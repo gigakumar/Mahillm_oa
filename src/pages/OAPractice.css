@@ -266,3 +266,17 @@
   }
 }
 
+.question-context img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+}
+.question-context table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.question-context th, .question-context td {
+  border: 1px solid var(--border);
+  padding: 0.5rem;
+}
+

@@ -31,6 +31,20 @@ async function scrapeTopic(startUrl, topic, category, startId, maxPages = 50) {
       const $ = cheerio.load(html);
       let pageQuestions = 0;
 
+      // Extract context (Data Interpretation graphs/tables)
+      let contextHtml = '';
+      const directionDiv = $('.bix-div-direction');
+      if (directionDiv.length > 0) {
+        // Fix relative image URLs
+        directionDiv.find('img').each((idx, img) => {
+          const src = $(img).attr('src');
+          if (src && src.startsWith('/')) {
+            $(img).attr('src', 'https://www.indiabix.com' + src);
+          }
+        });
+        contextHtml = directionDiv.html().trim();
+      }
+
       $('.bix-div-container').each((i, el) => {
         const qText = $(el).find('.bix-td-qtxt').text().trim();
         if (!qText) return;
@@ -53,6 +67,7 @@ async function scrapeTopic(startUrl, topic, category, startId, maxPages = 50) {
           options: options.slice(0, 4),
           correct: correctIdx,
           explanation: explanation,
+          contextHtml: contextHtml,
           difficulty: 'Medium',
           topic: topic,
           category: category

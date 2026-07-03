@@ -215,6 +215,10 @@ export default function OAPractice() {
           </div>
         </div>
 
+        {question.contextHtml && (
+          <div className="question-context card" style={{ marginBottom: '1.5rem', background: 'var(--bg-body)', padding: '1rem' }} dangerouslySetInnerHTML={{ __html: question.contextHtml }} />
+        )}
+
         <h2 className="question-text">{question.question}</h2>
 
         <div className="options">
