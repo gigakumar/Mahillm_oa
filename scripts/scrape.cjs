@@ -33,7 +33,7 @@ async function scrapeTopic(startUrl, topic, category, startId, maxPages = 50) {
 
       // Extract context (Data Interpretation graphs/tables)
       let contextHtml = '';
-      const directionDiv = $('.bix-div-direction');
+      const directionDiv = $('.direction-div');
       if (directionDiv.length > 0) {
         // Fix relative image URLs
         directionDiv.find('img').each((idx, img) => {
@@ -46,27 +46,39 @@ async function scrapeTopic(startUrl, topic, category, startId, maxPages = 50) {
       }
 
       $('.bix-div-container').each((i, el) => {
-        const qText = $(el).find('.bix-td-qtxt').text().trim();
-        if (!qText) return;
-
-        const options = [];
-        $(el).find('.bix-td-option-val').each((j, optEl) => {
-          options.push($(optEl).text().trim());
+        // Fix relative image URLs in this container first
+        $(el).find('img').each((idx, img) => {
+          const src = $(img).attr('src');
+          if (src && src.startsWith('/')) {
+            $(img).attr('src', 'https://www.indiabix.com' + src);
+          }
         });
-        if (options.length < 4) return;
+
+        const qHtml = $(el).find('.bix-td-qtxt').html();
+        if (!qHtml) return;
+
+        const optionsHtml = [];
+        $(el).find('.bix-td-option-val').each((j, optEl) => {
+          optionsHtml.push($(optEl).html().trim());
+        });
+        if (optionsHtml.length < 4) return;
 
         const ansVal = $(el).find('.jq-hdnakq').val();
         const correctIdx = ansVal ? ansVal.charCodeAt(0) - 65 : 0;
 
-        let explanation = $(el).find('.bix-ans-description').text().trim();
-        if (explanation.includes('No answer description is available')) explanation = '';
+        let explanationHtml = $(el).find('.bix-ans-description').html();
+        if (explanationHtml && explanationHtml.includes('No answer description is available')) {
+            explanationHtml = '';
+        } else if (explanationHtml) {
+            explanationHtml = explanationHtml.trim();
+        }
 
         questions.push({
           id: currentId++,
-          question: qText,
-          options: options.slice(0, 4),
+          question: qHtml.trim(),
+          options: optionsHtml.slice(0, 4),
           correct: correctIdx,
-          explanation: explanation,
+          explanation: explanationHtml || '',
           contextHtml: contextHtml,
           difficulty: 'Medium',
           topic: topic,

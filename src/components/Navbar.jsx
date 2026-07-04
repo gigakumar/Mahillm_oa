@@ -18,11 +18,7 @@ export default function Navbar() {
   return (
     <nav className="navbar card">
       <div className="nav-brand">
-        <div className="nav-logo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-          </svg>
-        </div>
+        <img src="/logo.png" alt="Mahi LLM Logo" className="nav-logo-img" />
         <span className="nav-title">Mahillm OA</span>
       </div>
 

@@ -219,37 +219,46 @@ export default function OAPractice() {
           <div className="question-context card" style={{ marginBottom: '1.5rem', background: 'var(--bg-body)', padding: '1rem' }} dangerouslySetInnerHTML={{ __html: question.contextHtml }} />
         )}
 
-        <h2 className="question-text">{question.question}</h2>
+        <h2 className="question-text" dangerouslySetInnerHTML={{ __html: question.question }} />
 
         <div className="options">
-          {question.options.map((opt, idx) => {
+          {question.options.map((opt, index) => {
             let cls = '';
             if (submitted) {
-              if (idx === question.correct) cls = 'correct';
-              else if (idx === selected) cls = 'incorrect';
-            } else if (idx === selected) {
+              if (index === question.correct) cls = 'correct';
+              else if (index === selected) cls = 'incorrect';
+            } else if (index === selected) {
               cls = 'selected';
             }
 
             return (
               <button
-                key={idx}
+                key={index}
                 className={`option ${cls}`}
-                onClick={() => !submitted && setSelected(idx)}
+                onClick={() => !submitted && setSelected(index)}
                 disabled={submitted}
               >
-                <span className="option-key">{String.fromCharCode(65 + idx)}</span>
-                <span className="option-value">{opt}</span>
-                {submitted && idx === question.correct && <CheckCircle size={18} className="option-icon success-icon" />}
-                {submitted && idx === selected && idx !== question.correct && <XCircle size={18} className="option-icon danger-icon" />}
+                <span className="option-key">{String.fromCharCode(65 + index)}</span>
+                <span className="option-value" dangerouslySetInnerHTML={{ __html: opt }} />
+                {submitted && index === question.correct && <CheckCircle size={18} className="option-icon success-icon" />}
+                {submitted && index === selected && index !== question.correct && <XCircle size={18} className="option-icon danger-icon" />}
               </button>
             );
           })}
         </div>
 
-        {submitted && question.explanation && (
-          <div className="explanation">
-            <strong>Explanation:</strong> {question.explanation}
+        {submitted && (
+          <div className={`result-box ${selected === question.correct ? 'correct' : 'incorrect'}`}>
+            <div className="result-header">
+              <h3>{selected === question.correct ? 'Correct! 🎉' : 'Incorrect'}</h3>
+              {selected === question.correct ? <span className="xp-gain">+10 XP</span> : null}
+            </div>
+            {question.explanation && (
+              <div className="explanation">
+                <strong>Explanation:</strong>
+                <div dangerouslySetInnerHTML={{ __html: question.explanation }} />
+              </div>
+            )}
           </div>
         )}
 
