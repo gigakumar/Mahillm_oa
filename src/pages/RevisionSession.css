@@ -1,0 +1,103 @@
+/* Spaced Repetition Revision Styles */
+
+.revision-page {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.revision-summary-header {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  padding: 1.5rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.revision-summary-text h2 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  margin: 0 0 0.5rem 0;
+  color: var(--text-h);
+}
+
+.revision-summary-text p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.revision-summary-stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.revision-stat-pill {
+  background: var(--bg-body);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.revision-stat-num {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.revision-stat-lbl {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.interval-progression-badge {
+  background: rgba(16, 185, 129, 0.12);
+  color: var(--success);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  animation: slideUp 0.3s ease-out;
+}
+
+.interval-progression-badge.shrunk {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.revision-complete-card {
+  padding: 3rem 2rem;
+  text-align: center;
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+.revision-complete-icon {
+  color: var(--success);
+  margin-bottom: 1.5rem;
+  animation: pulse 2s infinite;
+}
+
+.revision-complete-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background: var(--bg-body);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+}

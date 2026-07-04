@@ -1,12 +1,22 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { PenTool, Mic, Flame, Target, Zap } from 'lucide-react';
+import { useUserData } from '../contexts/UserDataContext';
+import { getRevisionSummary } from '../utils/spacedRepetition';
+import { getWeakestTopics } from '../utils/adaptiveEngine';
+import { MOCK_TESTS } from '../data/mockSeriesConfig';
+import { db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { useState, useEffect } from 'react';
+import { PenTool, Mic, Flame, Target, Zap, Clock, AlertTriangle, ArrowRight, Sparkles, Lock, Unlock, Play } from 'lucide-react';
 import './Dashboard.css';
 
 import metadata from '../data/metadata';
 
+
 export default function Dashboard() {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { spacedRepetition, masteryScores } = useUserData();
   const firstName = user?.displayName?.split(' ')[0] || 'there';
 
   const totalQs = metadata.totalCount;
@@ -15,6 +25,42 @@ export default function Dashboard() {
   const diCount = metadata.categories['Data Interpretation'].count;
   const dilrCount = metadata.categories['DILR'].count;
   const lrCount = metadata.categories['Logical Reasoning'].count;
+
+  const revisionSummary = getRevisionSummary(spacedRepetition);
+  const weakTopics = getWeakestTopics(masteryScores, 3);
+
+  const [dailyCompleted, setDailyCompleted] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+    const today = new Date();
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    
+    async function checkDaily() {
+      try {
+        const snap = await getDoc(doc(db, 'users', user.uid, 'dailyChallenges', todayStr));
+        if (snap.exists()) {
+          setDailyCompleted(snap.data().score !== undefined);
+        }
+      } catch (e) {
+        console.error("Error loading daily challenge status on dashboard:", e);
+      }
+    }
+    checkDaily();
+  }, [user]);
+
+  const handleStartMock = (mock) => {
+    localStorage.setItem('current_test_config', JSON.stringify({
+      name: mock.name,
+      duration: mock.duration,
+      difficulty: 'all',
+      negativeMarking: mock.negativeMarking,
+      distribution: mock.distribution,
+      count: mock.count
+    }));
+    localStorage.removeItem('current_test_session');
+    navigate('/tests/session');
+  };
 
   return (
     <div className="page-content dashboard">
@@ -63,6 +109,100 @@ export default function Dashboard() {
         </div>
       </section>
 
+      {/* Revision & Weakness Alerts */}
+      <section className="dashboard-alerts" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
+        
+        {/* Daily Challenge Widget */}
+        <div className="card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <Sparkles size={24} style={{ color: dailyCompleted ? 'var(--success)' : 'var(--accent)' }} />
+            <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: '1.25rem' }}>Daily Challenge</h3>
+          </div>
+          {dailyCompleted ? (
+            <>
+              <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
+                You have completed today's challenge. Check back tomorrow for another seeded test!
+              </p>
+              <span className="badge badge-success" style={{ width: 'fit-content', padding: '0.35rem 0.75rem', marginTop: 'auto' }}>
+                Completed ✓
+              </span>
+            </>
+          ) : (
+            <>
+              <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
+                Solve 10 questions in 10 minutes. Seeded challenge. One attempt only.
+              </p>
+              <Link to="/daily-challenge" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', width: 'fit-content', marginTop: 'auto' }}>
+                Start Challenge <ArrowRight size={16} />
+              </Link>
+            </>
+          )}
+        </div>
+
+        {/* Due for Revision Widget */}
+        <div className="card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', position: 'relative' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <Clock size={24} style={{ color: revisionSummary.dueToday > 0 ? 'var(--warning)' : 'var(--success)' }} />
+            <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: '1.25rem' }}>Revision Queue</h3>
+          </div>
+          {revisionSummary.dueToday > 0 ? (
+            <>
+              <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
+                You have <strong style={{ color: 'var(--text-primary)' }}>{revisionSummary.dueToday}</strong> question{revisionSummary.dueToday > 1 ? 's' : ''} due for review today. Keep your memory sharp!
+              </p>
+              <Link to="/revision" className="btn btn-primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', width: 'fit-content', marginTop: 'auto' }}>
+                Start Revision <ArrowRight size={16} />
+              </Link>
+            </>
+          ) : (
+            <>
+              <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
+                Excellent work! Your revision queue is completely clear today.
+              </p>
+              <span className="badge badge-success" style={{ width: 'fit-content', padding: '0.35rem 0.75rem', marginTop: 'auto' }}>
+                All Caught Up ✓
+              </span>
+            </>
+          )}
+        </div>
+
+        {/* Weakest Topics Widget */}
+        <div className="card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            <AlertTriangle size={24} style={{ color: weakTopics.length > 0 ? 'var(--danger)' : 'var(--success)' }} />
+            <h3 style={{ margin: 0, fontFamily: 'var(--font-display)', fontSize: '1.25rem' }}>Mastery Weakness</h3>
+          </div>
+          {weakTopics.length > 0 ? (
+            <>
+              <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
+                Your lowest performing areas. Target these to boost your placement score:
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginTop: '0.5rem' }}>
+                {weakTopics.map((item, idx) => (
+                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.9rem' }}>
+                    <Link to={`/oa-practice?cat=${encodeURIComponent(item.category)}&topic=${encodeURIComponent(item.topic)}`} style={{ color: 'var(--text-primary)', textDecoration: 'none', fontWeight: 600 }}>
+                      {item.topic}
+                    </Link>
+                    <span className="badge" style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', fontWeight: 'bold' }}>
+                      {Math.round(item.score * 100)}% Mastery
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <p style={{ margin: 0, fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
+                Answer more questions to calibrate your topic mastery heatmap.
+              </p>
+              <Link to="/readiness" className="btn btn-secondary" style={{ width: 'fit-content', marginTop: 'auto' }}>
+                View Heatmap
+              </Link>
+            </>
+          )}
+        </div>
+      </section>
+
       {/* Quick Links */}
       <section className="quick-links">
         <h2>Pick your battle ⚔️</h2>
@@ -97,6 +237,51 @@ export default function Dashboard() {
             <p>Series, coding-decoding, direction sense, syllogisms</p>
             <span className="badge badge-accent" style={{ background: 'var(--accent-glow)', color: 'var(--accent)' }}>~{lrCount.toLocaleString()} Qs</span>
           </Link>
+        </div>
+      </section>
+
+      {/* Mock Test Series */}
+      <section className="mock-tests-series" style={{ marginBottom: '2.5rem' }}>
+        <h2 style={{ fontFamily: 'var(--font-display)', marginBottom: '1.25rem' }}>Scheduled Mock Tests 🏆</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem' }}>
+          {MOCK_TESTS.map(mock => {
+            const isLocked = new Date() < new Date(mock.unlockDate);
+            const dateStr = new Date(mock.unlockDate).toLocaleDateString('en-IN', {
+              day: 'numeric',
+              month: 'short',
+              hour: '2-digit',
+              minute: '2-digit'
+            });
+
+            return (
+              <div key={mock.id} className="card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', borderTop: isLocked ? '4px solid var(--border)' : '4px solid var(--success)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>{mock.name}</h3>
+                  {isLocked ? <Lock size={16} style={{ color: 'var(--text-secondary)' }} /> : <Unlock size={16} style={{ color: 'var(--success)' }} />}
+                </div>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>{mock.description}</p>
+                <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.8rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
+                  <span className="badge" style={{ background: 'var(--bg-body)' }}>{mock.duration} Mins</span>
+                  <span className="badge" style={{ background: 'var(--bg-body)' }}>{mock.count} Qs</span>
+                  {mock.negativeMarking && <span className="badge badge-danger-soft">-1/3 Mark</span>}
+                </div>
+                
+                {isLocked ? (
+                  <div style={{ marginTop: 'auto', fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                    Unlocks: {dateStr}
+                  </div>
+                ) : (
+                  <button 
+                    className="btn btn-primary" 
+                    style={{ marginTop: 'auto', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', width: 'fit-content' }}
+                    onClick={() => handleStartMock(mock)}
+                  >
+                    <Play size={12} fill="currentColor" /> Start Mock
+                  </button>
+                )}
+              </div>
+            );
+          })}
         </div>
       </section>
 

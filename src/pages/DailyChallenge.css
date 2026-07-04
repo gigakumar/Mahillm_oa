@@ -1,0 +1,53 @@
+/* Daily Challenge Styles */
+
+.daily-challenge-page {
+  animation: fadeIn 0.4s ease-out;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.daily-challenge-hero {
+  background: linear-gradient(135deg, rgba(253, 203, 110, 0.15) 0%, rgba(249, 115, 22, 0.1) 100%);
+  border: 1px solid rgba(253, 203, 110, 0.3);
+  padding: 2rem;
+  border-radius: var(--radius-lg);
+  text-align: center;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.daily-challenge-title {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text-h);
+}
+
+.daily-countdown-box {
+  background: var(--bg-body);
+  border: 1px solid var(--border);
+  padding: 0.5rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  font-family: monospace;
+  color: var(--accent);
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+  margin-top: 0.5rem;
+}
+
+.daily-challenge-completed-card {
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.daily-xp-glow {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--success);
+  text-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+  margin: 1rem 0;
+}

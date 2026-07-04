@@ -1,0 +1,126 @@
+/* Admin Question Dashboard CSS */
+
+.admin-page {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.admin-grid-top {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.admin-stat-card {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.admin-table-container {
+  overflow-x: auto;
+  margin-top: 1rem;
+  background: var(--bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.admin-table th, .admin-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-table th {
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-h);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.admin-table tr:hover {
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-badge.healthy { background: rgba(16, 185, 129, 0.12); color: var(--success); }
+.status-badge.flagged { background: rgba(249, 115, 22, 0.12); color: var(--accent); }
+.status-badge.quarantined { background: rgba(239, 68, 68, 0.12); color: var(--danger); }
+
+.health-score-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: bold;
+}
+
+.health-score-indicator.good { color: var(--success); }
+.health-score-indicator.warning { color: var(--warning); }
+.health-score-indicator.poor { color: var(--danger); }
+
+.admin-action-btn-row {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.admin-action-btn {
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--bg-body);
+  color: var(--text-secondary);
+}
+
+.admin-action-btn:hover {
+  border-color: var(--text-primary);
+  color: var(--text-primary);
+}
+
+.admin-action-btn.quarantine {
+  border-color: rgba(239, 68, 68, 0.3);
+  color: var(--danger);
+  background: rgba(239, 68, 68, 0.05);
+}
+
+.admin-action-btn.quarantine:hover {
+  background: var(--danger);
+  color: white;
+}
+
+.admin-action-btn.approve {
+  border-color: rgba(16, 185, 129, 0.3);
+  color: var(--success);
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.admin-action-btn.approve:hover {
+  background: var(--success);
+  color: white;
+}
+
+.cluster-bubble {
+  padding: 0.25rem 0.5rem;
+  background: var(--bg-body);
+  border: 1px solid var(--border);
+  font-size: 0.75rem;
+  border-radius: 10px;
+}

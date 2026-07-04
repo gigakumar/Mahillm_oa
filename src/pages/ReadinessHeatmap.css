@@ -1,0 +1,190 @@
+/* Exam Readiness Heatmap CSS */
+
+.heatmap-page {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.heatmap-header-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.heatmap-stat-card {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.heatmap-score-text {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.heatmap-legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.legend-color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.legend-color-dot.strong { background-color: #00b894; }
+.legend-color-dot.unstable { background-color: #fdcb6e; }
+.legend-color-dot.weak { background-color: #d63031; }
+.legend-color-dot.unattempted { background-color: #636e72; }
+
+.heatmap-accordion {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.heatmap-cat-section {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.heatmap-cat-header {
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s ease;
+}
+
+.heatmap-cat-header:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.heatmap-cat-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.heatmap-cat-summary-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.heatmap-cat-meta-item {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.heatmap-cat-meta-val {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-left: 0.25rem;
+}
+
+.heatmap-cat-content {
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.01);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.heatmap-topic-cell {
+  padding: 1rem 1.25rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.heatmap-topic-cell::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+}
+
+.heatmap-topic-cell.strong { border-color: rgba(0, 184, 148, 0.2); background: rgba(0, 184, 148, 0.03); }
+.heatmap-topic-cell.strong::after { background-color: #00b894; }
+
+.heatmap-topic-cell.unstable { border-color: rgba(253, 203, 110, 0.2); background: rgba(253, 203, 110, 0.03); }
+.heatmap-topic-cell.unstable::after { background-color: #fdcb6e; }
+
+.heatmap-topic-cell.weak { border-color: rgba(214, 48, 49, 0.2); background: rgba(214, 48, 49, 0.03); }
+.heatmap-topic-cell.weak::after { background-color: #d63031; }
+
+.heatmap-topic-cell.unattempted { border-color: var(--border); background: rgba(255, 255, 255, 0.01); }
+.heatmap-topic-cell.unattempted::after { background-color: #636e72; }
+
+.heatmap-topic-cell:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.heatmap-topic-cell.strong:hover { border-color: #00b894; }
+.heatmap-topic-cell.unstable:hover { border-color: #fdcb6e; }
+.heatmap-topic-cell.weak:hover { border-color: #d63031; }
+.heatmap-topic-cell.unattempted:hover { border-color: var(--text-secondary); }
+
+.topic-cell-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-h);
+  line-height: 1.3;
+}
+
+.topic-cell-meta-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: auto;
+}
+
+.topic-cell-accuracy-bar {
+  height: 4px;
+  width: 100%;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 0.25rem;
+}
+
+.topic-cell-accuracy-fill {
+  height: 100%;
+  border-radius: 2px;
+}
+.topic-cell-accuracy-fill.strong { background-color: #00b894; }
+.topic-cell-accuracy-fill.unstable { background-color: #fdcb6e; }
+.topic-cell-accuracy-fill.weak { background-color: #d63031; }

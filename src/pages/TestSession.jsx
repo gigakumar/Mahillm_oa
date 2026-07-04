@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useUserData } from '../contexts/UserDataContext';
 import { db } from '../firebase';
-import { doc, setDoc, collection } from 'firebase/firestore';
+import { doc, setDoc, collection, getDocs } from 'firebase/firestore';
 import { HelpCircle, ChevronLeft, ChevronRight, CheckCircle2, Bookmark, Trash2, AlertTriangle } from 'lucide-react';
 import './TestSession.css';
 
@@ -11,6 +12,22 @@ import metadata from '../data/metadata';
 
 // Coherent Set-based sampler
 function sampleQuestions(config, pool) {
+  if (config.overrideQuestionIds && config.overrideQuestionIds.length > 0) {
+    const ids = new Set(config.overrideQuestionIds.map(String));
+    const list = [];
+    Object.values(pool).forEach(catList => {
+      catList.forEach(q => {
+        if (ids.has(q.id.toString())) {
+          list.push(q);
+        }
+      });
+    });
+    // Maintain the order specified in overrideQuestionIds
+    return config.overrideQuestionIds
+      .map(id => list.find(q => q.id.toString() === id.toString()))
+      .filter(Boolean);
+  }
+
   const { count, distribution, difficulty } = config;
   const selected = [];
 
@@ -73,6 +90,7 @@ function sampleQuestions(config, pool) {
 
 export default function TestSession() {
   const { user } = useAuth();
+  const { recordDetailedAnswer } = useUserData();
   const navigate = useNavigate();
 
   const [config, setConfig] = useState(null);
@@ -88,6 +106,11 @@ export default function TestSession() {
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
   const [attemptId, setAttemptId] = useState('');
+  
+  // Telemetry & strategy states
+  const [confidences, setConfidences] = useState({});
+  const [timeSpentMap, setTimeSpentMap] = useState({});
+  const [answerHistory, setAnswerHistory] = useState({});
 
   const timerRef = useRef(null);
 
@@ -119,6 +142,9 @@ export default function TestSession() {
         setVisitedQuestions(session.visitedQuestions || {});
         setMarkedForReview(session.markedForReview || {});
         setAttemptId(session.attemptId || `attempt_${Date.now()}`);
+        setConfidences(session.confidences || {});
+        setTimeSpentMap(session.timeSpentMap || {});
+        setAnswerHistory(session.answerHistory || {});
         
         // Recover time from timestamp
         const endTime = parseInt(localStorage.getItem('current_test_end_time') || '0');
@@ -149,6 +175,20 @@ export default function TestSession() {
           }
 
           await Promise.all(categoryPromises);
+
+          // Fetch quarantined list
+          const qList = new Set();
+          try {
+            const qSnap = await getDocs(collection(db, 'quarantined_questions'));
+            qSnap.forEach(d => qList.add(d.id.toString()));
+          } catch (e) {
+            console.error("Error fetching quarantine list in test session:", e);
+          }
+
+          // Filter pools
+          Object.keys(loadedPools).forEach(category => {
+            loadedPools[category] = loadedPools[category].filter(q => !qList.has(q.id.toString()));
+          });
 
           const testQs = sampleQuestions(parsedConfig, loadedPools);
           setQuestions(testQs);
@@ -211,7 +251,15 @@ export default function TestSession() {
       const remaining = Math.max(0, endTime - Math.floor(Date.now() / 1000));
       
       setTimerSeconds(remaining);
-      saveSessionToStorage(remaining);
+      
+      // Increment time spent on the active question
+      const activeQ = questions[currentIdx];
+      if (activeQ) {
+        setTimeSpentMap(prev => ({
+          ...prev,
+          [activeQ.id]: (prev[activeQ.id] || 0) + 1
+        }));
+      }
 
       if (remaining <= 0) {
         submitTest(true);
@@ -219,9 +267,10 @@ export default function TestSession() {
     }, 1000);
 
     return () => clearInterval(timerRef.current);
-  }, [timerSeconds, questions]);
+  }, [timerSeconds, questions, currentIdx]);
 
-  const saveSessionToStorage = (currTime) => {
+  // Reactive localStorage sync effect
+  useEffect(() => {
     if (questions.length === 0) return;
     localStorage.setItem('current_test_session', JSON.stringify({
       questions,
@@ -229,26 +278,18 @@ export default function TestSession() {
       selectedOptions,
       visitedQuestions,
       markedForReview,
-      attemptId
+      attemptId,
+      confidences,
+      timeSpentMap,
+      answerHistory
     }));
-  };
+  }, [questions, currentIdx, selectedOptions, visitedQuestions, markedForReview, attemptId, confidences, timeSpentMap, answerHistory]);
 
   const handleNext = () => {
     if (currentIdx < questions.length - 1) {
       const nextIdx = currentIdx + 1;
       setCurrentIdx(nextIdx);
-      setVisitedQuestions((prev) => {
-        const updated = { ...prev, [questions[nextIdx].id]: true };
-        localStorage.setItem('current_test_session', JSON.stringify({
-          questions,
-          currentIdx: nextIdx,
-          selectedOptions,
-          visitedQuestions: updated,
-          markedForReview,
-          timerSeconds
-        }));
-        return updated;
-      });
+      setVisitedQuestions((prev) => ({ ...prev, [questions[nextIdx].id]: true }));
     }
   };
 
@@ -256,40 +297,17 @@ export default function TestSession() {
     if (currentIdx > 0) {
       const prevIdx = currentIdx - 1;
       setCurrentIdx(prevIdx);
-      setVisitedQuestions((prev) => {
-        const updated = { ...prev, [questions[prevIdx].id]: true };
-        localStorage.setItem('current_test_session', JSON.stringify({
-          questions,
-          currentIdx: prevIdx,
-          selectedOptions,
-          visitedQuestions: updated,
-          markedForReview,
-          timerSeconds
-        }));
-        return updated;
-      });
+      setVisitedQuestions((prev) => ({ ...prev, [questions[prevIdx].id]: true }));
     }
   };
 
   const handleSaveAndNext = () => {
-    // Saves answer implicitly through state binding and moves to next
     handleNext();
   };
 
   const handleMarkForReviewAndNext = () => {
     const qId = questions[currentIdx].id;
-    setMarkedForReview(prev => {
-      const updated = { ...prev, [qId]: true };
-      localStorage.setItem('current_test_session', JSON.stringify({
-        questions,
-        currentIdx: currentIdx + 1,
-        selectedOptions,
-        visitedQuestions,
-        markedForReview: updated,
-        timerSeconds
-      }));
-      return updated;
-    });
+    setMarkedForReview(prev => ({ ...prev, [qId]: true }));
     handleNext();
   };
 
@@ -312,6 +330,15 @@ export default function TestSession() {
     const q = questions[currentIdx];
     const qId = q.id;
 
+    // Track selection history
+    setAnswerHistory(prev => {
+      const hist = prev[qId] || [];
+      if (hist[hist.length - 1] !== optIdx) {
+        return { ...prev, [qId]: [...hist, optIdx] };
+      }
+      return prev;
+    });
+
     if (q.type === 'MSQ') {
       setSelectedOptions(prev => {
         const currentSelection = prev[qId] || [];
@@ -330,6 +357,15 @@ export default function TestSession() {
 
   const handleNatInputChange = (val) => {
     const qId = questions[currentIdx].id;
+    
+    setAnswerHistory(prev => {
+      const hist = prev[qId] || [];
+      if (hist[hist.length - 1] !== val) {
+        return { ...prev, [qId]: [...hist, val] };
+      }
+      return prev;
+    });
+
     setSelectedOptions(prev => ({ ...prev, [qId]: val }));
   };
 
@@ -409,7 +445,10 @@ export default function TestSession() {
         explanation: q.explanation || '',
         category: q.category,
         topic: q.topic,
-        type: q.type
+        type: q.type,
+        confidence: confidences[q.id] || null,
+        timeSpentSeconds: timeSpentMap[q.id] || 0,
+        answerHistory: answerHistory[q.id] || []
       });
     });
 
@@ -429,7 +468,10 @@ export default function TestSession() {
       accuracy,
       timeSpentSeconds: timeSpent,
       submittedAt: new Date().toISOString(),
-      report: detailedReport
+      report: detailedReport,
+      confidences,
+      timeSpentMap,
+      answerHistory
     };
 
     // Use attemptId as the document name for idempotency
@@ -438,6 +480,16 @@ export default function TestSession() {
       if (user) {
         const docRef = doc(db, 'users', user.uid, 'tests', testId);
         await setDoc(docRef, testResult);
+
+        // Track each question result in the adaptive mastery context
+        const promises = questions.map((q) => {
+          const repItem = detailedReport.find(item => item.id === q.id);
+          const isCorrect = repItem ? repItem.isCorrect : false;
+          const qTimeMs = (timeSpentMap[q.id] || 0) * 1000;
+          const confidence = confidences[q.id] || null;
+          return recordDetailedAnswer(q, isCorrect, qTimeMs, confidence);
+        });
+        await Promise.all(promises);
       } else {
         localStorage.setItem(`guest_test_result_${testId}`, JSON.stringify(testResult));
       }
@@ -566,6 +618,38 @@ export default function TestSession() {
                   </div>
                 )}
               </div>
+
+              {/* Option Confidence Selector */}
+              {selectedOptions[currentQuestion.id] !== undefined && selectedOptions[currentQuestion.id] !== '' && (
+                <div className="confidence-tracking-section" style={{
+                  marginTop: '1.5rem',
+                  padding: '1rem',
+                  background: 'var(--bg-body)',
+                  border: '1px dashed var(--border)',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '1rem',
+                  animation: 'fadeIn 0.2s ease'
+                }}>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>How confident are you?</span>
+                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                    {['sure', 'unsure', 'guess'].map(c => {
+                      const isConfSelected = confidences[currentQuestion.id] === c;
+                      return (
+                        <button
+                          key={c}
+                          className={`btn ${isConfSelected ? 'btn-primary' : 'btn-ghost'}`}
+                          style={{ padding: '0.25rem 0.75rem', fontSize: '0.8rem', textTransform: 'capitalize' }}
+                          onClick={() => setConfidences(prev => ({ ...prev, [currentQuestion.id]: c }))}
+                        >
+                          {c}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
           </div>

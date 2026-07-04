@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useUserData } from '../contexts/UserDataContext';
 import { db } from '../firebase';
 import { doc, getDoc, setDoc, addDoc, collection } from 'firebase/firestore';
-import { Check, X, Award, Clock, Target, AlertTriangle, AlertCircle, Bookmark, Share2, CornerDownRight, Flag } from 'lucide-react';
+import { Check, X, Award, Clock, Target, AlertTriangle, AlertCircle, Bookmark, Share2, CornerDownRight, Flag, Brain } from 'lucide-react';
 import './TestResult.css';
 
 export default function TestResult() {
   const { testId } = useParams();
   const { user } = useAuth();
+  const { masteryScores } = useUserData();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
@@ -184,18 +186,47 @@ export default function TestResult() {
 
       {/* Weak Areas Alerts */}
       {weakAreas.length > 0 && (
-        <div className="weak-areas-banner card" style={{ borderLeft: '4px solid var(--danger)', background: 'rgba(239, 68, 68, 0.05)' }}>
+        <div className="weak-areas-banner card" style={{ borderLeft: '4px solid var(--danger)', background: 'rgba(239, 68, 68, 0.05)', marginBottom: '1.5rem' }}>
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', color: 'var(--danger)', marginBottom: '0.5rem' }}>
             <AlertTriangle size={20} />
             <h3 style={{ margin: 0 }}>Critical Focus Areas Spotted ⚠️</h3>
           </div>
           <p style={{ margin: '0 0 0.75rem 0', fontSize: '0.95rem' }}>Based on accuracy, prioritize revising these topics before your next mock exam:</p>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
             {weakAreas.map((w, idx) => (
               <span key={idx} className="badge badge-danger" style={{ background: 'rgba(239,68,68,0.15)', color: 'var(--danger)' }}>
                 {w.topic} ({w.accuracy}% Acc)
               </span>
             ))}
+          </div>
+          <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+            ⚠️ These questions have been added to your <Link to="/mistakes" style={{ color: 'var(--danger)', fontWeight: 600, textDecoration: 'underline' }}>Mistake Notebook</Link> for structured review.
+          </div>
+        </div>
+      )}
+
+      {user && Object.keys(topicStats).length > 0 && (
+        <div className="card" style={{ padding: '1.25rem', marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(108, 92, 231, 0.02) 100%)', border: '1px solid rgba(139, 92, 246, 0.2)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--secondary)' }}>
+            <Brain size={18} />
+            <h3 style={{ margin: 0, fontSize: '1rem', fontFamily: 'var(--font-display)' }}>Topic Mastery Calibration</h3>
+          </div>
+          <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Your overall placement readiness score has been updated with these topic indices:</p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+            {Object.keys(topicStats).map((topic) => {
+              // Find composite key matching this topic
+              const matchingKey = Object.keys(masteryScores).find(key => key.endsWith(`__${topic}`));
+              const mastery = matchingKey ? masteryScores[matchingKey] : null;
+              const scoreVal = mastery ? Math.round(mastery.score * 100) : null;
+              
+              if (scoreVal === null) return null;
+              
+              return (
+                <span key={topic} className="badge" style={{ background: 'var(--bg-body)', color: 'var(--text-secondary)', border: '1px solid var(--border)' }}>
+                  {topic}: <strong style={{ color: scoreVal >= 70 ? '#00b894' : scoreVal >= 40 ? '#fdcb6e' : '#d63031', marginLeft: '0.25rem' }}>{scoreVal}%</strong>
+                </span>
+              );
+            })}
           </div>
         </div>
       )}
@@ -227,6 +258,83 @@ export default function TestResult() {
             ))}
           </tbody>
         </table>
+      </section>
+
+      {/* Strategy Advisor Section */}
+      <section className="strategy-advisor-section card" style={{ marginTop: '2rem', padding: '1.5rem' }}>
+        <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'var(--font-display)', margin: '0 0 1rem 0' }}>
+          <Brain size={22} style={{ color: 'var(--accent)' }} /> Exam Strategy Advisor
+        </h2>
+        
+        {(() => {
+          let timeSinks = 0;
+          let rushedMistakes = 0;
+          let confidentMisconceptions = 0;
+          let changedToIncorrect = 0;
+
+          result.report.forEach(q => {
+            if (q.timeSpentSeconds > 90 && !q.isCorrect && q.isAttempted) {
+              timeSinks++;
+            }
+            if (q.timeSpentSeconds > 0 && q.timeSpentSeconds < 15 && !q.isCorrect && q.isAttempted) {
+              rushedMistakes++;
+            }
+            if (q.confidence === 'sure' && !q.isCorrect && q.isAttempted) {
+              confidentMisconceptions++;
+            }
+            const hist = q.answerHistory || [];
+            if (hist.length > 1 && q.type !== 'MSQ') {
+              const wasOnceCorrect = hist.includes(q.correct);
+              if (wasOnceCorrect && !q.isCorrect) {
+                changedToIncorrect++;
+              }
+            }
+          });
+
+          const hasFeedback = timeSinks > 0 || rushedMistakes > 0 || confidentMisconceptions > 0 || changedToIncorrect > 0;
+
+          if (!hasFeedback) {
+            return (
+              <div style={{ color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.95rem' }}>
+                <span>🌟 <strong>Flawless Execution Strategy:</strong> Your pacing, confidence mapping, and decision consistency was excellent in this attempt. Keep it up!</span>
+              </div>
+            );
+          }
+
+          return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <p style={{ margin: 0, color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                We analyzed your question navigation pacing, answer adjustment logs, and confidence ratings to identify core score leaks:
+              </p>
+              
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {timeSinks > 0 && (
+                  <div style={{ background: 'rgba(239, 68, 68, 0.04)', border: '1px dashed rgba(239, 68, 68, 0.2)', padding: '0.85rem 1rem', borderRadius: '8px', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                    ⚠️ <strong>Time Sink Alert:</strong> You spent more than 90 seconds on <strong style={{ color: 'var(--danger)' }}>{timeSinks}</strong> question{timeSinks > 1 ? 's' : ''} but still answered incorrectly. Consider skipping hard questions earlier to preserve energy.
+                  </div>
+                )}
+                
+                {rushedMistakes > 0 && (
+                  <div style={{ background: 'rgba(249, 115, 22, 0.04)', border: '1px dashed rgba(249, 115, 22, 0.2)', padding: '0.85rem 1rem', borderRadius: '8px', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                    ⚡ <strong>Rushing Alert:</strong> You answered <strong style={{ color: 'var(--accent)' }}>{rushedMistakes}</strong> question{rushedMistakes > 1 ? 's' : ''} in under 15 seconds and got them wrong. Double check your calculations or units before clicking next.
+                  </div>
+                )}
+
+                {confidentMisconceptions > 0 && (
+                  <div style={{ background: 'rgba(139, 92, 246, 0.04)', border: '1px dashed rgba(139, 92, 246, 0.2)', padding: '0.85rem 1rem', borderRadius: '8px', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                    🧠 <strong>Concept Warning:</strong> You were highly confident ('Sure') on <strong style={{ color: 'var(--secondary)' }}>{confidentMisconceptions}</strong> incorrect answer{confidentMisconceptions > 1 ? 's' : ''}. These represent core misconceptions — study their explanations carefully.
+                  </div>
+                )}
+
+                {changedToIncorrect > 0 && (
+                  <div style={{ background: 'rgba(100, 116, 139, 0.04)', border: '1px dashed rgba(100, 116, 139, 0.2)', padding: '0.85rem 1rem', borderRadius: '8px', fontSize: '0.9rem', color: 'var(--text-primary)' }}>
+                    🔄 <strong>Second Guessing:</strong> You changed your mind from the correct option to an incorrect one on <strong style={{ color: 'var(--text-secondary)' }}>{changedToIncorrect}</strong> question{changedToIncorrect > 1 ? 's' : ''}. Trust your first instinct unless you locate a concrete mathematical error!
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
       </section>
 
       {/* Review Mode Area */}
@@ -272,6 +380,11 @@ export default function TestResult() {
                     <span className="badge badge-accent">{q.type}</span>
                   </div>
                   <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    {q.isAttempted && !q.isCorrect && (
+                      <Link to="/mistakes" className="badge badge-danger" style={{ textDecoration: 'none', fontSize: '0.75rem', fontWeight: 600, background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444' }}>
+                        Notebook 📓
+                      </Link>
+                    )}
                     <span style={{ fontWeight: 'bold', fontSize: '0.85rem', color: q.isAttempted ? (q.isCorrect ? 'var(--success)' : 'var(--danger)') : 'var(--text-secondary)' }}>
                       {q.isAttempted ? (q.isCorrect ? 'Correct ✓' : 'Incorrect ✗') : 'Unattempted'}
                     </span>

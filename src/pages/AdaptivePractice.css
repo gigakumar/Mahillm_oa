@@ -1,0 +1,109 @@
+/* Adaptive Practice Styles */
+
+.adaptive-mode-banner {
+  background: linear-gradient(135deg, rgba(108, 92, 231, 0.15) 0%, rgba(0, 206, 201, 0.1) 100%);
+  border: 1px solid rgba(108, 92, 231, 0.3);
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.adaptive-banner-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.adaptive-banner-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-h);
+}
+
+.adaptive-banner-desc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.adaptive-focus-areas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.adaptive-focus-title {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.adaptive-focus-pill {
+  padding: 0.25rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  background: var(--bg-body);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.reason-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(108, 92, 231, 0.12);
+  color: var(--secondary);
+  border: 1px solid rgba(108, 92, 231, 0.2);
+  margin-right: 0.5rem;
+}
+
+.mastery-delta-alert {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: slideUp 0.3s ease-out;
+}
+
+.toggle-adaptive-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-adaptive-btn.active {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+  box-shadow: 0 0 12px rgba(108, 92, 231, 0.3);
+}
+
+.toggle-adaptive-btn:hover {
+  transform: translateY(-1px);
+}

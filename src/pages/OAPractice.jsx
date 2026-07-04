@@ -1,8 +1,14 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, Clock, Shuffle, List, Layers } from 'lucide-react';
+import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, Clock, Shuffle, List, Layers, Brain, Award } from 'lucide-react';
 import { useScore } from '../contexts/ScoreContext';
+import { useUserData } from '../contexts/UserDataContext';
+import { selectNextQuestions, getAdaptiveSummary } from '../utils/adaptiveEngine';
+import { db } from '../firebase';
+import { collection, getDocs } from 'firebase/firestore';
 import './OAPractice.css';
+import './AdaptivePractice.css';
+
 
 const CATEGORIES = [
   { key: 'all', label: 'All', emoji: '📚' },
@@ -29,7 +35,8 @@ export default function OAPractice() {
   const [searchParams] = useSearchParams();
   const initialCat = searchParams.get('cat') || 'all';
 
-  const { scoreData, recordAnswer, getQuestionsProgress, toggleBookmark } = useScore();
+  const { scoreData, toggleBookmark } = useScore();
+  const { masteryScores, mistakes, spacedRepetition, recordDetailedAnswer } = useUserData();
   const [progressMap, setProgressMap] = useState({});
   
   const [category, setCategory] = useState(initialCat);
@@ -40,10 +47,13 @@ export default function OAPractice() {
   const [showFilters, setShowFilters] = useState(false);
   const prevCategoryRef = useRef(category);
   
-  // View mode and selections
+  // View mode, selections, and Adaptive mode
   const [viewMode, setViewMode] = useState('card'); // 'card' | 'list'
   const [selectedOptions, setSelectedOptions] = useState({}); // { [qId]: index }
   const [submittedQuestions, setSubmittedQuestions] = useState({}); // { [qId]: boolean }
+  const [isAdaptive, setIsAdaptive] = useState(false);
+  const [selectionReasons, setSelectionReasons] = useState({});
+  const [confidences, setConfidences] = useState({});
   
   // Timer State
   const [timeLeft, setTimeLeft] = useState(60);
@@ -87,7 +97,16 @@ export default function OAPractice() {
       const uniqueTopics = ['all', ...new Set(pool.map(q => q.topic).filter(Boolean))].sort();
       setAvailableTopics(uniqueTopics);
 
-      let filtered = pool;
+      // Fetch quarantined list
+      const qList = new Set();
+      try {
+        const qSnap = await getDocs(collection(db, 'quarantined_questions'));
+        qSnap.forEach(d => qList.add(d.id.toString()));
+      } catch (e) {
+        console.error("Error fetching quarantine list in practice session:", e);
+      }
+
+      let filtered = pool.filter(q => !qList.has(q.id.toString()));
       if (category === 'bookmarked') {
         filtered = filtered.filter(q => scoreData?.bookmarked?.includes(q.id));
       }
@@ -98,8 +117,33 @@ export default function OAPractice() {
         filtered = filtered.filter(q => q.topic === topic);
       }
 
-      const shuffled = shuffleArray(filtered).slice(0, 50);
-      setQuizQuestions(shuffled);
+      if (isAdaptive) {
+        // Build userHistory proxy map for selectNextQuestions
+        const userHistoryProxy = {};
+        Object.keys(spacedRepetition).forEach(id => {
+          userHistoryProxy[id] = { totalAttempts: 1, correctCount: spacedRepetition[id].lastResult === 'correct' ? 1 : 0 };
+        });
+        Object.keys(mistakes).forEach(id => {
+          if (!userHistoryProxy[id]) {
+            userHistoryProxy[id] = { totalAttempts: 1, correctCount: 0 };
+          }
+        });
+
+        const adaptiveResult = selectNextQuestions(
+          filtered,
+          masteryScores,
+          userHistoryProxy,
+          mistakes,
+          20
+        );
+        setQuizQuestions(adaptiveResult.questions);
+        setSelectionReasons(adaptiveResult.reasons);
+      } else {
+        const shuffled = shuffleArray(filtered).slice(0, 50);
+        setQuizQuestions(shuffled);
+        setSelectionReasons({});
+      }
+
       setCurrentIdx(0);
       setSelectedOptions({});
       setSubmittedQuestions({});
@@ -119,7 +163,7 @@ export default function OAPractice() {
       return;
     }
     loadActivePool();
-  }, [category, difficulty, topic]);
+  }, [category, difficulty, topic, isAdaptive]);
 
   const regenerateQuiz = () => {
     loadActivePool();
@@ -127,13 +171,18 @@ export default function OAPractice() {
 
   useEffect(() => {
     if (quizQuestions.length === 0) return;
-    async function fetchProgress() {
-      const ids = quizQuestions.map(q => q.id);
-      const progress = await getQuestionsProgress(ids);
-      setProgressMap(progress);
-    }
-    fetchProgress();
-  }, [quizQuestions]);
+    // We can also infer correct/incorrect statuses locally from spacedRepetition/mistakes 
+    // to avoid extra getQuestionsProgress calls if desired, but let's keep getQuestionsProgress fallback
+    const progress = {};
+    quizQuestions.forEach(q => {
+      if (mistakes[q.id.toString()] && !mistakes[q.id.toString()].isResolved) {
+        progress[q.id] = 'incorrect';
+      } else if (spacedRepetition[q.id.toString()] && spacedRepetition[q.id.toString()].lastResult === 'correct') {
+        progress[q.id] = 'correct';
+      }
+    });
+    setProgressMap(progress);
+  }, [quizQuestions, mistakes, spacedRepetition]);
 
   const question = quizQuestions[currentIdx];
   const isBookmarked = question && scoreData?.bookmarked?.includes(question.id);
@@ -161,7 +210,7 @@ export default function OAPractice() {
     if (!question) return;
     setSubmittedQuestions(prev => ({ ...prev, [question.id]: true }));
     setIsTimerRunning(false);
-    recordAnswer(question.id, false);
+    recordDetailedAnswer(question, false, 60000, 'guess');
     setProgressMap(prev => ({ ...prev, [question.id]: 'incorrect' }));
   };
 
@@ -172,7 +221,9 @@ export default function OAPractice() {
     setSubmittedQuestions(prev => ({ ...prev, [question.id]: true }));
     setIsTimerRunning(false);
     const isCorrect = sel === question.correct;
-    recordAnswer(question.id, isCorrect);
+    const solveTimeMs = (60 - timeLeft) * 1000;
+    const confidence = confidences[question.id] || null;
+    recordDetailedAnswer(question, isCorrect, solveTimeMs, confidence);
     setProgressMap(prev => ({ ...prev, [question.id]: isCorrect ? 'correct' : 'incorrect' }));
   };
 
@@ -183,6 +234,10 @@ export default function OAPractice() {
   };
 
   const handleReset = () => {
+    setIsAdaptive(false);
+    setCategory('all');
+    setDifficulty('all');
+    setTopic('all');
     regenerateQuiz();
   };
   
@@ -191,6 +246,7 @@ export default function OAPractice() {
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
 
   if (!question) {
     return (
@@ -211,10 +267,17 @@ export default function OAPractice() {
         <div>
           <h1>Practice Mode 🎯</h1>
           <p className="practice-subtitle">
-            {quizQuestions.length} questions in this quiz
+            {quizQuestions.length} questions in this quiz {isAdaptive && '(Adaptive Mode)'}
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <button
+            className={`toggle-adaptive-btn ${isAdaptive ? 'active' : ''}`}
+            onClick={() => setIsAdaptive(!isAdaptive)}
+            title="Toggle Adaptive Practice Engine"
+          >
+            <Brain size={16} /> Adaptive Practice
+          </button>
           <button 
             className="btn btn-ghost" 
             onClick={() => setViewMode(viewMode === 'card' ? 'list' : 'card')}
@@ -231,6 +294,28 @@ export default function OAPractice() {
           </button>
         </div>
       </header>
+
+      {isAdaptive && (
+        <div className="adaptive-mode-banner">
+          <div className="adaptive-banner-header">
+            <Brain size={20} className="secondary" style={{ color: 'var(--secondary)' }} />
+            <span className="adaptive-banner-title">Adaptive Practice Active</span>
+          </div>
+          <p className="adaptive-banner-desc">
+            The platform has scanned your past attempts and generated 20 questions targeted specifically at your weakness areas and mistake patterns.
+          </p>
+          {getAdaptiveSummary(masteryScores).length > 0 && (
+            <div className="adaptive-focus-areas">
+              <span className="adaptive-focus-title">Focus areas today:</span>
+              {getAdaptiveSummary(masteryScores).map((area, idx) => (
+                <span key={idx} className="adaptive-focus-pill">
+                  {area.topic} ({Math.round(area.score * 100)}%)
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {showFilters && (
         <div className="filters-panel card">
@@ -302,6 +387,11 @@ export default function OAPractice() {
                     <span className={`badge badge-${q.difficulty === 'Easy' ? 'success' : q.difficulty === 'Medium' ? 'warning' : 'danger'}`}>
                       {q.difficulty}
                     </span>
+                    {isAdaptive && selectionReasons[q.id] && (
+                      <span className="reason-badge">
+                        <Brain size={12} /> {selectionReasons[q.id]}
+                      </span>
+                    )}
                     {progressMap[q.id] === 'correct' && (
                       <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                         Solved ✓
@@ -379,7 +469,7 @@ export default function OAPractice() {
                       onClick={() => {
                         if (selected === null) return;
                         setSubmittedQuestions(prev => ({ ...prev, [q.id]: true }));
-                        recordAnswer(q.id, selected === q.correct);
+                        recordDetailedAnswer(q, selected === q.correct, 0, null);
                       }} 
                       disabled={selected === null}
                     >
@@ -411,6 +501,11 @@ export default function OAPractice() {
                 <span className={`badge badge-${question.difficulty === 'Easy' ? 'success' : question.difficulty === 'Medium' ? 'warning' : 'danger'}`}>
                   {question.difficulty}
                 </span>
+                {isAdaptive && selectionReasons[question.id] && (
+                  <span className="reason-badge">
+                    <Brain size={12} /> {selectionReasons[question.id]}
+                  </span>
+                )}
                 {progressMap[question.id] === 'correct' && (
                   <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                     Solved ✓
@@ -481,6 +576,38 @@ export default function OAPractice() {
                     <div dangerouslySetInnerHTML={{ __html: question.explanation }} />
                   </div>
                 )}
+              </div>
+            )}
+
+            {!submitted && selected !== null && (
+              <div className="confidence-tracking-section" style={{
+                marginTop: '1.5rem',
+                padding: '1rem',
+                background: 'var(--bg-body)',
+                border: '1px dashed var(--border)',
+                borderRadius: '8px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                animation: 'fadeIn 0.2s ease',
+                marginBottom: '1.5rem'
+              }}>
+                <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)' }}>How confident are you?</span>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  {['sure', 'unsure', 'guess'].map(c => {
+                    const isConfSelected = confidences[question.id] === c;
+                    return (
+                      <button
+                        key={c}
+                        className={`btn ${isConfSelected ? 'btn-primary' : 'btn-ghost'}`}
+                        style={{ padding: '0.25rem 0.75rem', fontSize: '0.8rem', textTransform: 'capitalize' }}
+                        onClick={() => setConfidences(prev => ({ ...prev, [question.id]: c }))}
+                      >
+                        {c}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             )}
 
