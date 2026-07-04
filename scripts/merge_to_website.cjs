@@ -78,7 +78,11 @@ async function main() {
       options: options,
       correct: correctVal,
       explanation: dq.solution || '',
-      contextHtml: dq.review_reason || '', // We store shared set context in review_reason for synthetic questions
+      contextHtml: (() => {
+        const ctx = dq.review_reason || '';
+        const diffTiers = ['undergraduate_advanced', 'undergraduate_introductory', 'high_school', 'middle_school', 'graduate'];
+        return diffTiers.includes(ctx.trim()) ? '' : ctx;
+      })(),
       difficulty: difficulty,
       topic: topic || 'General',
       category: '',
