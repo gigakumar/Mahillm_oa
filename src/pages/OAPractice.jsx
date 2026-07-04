@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, Clock, Shuffle } from 'lucide-react';
+import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, Clock, Shuffle, List, Layers } from 'lucide-react';
 import { useScore } from '../contexts/ScoreContext';
 import './OAPractice.css';
 
@@ -41,9 +41,12 @@ export default function OAPractice() {
   const [category, setCategory] = useState(initialCat);
   const [difficulty, setDifficulty] = useState('all');
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [selected, setSelected] = useState(null);
-  const [submitted, setSubmitted] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  
+  // View mode and selections
+  const [viewMode, setViewMode] = useState('card'); // 'card' | 'list'
+  const [selectedOptions, setSelectedOptions] = useState({}); // { [qId]: index }
+  const [submittedQuestions, setSubmittedQuestions] = useState({}); // { [qId]: boolean }
   
   // Timer State
   const [timeLeft, setTimeLeft] = useState(60);
@@ -64,8 +67,8 @@ export default function OAPractice() {
     const shuffled = shuffleArray(qs).slice(0, 50);
     setQuizQuestions(shuffled);
     setCurrentIdx(0);
-    setSelected(null);
-    setSubmitted(false);
+    setSelectedOptions({});
+    setSubmittedQuestions({});
     setTimeLeft(60);
     setIsTimerRunning(true);
   }, [category, difficulty]);
@@ -82,18 +85,21 @@ export default function OAPractice() {
     const shuffled = shuffleArray(qs).slice(0, 50);
     setQuizQuestions(shuffled);
     setCurrentIdx(0);
-    setSelected(null);
-    setSubmitted(false);
+    setSelectedOptions({});
+    setSubmittedQuestions({});
     setTimeLeft(60);
     setIsTimerRunning(true);
   };
 
   const question = quizQuestions[currentIdx];
   const isBookmarked = question && scoreData?.bookmarked?.includes(question.id);
+  
+  const selected = question ? (selectedOptions[question.id] ?? null) : null;
+  const submitted = question ? (!!submittedQuestions[question.id]) : false;
 
   // Timer Effect
   useEffect(() => {
-    if (!isTimerRunning || submitted || !question) return;
+    if (!isTimerRunning || submitted || !question || viewMode !== 'card') return;
     
     if (timeLeft <= 0) {
       handleTimeUp();
@@ -105,28 +111,27 @@ export default function OAPractice() {
     }, 1000);
     
     return () => clearInterval(timerId);
-  }, [timeLeft, isTimerRunning, submitted, question]);
+  }, [timeLeft, isTimerRunning, submitted, question, viewMode]);
 
   const handleTimeUp = () => {
-    setSubmitted(true);
+    if (!question) return;
+    setSubmittedQuestions(prev => ({ ...prev, [question.id]: true }));
     setIsTimerRunning(false);
-    if (question) {
-      recordAnswer(question.id, false);
-    }
+    recordAnswer(question.id, false);
   };
 
   const handleSubmit = () => {
-    if (selected === null || !question) return;
-    setSubmitted(true);
+    if (!question) return;
+    const sel = selectedOptions[question.id];
+    if (sel === undefined || sel === null) return;
+    setSubmittedQuestions(prev => ({ ...prev, [question.id]: true }));
     setIsTimerRunning(false);
-    const isCorrect = selected === question.correct;
+    const isCorrect = sel === question.correct;
     recordAnswer(question.id, isCorrect);
   };
 
   const handleNext = () => {
     setCurrentIdx((i) => Math.min(i + 1, quizQuestions.length - 1));
-    setSelected(null);
-    setSubmitted(false);
     setTimeLeft(60);
     setIsTimerRunning(true);
   };
@@ -164,6 +169,14 @@ export default function OAPractice() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button 
+            className="btn btn-ghost" 
+            onClick={() => setViewMode(viewMode === 'card' ? 'list' : 'card')}
+            title={viewMode === 'card' ? 'Show all questions in a list' : 'Show one question at a time'}
+          >
+            {viewMode === 'card' ? <List size={16} /> : <Layers size={16} />}
+            {viewMode === 'card' ? ' List View' : ' Card View'}
+          </button>
           <button className="btn btn-ghost" onClick={regenerateQuiz} title="Start a new random quiz">
             <RotateCcw size={16} /> New Quiz
           </button>
@@ -206,107 +219,218 @@ export default function OAPractice() {
         </div>
       )}
 
-      {/* Progress */}
-      <div className="progress-row">
-        <span className="progress-label">Q {currentIdx + 1} of {quizQuestions.length}</span>
-        <div className="progress-track">
-          <div className="progress-fill" style={{ width: `${progress}%`, background: 'var(--accent)' }}></div>
-        </div>
-      </div>
-
-      {/* Question Card */}
-      <div className="question-card card">
-        <div className="question-header-row">
-          <div className="question-meta" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <span className="badge badge-accent">{question.topic}</span>
-            <span className={`badge badge-${question.difficulty === 'Easy' ? 'success' : question.difficulty === 'Medium' ? 'warning' : 'danger'}`}>
-              {question.difficulty}
-            </span>
-            {scoreData?.correctQuestions?.includes(question.id) && (
-              <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-                Solved ✓
-              </span>
-            )}
-            {scoreData?.incorrectQuestions?.includes(question.id) && (
-              <span className="badge badge-danger" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-                Incorrect previously ✗
-              </span>
-            )}
-          </div>
-          
-          <div className="question-tools">
-            <div className={`timer-badge ${timeLeft <= 10 ? 'danger' : ''}`}>
-              <Clock size={16} /> {formatTime(timeLeft)}
-            </div>
-            <button 
-              className={`bookmark-btn ${isBookmarked ? 'bookmarked' : ''}`} 
-              onClick={() => toggleBookmark(question.id)}
-              title="Bookmark Question"
-            >
-              <Bookmark size={20} fill={isBookmarked ? 'currentColor' : 'none'} />
-            </button>
-          </div>
-        </div>
-
-        {question.contextHtml && (
-          <div className="question-context card" style={{ marginBottom: '1.5rem', background: 'var(--bg-body)', padding: '1rem' }} dangerouslySetInnerHTML={{ __html: question.contextHtml }} />
-        )}
-
-        <h2 className="question-text" dangerouslySetInnerHTML={{ __html: question.question }} />
-
-        <div className="options">
-          {question.options.map((opt, index) => {
-            let cls = '';
-            if (submitted) {
-              if (index === question.correct) cls = 'correct';
-              else if (index === selected) cls = 'incorrect';
-            } else if (index === selected) {
-              cls = 'selected';
-            }
+      {viewMode === 'list' ? (
+        <div className="questions-list" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', marginTop: '1rem' }}>
+          {quizQuestions.map((q, idx) => {
+            const isBookmarked = scoreData?.bookmarked?.includes(q.id);
+            const selected = selectedOptions[q.id] ?? null;
+            const submitted = !!submittedQuestions[q.id];
 
             return (
-              <button
-                key={index}
-                className={`option ${cls}`}
-                onClick={() => !submitted && setSelected(index)}
-                disabled={submitted}
-              >
-                <span className="option-key">{String.fromCharCode(65 + index)}</span>
-                <span className="option-value" dangerouslySetInnerHTML={{ __html: opt }} />
-                {submitted && index === question.correct && <CheckCircle size={18} className="option-icon success-icon" />}
-                {submitted && index === selected && index !== question.correct && <XCircle size={18} className="option-icon danger-icon" />}
-              </button>
+              <div key={q.id} className="question-card card">
+                <div className="question-header-row">
+                  <div className="question-meta" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <span className="badge" style={{ background: 'var(--bg-body)', color: 'var(--text-secondary)', fontWeight: 600 }}>Q {idx + 1}</span>
+                    <span className="badge badge-accent">{q.topic}</span>
+                    <span className={`badge badge-${q.difficulty === 'Easy' ? 'success' : q.difficulty === 'Medium' ? 'warning' : 'danger'}`}>
+                      {q.difficulty}
+                    </span>
+                    {scoreData?.correctQuestions?.includes(q.id) && (
+                      <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                        Solved ✓
+                      </span>
+                    )}
+                    {scoreData?.incorrectQuestions?.includes(q.id) && (
+                      <span className="badge badge-danger" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                        Incorrect previously ✗
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="question-tools">
+                    <button 
+                      className={`bookmark-btn ${isBookmarked ? 'bookmarked' : ''}`} 
+                      onClick={() => toggleBookmark(q.id)}
+                      title="Bookmark Question"
+                    >
+                      <Bookmark size={20} fill={isBookmarked ? 'currentColor' : 'none'} />
+                    </button>
+                  </div>
+                </div>
+
+                {q.contextHtml && (
+                  <div className="question-context card" style={{ marginBottom: '1.5rem', background: 'var(--bg-body)', padding: '1rem' }} dangerouslySetInnerHTML={{ __html: q.contextHtml }} />
+                )}
+
+                <h2 className="question-text" dangerouslySetInnerHTML={{ __html: q.question }} />
+
+                <div className="options">
+                  {q.options.map((opt, optIdx) => {
+                    let cls = '';
+                    if (submitted) {
+                      if (optIdx === q.correct) cls = 'correct';
+                      else if (optIdx === selected) cls = 'incorrect';
+                    } else if (optIdx === selected) {
+                      cls = 'selected';
+                    }
+
+                    return (
+                      <button
+                        key={optIdx}
+                        className={`option ${cls}`}
+                        onClick={() => !submitted && setSelectedOptions(prev => ({ ...prev, [q.id]: optIdx }))}
+                        disabled={submitted}
+                      >
+                        <span className="option-key">{String.fromCharCode(65 + optIdx)}</span>
+                        <span className="option-value" dangerouslySetInnerHTML={{ __html: opt }} />
+                        {submitted && optIdx === q.correct && <CheckCircle size={18} className="option-icon success-icon" />}
+                        {submitted && optIdx === selected && optIdx !== q.correct && <XCircle size={18} className="option-icon danger-icon" />}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {submitted && (
+                  <div className={`result-box ${selected === q.correct ? 'correct' : 'incorrect'}`}>
+                    <div className="result-header">
+                      <h3>{selected === q.correct ? 'Correct! 🎉' : 'Incorrect'}</h3>
+                      {selected === q.correct ? <span className="xp-gain">+10 XP</span> : null}
+                    </div>
+                    {q.explanation && (
+                      <div className="explanation">
+                        <strong>Explanation:</strong>
+                        <div dangerouslySetInnerHTML={{ __html: q.explanation }} />
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="question-actions">
+                  {!submitted ? (
+                    <button 
+                      className="btn btn-primary" 
+                      onClick={() => {
+                        if (selected === null) return;
+                        setSubmittedQuestions(prev => ({ ...prev, [q.id]: true }));
+                        recordAnswer(q.id, selected === q.correct);
+                      }} 
+                      disabled={selected === null}
+                    >
+                      Check Answer
+                    </button>
+                  ) : (
+                    <span className="badge badge-success" style={{ padding: '0.5rem 1rem' }}>Completed</span>
+                  )}
+                </div>
+              </div>
             );
           })}
         </div>
-
-        {submitted && (
-          <div className={`result-box ${selected === question.correct ? 'correct' : 'incorrect'}`}>
-            <div className="result-header">
-              <h3>{selected === question.correct ? 'Correct! 🎉' : 'Incorrect'}</h3>
-              {selected === question.correct ? <span className="xp-gain">+10 XP</span> : null}
+      ) : (
+        <>
+          {/* Progress */}
+          <div className="progress-row">
+            <span className="progress-label">Q {currentIdx + 1} of {quizQuestions.length}</span>
+            <div className="progress-track">
+              <div className="progress-fill" style={{ width: `${progress}%`, background: 'var(--accent)' }}></div>
             </div>
-            {question.explanation && (
-              <div className="explanation">
-                <strong>Explanation:</strong>
-                <div dangerouslySetInnerHTML={{ __html: question.explanation }} />
+          </div>
+
+          {/* Question Card */}
+          <div className="question-card card">
+            <div className="question-header-row">
+              <div className="question-meta" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                <span className="badge badge-accent">{question.topic}</span>
+                <span className={`badge badge-${question.difficulty === 'Easy' ? 'success' : question.difficulty === 'Medium' ? 'warning' : 'danger'}`}>
+                  {question.difficulty}
+                </span>
+                {scoreData?.correctQuestions?.includes(question.id) && (
+                  <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                    Solved ✓
+                  </span>
+                )}
+                {scoreData?.incorrectQuestions?.includes(question.id) && (
+                  <span className="badge badge-danger" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                    Incorrect previously ✗
+                  </span>
+                )}
+              </div>
+              
+              <div className="question-tools">
+                <div className={`timer-badge ${timeLeft <= 10 ? 'danger' : ''}`}>
+                  <Clock size={16} /> {formatTime(timeLeft)}
+                </div>
+                <button 
+                  className={`bookmark-btn ${isBookmarked ? 'bookmarked' : ''}`} 
+                  onClick={() => toggleBookmark(question.id)}
+                  title="Bookmark Question"
+                >
+                  <Bookmark size={20} fill={isBookmarked ? 'currentColor' : 'none'} />
+                </button>
+              </div>
+            </div>
+
+            {question.contextHtml && (
+              <div className="question-context card" style={{ marginBottom: '1.5rem', background: 'var(--bg-body)', padding: '1rem' }} dangerouslySetInnerHTML={{ __html: question.contextHtml }} />
+            )}
+
+            <h2 className="question-text" dangerouslySetInnerHTML={{ __html: question.question }} />
+
+            <div className="options">
+              {question.options.map((opt, index) => {
+                let cls = '';
+                if (submitted) {
+                  if (index === question.correct) cls = 'correct';
+                  else if (index === selected) cls = 'incorrect';
+                } else if (index === selected) {
+                  cls = 'selected';
+                }
+
+                return (
+                  <button
+                    key={index}
+                    className={`option ${cls}`}
+                    onClick={() => !submitted && setSelectedOptions(prev => ({ ...prev, [question.id]: index }))}
+                    disabled={submitted}
+                  >
+                    <span className="option-key">{String.fromCharCode(65 + index)}</span>
+                    <span className="option-value" dangerouslySetInnerHTML={{ __html: opt }} />
+                    {submitted && index === question.correct && <CheckCircle size={18} className="option-icon success-icon" />}
+                    {submitted && index === selected && index !== question.correct && <XCircle size={18} className="option-icon danger-icon" />}
+                  </button>
+                );
+              })}
+            </div>
+
+            {submitted && (
+              <div className={`result-box ${selected === question.correct ? 'correct' : 'incorrect'}`}>
+                <div className="result-header">
+                  <h3>{selected === question.correct ? 'Correct! 🎉' : 'Incorrect'}</h3>
+                  {selected === question.correct ? <span className="xp-gain">+10 XP</span> : null}
+                </div>
+                {question.explanation && (
+                  <div className="explanation">
+                    <strong>Explanation:</strong>
+                    <div dangerouslySetInnerHTML={{ __html: question.explanation }} />
+                  </div>
+                )}
               </div>
             )}
-          </div>
-        )}
 
-        <div className="question-actions">
-          {!submitted ? (
-            <button className="btn btn-primary" onClick={handleSubmit} disabled={selected === null}>
-              Check Answer
-            </button>
-          ) : (
-            <button className="btn btn-primary" onClick={handleNext} disabled={currentIdx >= quizQuestions.length - 1}>
-              Next <ChevronRight size={16} />
-            </button>
-          )}
-        </div>
-      </div>
+            <div className="question-actions">
+              {!submitted ? (
+                <button className="btn btn-primary" onClick={handleSubmit} disabled={selected === null}>
+                  Check Answer
+                </button>
+              ) : (
+                <button className="btn btn-primary" onClick={handleNext} disabled={currentIdx >= quizQuestions.length - 1}>
+                  Next <ChevronRight size={16} />
+                </button>
+              )}
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
