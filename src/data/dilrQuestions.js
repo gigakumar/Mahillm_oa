@@ -1,4 +1,3 @@
-// Auto-scraped questions for DILR
 export default [
   {
     "id": 2001,
