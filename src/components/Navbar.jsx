@@ -15,7 +15,9 @@ import {
   RefreshCw,
   Shield,
   Sparkles,
-  FileText
+  FileText,
+  Play,
+  ChevronDown
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -79,11 +81,8 @@ export default function Navbar() {
         <Link to="/oa-practice" className={`nav-link ${isActive('/oa-practice') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
           <PenTool size={16} /> Practice
         </Link>
-        <Link to="/daily-challenge" className={`nav-link ${isActive('/daily-challenge') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-          <Sparkles size={16} /> Daily Challenge
-        </Link>
         <Link to="/tests" className={`nav-link ${isActive('/tests') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-          <Clipboard size={16} /> Online Tests
+          <Clipboard size={16} /> Tests
         </Link>
         <Link to="/mistakes" className={`nav-link ${isActive('/mistakes') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
           <BookOpen size={16} /> Mistakes
@@ -104,23 +103,36 @@ export default function Navbar() {
         <Link to="/readiness" className={`nav-link ${isActive('/readiness') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
           <BarChart2 size={16} /> Readiness
         </Link>
-        <Link to="/attempt-replay" className={`nav-link ${isActive('/attempt-replay') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-          <Play size={16} /> Replay
-        </Link>
-        <Link to="/formulas" className={`nav-link ${isActive('/formulas') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-          <FileText size={16} /> Formulas
-        </Link>
-        <Link to="/mock-interview" className={`nav-link ${isActive('/mock-interview') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-          <Mic size={16} /> Interview
-        </Link>
-        <Link to="/leaderboard" className={`nav-link ${isActive('/leaderboard') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-          <Trophy size={16} /> Leaderboard
-        </Link>
-        {isAdmin && (
-          <Link to="/admin/questions" className={`nav-link ${isActive('/admin/questions') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-            <Shield size={16} style={{ color: 'var(--accent)' }} /> Admin
-          </Link>
-        )}
+
+        {/* More dropdown */}
+        <div className="nav-dropdown-wrapper">
+          <div className="nav-dropdown-trigger">
+            <span>More</span>
+            <ChevronDown size={14} />
+          </div>
+          <div className="nav-dropdown-menu">
+            <Link to="/daily-challenge" className={`dropdown-item ${isActive('/daily-challenge') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+              <Sparkles size={14} /> Challenge
+            </Link>
+            <Link to="/attempt-replay" className={`dropdown-item ${isActive('/attempt-replay') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+              <Play size={14} /> Replay
+            </Link>
+            <Link to="/formulas" className={`dropdown-item ${isActive('/formulas') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+              <FileText size={14} /> Formulas
+            </Link>
+            <Link to="/mock-interview" className={`dropdown-item ${isActive('/mock-interview') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+              <Mic size={14} /> Interview
+            </Link>
+            <Link to="/leaderboard" className={`dropdown-item ${isActive('/leaderboard') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+              <Trophy size={14} /> Leaderboard
+            </Link>
+            {isAdmin && (
+              <Link to="/admin/questions" className={`dropdown-item ${isActive('/admin/questions') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+                <Shield size={14} style={{ color: 'var(--accent)' }} /> Admin
+              </Link>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="nav-actions">

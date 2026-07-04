@@ -104,7 +104,18 @@ export default function MockInterview() {
         <div className="recorder">
           <div className={`recorder-status ${isRecording ? 'active' : ''}`}>
             <div className="rec-dot"></div>
-            {isRecording ? 'Recording… speak clearly' : 'Tap to start practicing'}
+            {isRecording ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <span>Recording… speak clearly</span>
+                <div className="wave">
+                  <div className="wave-bar"></div>
+                  <div className="wave-bar"></div>
+                  <div className="wave-bar"></div>
+                  <div className="wave-bar"></div>
+                  <div className="wave-bar"></div>
+                </div>
+              </div>
+            ) : 'Tap to start practicing'}
           </div>
           {!isRecording ? (
             <button className="rec-btn start" onClick={() => setIsRecording(true)}>
