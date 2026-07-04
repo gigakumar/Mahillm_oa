@@ -152,8 +152,137 @@
   font-weight: 600;
 }
 
+/* Verification and OTP Styles */
+.verify-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.verify-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-align: center;
+}
+
+.verify-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+}
+
+.verify-card .icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.verify-card h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-family: var(--font-display);
+}
+
+.verify-card p {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.btn-back-link {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  padding: 0;
+  margin-top: 1rem;
+  transition: color 0.2s;
+}
+
+.btn-back-link:hover {
+  color: var(--accent);
+}
+
+/* OTP Code inputs */
+.otp-inputs-wrapper {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+}
+
+.otp-input-box {
+  width: 50px;
+  height: 52px;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-body);
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.2s;
+}
+
+.otp-input-box:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.verify-status {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 1rem;
+}
+
+.verify-status.success {
+  color: var(--success);
+  font-weight: 600;
+}
+
+.timer-text {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.timer-text span {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+#recaptcha-container {
+  margin: 0.5rem 0;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .auth-page { grid-template-columns: 1fr; }
   .auth-left { display: none; }
+  .otp-input-box {
+    width: 42px;
+    height: 46px;
+    font-size: 1.25rem;
+  }
 }
+

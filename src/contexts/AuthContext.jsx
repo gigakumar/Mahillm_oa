@@ -7,6 +7,7 @@ import {
   GoogleAuthProvider,
   signOut,
   updateProfile,
+  sendEmailVerification,
 } from 'firebase/auth';
 import { auth } from '../firebase';
 
@@ -36,6 +37,13 @@ export function AuthProvider({ children }) {
     return cred;
   };
 
+  const verifyEmail = () => {
+    if (auth.currentUser) {
+      return sendEmailVerification(auth.currentUser);
+    }
+    return Promise.reject(new Error("No user logged in"));
+  };
+
   const login = (email, password) =>
     signInWithEmailAndPassword(auth, email, password);
 
@@ -44,7 +52,7 @@ export function AuthProvider({ children }) {
 
   const logout = () => signOut(auth);
 
-  const value = { user, loading, signup, login, loginWithGoogle, logout };
+  const value = { user, loading, signup, verifyEmail, login, loginWithGoogle, logout };
 
   return (
     <AuthContext.Provider value={value}>
