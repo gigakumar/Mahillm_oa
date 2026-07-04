@@ -102,7 +102,10 @@ export default function Navbar() {
           )}
         </Link>
         <Link to="/readiness" className={`nav-link ${isActive('/readiness') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-          <BarChart2 size={16} /> Heatmap
+          <BarChart2 size={16} /> Readiness
+        </Link>
+        <Link to="/attempt-replay" className={`nav-link ${isActive('/attempt-replay') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+          <Play size={16} /> Replay
         </Link>
         <Link to="/formulas" className={`nav-link ${isActive('/formulas') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
           <FileText size={16} /> Formulas

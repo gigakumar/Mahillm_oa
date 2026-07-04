@@ -2,25 +2,32 @@ import React, { useState, useEffect } from 'react';
 import { useUserData } from '../contexts/UserDataContext';
 import { buildHeatmapData, getReadinessSummary } from '../utils/masteryUtils';
 import { useNavigate } from 'react-router-dom';
+import { compileLearnerState } from '../intelligence/learnerStateModel';
+import { companyProfiles } from '../config/companyProfiles';
 import { 
   ChevronDown, 
   ChevronUp, 
   Award, 
   TrendingUp, 
   Brain, 
-  Play, 
   Search,
   CheckCircle,
   HelpCircle,
   AlertTriangle,
-  FileText
+  FileText,
+  Activity,
+  Zap,
+  TrendingDown,
+  Gauge,
+  UserCheck
 } from 'lucide-react';
 import './ReadinessHeatmap.css';
 
 export default function ReadinessHeatmap() {
   const navigate = useNavigate();
-  const { masteryScores } = useUserData();
+  const { masteryScores, questionProgress, spacedRepetition } = useUserData();
 
+  const [activeTab, setActiveTab] = useState('analytics'); // 'analytics' | 'heatmap'
   const [allQuestions, setAllQuestions] = useState([]);
   const [loadingPools, setLoadingPools] = useState(false);
   const [expandedCategories, setExpandedCategories] = useState({
@@ -67,9 +74,72 @@ export default function ReadinessHeatmap() {
     navigate(`/oa-practice`);
   };
 
+  // Compile overall attempts array from progress mapping for learnerState
+  const getCompiledAttempts = () => {
+    const attemptsList = [];
+    Object.keys(questionProgress || {}).forEach(qId => {
+      const prog = questionProgress[qId];
+      // Lookup topic in allQuestions
+      const quest = allQuestions.find(q => q.id.toString() === qId);
+      attemptsList.push({
+        id: parseInt(qId),
+        topic: quest ? quest.topic : 'General',
+        category: quest ? quest.category : 'General',
+        correct: prog.status === 'correct',
+        solveTime: (prog.solveTimeMs || 60000) / 1000,
+        timeRatio: (prog.solveTimeMs || 60000) / 60000, // normalized
+        confidence: prog.confidence || 'Sure',
+        changedAnswer: prog.changedAnswer || false,
+        date: prog.updatedAt || new Date().toISOString()
+      });
+    });
+    return attemptsList;
+  };
+
+  const getTopicEloMap = () => {
+    const eloMap = {};
+    Object.keys(masteryScores || {}).forEach(key => {
+      const doc = masteryScores[key];
+      // ELO maps derived score range (0-1) to (600-1500)
+      eloMap[doc.topic] = Math.round(600 + doc.score * 900);
+    });
+    return eloMap;
+  };
+
+  const getSrItems = () => {
+    return Object.values(spacedRepetition || {}).map(item => ({
+      questionId: item.questionId,
+      topic: item.topic || 'General',
+      lastReviewed: item.lastReviewDate,
+      intervalDays: item.interval || 1
+    }));
+  };
+
   // Build heatmap layout models
   const rawHeatmapData = buildHeatmapData(allQuestions, masteryScores);
   const summary = getReadinessSummary(rawHeatmapData);
+
+  // Compile derived analytics state
+  const compiledAttempts = getCompiledAttempts();
+  const topicElo = getTopicEloMap();
+  const srItems = getSrItems();
+
+  // Peer benchmark pool
+  const simulatedPeerPool = [
+    { accuracy: 0.65, speedSeconds: 70, coreMechanicalElo: 1100, aptitudeElo: 1050 },
+    { accuracy: 0.85, speedSeconds: 45, coreMechanicalElo: 1400, aptitudeElo: 1350 },
+    { accuracy: 0.72, speedSeconds: 58, coreMechanicalElo: 1210, aptitudeElo: 1180 },
+    { accuracy: 0.58, speedSeconds: 88, coreMechanicalElo: 950, aptitudeElo: 900 }
+  ];
+
+  const learnerState = compileLearnerState({
+    userId: 'user-id',
+    attempts: compiledAttempts,
+    topicMasteryElo: topicElo,
+    srItems,
+    recentMockScores: [75, 82, 88], // simulated recent mocks
+    peerPool: simulatedPeerPool
+  });
 
   // Apply search query filter if present
   const heatmapData = rawHeatmapData.map(cat => {
@@ -82,23 +152,187 @@ export default function ReadinessHeatmap() {
     };
   }).filter(cat => cat.topics.length > 0);
 
-  // Calculate placement readiness index
-  const readinessIndex = Math.round(summary.overallScore * 100);
+  const readinessPct = Math.round(learnerState.global.readiness * 100);
 
   return (
     <div className="page-content heatmap-page">
-      <h1>Exam Readiness Heatmap 📊</h1>
+      <h1>Predictive Placement Intelligence 🧠</h1>
       <p className="practice-subtitle" style={{ marginBottom: '2rem' }}>
-        Visualize your learning taxonomy. Click on any topic matrix to start practicing immediately.
+        Assess your readiness indices, diagnose prerequisite gaps, and run targeted company GET benchmarks.
       </p>
+
+      {/* Tabs */}
+      <div className="formulas-tabs" style={{ marginBottom: '2rem' }}>
+        <button 
+          className={`tab-btn ${activeTab === 'analytics' ? 'active' : ''}`}
+          onClick={() => setActiveTab('analytics')}
+        >
+          <Gauge size={16} /> Placement Analytics
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'heatmap' ? 'active' : ''}`}
+          onClick={() => setActiveTab('heatmap')}
+        >
+          <Activity size={16} /> Syllabus Mastery Map
+        </button>
+      </div>
 
       {loadingPools ? (
         <div className="loading" style={{ textAlign: 'center', padding: '5rem 0' }}>
           <div className="spinner" style={{ border: '4px solid var(--border)', borderTop: '4px solid var(--accent)', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite', margin: '0 auto 1rem auto' }}></div>
-          <p>Analyzing question database and building taxonomy graph...</p>
+          <p>Analyzing question database and building telemetry model...</p>
+        </div>
+      ) : activeTab === 'analytics' ? (
+        <div className="analytics-tab-content" style={{ animation: 'fadeIn 0.3s ease-out' }}>
+          
+          {/* Main index card */}
+          <div className="card" style={{ padding: '2rem', background: 'linear-gradient(135deg, rgba(108, 92, 231, 0.1) 0%, rgba(0, 184, 148, 0.05) 100%)', border: '1px solid var(--border)', marginBottom: '2rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
+              <div>
+                <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-h)', margin: '0 0 0.5rem 0' }}>Overall OA Readiness</h2>
+                <p style={{ color: 'var(--text-secondary)', maxWidth: '550px', margin: 0 }}>
+                  {learnerState.readinessFeedback}
+                </p>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <span style={{ fontSize: '3.5rem', fontWeight: 900, color: '#00b894', lineHeight: 1 }}>{readinessPct}%</span>
+                <span className="badge badge-success-soft" style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>Derived Competency</span>
+              </div>
+            </div>
+
+            {/* Micro component progress bar indices */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
+              {Object.entries(learnerState.readinessComponents).map(([key, val]) => (
+                <div key={key} className="card" style={{ padding: '1rem', background: 'rgba(255,255,255,0.02)' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'capitalize' }}>{key}</span>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.25rem' }}>
+                    <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-h)' }}>{val}%</span>
+                    <div style={{ width: '30px', height: '4px', background: val >= 70 ? '#00b894' : val >= 45 ? '#fdcb6e' : '#d63031', borderRadius: '2px' }}></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', alignItems: 'start', flexWrap: 'wrap' }} className="analytics-grid">
+            
+            {/* Prerequisite weak spot diagnoses */}
+            <div className="card" style={{ padding: '1.5rem' }}>
+              <h3 style={{ margin: '0 0 1.25rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.2rem' }}>
+                <AlertTriangle size={18} style={{ color: '#fdcb6e' }} /> Upstream Weakness Diagnosis
+              </h3>
+              {Object.keys(learnerState.weaknessDiagnoses).length === 0 ? (
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>No prerequisite deficits detected. All active ELO ratings are stable.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {Object.entries(learnerState.weaknessDiagnoses).map(([topic, diagnosis]) => (
+                    <div key={topic} className="card" style={{ padding: '1rem', borderLeft: '3px solid #fdcb6e', background: 'rgba(255,255,255,0.01)' }}>
+                      <strong style={{ display: 'block', fontSize: '0.95rem', color: 'var(--text-h)' }}>Topic: {topic}</strong>
+                      <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                        {diagnosis.message}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Company GET benchmarks */}
+            <div className="card" style={{ padding: '1.5rem' }}>
+              <h3 style={{ margin: '0 0 1.25rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.2rem' }}>
+                <UserCheck size={18} style={{ color: '#6c5ce7' }} /> Company OA Benchmarks
+              </h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                {companyProfiles.map(profile => {
+                  // Weighted score computation for company readiness
+                  const compScore = Math.min(Math.max(readinessPct + Math.round((4.0 - profile.difficulty) * 5), 0), 100);
+                  const isEligible = compScore >= profile.minPassReadiness;
+
+                  return (
+                    <div key={profile.companyId} style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
+                        <div>
+                          <strong style={{ color: 'var(--text-h)' }}>{profile.name}</strong>
+                          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginLeft: '0.5rem' }}>({profile.role})</span>
+                        </div>
+                        <span style={{ fontWeight: 700, color: isEligible ? '#00b894' : '#d63031' }}>{compScore}% Match</span>
+                      </div>
+                      <div className="topic-cell-accuracy-bar">
+                        <div 
+                          className="topic-cell-accuracy-fill" 
+                          style={{ 
+                            width: `${compScore}%`, 
+                            backgroundColor: isEligible ? '#00b894' : '#d63031' 
+                          }}
+                        ></div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Strategic telemetry & pacing */}
+            <div className="card" style={{ padding: '1.5rem' }}>
+              <h3 style={{ margin: '0 0 1.25rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.2rem' }}>
+                <Activity size={18} style={{ color: '#0984e3' }} /> Strategic Telemetry
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
+                <div className="card" style={{ padding: '1rem', background: 'rgba(255,255,255,0.01)' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Rushed Errors</span>
+                  <h4 style={{ margin: '0.25rem 0', fontSize: '1.5rem', fontWeight: 800 }}>{Math.round(learnerState.behaviour.rushRate * 100)}%</h4>
+                </div>
+                <div className="card" style={{ padding: '1rem', background: 'rgba(255,255,255,0.01)' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Time Sinks</span>
+                  <h4 style={{ margin: '0.25rem 0', fontSize: '1.5rem', fontWeight: 800 }}>{Math.round(learnerState.behaviour.timeSinkRate * 100)}%</h4>
+                </div>
+                <div className="card" style={{ padding: '1rem', background: 'rgba(255,255,255,0.01)' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Second Guessing</span>
+                  <h4 style={{ margin: '0.25rem 0', fontSize: '1.5rem', fontWeight: 800 }}>{Math.round(learnerState.behaviour.secondGuessRate * 100)}%</h4>
+                </div>
+                <div className="card" style={{ padding: '1rem', background: 'rgba(255,255,255,0.01)' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Guess Dependency</span>
+                  <h4 style={{ margin: '0.25rem 0', fontSize: '1.5rem', fontWeight: 800 }}>{Math.round(learnerState.behaviour.guessDependency * 100)}%</h4>
+                </div>
+              </div>
+
+              {/* Confidence calibration analysis */}
+              <div className="card" style={{ padding: '1rem', border: '1px solid rgba(9, 132, 227, 0.2)', background: 'rgba(9, 132, 227, 0.03)' }}>
+                <strong style={{ fontSize: '0.9rem', color: 'var(--text-h)', display: 'block', marginBottom: '0.25rem' }}>Confidence Calibration</strong>
+                <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                  {learnerState.calibration.message} (Calibration Score: {Math.round(learnerState.global.calibration * 100)}%)
+                </p>
+              </div>
+            </div>
+
+            {/* Spaced repetition memory decay warning */}
+            <div className="card" style={{ padding: '1.5rem' }}>
+              <h3 style={{ margin: '0 0 1.25rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.2rem' }}>
+                <Zap size={18} style={{ color: '#d63031' }} /> Forgetting Risk Alerts
+              </h3>
+              {learnerState.forgettingRisks.length === 0 ? (
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>No concepts are currently at risk of memory decay. Spaced repetition queue is fully protected.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {learnerState.forgettingRisks.map(item => (
+                    <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div>
+                        <strong style={{ display: 'block', fontSize: '0.9rem', color: 'var(--text-h)' }}>{item.topic}</strong>
+                        <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Estimated stability factor: {Math.round(item.pRecall * 100)}% recall</span>
+                      </div>
+                      <span className="badge badge-danger-soft" style={{ fontSize: '0.8rem' }}>{Math.round(item.risk * 100)}% Risk</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+          </div>
+
         </div>
       ) : (
-        <>
+        <div className="heatmap-tab-content" style={{ animation: 'fadeIn 0.3s ease-out' }}>
+          
           {/* Header overall readiness scores */}
           <div className="heatmap-header-summary">
             <div className="card heatmap-stat-card" style={{ background: 'linear-gradient(135deg, rgba(0, 184, 148, 0.15) 0%, rgba(108, 92, 231, 0.05) 100%)', border: '1px solid rgba(0, 184, 148, 0.3)' }}>
@@ -248,7 +482,7 @@ export default function ReadinessHeatmap() {
               );
             })}
           </div>
-        </>
+        </div>
       )}
     </div>
   );

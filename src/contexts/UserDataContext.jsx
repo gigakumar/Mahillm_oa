@@ -30,6 +30,7 @@ export function UserDataProvider({ children }) {
   const [masteryScores, setMasteryScores] = useState({});
   const [mistakes, setMistakes] = useState({});
   const [spacedRepetition, setSpacedRepetition] = useState({});
+  const [questionProgress, setQuestionProgress] = useState({});
   const [loading, setLoading] = useState(true);
 
   // Load and listen to user's adaptive data
@@ -38,6 +39,7 @@ export function UserDataProvider({ children }) {
       setMasteryScores({});
       setMistakes({});
       setSpacedRepetition({});
+      setQuestionProgress({});
       setLoading(false);
       return;
     }
@@ -48,6 +50,7 @@ export function UserDataProvider({ children }) {
     const masteryColRef = collection(db, 'users', user.uid, 'masteryData');
     const mistakesColRef = collection(db, 'users', user.uid, 'mistakes');
     const spacedRepColRef = collection(db, 'users', user.uid, 'spacedRepetition');
+    const progressColRef = collection(db, 'users', user.uid, 'questionProgress');
 
     // Listen to mastery scores
     const unsubMastery = onSnapshot(masteryColRef, (snapshot) => {
@@ -74,9 +77,18 @@ export function UserDataProvider({ children }) {
         srQueue[doc.id] = doc.data();
       });
       setSpacedRepetition(srQueue);
+    }, (err) => console.error("Error syncing spacedRepetition:", err));
+
+    // Listen to questionProgress
+    const unsubProgress = onSnapshot(progressColRef, (snapshot) => {
+      const prog = {};
+      snapshot.forEach((doc) => {
+        prog[doc.id] = doc.data();
+      });
+      setQuestionProgress(prog);
       setLoading(false);
     }, (err) => {
-      console.error("Error syncing spacedRepetition:", err);
+      console.error("Error syncing questionProgress:", err);
       setLoading(false);
     });
 
@@ -84,13 +96,14 @@ export function UserDataProvider({ children }) {
       unsubMastery();
       unsubMistakes();
       unsubSpaced();
+      unsubProgress();
     };
   }, [user]);
 
   /**
    * Records a detailed answer response for adaptive algorithms.
    */
-  const recordDetailedAnswer = async (question, isCorrect, solveTimeMs = 0, confidence = null) => {
+  const recordDetailedAnswer = async (question, isCorrect, solveTimeMs = 0, confidence = null, timeline = []) => {
     if (!user) return;
 
     const qId = question.id.toString();
@@ -209,6 +222,7 @@ export function UserDataProvider({ children }) {
         attempts: increment(1),
         solveTimeMs,
         confidence,
+        timeline: timeline || [],
         updatedAt: new Date().toISOString()
       }, { merge: true });
 
@@ -268,6 +282,7 @@ export function UserDataProvider({ children }) {
       masteryScores,
       mistakes,
       spacedRepetition,
+      questionProgress,
       loading,
       recordDetailedAnswer,
       updateMistakeType,

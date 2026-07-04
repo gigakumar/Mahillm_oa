@@ -54,6 +54,7 @@ export default function OAPractice() {
   const [isAdaptive, setIsAdaptive] = useState(false);
   const [selectionReasons, setSelectionReasons] = useState({});
   const [confidences, setConfidences] = useState({});
+  const [currentTimeline, setCurrentTimeline] = useState([]);
   
   // Timer State
   const [timeLeft, setTimeLeft] = useState(60);
@@ -190,6 +191,22 @@ export default function OAPractice() {
   const selected = question ? (selectedOptions[question.id] ?? null) : null;
   const submitted = question ? (!!submittedQuestions[question.id]) : false;
 
+  useEffect(() => {
+    if (question) {
+      setCurrentTimeline([{ action: 'open', time: 0 }]);
+    }
+  }, [question]);
+
+  const handleSelectOption = (qId, optionIdx) => {
+    if (submitted) return;
+    setSelectedOptions(prev => ({ ...prev, [qId]: optionIdx }));
+    const secondsElapsed = Math.max(0, 60 - timeLeft);
+    setCurrentTimeline(prev => [
+      ...prev,
+      { action: 'select', optionIndex: optionIdx, time: secondsElapsed }
+    ]);
+  };
+
   // Timer Effect
   useEffect(() => {
     if (!isTimerRunning || submitted || !question || viewMode !== 'card') return;
@@ -210,7 +227,11 @@ export default function OAPractice() {
     if (!question) return;
     setSubmittedQuestions(prev => ({ ...prev, [question.id]: true }));
     setIsTimerRunning(false);
-    recordDetailedAnswer(question, false, 60000, 'guess');
+    const finalTimeline = [
+      ...currentTimeline,
+      { action: 'submit', time: 60 }
+    ];
+    recordDetailedAnswer(question, false, 60000, 'guess', finalTimeline);
     setProgressMap(prev => ({ ...prev, [question.id]: 'incorrect' }));
   };
 
@@ -223,7 +244,11 @@ export default function OAPractice() {
     const isCorrect = sel === question.correct;
     const solveTimeMs = (60 - timeLeft) * 1000;
     const confidence = confidences[question.id] || null;
-    recordDetailedAnswer(question, isCorrect, solveTimeMs, confidence);
+    const finalTimeline = [
+      ...currentTimeline,
+      { action: 'submit', time: Math.max(0, 60 - timeLeft) }
+    ];
+    recordDetailedAnswer(question, isCorrect, solveTimeMs, confidence, finalTimeline);
     setProgressMap(prev => ({ ...prev, [question.id]: isCorrect ? 'correct' : 'incorrect' }));
   };
 
@@ -435,7 +460,7 @@ export default function OAPractice() {
                       <button
                         key={optIdx}
                         className={`option ${cls}`}
-                        onClick={() => !submitted && setSelectedOptions(prev => ({ ...prev, [q.id]: optIdx }))}
+                        onClick={() => handleSelectOption(q.id, optIdx)}
                         disabled={submitted}
                       >
                         <span className="option-key">{String.fromCharCode(65 + optIdx)}</span>
@@ -552,7 +577,7 @@ export default function OAPractice() {
                   <button
                     key={index}
                     className={`option ${cls}`}
-                    onClick={() => !submitted && setSelectedOptions(prev => ({ ...prev, [question.id]: index }))}
+                    onClick={() => handleSelectOption(question.id, index)}
                     disabled={submitted}
                   >
                     <span className="option-key">{String.fromCharCode(65 + index)}</span>

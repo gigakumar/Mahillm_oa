@@ -17,6 +17,7 @@ import TestResult from './pages/TestResult';
 import Mistakes from './pages/Mistakes';
 import RevisionSession from './pages/RevisionSession';
 import ReadinessHeatmap from './pages/ReadinessHeatmap';
+import AttemptReplay from './pages/AttemptReplay';
 import AdminDashboard from './pages/AdminDashboard';
 import DailyChallenge from './pages/DailyChallenge';
 import Formulas from './pages/Formulas';
@@ -121,6 +122,14 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <ReadinessHeatmap />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/attempt-replay" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <AttemptReplay />
                     </Layout>
                   </ProtectedRoute>
                 } />
