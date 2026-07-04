@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { db } from '../firebase';
-import { doc, getDoc, setDoc, updateDoc, increment, onSnapshot } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, increment, onSnapshot, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
 
 const ScoreContext = createContext();
@@ -16,13 +16,15 @@ export function ScoreProvider({ children }) {
     totalAttempted: 0,
     totalCorrect: 0,
     accuracy: 0,
-    bookmarked: []
+    bookmarked: [],
+    correctQuestions: [],
+    incorrectQuestions: []
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) {
-      setScoreData({ xp: 0, totalAttempted: 0, totalCorrect: 0, accuracy: 0, bookmarked: [] });
+      setScoreData({ xp: 0, totalAttempted: 0, totalCorrect: 0, accuracy: 0, bookmarked: [], correctQuestions: [], incorrectQuestions: [] });
       setLoading(false);
       return;
     }
@@ -37,7 +39,9 @@ export function ScoreProvider({ children }) {
           totalAttempted: data.totalAttempted || 0,
           totalCorrect: data.totalCorrect || 0,
           accuracy: data.totalAttempted ? Math.round((data.totalCorrect / data.totalAttempted) * 100) : 0,
-          bookmarked: data.bookmarked || []
+          bookmarked: data.bookmarked || [],
+          correctQuestions: data.correctQuestions || [],
+          incorrectQuestions: data.incorrectQuestions || []
         });
       } else {
         // Initialize new user
@@ -47,6 +51,8 @@ export function ScoreProvider({ children }) {
           totalAttempted: 0,
           totalCorrect: 0,
           bookmarked: [],
+          correctQuestions: [],
+          incorrectQuestions: [],
           createdAt: new Date().toISOString()
         });
       }
@@ -59,16 +65,27 @@ export function ScoreProvider({ children }) {
     return () => unsubscribe();
   }, [user]);
 
-  const recordAnswer = async (isCorrect) => {
+  const recordAnswer = async (questionId, isCorrect) => {
     if (!user) return;
     const userRef = doc(db, 'users', user.uid);
     
     try {
-      await updateDoc(userRef, {
-        totalAttempted: increment(1),
-        totalCorrect: isCorrect ? increment(1) : increment(0),
-        xp: isCorrect ? increment(10) : increment(2) // 10 XP for correct, 2 XP for trying
-      });
+      if (isCorrect) {
+        await updateDoc(userRef, {
+          totalAttempted: increment(1),
+          totalCorrect: increment(1),
+          xp: increment(10), // 10 XP for correct
+          correctQuestions: arrayUnion(questionId),
+          incorrectQuestions: arrayRemove(questionId)
+        });
+      } else {
+        await updateDoc(userRef, {
+          totalAttempted: increment(1),
+          xp: increment(2), // 2 XP for trying
+          incorrectQuestions: arrayUnion(questionId),
+          correctQuestions: arrayRemove(questionId)
+        });
+      }
     } catch (error) {
       console.error("Error updating score:", error);
     }

@@ -49,7 +49,10 @@ export default function OAPractice() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
 
-  const filtered = useMemo(() => {
+  const [quizQuestions, setQuizQuestions] = useState([]);
+
+  // Generate a randomized set of 50 questions when category/difficulty changes
+  useEffect(() => {
     let qs = ALL_QUESTIONS;
     if (category === 'bookmarked') {
       qs = qs.filter(q => scoreData?.bookmarked?.includes(q.id));
@@ -57,10 +60,35 @@ export default function OAPractice() {
       qs = qs.filter((q) => q.category === category);
     }
     if (difficulty !== 'all') qs = qs.filter((q) => q.difficulty === difficulty);
-    return qs;
-  }, [category, difficulty, scoreData?.bookmarked]);
+    
+    const shuffled = shuffleArray(qs).slice(0, 50);
+    setQuizQuestions(shuffled);
+    setCurrentIdx(0);
+    setSelected(null);
+    setSubmitted(false);
+    setTimeLeft(60);
+    setIsTimerRunning(true);
+  }, [category, difficulty]);
 
-  const question = filtered[currentIdx];
+  const regenerateQuiz = () => {
+    let qs = ALL_QUESTIONS;
+    if (category === 'bookmarked') {
+      qs = qs.filter(q => scoreData?.bookmarked?.includes(q.id));
+    } else if (category !== 'all') {
+      qs = qs.filter((q) => q.category === category);
+    }
+    if (difficulty !== 'all') qs = qs.filter((q) => q.difficulty === difficulty);
+    
+    const shuffled = shuffleArray(qs).slice(0, 50);
+    setQuizQuestions(shuffled);
+    setCurrentIdx(0);
+    setSelected(null);
+    setSubmitted(false);
+    setTimeLeft(60);
+    setIsTimerRunning(true);
+  };
+
+  const question = quizQuestions[currentIdx];
   const isBookmarked = question && scoreData?.bookmarked?.includes(question.id);
 
   // Timer Effect
@@ -79,30 +107,24 @@ export default function OAPractice() {
     return () => clearInterval(timerId);
   }, [timeLeft, isTimerRunning, submitted, question]);
 
-  useEffect(() => {
-    setCurrentIdx(0);
-    setSelected(null);
-    setSubmitted(false);
-    setTimeLeft(60);
-    setIsTimerRunning(true);
-  }, [category, difficulty]);
-
   const handleTimeUp = () => {
     setSubmitted(true);
     setIsTimerRunning(false);
-    recordAnswer(false);
+    if (question) {
+      recordAnswer(question.id, false);
+    }
   };
 
   const handleSubmit = () => {
-    if (selected === null) return;
+    if (selected === null || !question) return;
     setSubmitted(true);
     setIsTimerRunning(false);
     const isCorrect = selected === question.correct;
-    recordAnswer(isCorrect);
+    recordAnswer(question.id, isCorrect);
   };
 
   const handleNext = () => {
-    setCurrentIdx((i) => Math.min(i + 1, filtered.length - 1));
+    setCurrentIdx((i) => Math.min(i + 1, quizQuestions.length - 1));
     setSelected(null);
     setSubmitted(false);
     setTimeLeft(60);
@@ -110,11 +132,7 @@ export default function OAPractice() {
   };
 
   const handleReset = () => {
-    setCurrentIdx(0);
-    setSelected(null);
-    setSubmitted(false);
-    setTimeLeft(60);
-    setIsTimerRunning(true);
+    regenerateQuiz();
   };
   
   const formatTime = (seconds) => {
@@ -134,7 +152,7 @@ export default function OAPractice() {
     );
   }
 
-  const progress = filtered.length > 0 ? ((currentIdx + 1) / filtered.length) * 100 : 0;
+  const progress = quizQuestions.length > 0 ? ((currentIdx + 1) / quizQuestions.length) * 100 : 0;
 
   return (
     <div className="page-content oa-practice">
@@ -142,12 +160,17 @@ export default function OAPractice() {
         <div>
           <h1>Practice Mode 🎯</h1>
           <p className="practice-subtitle">
-            {filtered.length} questions available in this view
+            {quizQuestions.length} questions in this quiz
           </p>
         </div>
-        <button className="btn btn-ghost" onClick={() => setShowFilters(!showFilters)}>
-          <Filter size={16} /> Filters
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button className="btn btn-ghost" onClick={regenerateQuiz} title="Start a new random quiz">
+            <RotateCcw size={16} /> New Quiz
+          </button>
+          <button className="btn btn-ghost" onClick={() => setShowFilters(!showFilters)}>
+            <Filter size={16} /> Filters
+          </button>
+        </div>
       </header>
 
       {showFilters && (
@@ -185,7 +208,7 @@ export default function OAPractice() {
 
       {/* Progress */}
       <div className="progress-row">
-        <span className="progress-label">Q {currentIdx + 1} of {filtered.length}</span>
+        <span className="progress-label">Q {currentIdx + 1} of {quizQuestions.length}</span>
         <div className="progress-track">
           <div className="progress-fill" style={{ width: `${progress}%`, background: 'var(--accent)' }}></div>
         </div>
@@ -194,11 +217,21 @@ export default function OAPractice() {
       {/* Question Card */}
       <div className="question-card card">
         <div className="question-header-row">
-          <div className="question-meta">
+          <div className="question-meta" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
             <span className="badge badge-accent">{question.topic}</span>
             <span className={`badge badge-${question.difficulty === 'Easy' ? 'success' : question.difficulty === 'Medium' ? 'warning' : 'danger'}`}>
               {question.difficulty}
             </span>
+            {scoreData?.correctQuestions?.includes(question.id) && (
+              <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                Solved ✓
+              </span>
+            )}
+            {scoreData?.incorrectQuestions?.includes(question.id) && (
+              <span className="badge badge-danger" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                Incorrect previously ✗
+              </span>
+            )}
           </div>
           
           <div className="question-tools">
@@ -268,7 +301,7 @@ export default function OAPractice() {
               Check Answer
             </button>
           ) : (
-            <button className="btn btn-primary" onClick={handleNext} disabled={currentIdx >= filtered.length - 1}>
+            <button className="btn btn-primary" onClick={handleNext} disabled={currentIdx >= quizQuestions.length - 1}>
               Next <ChevronRight size={16} />
             </button>
           )}
