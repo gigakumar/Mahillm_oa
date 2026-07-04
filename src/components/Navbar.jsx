@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutGrid, PenTool, Mic, Trophy, Moon, Sun, LogOut, Menu, X } from 'lucide-react';
+import { LayoutGrid, PenTool, Clipboard, Mic, Trophy, Moon, Sun, LogOut, Menu, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useScore } from '../contexts/ScoreContext';
@@ -32,6 +32,9 @@ export default function Navbar() {
         </Link>
         <Link to="/oa-practice" className={`nav-link ${isActive('/oa-practice') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
           <PenTool size={16} /> Practice
+        </Link>
+        <Link to="/tests" className={`nav-link ${isActive('/tests') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+          <Clipboard size={16} /> Online Tests
         </Link>
         <Link to="/mock-interview" className={`nav-link ${isActive('/mock-interview') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
           <Mic size={16} /> Interview

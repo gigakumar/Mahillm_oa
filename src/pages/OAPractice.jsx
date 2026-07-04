@@ -8,16 +8,24 @@ import './OAPractice.css';
 import mechEngQuestions from '../data/mechEngQuestions';
 import quantsQuestions from '../data/quantsQuestions';
 import dilrQuestions from '../data/dilrQuestions';
-import graphQuestions from '../data/graphQuestions';
+import dataInterpretationQuestions from '../data/dataInterpretationQuestions';
+import logicalReasoningQuestions from '../data/logicalReasoningQuestions';
 
-const ALL_QUESTIONS = [...mechEngQuestions, ...quantsQuestions, ...dilrQuestions, ...graphQuestions];
+const ALL_QUESTIONS = [
+  ...mechEngQuestions,
+  ...quantsQuestions,
+  ...dataInterpretationQuestions,
+  ...dilrQuestions,
+  ...logicalReasoningQuestions
+];
 
 const CATEGORIES = [
   { key: 'all', label: 'All', emoji: '📚' },
   { key: 'Mechanical Engineering', label: 'Mech Engg', emoji: '🔩' },
   { key: 'Quantitative Aptitude', label: 'Quants', emoji: '🧮' },
+  { key: 'Data Interpretation', label: 'Data Interpretation', emoji: '📊' },
   { key: 'DILR', label: 'DILR', emoji: '🧩' },
-  { key: 'Graph Interpretation', label: 'Graphs', emoji: '📊' },
+  { key: 'Logical Reasoning', label: 'Logical Reasoning', emoji: '🧠' },
   { key: 'bookmarked', label: 'Bookmarked', emoji: '⭐' }
 ];
 

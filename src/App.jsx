@@ -10,6 +10,9 @@ import MockInterview from './pages/MockInterview';
 import Leaderboard from './pages/Leaderboard';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Tests from './pages/Tests';
+import TestSession from './pages/TestSession';
+import TestResult from './pages/TestResult';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -63,6 +66,28 @@ function App() {
               <ProtectedRoute>
                 <Layout>
                   <Leaderboard />
+                </Layout>
+              </ProtectedRoute>
+            } />
+
+            <Route path="/tests" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Tests />
+                </Layout>
+              </ProtectedRoute>
+            } />
+
+            <Route path="/tests/session" element={
+              <ProtectedRoute>
+                <TestSession />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/tests/result/:testId" element={
+              <ProtectedRoute>
+                <Layout>
+                  <TestResult />
                 </Layout>
               </ProtectedRoute>
             } />

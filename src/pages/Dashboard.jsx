@@ -1,11 +1,19 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { PenTool, Mic, BookOpen, Flame, Target, Clock, Zap } from 'lucide-react';
+import { PenTool, Mic, Flame, Target, Zap } from 'lucide-react';
 import './Dashboard.css';
+
+import mechEngQuestions from '../data/mechEngQuestions';
+import quantsQuestions from '../data/quantsQuestions';
+import dataInterpretationQuestions from '../data/dataInterpretationQuestions';
+import dilrQuestions from '../data/dilrQuestions';
+import logicalReasoningQuestions from '../data/logicalReasoningQuestions';
 
 export default function Dashboard() {
   const { user } = useAuth();
   const firstName = user?.displayName?.split(' ')[0] || 'there';
+
+  const totalQs = mechEngQuestions.length + quantsQuestions.length + dataInterpretationQuestions.length + dilrQuestions.length + logicalReasoningQuestions.length;
 
   return (
     <div className="page-content dashboard">
@@ -15,7 +23,7 @@ export default function Dashboard() {
           <p className="hero-eyebrow">👋 Hey {firstName}</p>
           <h1>Placement season is <span className="gradient-text">almost here.</span></h1>
           <p className="hero-sub">
-            You've got 2000+ questions, mock interviews, and skill trackers — all in one place.
+            You've got {totalQs.toLocaleString()} questions, mock interviews, and skill trackers — all in one place.
             No excuses. Let's get grinding.
           </p>
           <div className="hero-actions">
@@ -33,14 +41,14 @@ export default function Dashboard() {
           <div className="hero-stat-card">
             <Flame size={22} className="stat-icon fire" />
             <div>
-              <span className="stat-number">2000+</span>
+              <span className="stat-number">{totalQs.toLocaleString()}</span>
               <span className="stat-desc">Practice Qs</span>
             </div>
           </div>
           <div className="hero-stat-card">
             <Target size={22} className="stat-icon target" />
             <div>
-              <span className="stat-number">4</span>
+              <span className="stat-number">5</span>
               <span className="stat-desc">Categories</span>
             </div>
           </div>
@@ -57,30 +65,36 @@ export default function Dashboard() {
       {/* Quick Links */}
       <section className="quick-links">
         <h2>Pick your battle ⚔️</h2>
-        <div className="links-grid">
+        <div className="links-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem' }}>
           <Link to="/oa-practice?cat=Mechanical+Engineering" className="link-card card card-interactive">
             <span className="link-emoji">🔩</span>
             <h3>Mechanical Engg</h3>
             <p>Thermo, Fluids, SOM, Manufacturing, Machine Design & more</p>
-            <span className="badge badge-accent">~600 Qs</span>
+            <span className="badge badge-accent">~{mechEngQuestions.length.toLocaleString()} Qs</span>
           </Link>
           <Link to="/oa-practice?cat=Quantitative+Aptitude" className="link-card card card-interactive">
             <span className="link-emoji">🧮</span>
             <h3>Quantitative Aptitude</h3>
             <p>Percentages, Profit & Loss, Time & Work, Algebra, Geometry</p>
-            <span className="badge badge-secondary">~500 Qs</span>
+            <span className="badge badge-secondary">~{quantsQuestions.length.toLocaleString()} Qs</span>
+          </Link>
+          <Link to="/oa-practice?cat=Data+Interpretation" className="link-card card card-interactive">
+            <span className="link-emoji">📊</span>
+            <h3>Data Interpretation</h3>
+            <p>Tables, Bar, Pie, Line charts — read data, spot trends</p>
+            <span className="badge badge-warning">~{dataInterpretationQuestions.length.toLocaleString()} Qs</span>
           </Link>
           <Link to="/oa-practice?cat=DILR" className="link-card card card-interactive">
             <span className="link-emoji">🧩</span>
-            <h3>DILR</h3>
-            <p>Logical Reasoning, Seating, Syllogisms, Blood Relations, Puzzles</p>
-            <span className="badge badge-success">~500 Qs</span>
+            <h3>DILR Puzzles</h3>
+            <p>Logical Seating arrangements, constraint satisfaction, ordering</p>
+            <span className="badge badge-success">~{dilrQuestions.length.toLocaleString()} Qs</span>
           </Link>
-          <Link to="/oa-practice?cat=Graph+Interpretation" className="link-card card card-interactive">
-            <span className="link-emoji">📊</span>
-            <h3>Graph Interpretation</h3>
-            <p>Bar, Pie, Line charts — read data, spot trends, crunch numbers</p>
-            <span className="badge badge-warning">~400 Qs</span>
+          <Link to="/oa-practice?cat=Logical+Reasoning" className="link-card card card-interactive">
+            <span className="link-emoji">🧠</span>
+            <h3>Logical Reasoning</h3>
+            <p>Series, coding-decoding, direction sense, syllogisms</p>
+            <span className="badge badge-accent" style={{ background: 'var(--accent-glow)', color: 'var(--accent)' }}>~{logicalReasoningQuestions.length.toLocaleString()} Qs</span>
           </Link>
         </div>
       </section>
