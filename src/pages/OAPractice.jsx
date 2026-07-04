@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, Clock, Shuffle, List, Layers } from 'lucide-react';
 import { useScore } from '../contexts/ScoreContext';
@@ -34,8 +34,11 @@ export default function OAPractice() {
   
   const [category, setCategory] = useState(initialCat);
   const [difficulty, setDifficulty] = useState('all');
+  const [topic, setTopic] = useState('all');
+  const [availableTopics, setAvailableTopics] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
+  const prevCategoryRef = useRef(category);
   
   // View mode and selections
   const [viewMode, setViewMode] = useState('card'); // 'card' | 'list'
@@ -80,12 +83,19 @@ export default function OAPractice() {
         pool = [...me.default, ...qa.default, ...di.default, ...dilr.default, ...lr.default];
       }
 
+      // Dynamically extract unique topics for selection
+      const uniqueTopics = ['all', ...new Set(pool.map(q => q.topic).filter(Boolean))].sort();
+      setAvailableTopics(uniqueTopics);
+
       let filtered = pool;
       if (category === 'bookmarked') {
         filtered = filtered.filter(q => scoreData?.bookmarked?.includes(q.id));
       }
       if (difficulty !== 'all') {
         filtered = filtered.filter(q => q.difficulty === difficulty);
+      }
+      if (topic !== 'all') {
+        filtered = filtered.filter(q => q.topic === topic);
       }
 
       const shuffled = shuffleArray(filtered).slice(0, 50);
@@ -103,8 +113,13 @@ export default function OAPractice() {
   };
 
   useEffect(() => {
+    if (prevCategoryRef.current !== category) {
+      prevCategoryRef.current = category;
+      setTopic('all');
+      return;
+    }
     loadActivePool();
-  }, [category, difficulty]);
+  }, [category, difficulty, topic]);
 
   const regenerateQuiz = () => {
     loadActivePool();
@@ -243,6 +258,21 @@ export default function OAPractice() {
                   onClick={() => setDifficulty(d)}
                 >
                   {d === 'all' ? '🌐 All' : d}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="filter-group" style={{ gridColumn: '1 / -1' }}>
+            <label className="form-label">📁 Topic / Section</label>
+            <div className="filter-pills" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              {availableTopics.map((t) => (
+                <button
+                  key={t}
+                  className={`pill ${topic === t ? 'active' : ''}`}
+                  onClick={() => setTopic(t)}
+                  style={{ fontSize: '0.85rem', padding: '0.4rem 0.8rem' }}
+                >
+                  {t === 'all' ? '🌐 All Topics' : t}
                 </button>
               ))}
             </div>
