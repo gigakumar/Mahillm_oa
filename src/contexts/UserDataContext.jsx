@@ -16,6 +16,7 @@ import { useAuth } from './AuthContext';
 import { useScore } from './ScoreContext';
 import { updateMasteryScore, classifyMistake, buildCompositeKey } from '../utils/adaptiveEngine';
 import { scheduleReview } from '../utils/spacedRepetition';
+import { validateAttemptTelemetry } from '../intelligence/telemetry/telemetrySchema';
 
 const UserDataContext = createContext();
 
@@ -225,6 +226,60 @@ export function UserDataProvider({ children }) {
         timeline: timeline || [],
         updatedAt: new Date().toISOString()
       }, { merge: true });
+
+      // 6. Write canonical event-based telemetry document
+      const attemptId = "ATT_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
+      const sessionId = sessionStorage.getItem('active_session_id') || 'PRACTICE_' + Date.now();
+      
+      const selections = (timeline || []).filter(e => e.action === "select" || e.type === "OPTION_SELECTED");
+      const mappedEvents = (timeline || []).map(e => {
+        if (e.action === "open") return { type: "QUESTION_OPENED", timestamp: e.time * 1000 + Date.now() - solveTimeMs };
+        if (e.action === "select") return { type: "OPTION_SELECTED", option: e.optionIndex, timestamp: e.time * 1000 + Date.now() - solveTimeMs };
+        if (e.action === "submit") return { type: "ANSWER_SUBMITTED", timestamp: e.time * 1000 + Date.now() - solveTimeMs };
+        return e;
+      });
+
+      if (!mappedEvents.some(e => e.type === "QUESTION_OPENED")) {
+        mappedEvents.unshift({ type: "QUESTION_OPENED", timestamp: Date.now() - solveTimeMs });
+      }
+      if (!mappedEvents.some(e => e.type === "ANSWER_SUBMITTED" || e.type === "TIMEOUT")) {
+        mappedEvents.push({ type: "ANSWER_SUBMITTED", timestamp: Date.now() });
+      }
+
+      const attemptDoc = {
+        schemaVersion: 1,
+        attemptId,
+        sessionId,
+        userId: user.uid,
+        questionId: question.id,
+        questionVersion: 1,
+        context: {
+          mode: question.category === "Quantitative Aptitude" ? "APTITUDE" : "MECHANICAL_CORE",
+          createdAt: Date.now()
+        },
+        timing: {
+          openedAt: Date.now() - solveTimeMs,
+          firstInteractionAt: selections.length > 0 ? (selections[0].time * 1000 + Date.now() - solveTimeMs) : null,
+          submittedAt: Date.now(),
+          activeTimeMs: solveTimeMs,
+          idleTimeMs: 0
+        },
+        answer: {
+          finalOption: selections.length > 0 ? (selections[selections.length - 1].optionIndex !== undefined ? selections[selections.length - 1].optionIndex : selections[selections.length - 1].option) : null,
+          correctOption: question.correct,
+          isCorrect
+        },
+        confidence: confidence || "Sure",
+        events: mappedEvents
+      };
+
+      try {
+        validateAttemptTelemetry(attemptDoc);
+        const attemptRef = doc(db, 'users', user.uid, 'attempts', attemptId);
+        await setDoc(attemptRef, attemptDoc);
+      } catch (validationErr) {
+        console.error("Telemetry validation error, aborting attempts write:", validationErr);
+      }
 
     } catch (error) {
       console.error("Error recording detailed answer:", error);
