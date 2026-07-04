@@ -6,11 +6,7 @@ import { collection, query, getDocs, orderBy } from 'firebase/firestore';
 import { Clipboard, Play, RotateCcw, BarChart2, Plus, RefreshCw, Trash2, Calendar, Award } from 'lucide-react';
 import './Tests.css';
 
-import mechEngQuestions from '../data/mechEngQuestions';
-import quantsQuestions from '../data/quantsQuestions';
-import dataInterpretationQuestions from '../data/dataInterpretationQuestions';
-import dilrQuestions from '../data/dilrQuestions';
-import logicalReasoningQuestions from '../data/logicalReasoningQuestions';
+import metadata from '../data/metadata';
 
 const PRESETS = [
   { id: 'quick', name: 'Quick Test ⚡', desc: '10 random questions, 15 minutes. Great for a quick daily sprint.', count: 10, time: 15, dist: { ME: 40, QA: 30, LR: 20, DI: 10 } },
@@ -259,27 +255,27 @@ export default function Tests() {
 
               <div className="weights-grid">
                 <div className="weight-row">
-                  <span>🔩 Mechanical Engineering (~{mechEngQuestions.length.toLocaleString()} Qs)</span>
+                  <span>🔩 Mechanical Engineering (~{metadata.categories['Mechanical Engineering'].count.toLocaleString()} Qs)</span>
                   <input type="number" className="weight-input" value={weights.ME} onChange={(e) => handleWeightChange('ME', e.target.value)} />
                   <span className="unit">%</span>
                 </div>
                 <div className="weight-row">
-                  <span>🧮 Quantitative Aptitude (~{quantsQuestions.length.toLocaleString()} Qs)</span>
+                  <span>🧮 Quantitative Aptitude (~{metadata.categories['Quantitative Aptitude'].count.toLocaleString()} Qs)</span>
                   <input type="number" className="weight-input" value={weights.QA} onChange={(e) => handleWeightChange('QA', e.target.value)} />
                   <span className="unit">%</span>
                 </div>
                 <div className="weight-row">
-                  <span>📊 Data Interpretation (~{dataInterpretationQuestions.length.toLocaleString()} Qs)</span>
+                  <span>📊 Data Interpretation (~{metadata.categories['Data Interpretation'].count.toLocaleString()} Qs)</span>
                   <input type="number" className="weight-input" value={weights.DI} onChange={(e) => handleWeightChange('DI', e.target.value)} />
                   <span className="unit">%</span>
                 </div>
                 <div className="weight-row">
-                  <span>🧩 DILR Puzzles (~{dilrQuestions.length.toLocaleString()} Qs)</span>
+                  <span>🧩 DILR Puzzles (~{metadata.categories['DILR'].count.toLocaleString()} Qs)</span>
                   <input type="number" className="weight-input" value={weights.DILR} onChange={(e) => handleWeightChange('DILR', e.target.value)} />
                   <span className="unit">%</span>
                 </div>
                 <div className="weight-row">
-                  <span>🧠 Logical Reasoning (~{logicalReasoningQuestions.length.toLocaleString()} Qs)</span>
+                  <span>🧠 Logical Reasoning (~{metadata.categories['Logical Reasoning'].count.toLocaleString()} Qs)</span>
                   <input type="number" className="weight-input" value={weights.LR} onChange={(e) => handleWeightChange('LR', e.target.value)} />
                   <span className="unit">%</span>
                 </div>

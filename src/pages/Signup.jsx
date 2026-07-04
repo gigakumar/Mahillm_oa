@@ -157,11 +157,15 @@ export default function Signup() {
       setDemoMode(false);
     } catch (err) {
       console.warn('Firebase SMS OTP failed:', err);
-      // Fallback to Demo Mode so the user is never stuck
-      setError('SMS Auth not enabled in Firebase project. Switching to Demo Mode: Enter any 6 digits (e.g. 123456) to proceed.');
-      setDemoMode(true);
-      setStep('phone-otp');
-      setTimer(60);
+      if (import.meta.env.PROD) {
+        setError('Phone verification is currently unavailable. Please use email verification or try again later. Details: ' + (err.message || 'Firebase error'));
+      } else {
+        // Fallback to Demo Mode so the user is never stuck in local dev
+        setError('SMS Auth not enabled in Firebase project. Switching to Demo Mode: Enter any 6 digits (e.g. 123456) to proceed.');
+        setDemoMode(true);
+        setStep('phone-otp');
+        setTimer(60);
+      }
     } finally {
       setLoading(false);
     }
@@ -196,10 +200,12 @@ export default function Signup() {
     setError('');
     setLoading(true);
     try {
-      if (demoMode) {
-        // In demo fallback, we simulate successful verification
+      if (demoMode && !import.meta.env.PROD) {
+        // In demo fallback, we simulate successful verification (dev only)
         setVerifyStatus('Success! Account verified (Demo mode).');
         setTimeout(() => navigate('/'), 1500);
+      } else if (demoMode && import.meta.env.PROD) {
+        setError('Demo mode is disabled in production. Real OTP verification is required.');
       } else {
         await confirmationResult.confirm(code);
         setVerifyStatus('Success! Phone number verified.');

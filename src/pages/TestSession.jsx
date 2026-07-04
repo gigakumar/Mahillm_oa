@@ -6,24 +6,12 @@ import { doc, setDoc, collection } from 'firebase/firestore';
 import { HelpCircle, ChevronLeft, ChevronRight, CheckCircle2, Bookmark, Trash2, AlertTriangle } from 'lucide-react';
 import './TestSession.css';
 
-// Datasets
-import mechEngQuestions from '../data/mechEngQuestions';
-import quantsQuestions from '../data/quantsQuestions';
-import dataInterpretationQuestions from '../data/dataInterpretationQuestions';
-import dilrQuestions from '../data/dilrQuestions';
-import logicalReasoningQuestions from '../data/logicalReasoningQuestions';
+// Dynamic imports metadata
+import metadata from '../data/metadata';
 
 // Coherent Set-based sampler
-function sampleQuestions(config) {
+function sampleQuestions(config, pool) {
   const { count, distribution, difficulty } = config;
-  const pool = {
-    'Mechanical Engineering': mechEngQuestions,
-    'Quantitative Aptitude': quantsQuestions,
-    'Data Interpretation': dataInterpretationQuestions,
-    'DILR': dilrQuestions,
-    'Logical Reasoning': logicalReasoningQuestions
-  };
-
   const selected = [];
 
   // Determine number of questions per category
@@ -37,12 +25,11 @@ function sampleQuestions(config) {
       catPool = catPool.filter(q => q.difficulty === difficulty);
     }
     if (catPool.length === 0) {
-      catPool = pool[category] || []; // fallback to all if difficulty pool empty
+      catPool = pool[category] || []; // fallback
     }
 
     // Set-based coherence for Data Interpretation and DILR
     if (category === 'Data Interpretation' || category === 'DILR') {
-      // Find all unique sets (grouped by contextHtml)
       const setsMap = new Map();
       catPool.forEach((q) => {
         const key = q.contextHtml || q.question;
@@ -53,30 +40,27 @@ function sampleQuestions(config) {
       });
 
       const sets = Array.from(setsMap.values());
-      // Shuffle sets
       const shuffledSets = [...sets].sort(() => 0.5 - Math.random());
       
       let added = 0;
       for (const setQs of shuffledSets) {
         if (added >= catCount) break;
-        // Take up to remaining needed
         const toTake = setQs.slice(0, catCount - added);
         selected.push(...toTake);
         added += toTake.length;
       }
     } else {
-      // Standalone random selection
       const shuffled = [...catPool].sort(() => 0.5 - Math.random());
       selected.push(...shuffled.slice(0, catCount));
     }
   });
 
-  // If we ended up with slightly more or fewer questions due to rounding, truncate or pad
   let finalSelection = selected.slice(0, count);
   if (finalSelection.length < count) {
-    // Pad with leftover questions
-    const allQs = [...mechEngQuestions, ...quantsQuestions];
-    for (const q of allQs) {
+    // Pad with leftover questions if needed from first available category pool
+    const firstCat = Object.keys(pool)[0];
+    const fallbackPool = pool[firstCat] || [];
+    for (const q of fallbackPool) {
       if (finalSelection.length >= count) break;
       if (!finalSelection.some(fq => fq.id === q.id)) {
         finalSelection.push(q);
@@ -84,7 +68,6 @@ function sampleQuestions(config) {
     }
   }
 
-  // Shuffle the final merged test set so it's a mixed test
   return finalSelection.sort(() => 0.5 - Math.random());
 }
 
@@ -95,6 +78,8 @@ export default function TestSession() {
   const [config, setConfig] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   // States: key is question ID
   const [selectedOptions, setSelectedOptions] = useState({}); // user answers (index for MCQ, array for MSQ, text for NAT)
@@ -102,84 +87,135 @@ export default function TestSession() {
   const [markedForReview, setMarkedForReview] = useState({}); // true/false
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [showConfirmSubmit, setShowConfirmSubmit] = useState(false);
+  const [attemptId, setAttemptId] = useState('');
 
   const timerRef = useRef(null);
 
   // Load or initialize test session
   useEffect(() => {
-    const configStr = localStorage.getItem('current_test_config');
-    if (!configStr) {
-      navigate('/tests');
-      return;
-    }
-    const parsedConfig = JSON.parse(configStr);
-    setConfig(parsedConfig);
-
-    // Enter Fullscreen on test start
-    try {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen().catch(() => {});
+    async function initSession() {
+      const configStr = localStorage.getItem('current_test_config');
+      if (!configStr) {
+        navigate('/tests');
+        return;
       }
-    } catch (e) {}
+      const parsedConfig = JSON.parse(configStr);
+      setConfig(parsedConfig);
 
-    const sessionStr = localStorage.getItem('current_test_session');
-    if (sessionStr) {
-      // Resume session
-      const session = JSON.parse(sessionStr);
-      setQuestions(session.questions);
-      setCurrentIdx(session.currentIdx);
-      setSelectedOptions(session.selectedOptions || {});
-      setVisitedQuestions(session.visitedQuestions || {});
-      setMarkedForReview(session.markedForReview || {});
-      setTimerSeconds(session.timerSeconds);
-    } else {
-      // Start new session
-      const testQs = sampleQuestions(parsedConfig);
-      setQuestions(testQs);
-      setTimerSeconds(parsedConfig.duration * 60);
-      
-      const initialVisited = { [testQs[0]?.id]: true };
-      setVisitedQuestions(initialVisited);
+      // Enter Fullscreen on test start
+      try {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        }
+      } catch (e) {}
 
-      // Save initial state
-      localStorage.setItem('current_test_session', JSON.stringify({
-        questions: testQs,
-        currentIdx: 0,
-        selectedOptions: {},
-        visitedQuestions: initialVisited,
-        markedForReview: {},
-        timerSeconds: parsedConfig.duration * 60
-      }));
+      const sessionStr = localStorage.getItem('current_test_session');
+      if (sessionStr) {
+        // Resume session
+        const session = JSON.parse(sessionStr);
+        setQuestions(session.questions);
+        setCurrentIdx(session.currentIdx);
+        setSelectedOptions(session.selectedOptions || {});
+        setVisitedQuestions(session.visitedQuestions || {});
+        setMarkedForReview(session.markedForReview || {});
+        setAttemptId(session.attemptId || `attempt_${Date.now()}`);
+        
+        // Recover time from timestamp
+        const endTime = parseInt(localStorage.getItem('current_test_end_time') || '0');
+        const remaining = Math.max(0, endTime - Math.floor(Date.now() / 1000));
+        setTimerSeconds(remaining);
+      } else {
+        // Load required pools dynamically based on config distribution
+        setLoading(true);
+        try {
+          const loadedPools = {};
+          const categoryPromises = [];
+          const dist = parsedConfig.distribution;
+
+          if (dist['Mechanical Engineering'] > 0) {
+            categoryPromises.push(import('../data/mechEngQuestions.js').then(m => { loadedPools['Mechanical Engineering'] = m.default; }));
+          }
+          if (dist['Quantitative Aptitude'] > 0) {
+            categoryPromises.push(import('../data/quantsQuestions.js').then(m => { loadedPools['Quantitative Aptitude'] = m.default; }));
+          }
+          if (dist['Data Interpretation'] > 0) {
+            categoryPromises.push(import('../data/dataInterpretationQuestions.js').then(m => { loadedPools['Data Interpretation'] = m.default; }));
+          }
+          if (dist['DILR'] > 0) {
+            categoryPromises.push(import('../data/dilrQuestions.js').then(m => { loadedPools['DILR'] = m.default; }));
+          }
+          if (dist['Logical Reasoning'] > 0) {
+            categoryPromises.push(import('../data/logicalReasoningQuestions.js').then(m => { loadedPools['Logical Reasoning'] = m.default; }));
+          }
+
+          await Promise.all(categoryPromises);
+
+          const testQs = sampleQuestions(parsedConfig, loadedPools);
+          setQuestions(testQs);
+          
+          const newAttemptId = `attempt_${Date.now()}`;
+          setAttemptId(newAttemptId);
+
+          const durationSecs = parsedConfig.duration * 60;
+          setTimerSeconds(durationSecs);
+
+          const now = Math.floor(Date.now() / 1000);
+          localStorage.setItem('current_test_end_time', (now + durationSecs).toString());
+
+          const initialVisited = { [testQs[0]?.id]: true };
+          setVisitedQuestions(initialVisited);
+
+          // Save initial state
+          localStorage.setItem('current_test_session', JSON.stringify({
+            questions: testQs,
+            currentIdx: 0,
+            selectedOptions: {},
+            visitedQuestions: initialVisited,
+            markedForReview: {},
+            attemptId: newAttemptId
+          }));
+        } catch (e) {
+          console.error("Error loading dynamic test session pools:", e);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      // Refresh protection warning
+      const handleBeforeUnload = (e) => {
+        e.preventDefault();
+        e.returnValue = 'Warning: Leaving this page will submit your exam.';
+        return e.returnValue;
+      };
+      window.addEventListener('beforeunload', handleBeforeUnload);
+
+      return () => {
+        window.removeEventListener('beforeunload', handleBeforeUnload);
+      };
     }
 
-    // Refresh protection warning
-    const handleBeforeUnload = (e) => {
-      e.preventDefault();
-      e.returnValue = 'Warning: Leaving this page will submit your exam.';
-      return e.returnValue;
-    };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
+    initSession();
   }, []);
 
   // Timer interval setup
   useEffect(() => {
-    if (timerSeconds <= 0 && questions.length > 0) {
-      // Auto submit on timeout
+    if (questions.length === 0) return;
+
+    if (timerSeconds <= 0) {
       submitTest(true);
       return;
     }
 
     timerRef.current = setInterval(() => {
-      setTimerSeconds((prev) => {
-        const next = prev - 1;
-        // Save state to localstorage with decremented timer
-        saveSessionToStorage(next);
-        return next;
-      });
+      const endTime = parseInt(localStorage.getItem('current_test_end_time') || '0');
+      const remaining = Math.max(0, endTime - Math.floor(Date.now() / 1000));
+      
+      setTimerSeconds(remaining);
+      saveSessionToStorage(remaining);
+
+      if (remaining <= 0) {
+        submitTest(true);
+      }
     }, 1000);
 
     return () => clearInterval(timerRef.current);
@@ -193,7 +229,7 @@ export default function TestSession() {
       selectedOptions,
       visitedQuestions,
       markedForReview,
-      timerSeconds: currTime
+      attemptId
     }));
   };
 
@@ -314,6 +350,8 @@ export default function TestSession() {
   };
 
   const submitTest = async (auto = false) => {
+    if (submitting) return;
+    setSubmitting(true);
     clearInterval(timerRef.current);
     
     // Exit Fullscreen
@@ -337,28 +375,25 @@ export default function TestSession() {
 
       if (isAttempted) {
         if (q.type === 'MSQ') {
-          // Both correct arrays must match elements exactly
           const correctArr = q.correct || [];
           const userArr = ans || [];
           isCorrect = correctArr.length === userArr.length && correctArr.every(v => userArr.includes(v));
         } else if (q.type === 'NAT') {
           const userVal = parseFloat(ans);
           const correctVal = parseFloat(q.correct);
-          // Set standard numeric tolerance e.g. 0.05
           const tolerance = 0.05;
           isCorrect = Math.abs(userVal - correctVal) <= tolerance;
         } else {
-          // MCQ / TF / Assertion-Reason
           isCorrect = ans === q.correct;
         }
 
         if (isCorrect) {
           correctCount++;
-          totalScore += 1; // 1 mark per question
+          totalScore += 1;
         } else {
           incorrectCount++;
           if (config.negativeMarking) {
-            totalScore -= (1/3); // GATE Style negative marking
+            totalScore -= (1/3);
           }
         }
       }
@@ -397,25 +432,44 @@ export default function TestSession() {
       report: detailedReport
     };
 
-    let testId = `test_${Date.now()}`;
-    if (user) {
-      // Save scorecard to firestore
-      const docRef = doc(db, 'users', user.uid, 'tests', testId);
-      await setDoc(docRef, testResult);
-    } else {
-      // Local storage fallback for guests
-      localStorage.setItem(`guest_test_result_${testId}`, JSON.stringify(testResult));
+    // Use attemptId as the document name for idempotency
+    let testId = attemptId || `test_${Date.now()}`;
+    try {
+      if (user) {
+        const docRef = doc(db, 'users', user.uid, 'tests', testId);
+        await setDoc(docRef, testResult);
+      } else {
+        localStorage.setItem(`guest_test_result_${testId}`, JSON.stringify(testResult));
+      }
+    } catch (err) {
+      console.error("Error saving scorecard:", err);
     }
 
     // Clear state
     localStorage.removeItem('current_test_session');
     localStorage.removeItem('current_test_config');
+    localStorage.removeItem('current_test_end_time');
 
     navigate(`/tests/result/${testId}`);
   };
 
-  if (questions.length === 0 || !config) {
-    return <div className="loading">Initializing test session...</div>;
+  if (loading || questions.length === 0 || !config) {
+    return (
+      <div className="loading-fullscreen" style={{
+        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+        background: 'var(--bg-body)', display: 'flex', flexDirection: 'column',
+        justifyContent: 'center', alignItems: 'center', zIndex: 100000
+      }}>
+        <div className="spinner" style={{
+          border: '4px solid var(--border)', borderTop: '4px solid var(--accent)',
+          borderRadius: '50%', width: '50px', height: '50px',
+          animation: 'spin 1s linear infinite', marginBottom: '1.5rem'
+        }}></div>
+        <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+        <h3>Preparing Exam Environment...</h3>
+        <p style={{ color: 'var(--text-secondary)' }}>Dynamically configuring test templates and sampling questions.</p>
+      </div>
+    );
   }
 
   const formatTime = (seconds) => {

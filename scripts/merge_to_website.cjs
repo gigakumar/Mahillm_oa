@@ -82,7 +82,15 @@ async function main() {
       difficulty: difficulty,
       topic: topic || 'General',
       category: '',
-      type: dq.question_type || 'MCQ'
+      type: dq.question_type || 'MCQ',
+      originType: dq.origin_type || 'legacy_unknown',
+      templateClusterId: dq.template_cluster_id || '',
+      oaRelevanceScore: dq.oa_relevance_score || 60.0,
+      qualityScore: dq.quality_score || 90.0,
+      validationStatus: dq.validation_status || 'legacy_passed',
+      sourceName: dq.source_name || '',
+      sourceTier: dq.source_tier || '',
+      verifiedPyq: dq.verified_pyq || false
     };
 
     if (subject === 'Mechanical Engineering') {
@@ -138,6 +146,27 @@ async function main() {
   writeJsFile(path.join(DATA_DIR, 'dataInterpretationQuestions.js'), diQuestions);
   writeJsFile(path.join(DATA_DIR, 'dilrQuestions.js'), dilrQuestions);
   writeJsFile(path.join(DATA_DIR, 'logicalReasoningQuestions.js'), lrQuestions);
+
+  // Calculate metadata
+  const totalCount = meQuestions.length + qaQuestions.length + diQuestions.length + dilrQuestions.length + lrQuestions.length;
+  const generatedCount = dbData.filter(dq => dq.question_id.startsWith("gen_")).length;
+  const verifiedCount = totalCount - generatedCount;
+
+  const metadata = {
+    totalCount: totalCount,
+    categories: {
+      'Mechanical Engineering': { count: meQuestions.length, emoji: '🔩' },
+      'Quantitative Aptitude': { count: qaQuestions.length, emoji: '🧮' },
+      'Data Interpretation': { count: diQuestions.length, emoji: '📊' },
+      'DILR': { count: dilrQuestions.length, emoji: '🧩' },
+      'Logical Reasoning': { count: lrQuestions.length, emoji: '🧠' }
+    },
+    generatedPercentage: parseFloat((generatedCount / totalCount * 100).toFixed(2)),
+    externallyVerifiedPercentage: parseFloat((verifiedCount / totalCount * 100).toFixed(2))
+  };
+
+  writeJsFile(path.join(DATA_DIR, 'metadata.js'), metadata);
+  console.log(`Generated metadata.js with totalCount=${totalCount}`);
 
   // Remove old graphQuestions.js if it exists to clean up
   const oldGraphFile = path.join(DATA_DIR, 'graphQuestions.js');

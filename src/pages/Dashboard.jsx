@@ -3,17 +3,18 @@ import { useAuth } from '../contexts/AuthContext';
 import { PenTool, Mic, Flame, Target, Zap } from 'lucide-react';
 import './Dashboard.css';
 
-import mechEngQuestions from '../data/mechEngQuestions';
-import quantsQuestions from '../data/quantsQuestions';
-import dataInterpretationQuestions from '../data/dataInterpretationQuestions';
-import dilrQuestions from '../data/dilrQuestions';
-import logicalReasoningQuestions from '../data/logicalReasoningQuestions';
+import metadata from '../data/metadata';
 
 export default function Dashboard() {
   const { user } = useAuth();
   const firstName = user?.displayName?.split(' ')[0] || 'there';
 
-  const totalQs = mechEngQuestions.length + quantsQuestions.length + dataInterpretationQuestions.length + dilrQuestions.length + logicalReasoningQuestions.length;
+  const totalQs = metadata.totalCount;
+  const meCount = metadata.categories['Mechanical Engineering'].count;
+  const qaCount = metadata.categories['Quantitative Aptitude'].count;
+  const diCount = metadata.categories['Data Interpretation'].count;
+  const dilrCount = metadata.categories['DILR'].count;
+  const lrCount = metadata.categories['Logical Reasoning'].count;
 
   return (
     <div className="page-content dashboard">
@@ -70,31 +71,31 @@ export default function Dashboard() {
             <span className="link-emoji">🔩</span>
             <h3>Mechanical Engg</h3>
             <p>Thermo, Fluids, SOM, Manufacturing, Machine Design & more</p>
-            <span className="badge badge-accent">~{mechEngQuestions.length.toLocaleString()} Qs</span>
+            <span className="badge badge-accent">~{meCount.toLocaleString()} Qs</span>
           </Link>
           <Link to="/oa-practice?cat=Quantitative+Aptitude" className="link-card card card-interactive">
             <span className="link-emoji">🧮</span>
             <h3>Quantitative Aptitude</h3>
             <p>Percentages, Profit & Loss, Time & Work, Algebra, Geometry</p>
-            <span className="badge badge-secondary">~{quantsQuestions.length.toLocaleString()} Qs</span>
+            <span className="badge badge-secondary">~{qaCount.toLocaleString()} Qs</span>
           </Link>
           <Link to="/oa-practice?cat=Data+Interpretation" className="link-card card card-interactive">
             <span className="link-emoji">📊</span>
             <h3>Data Interpretation</h3>
             <p>Tables, Bar, Pie, Line charts — read data, spot trends</p>
-            <span className="badge badge-warning">~{dataInterpretationQuestions.length.toLocaleString()} Qs</span>
+            <span className="badge badge-warning">~{diCount.toLocaleString()} Qs</span>
           </Link>
           <Link to="/oa-practice?cat=DILR" className="link-card card card-interactive">
             <span className="link-emoji">🧩</span>
             <h3>DILR Puzzles</h3>
             <p>Logical Seating arrangements, constraint satisfaction, ordering</p>
-            <span className="badge badge-success">~{dilrQuestions.length.toLocaleString()} Qs</span>
+            <span className="badge badge-success">~{dilrCount.toLocaleString()} Qs</span>
           </Link>
           <Link to="/oa-practice?cat=Logical+Reasoning" className="link-card card card-interactive">
             <span className="link-emoji">🧠</span>
             <h3>Logical Reasoning</h3>
             <p>Series, coding-decoding, direction sense, syllogisms</p>
-            <span className="badge badge-accent" style={{ background: 'var(--accent-glow)', color: 'var(--accent)' }}>~{logicalReasoningQuestions.length.toLocaleString()} Qs</span>
+            <span className="badge badge-accent" style={{ background: 'var(--accent-glow)', color: 'var(--accent)' }}>~{lrCount.toLocaleString()} Qs</span>
           </Link>
         </div>
       </section>

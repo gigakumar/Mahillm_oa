@@ -4,21 +4,6 @@ import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, Clock,
 import { useScore } from '../contexts/ScoreContext';
 import './OAPractice.css';
 
-// These will be populated by the scraper subagents
-import mechEngQuestions from '../data/mechEngQuestions';
-import quantsQuestions from '../data/quantsQuestions';
-import dilrQuestions from '../data/dilrQuestions';
-import dataInterpretationQuestions from '../data/dataInterpretationQuestions';
-import logicalReasoningQuestions from '../data/logicalReasoningQuestions';
-
-const ALL_QUESTIONS = [
-  ...mechEngQuestions,
-  ...quantsQuestions,
-  ...dataInterpretationQuestions,
-  ...dilrQuestions,
-  ...logicalReasoningQuestions
-];
-
 const CATEGORIES = [
   { key: 'all', label: 'All', emoji: '📚' },
   { key: 'Mechanical Engineering', label: 'Mech Engg', emoji: '🔩' },
@@ -44,7 +29,8 @@ export default function OAPractice() {
   const [searchParams] = useSearchParams();
   const initialCat = searchParams.get('cat') || 'all';
 
-  const { scoreData, recordAnswer, toggleBookmark } = useScore();
+  const { scoreData, recordAnswer, getQuestionsProgress, toggleBookmark } = useScore();
+  const [progressMap, setProgressMap] = useState({});
   
   const [category, setCategory] = useState(initialCat);
   const [difficulty, setDifficulty] = useState('all');
@@ -61,43 +47,78 @@ export default function OAPractice() {
   const [isTimerRunning, setIsTimerRunning] = useState(true);
 
   const [quizQuestions, setQuizQuestions] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  // Generate a randomized set of 50 questions when category/difficulty changes
-  useEffect(() => {
-    let qs = ALL_QUESTIONS;
-    if (category === 'bookmarked') {
-      qs = qs.filter(q => scoreData?.bookmarked?.includes(q.id));
-    } else if (category !== 'all') {
-      qs = qs.filter((q) => q.category === category);
+  const loadActivePool = async () => {
+    setLoading(true);
+    try {
+      let pool = [];
+      if (category === 'Mechanical Engineering') {
+        const mod = await import('../data/mechEngQuestions.js');
+        pool = mod.default;
+      } else if (category === 'Quantitative Aptitude') {
+        const mod = await import('../data/quantsQuestions.js');
+        pool = mod.default;
+      } else if (category === 'Data Interpretation') {
+        const mod = await import('../data/dataInterpretationQuestions.js');
+        pool = mod.default;
+      } else if (category === 'DILR') {
+        const mod = await import('../data/dilrQuestions.js');
+        pool = mod.default;
+      } else if (category === 'Logical Reasoning') {
+        const mod = await import('../data/logicalReasoningQuestions.js');
+        pool = mod.default;
+      } else if (category === 'all' || category === 'bookmarked') {
+        // Load all categories dynamically in parallel
+        const [me, qa, di, dilr, lr] = await Promise.all([
+          import('../data/mechEngQuestions.js'),
+          import('../data/quantsQuestions.js'),
+          import('../data/dataInterpretationQuestions.js'),
+          import('../data/dilrQuestions.js'),
+          import('../data/logicalReasoningQuestions.js')
+        ]);
+        pool = [...me.default, ...qa.default, ...di.default, ...dilr.default, ...lr.default];
+      }
+
+      let filtered = pool;
+      if (category === 'bookmarked') {
+        filtered = filtered.filter(q => scoreData?.bookmarked?.includes(q.id));
+      }
+      if (difficulty !== 'all') {
+        filtered = filtered.filter(q => q.difficulty === difficulty);
+      }
+
+      const shuffled = shuffleArray(filtered).slice(0, 50);
+      setQuizQuestions(shuffled);
+      setCurrentIdx(0);
+      setSelectedOptions({});
+      setSubmittedQuestions({});
+      setTimeLeft(60);
+      setIsTimerRunning(true);
+    } catch (e) {
+      console.error("Error loading code-split question datasets dynamically:", e);
+    } finally {
+      setLoading(false);
     }
-    if (difficulty !== 'all') qs = qs.filter((q) => q.difficulty === difficulty);
-    
-    const shuffled = shuffleArray(qs).slice(0, 50);
-    setQuizQuestions(shuffled);
-    setCurrentIdx(0);
-    setSelectedOptions({});
-    setSubmittedQuestions({});
-    setTimeLeft(60);
-    setIsTimerRunning(true);
+  };
+
+  useEffect(() => {
+    loadActivePool();
   }, [category, difficulty]);
 
   const regenerateQuiz = () => {
-    let qs = ALL_QUESTIONS;
-    if (category === 'bookmarked') {
-      qs = qs.filter(q => scoreData?.bookmarked?.includes(q.id));
-    } else if (category !== 'all') {
-      qs = qs.filter((q) => q.category === category);
-    }
-    if (difficulty !== 'all') qs = qs.filter((q) => q.difficulty === difficulty);
-    
-    const shuffled = shuffleArray(qs).slice(0, 50);
-    setQuizQuestions(shuffled);
-    setCurrentIdx(0);
-    setSelectedOptions({});
-    setSubmittedQuestions({});
-    setTimeLeft(60);
-    setIsTimerRunning(true);
+    loadActivePool();
   };
+
+  useEffect(() => {
+    if (quizQuestions.length === 0) return;
+    async function fetchProgress() {
+      const ids = quizQuestions.map(q => q.id);
+      const progress = await getQuestionsProgress(ids);
+      setProgressMap(progress);
+    }
+    fetchProgress();
+  }, [quizQuestions]);
 
   const question = quizQuestions[currentIdx];
   const isBookmarked = question && scoreData?.bookmarked?.includes(question.id);
@@ -126,6 +147,7 @@ export default function OAPractice() {
     setSubmittedQuestions(prev => ({ ...prev, [question.id]: true }));
     setIsTimerRunning(false);
     recordAnswer(question.id, false);
+    setProgressMap(prev => ({ ...prev, [question.id]: 'incorrect' }));
   };
 
   const handleSubmit = () => {
@@ -136,6 +158,7 @@ export default function OAPractice() {
     setIsTimerRunning(false);
     const isCorrect = sel === question.correct;
     recordAnswer(question.id, isCorrect);
+    setProgressMap(prev => ({ ...prev, [question.id]: isCorrect ? 'correct' : 'incorrect' }));
   };
 
   const handleNext = () => {
@@ -227,7 +250,13 @@ export default function OAPractice() {
         </div>
       )}
 
-      {viewMode === 'list' ? (
+      {loading ? (
+        <div className="loading" style={{ textAlign: 'center', padding: '5rem 0' }}>
+          <div className="spinner" style={{ border: '4px solid var(--border)', borderTop: '4px solid var(--accent)', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite', margin: '0 auto 1rem auto' }}></div>
+          <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+          <p style={{ color: 'var(--text-secondary)' }}>Loading code-split practice pool...</p>
+        </div>
+      ) : viewMode === 'list' ? (
         <div className="questions-list" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', marginTop: '1rem' }}>
           {quizQuestions.map((q, idx) => {
             const isBookmarked = scoreData?.bookmarked?.includes(q.id);
@@ -243,12 +272,12 @@ export default function OAPractice() {
                     <span className={`badge badge-${q.difficulty === 'Easy' ? 'success' : q.difficulty === 'Medium' ? 'warning' : 'danger'}`}>
                       {q.difficulty}
                     </span>
-                    {scoreData?.correctQuestions?.includes(q.id) && (
+                    {progressMap[q.id] === 'correct' && (
                       <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                         Solved ✓
                       </span>
                     )}
-                    {scoreData?.incorrectQuestions?.includes(q.id) && (
+                    {progressMap[q.id] === 'incorrect' && (
                       <span className="badge badge-danger" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                         Incorrect previously ✗
                       </span>
@@ -352,12 +381,12 @@ export default function OAPractice() {
                 <span className={`badge badge-${question.difficulty === 'Easy' ? 'success' : question.difficulty === 'Medium' ? 'warning' : 'danger'}`}>
                   {question.difficulty}
                 </span>
-                {scoreData?.correctQuestions?.includes(question.id) && (
+                {progressMap[question.id] === 'correct' && (
                   <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                     Solved ✓
                   </span>
                 )}
-                {scoreData?.incorrectQuestions?.includes(question.id) && (
+                {progressMap[question.id] === 'incorrect' && (
                   <span className="badge badge-danger" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                     Incorrect previously ✗
                   </span>

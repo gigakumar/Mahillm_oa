@@ -91,6 +91,7 @@ function App() {
                 </Layout>
               </ProtectedRoute>
             } />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Router>
         </ScoreProvider>

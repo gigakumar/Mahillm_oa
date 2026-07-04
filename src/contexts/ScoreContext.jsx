@@ -16,15 +16,13 @@ export function ScoreProvider({ children }) {
     totalAttempted: 0,
     totalCorrect: 0,
     accuracy: 0,
-    bookmarked: [],
-    correctQuestions: [],
-    incorrectQuestions: []
+    bookmarked: []
   });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!user) {
-      setScoreData({ xp: 0, totalAttempted: 0, totalCorrect: 0, accuracy: 0, bookmarked: [], correctQuestions: [], incorrectQuestions: [] });
+      setScoreData({ xp: 0, totalAttempted: 0, totalCorrect: 0, accuracy: 0, bookmarked: [] });
       setLoading(false);
       return;
     }
@@ -39,9 +37,7 @@ export function ScoreProvider({ children }) {
           totalAttempted: data.totalAttempted || 0,
           totalCorrect: data.totalCorrect || 0,
           accuracy: data.totalAttempted ? Math.round((data.totalCorrect / data.totalAttempted) * 100) : 0,
-          bookmarked: data.bookmarked || [],
-          correctQuestions: data.correctQuestions || [],
-          incorrectQuestions: data.incorrectQuestions || []
+          bookmarked: data.bookmarked || []
         });
       } else {
         // Initialize new user
@@ -51,8 +47,6 @@ export function ScoreProvider({ children }) {
           totalAttempted: 0,
           totalCorrect: 0,
           bookmarked: [],
-          correctQuestions: [],
-          incorrectQuestions: [],
           createdAt: new Date().toISOString()
         });
       }
@@ -68,27 +62,52 @@ export function ScoreProvider({ children }) {
   const recordAnswer = async (questionId, isCorrect) => {
     if (!user) return;
     const userRef = doc(db, 'users', user.uid);
+    const progressRef = doc(db, 'users', user.uid, 'questionProgress', questionId.toString());
     
     try {
+      // 1. Update overall XP and stats in root doc
       if (isCorrect) {
         await updateDoc(userRef, {
           totalAttempted: increment(1),
           totalCorrect: increment(1),
-          xp: increment(10), // 10 XP for correct
-          correctQuestions: arrayUnion(questionId),
-          incorrectQuestions: arrayRemove(questionId)
+          xp: increment(10)
         });
       } else {
         await updateDoc(userRef, {
           totalAttempted: increment(1),
-          xp: increment(2), // 2 XP for trying
-          incorrectQuestions: arrayUnion(questionId),
-          correctQuestions: arrayRemove(questionId)
+          xp: increment(2)
         });
       }
+
+      // 2. Set sub-collection document progress
+      await setDoc(progressRef, {
+        status: isCorrect ? 'correct' : 'incorrect',
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+
     } catch (error) {
       console.error("Error updating score:", error);
     }
+  };
+
+  const getQuestionsProgress = async (questionIds) => {
+    if (!user || !questionIds || questionIds.length === 0) return {};
+    const progressMap = {};
+    
+    try {
+      // Query individual documents in parallel (capped at 50 to match quiz size)
+      const promises = questionIds.map(async (id) => {
+        const progressRef = doc(db, 'users', user.uid, 'questionProgress', id.toString());
+        const docSnap = await getDoc(progressRef);
+        if (docSnap.exists()) {
+          progressMap[id] = docSnap.data().status;
+        }
+      });
+      await Promise.all(promises);
+    } catch (error) {
+      console.error("Error fetching questions progress:", error);
+    }
+    return progressMap;
   };
 
   const toggleBookmark = async (questionId) => {
@@ -106,7 +125,7 @@ export function ScoreProvider({ children }) {
   };
 
   return (
-    <ScoreContext.Provider value={{ scoreData, recordAnswer, toggleBookmark, loading }}>
+    <ScoreContext.Provider value={{ scoreData, recordAnswer, getQuestionsProgress, toggleBookmark, loading }}>
       {children}
     </ScoreContext.Provider>
   );
