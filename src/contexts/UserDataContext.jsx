@@ -110,9 +110,10 @@ export function UserDataProvider({ children }) {
     const qId = question.id.toString();
     const compositeKey = buildCompositeKey(question.category, question.topic);
 
+    let xpResult = null;
     // 1. Trigger the legacy ScoreContext answer logging (XP rewards, legacy progress)
     try {
-      await recordAnswer(question.id, isCorrect);
+      xpResult = await recordAnswer(question, isCorrect, solveTimeMs);
     } catch (e) {
       console.error("Error calling legacy recordAnswer:", e);
     }
@@ -286,6 +287,7 @@ export function UserDataProvider({ children }) {
     } catch (error) {
       console.error("Error recording detailed answer:", error);
     }
+    return xpResult;
   };
 
   /**

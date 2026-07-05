@@ -38,6 +38,7 @@ export default function OAPractice() {
   const { scoreData, toggleBookmark } = useScore();
   const { masteryScores, mistakes, spacedRepetition, recordDetailedAnswer } = useUserData();
   const [progressMap, setProgressMap] = useState({});
+  const [xpFeedback, setXpFeedback] = useState(null);
   
   const [category, setCategory] = useState(initialCat);
   
@@ -250,7 +251,7 @@ export default function OAPractice() {
     return () => clearInterval(timerId);
   }, [timeLeft, isTimerRunning, submitted, question, viewMode]);
 
-  const handleTimeUp = () => {
+  const handleTimeUp = async () => {
     if (!question) return;
     setSubmittedQuestions(prev => ({ ...prev, [question.id]: true }));
     setIsTimerRunning(false);
@@ -258,11 +259,19 @@ export default function OAPractice() {
       ...currentTimeline,
       { action: 'submit', time: 60 }
     ];
-    recordDetailedAnswer(question, false, 60000, 'guess', finalTimeline);
+    const res = await recordDetailedAnswer(question, false, 60000, 'guess', finalTimeline);
+    if (res) {
+      setXpFeedback({
+        xp: res.xpEarned,
+        streak: res.newStreak,
+        isCorrect: false
+      });
+      setTimeout(() => setXpFeedback(null), 3500);
+    }
     setProgressMap(prev => ({ ...prev, [question.id]: 'incorrect' }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!question) return;
     const sel = selectedOptions[question.id];
     if (sel === undefined || sel === null) return;
@@ -275,7 +284,15 @@ export default function OAPractice() {
       ...currentTimeline,
       { action: 'submit', time: Math.max(0, 60 - timeLeft) }
     ];
-    recordDetailedAnswer(question, isCorrect, solveTimeMs, confidence, finalTimeline);
+    const res = await recordDetailedAnswer(question, isCorrect, solveTimeMs, confidence, finalTimeline);
+    if (res) {
+      setXpFeedback({
+        xp: res.xpEarned,
+        streak: res.newStreak,
+        isCorrect: res.isCorrect
+      });
+      setTimeout(() => setXpFeedback(null), 3500);
+    }
     setProgressMap(prev => ({ ...prev, [question.id]: isCorrect ? 'correct' : 'incorrect' }));
   };
 
@@ -345,6 +362,23 @@ export default function OAPractice() {
 
   return (
     <div className="page-content oa-practice">
+      {xpFeedback && (
+        <div className={`floating-xp-toast ${xpFeedback.isCorrect ? 'correct' : 'incorrect'}`}>
+          <div className="xp-toast-content">
+            <Sparkles size={18} className="xp-toast-icon" />
+            <div className="xp-toast-details">
+              <strong>+{xpFeedback.xp} XP</strong>
+              <span>{xpFeedback.isCorrect ? 'Correct Answer!' : 'Participation XP'}</span>
+            </div>
+            {xpFeedback.streak > 1 && (
+              <div className="xp-toast-streak">
+                <Flame size={16} fill="var(--warning)" />
+                <span>{xpFeedback.streak}🔥</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       <header className="practice-header">
         <div>
           <h1>Practice Mode 🎯</h1>
@@ -548,10 +582,18 @@ export default function OAPractice() {
                   {!submitted ? (
                     <button 
                       className="btn btn-primary" 
-                      onClick={() => {
+                      onClick={async () => {
                         if (selected === null) return;
                         setSubmittedQuestions(prev => ({ ...prev, [q.id]: true }));
-                        recordDetailedAnswer(q, selected === q.correct, 0, null);
+                        const res = await recordDetailedAnswer(q, selected === q.correct, 0, null);
+                        if (res) {
+                          setXpFeedback({
+                            xp: res.xpEarned,
+                            streak: res.newStreak,
+                            isCorrect: res.isCorrect
+                          });
+                          setTimeout(() => setXpFeedback(null), 3500);
+                        }
                       }} 
                       disabled={selected === null}
                     >

@@ -59,34 +59,88 @@ export function ScoreProvider({ children }) {
     return () => unsubscribe();
   }, [user]);
 
-  const recordAnswer = async (questionId, isCorrect) => {
-    if (!user) return;
+  const recordAnswer = async (questionOrId, isCorrect, solveTimeMs = 0) => {
+    if (!user) return null;
+    
+    let questionId = questionOrId;
+    let difficulty = 'easy';
+    
+    if (questionOrId && typeof questionOrId === 'object') {
+      questionId = questionOrId.id;
+      difficulty = questionOrId.difficulty || 'easy';
+    }
+    
+    const questionIdStr = questionId.toString();
     const userRef = doc(db, 'users', user.uid);
-    const progressRef = doc(db, 'users', user.uid, 'questionProgress', questionId.toString());
+    const progressRef = doc(db, 'users', user.uid, 'questionProgress', questionIdStr);
     
     try {
-      // 1. Update overall XP and stats in root doc
-      if (isCorrect) {
-        await updateDoc(userRef, {
-          totalAttempted: increment(1),
-          totalCorrect: increment(1),
-          xp: increment(10)
-        });
-      } else {
-        await updateDoc(userRef, {
-          totalAttempted: increment(1),
-          xp: increment(2)
-        });
+      // Get current user doc to compute streak bonuses
+      const userSnap = await getDoc(userRef);
+      let currentStreak = 0;
+      if (userSnap.exists()) {
+        currentStreak = userSnap.data().streak || 0;
       }
+      
+      let xpEarned = 0;
+      let newStreak = 0;
+      
+      if (isCorrect) {
+        newStreak = currentStreak + 1;
+        
+        // 1. Base XP
+        xpEarned += 10;
+        
+        // 2. Difficulty Multiplier
+        if (difficulty === 'hard') {
+          xpEarned += 15;
+        } else if (difficulty === 'medium') {
+          xpEarned += 5;
+        }
+        
+        // 3. Speed Bonus (< 25 seconds)
+        if (solveTimeMs > 0 && solveTimeMs < 25000) {
+          xpEarned += 5;
+        }
+        
+        // 4. Streak Milestones & Momentum
+        if (newStreak % 5 === 0) {
+          xpEarned += 20; // Big milestone bonus
+        } else if (newStreak > 1) {
+          xpEarned += Math.min(newStreak, 10); // Momentum bonus
+        }
+      } else {
+        newStreak = 0;
+        xpEarned += 2; // Participation XP
+      }
+      
+      // Update Firestore user document
+      const updates = {
+        totalAttempted: increment(1),
+        xp: increment(xpEarned),
+        streak: newStreak
+      };
+      
+      if (isCorrect) {
+        updates.totalCorrect = increment(1);
+      }
+      
+      await updateDoc(userRef, updates);
 
-      // 2. Set sub-collection document progress
+      // Set sub-collection document progress
       await setDoc(progressRef, {
         status: isCorrect ? 'correct' : 'incorrect',
         updatedAt: new Date().toISOString()
       }, { merge: true });
 
+      return {
+        xpEarned,
+        newStreak,
+        isCorrect
+      };
     } catch (error) {
       console.error("Error updating score:", error);
+      return null;
     }
   };
 
