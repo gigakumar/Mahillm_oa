@@ -17,7 +17,8 @@ import {
   Sparkles,
   FileText,
   Play,
-  ChevronDown
+  ChevronDown,
+  User
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -154,12 +155,22 @@ export default function Navbar() {
         </div>
         
         {user && (
-          <button 
-            onClick={() => { logout(); setMenuOpen(false); }} 
-            className="nav-link logout-mobile-only"
-          >
-            <LogOut size={16} /> Logout
-          </button>
+          <>
+            <Link 
+              to="/profile" 
+              className="nav-link logout-mobile-only" 
+              onClick={() => setMenuOpen(false)}
+              style={{ color: 'var(--text-primary)' }}
+            >
+              <User size={16} /> Profile
+            </Link>
+            <button 
+              onClick={() => { logout(); setMenuOpen(false); }} 
+              className="nav-link logout-mobile-only"
+            >
+              <LogOut size={16} /> Logout
+            </button>
+          </>
         )}
       </div>
 
@@ -186,7 +197,10 @@ export default function Navbar() {
               minWidth={150}
               align="right"
             >
-              <span className="user-email">{user.email}</span>
+              <span className="user-email" style={{ display: 'block', padding: '0.5rem', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>{user.email}</span>
+              <Link to="/profile" role="menuitem" className="dropdown-item" onClick={() => setActiveMenu(null)} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%', textDecoration: 'none' }}>
+                <User size={14} /> Profile
+              </Link>
               <button role="menuitem" onClick={() => { setActiveMenu(null); logout(); }} className="logout-btn">
                 <LogOut size={14} /> Logout
               </button>

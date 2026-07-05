@@ -21,6 +21,8 @@ import AttemptReplay from './pages/AttemptReplay';
 import AdminDashboard from './pages/AdminDashboard';
 import DailyChallenge from './pages/DailyChallenge';
 import Formulas from './pages/Formulas';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
 
 
 function ProtectedRoute({ children }) {
@@ -154,6 +156,22 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <Formulas />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/profile" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Profile />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/settings" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Settings />
                     </Layout>
                   </ProtectedRoute>
                 } />
