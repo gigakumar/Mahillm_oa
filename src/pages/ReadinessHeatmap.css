@@ -236,3 +236,160 @@
   background: rgba(108, 92, 231, 0.1);
 }
 
+/* Evidence Sufficiency Badges */
+.sufficiency-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  width: fit-content;
+  margin-top: 0.25rem;
+}
+.sufficiency-badge.high-confidence {
+  background-color: rgba(0, 184, 148, 0.12);
+  color: #00b894;
+  border: 1px solid rgba(0, 184, 148, 0.2);
+}
+.sufficiency-badge.moderate-evidence {
+  background-color: rgba(253, 203, 110, 0.12);
+  color: #fdcb6e;
+  border: 1px solid rgba(253, 203, 110, 0.2);
+}
+.sufficiency-badge.insufficient-data {
+  background-color: rgba(99, 110, 114, 0.12);
+  color: #b2bec3;
+  border: 1px solid rgba(99, 110, 114, 0.2);
+}
+
+/* Mistake Fingerprint Visualizer */
+.mistake-fingerprint-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.fingerprint-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.fingerprint-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+.fingerprint-name {
+  font-weight: 500;
+  color: var(--text-primary);
+  text-transform: capitalize;
+}
+.fingerprint-count {
+  font-weight: 700;
+  color: var(--text-h);
+}
+.fingerprint-bar-outer {
+  height: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+.fingerprint-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: var(--accent);
+  transition: width 0.4s ease-out;
+}
+/* Colorful bars based on mistake types */
+.fingerprint-row:nth-child(1) .fingerprint-bar-fill { background: #fd79a8; } /* conceptual */
+.fingerprint-row:nth-child(2) .fingerprint-bar-fill { background: #0984e3; } /* calculation */
+.fingerprint-row:nth-child(3) .fingerprint-bar-fill { background: #ffeaa7; } /* misread */
+.fingerprint-row:nth-child(4) .fingerprint-bar-fill { background: #6c5ce7; } /* formula recall */
+.fingerprint-row:nth-child(5) .fingerprint-bar-fill { background: #e17055; } /* option trap */
+.fingerprint-row:nth-child(6) .fingerprint-bar-fill { background: #d63031; } /* time pressure */
+.fingerprint-row:nth-child(7) .fingerprint-bar-fill { background: #a29bfe; } /* guess */
+
+/* Overconfident/Underconfident Lists */
+.metacognition-topics-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+.metacognition-topic-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 6px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+.metacognition-topic-item.overconfident {
+  border-color: rgba(214, 48, 49, 0.25);
+  background: rgba(214, 48, 49, 0.04);
+}
+.metacognition-topic-item.underconfident {
+  border-color: rgba(0, 184, 148, 0.25);
+  background: rgba(0, 184, 148, 0.04);
+}
+
+/* Premium Glassmorphism and animations */
+.heatmap-stat-card {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(8px) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.heatmap-stat-card:hover {
+  transform: translateY(-4px) !important;
+  border-color: rgba(249, 115, 22, 0.2) !important;
+  box-shadow: 0 12px 40px 0 rgba(249, 115, 22, 0.08) !important;
+}
+
+.heatmap-cat-section {
+  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+.heatmap-cat-header {
+  border-radius: 16px 16px 0 0 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Heatmap cells improvements */
+.heatmap-topic-cell {
+  border-radius: 12px !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
+}
+.heatmap-topic-cell:hover {
+  transform: scale(1.02) translateY(-2px) !important;
+  border-color: var(--border-hover) !important;
+}
+
+/* Pulse animation for high priority items in Diagnostic action plan */
+@keyframes pulseGlow {
+  0% { box-shadow: 0 0 0 0 rgba(108, 92, 231, 0.2); }
+  70% { box-shadow: 0 0 0 6px rgba(108, 92, 231, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(108, 92, 231, 0); }
+}
+.diagnostic-need-critical {
+  animation: pulseGlow 2s infinite !important;
+  border-color: rgba(108, 92, 231, 0.4) !important;
+}
+
+
+

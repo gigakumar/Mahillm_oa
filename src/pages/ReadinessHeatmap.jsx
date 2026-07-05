@@ -25,7 +25,7 @@ import './ReadinessHeatmap.css';
 
 export default function ReadinessHeatmap() {
   const navigate = useNavigate();
-  const { masteryScores, questionProgress, spacedRepetition } = useUserData();
+  const { masteryScores, questionProgress, spacedRepetition, mistakes } = useUserData();
 
   const [activeTab, setActiveTab] = useState('analytics'); // 'analytics' | 'heatmap'
   const [allQuestions, setAllQuestions] = useState([]);
@@ -138,7 +138,8 @@ export default function ReadinessHeatmap() {
     topicMasteryElo: topicElo,
     srItems,
     recentMockScores: [75, 82, 88], // simulated recent mocks
-    peerPool: simulatedPeerPool
+    peerPool: simulatedPeerPool,
+    mistakes
   });
 
   // Apply search query filter if present
@@ -185,8 +186,22 @@ export default function ReadinessHeatmap() {
       ) : activeTab === 'analytics' ? (
         <div className="analytics-tab-content" style={{ animation: 'fadeIn 0.3s ease-out' }}>
           
+          {learnerState.integrity?.conflicts > 0 && (
+            <div className="card" style={{ padding: '1.25rem', border: '1px solid rgba(253, 203, 110, 0.3)', background: 'linear-gradient(135deg, rgba(253, 203, 110, 0.08) 0%, rgba(253, 203, 110, 0.02) 100%)', borderRadius: '16px', display: 'flex', alignItems: 'flex-start', gap: '1rem', marginBottom: '1.5rem' }}>
+              <span style={{ fontSize: '1.5rem', marginTop: '0.2rem' }}>⚠️</span>
+              <div>
+                <strong style={{ fontSize: '1rem', color: '#fdcb6e', display: 'block', marginBottom: '0.25rem' }}>Learner State Conflict Log Detected (Integrity Score: {Math.round(learnerState.integrity.score * 100)}%)</strong>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+                  {learnerState.integrity.warnings.map((w, idx) => (
+                    <span key={idx} style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>• {w}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Main index card */}
-          <div className="card" style={{ padding: '2rem', background: 'linear-gradient(135deg, rgba(108, 92, 231, 0.1) 0%, rgba(0, 184, 148, 0.05) 100%)', border: '1px solid var(--border)', marginBottom: '2rem' }}>
+          <div className="card" style={{ padding: '2rem', background: 'linear-gradient(135deg, rgba(108, 92, 231, 0.1) 0%, rgba(0, 184, 148, 0.05) 100%)', border: '1px solid var(--border)', marginBottom: '2rem', position: 'relative', overflow: 'hidden' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '2rem' }}>
               <div>
                 <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-h)', margin: '0 0 0.5rem 0' }}>Overall OA Readiness</h2>
@@ -194,9 +209,26 @@ export default function ReadinessHeatmap() {
                   {learnerState.readinessFeedback}
                 </p>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <span style={{ fontSize: '3.5rem', fontWeight: 900, color: '#00b894', lineHeight: 1 }}>{readinessPct}%</span>
-                <span className="badge badge-success-soft" style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>Derived Competency</span>
+              <div style={{ position: 'relative', width: '120px', height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="120" height="120" viewBox="0 0 120 120" style={{ transform: 'rotate(-90deg)' }}>
+                  <circle cx="60" cy="60" r="48" fill="transparent" stroke="rgba(255,255,255,0.03)" strokeWidth="8" />
+                  <circle 
+                    cx="60" 
+                    cy="60" 
+                    r="48" 
+                    fill="transparent" 
+                    stroke={readinessPct >= 70 ? '#00b894' : readinessPct >= 45 ? '#fdcb6e' : '#d63031'} 
+                    strokeWidth="8" 
+                    strokeDasharray={2 * Math.PI * 48}
+                    strokeDashoffset={2 * Math.PI * 48 * (1 - readinessPct / 100)}
+                    strokeLinecap="round"
+                    style={{ transition: 'stroke-dashoffset 0.8s ease-in-out', filter: `drop-shadow(0 0 6px ${readinessPct >= 70 ? 'rgba(0, 184, 148, 0.3)' : readinessPct >= 45 ? 'rgba(253, 203, 110, 0.3)' : 'rgba(214, 48, 49, 0.3)'})` }}
+                  />
+                </svg>
+                <div style={{ position: 'absolute', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <span style={{ fontSize: '1.75rem', fontWeight: 900, color: 'var(--text-h)', lineHeight: 1 }}>{readinessPct}%</span>
+                  <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', textTransform: 'uppercase', marginTop: '2px', fontWeight: 600 }}>Ready</span>
+                </div>
               </div>
             </div>
 
@@ -296,12 +328,83 @@ export default function ReadinessHeatmap() {
                 </div>
               </div>
 
-              {/* Confidence calibration analysis */}
-              <div className="card" style={{ padding: '1rem', border: '1px solid rgba(9, 132, 227, 0.2)', background: 'rgba(9, 132, 227, 0.03)' }}>
-                <strong style={{ fontSize: '0.9rem', color: 'var(--text-h)', display: 'block', marginBottom: '0.25rem' }}>Confidence Calibration</strong>
+              {/* Confidence calibration & Metacognition analysis */}
+              <div className="card" style={{ padding: '1rem', border: '1px solid rgba(9, 132, 227, 0.2)', background: 'rgba(9, 132, 227, 0.03)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div>
+                  <strong style={{ fontSize: '0.9rem', color: 'var(--text-h)', display: 'block', marginBottom: '0.2rem' }}>Metacognitive Self-Awareness</strong>
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.4rem' }}>
+                    <span style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0984e3' }}>{learnerState.metacognition.global.score}% Calibrated</span>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>(Brier score: {learnerState.metacognition.global.brierScore.toFixed(3)})</span>
+                  </div>
+                </div>
                 <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                  {learnerState.calibration.message} (Calibration Score: {Math.round(learnerState.global.calibration * 100)}%)
+                  Reflects the precision match between your confidence declarations (Sure/Unsure/Guess) and your actual answer correctness.
                 </p>
+                {learnerState.metacognition.overconfidentTopics.length > 0 && (
+                  <div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#d63031', textTransform: 'uppercase', letterSpacing: '0.03em' }}>⚠️ Overconfident Topics (wrong despite "Sure"):</span>
+                    <div className="metacognition-topics-list">
+                      {learnerState.metacognition.overconfidentTopics.slice(0, 3).map(t => (
+                        <span key={t} className="metacognition-topic-item overconfident">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {learnerState.metacognition.underconfidentTopics.length > 0 && (
+                  <div>
+                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#00b894', textTransform: 'uppercase', letterSpacing: '0.03em' }}>💡 Underconfident Topics (correct despite "Guess"):</span>
+                    <div className="metacognition-topics-list">
+                      {learnerState.metacognition.underconfidentTopics.slice(0, 3).map(t => (
+                        <span key={t} className="metacognition-topic-item underconfident">{t}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Mistake Fingerprinting / Profile */}
+            <div className="card" style={{ padding: '1.5rem', gridColumn: 'span 2' }}>
+              <h3 style={{ margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.2rem' }}>
+                <Activity size={18} style={{ color: '#fd79a8' }} /> Mistake Fingerprint Profile
+              </h3>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', margin: '0 0 1.5rem 0' }}>
+                Analysis of active learning errors classified by conceptual, mathematical, mechanical, or speed factors.
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', alignItems: 'center' }}>
+                <div className="mistake-fingerprint-card">
+                  {Object.entries(learnerState.mistakeProfile.distribution).map(([type, count]) => {
+                    const total = learnerState.mistakeProfile.totalMistakes || 1;
+                    const pct = Math.round(count.share * 100);
+                    return (
+                      <div key={type} className="fingerprint-row">
+                        <div className="fingerprint-label-row">
+                          <span className="fingerprint-name">{type.replace('_', ' ')}</span>
+                          <span className="fingerprint-count">{count.rawCount} mistakes (weighted: {count.weightedCount.toFixed(1)}, share: {pct}%)</span>
+                        </div>
+                        <div className="fingerprint-bar-outer">
+                          <div className="fingerprint-bar-fill" style={{ width: `${pct}%` }}></div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <div className="card" style={{ padding: '1.25rem', border: '1px solid rgba(253, 121, 168, 0.25)', background: 'rgba(253, 121, 168, 0.03)', height: 'fit-content', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
+                    <span className="badge badge-danger-soft" style={{ textTransform: 'capitalize', fontSize: '0.8rem' }}>
+                      Dominant Mode: {learnerState.mistakeProfile.primaryErrorType.replace('_', ' ')}
+                    </span>
+                    <span className="badge badge-info-soft" style={{ fontSize: '0.8rem' }}>
+                      Diagnostic Strength: {Math.round(learnerState.mistakeProfile.primaryErrorConfidence * 100)}%
+                    </span>
+                  </div>
+                  <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem', color: 'var(--text-h)' }}>Placement Coach Recommendation</h4>
+                  <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                    {learnerState.mistakeProfile.recommendation.message}
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -321,6 +424,43 @@ export default function ReadinessHeatmap() {
                         <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Estimated stability factor: {Math.round(item.pRecall * 100)}% recall</span>
                       </div>
                       <span className="badge badge-danger-soft" style={{ fontSize: '0.8rem' }}>{Math.round(item.risk * 100)}% Risk</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Diagnostic Needs & Priority Queue */}
+            <div className="card" style={{ padding: '1.5rem' }}>
+              <h3 style={{ margin: '0 0 1.25rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.2rem' }}>
+                <Brain size={18} style={{ color: '#6c5ce7' }} /> Diagnostic Action Plan
+              </h3>
+              {learnerState.diagnosticNeeds.length === 0 ? (
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>No urgent diagnostic actions needed. All concept confidence levels are saturated and well-established.</p>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {learnerState.diagnosticNeeds.slice(0, 4).map(need => (
+                    <div 
+                      key={need.topicId} 
+                      className={need.priority >= 0.70 ? "diagnostic-need-critical" : ""}
+                      style={{ padding: '0.85rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', borderRadius: '8px', transition: 'all 0.3s ease' }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+                        <strong style={{ fontSize: '0.9rem', color: 'var(--text-h)' }}>{need.topicId}</strong>
+                        <span className="badge badge-warning-soft" style={{ fontSize: '0.75rem' }}>
+                          Priority: {Math.round(need.priority * 100)}%
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', marginBottom: '0.4rem' }}>
+                        {need.reasons.map(r => (
+                          <span key={r} style={{ fontSize: '0.7rem', padding: '0.1rem 0.35rem', background: 'var(--bg-secondary)', border: '1px solid var(--border)', borderRadius: '4px', textTransform: 'capitalize', color: 'var(--text-secondary)' }}>
+                            {r.replace(/_/g, ' ')}
+                          </span>
+                        ))}
+                      </div>
+                      <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                        Recommended drill: <strong>{need.recommendedQuestionProfile.count} questions</strong> of <strong>{need.recommendedQuestionProfile.difficulty}</strong> difficulty.
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -443,6 +583,7 @@ export default function ReadinessHeatmap() {
                   {isExpanded && (
                     <div className="heatmap-cat-content">
                       {cat.topics.map((t) => {
+                        const sufficiency = learnerState.evidenceSufficiency?.[t.topic];
                         return (
                           <div 
                             key={t.topic} 
@@ -450,6 +591,18 @@ export default function ReadinessHeatmap() {
                             onClick={() => handleTopicClick(cat.category, t.topic)}
                           >
                             <span className="topic-cell-title">{t.topic}</span>
+
+                            {t.questionsAttempted > 0 && sufficiency && (
+                              <span className={`sufficiency-badge ${
+                                sufficiency.level === 'high_confidence' 
+                                  ? 'high-confidence' 
+                                  : sufficiency.level === 'moderate_evidence' 
+                                    ? 'moderate-evidence' 
+                                    : 'insufficient-data'
+                              }`}>
+                                {sufficiency.level.replace(/_/g, ' ')}
+                              </span>
+                            )}
                             
                             <div className="topic-cell-meta-row">
                               {t.questionsAttempted > 0 ? (

@@ -24,10 +24,11 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useScore } from '../contexts/ScoreContext';
 import { useUserData } from '../contexts/UserDataContext';
 import { getDueQuestions } from '../utils/spacedRepetition';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import './Navbar.css';
+import FloatingMenu from './FloatingMenu';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
@@ -37,6 +38,13 @@ export default function Navbar() {
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [activeMenu, setActiveMenu] = useState(null);
+  const moreTriggerRef = useRef(null);
+  const profileTriggerRef = useRef(null);
+
+  const toggleMenu = (menu) => {
+    setActiveMenu(current => current === menu ? null : menu);
+  };
 
   // Check if current user has isAdmin flag on their user document
   useEffect(() => {
@@ -106,33 +114,53 @@ export default function Navbar() {
 
         {/* More dropdown */}
         <div className="nav-dropdown-wrapper">
-          <div className="nav-dropdown-trigger">
+          <button 
+            ref={moreTriggerRef}
+            className="nav-dropdown-trigger" 
+            onClick={() => toggleMenu('more')}
+            style={{ background: 'none', border: 'none', fontFamily: 'inherit' }}
+          >
             <span>More</span>
             <ChevronDown size={14} />
-          </div>
-          <div className="nav-dropdown-menu">
-            <Link to="/daily-challenge" className={`dropdown-item ${isActive('/daily-challenge') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+          </button>
+          <FloatingMenu 
+            isOpen={activeMenu === 'more'} 
+            onClose={() => setActiveMenu(null)} 
+            triggerRef={moreTriggerRef}
+            minWidth={170}
+            align="right"
+          >
+            <Link to="/daily-challenge" role="menuitem" className={`dropdown-item ${isActive('/daily-challenge') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
               <Sparkles size={14} /> Challenge
             </Link>
-            <Link to="/attempt-replay" className={`dropdown-item ${isActive('/attempt-replay') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+            <Link to="/attempt-replay" role="menuitem" className={`dropdown-item ${isActive('/attempt-replay') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
               <Play size={14} /> Replay
             </Link>
-            <Link to="/formulas" className={`dropdown-item ${isActive('/formulas') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+            <Link to="/formulas" role="menuitem" className={`dropdown-item ${isActive('/formulas') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
               <FileText size={14} /> Formulas
             </Link>
-            <Link to="/mock-interview" className={`dropdown-item ${isActive('/mock-interview') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+            <Link to="/mock-interview" role="menuitem" className={`dropdown-item ${isActive('/mock-interview') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
               <Mic size={14} /> Interview
             </Link>
-            <Link to="/leaderboard" className={`dropdown-item ${isActive('/leaderboard') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+            <Link to="/leaderboard" role="menuitem" className={`dropdown-item ${isActive('/leaderboard') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
               <Trophy size={14} /> Leaderboard
             </Link>
             {isAdmin && (
-              <Link to="/admin/questions" className={`dropdown-item ${isActive('/admin/questions') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+              <Link to="/admin/questions" role="menuitem" className={`dropdown-item ${isActive('/admin/questions') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
                 <Shield size={14} style={{ color: 'var(--accent)' }} /> Admin
               </Link>
             )}
-          </div>
+          </FloatingMenu>
         </div>
+        
+        {user && (
+          <button 
+            onClick={() => { logout(); setMenuOpen(false); }} 
+            className="nav-link logout-mobile-only"
+          >
+            <LogOut size={16} /> Logout
+          </button>
+        )}
       </div>
 
       <div className="nav-actions">
@@ -144,13 +172,25 @@ export default function Navbar() {
         </button>
         {user && (
           <div className="user-profile">
-            <img src={user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=random`} alt="Profile" className="avatar" />
-            <div className="user-dropdown card">
+            <button 
+              ref={profileTriggerRef}
+              onClick={() => toggleMenu('profile')}
+              style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+            >
+              <img src={user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=random`} alt="Profile" className="avatar" />
+            </button>
+            <FloatingMenu
+              isOpen={activeMenu === 'profile'}
+              onClose={() => setActiveMenu(null)}
+              triggerRef={profileTriggerRef}
+              minWidth={150}
+              align="right"
+            >
               <span className="user-email">{user.email}</span>
-              <button onClick={logout} className="logout-btn">
+              <button role="menuitem" onClick={() => { setActiveMenu(null); logout(); }} className="logout-btn">
                 <LogOut size={14} /> Logout
               </button>
-            </div>
+            </FloatingMenu>
           </div>
         )}
       </div>

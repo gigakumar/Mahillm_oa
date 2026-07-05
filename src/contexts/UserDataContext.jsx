@@ -197,7 +197,9 @@ export function UserDataProvider({ children }) {
       const existingMistake = mistakes[qId];
 
       if (!isCorrect) {
-        const autoClass = classifyMistake(question, null, solveTimeMs, confidence);
+        const selections = (timeline || []).filter(e => e.action === "select" || e.type === "OPTION_SELECTED");
+        const hasSwitched = selections.length > 1;
+        const autoClass = classifyMistake(question, null, solveTimeMs, confidence, hasSwitched);
         await setDoc(mistakeRef, {
           questionId: question.id,
           category: question.category,

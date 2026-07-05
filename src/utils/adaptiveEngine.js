@@ -199,29 +199,40 @@ const TECHNICAL_TOPICS = new Set([
 /**
  * Heuristically classify why a mistake was made.
  *
- * @param {Object}  question     The question object
- * @param {*}       userAnswer   The user's selected answer
- * @param {number}  solveTimeMs  Time taken (ms)
- * @param {string}  confidence   'sure' | 'unsure' | 'guess' | null
- * @returns {string} One of: conceptual, calculation, formula, unit_conversion, misread, time_pressure, guess
+ * @param {Object}  question       The question object
+ * @param {*}       userAnswer     The user's selected answer
+ * @param {number}  solveTimeMs    Time taken (ms)
+ * @param {string}  confidence     'sure' | 'unsure' | 'guess' | null
+ * @param {boolean} changedAnswer  Whether the user changed their option
+ * @returns {string} One of: conceptual, calculation, formula recall, option trap, misread, time pressure, guess
  */
-export function classifyMistake(question, userAnswer, solveTimeMs = 0, confidence = null) {
+export function classifyMistake(question, userAnswer, solveTimeMs = 0, confidence = null, changedAnswer = false) {
+  const normConfidence = typeof confidence === 'string' ? confidence.toLowerCase() : null;
+
   // 1. Guess — explicit or very fast
-  if (confidence === 'guess' || (solveTimeMs > 0 && solveTimeMs < 5000)) {
+  if (normConfidence === 'guess' || (solveTimeMs > 0 && solveTimeMs < 5000)) {
     return 'guess';
   }
 
   // 2. Time pressure — fast + not confident
-  if (solveTimeMs > 0 && solveTimeMs < 15000 && confidence !== 'sure') {
-    return 'time_pressure';
+  if (solveTimeMs > 0 && solveTimeMs < 15000 && normConfidence !== 'sure') {
+    return 'time pressure';
   }
 
-  // 3. Misread — DI/DILR questions with shared context, answered quickly
+  // 3. Option trap — explicit trap option or panic choice switch
+  if (question.trapOption !== undefined && userAnswer === question.trapOption) {
+    return 'option trap';
+  }
+  if (changedAnswer && normConfidence === 'unsure') {
+    return 'option trap';
+  }
+
+  // 4. Misread — DI/DILR questions with shared context, answered quickly
   if (question.contextHtml && solveTimeMs > 0 && solveTimeMs < 20000) {
     return 'misread';
   }
 
-  // 4. Formula — technical question with formula-based topic
+  // 5. Formula recall — technical question with formula-based topic
   if (TECHNICAL_TOPICS.has(question.topic) && question.type === 'MCQ') {
     // If user picked an option adjacent to the correct one, likely calculation error
     if (typeof userAnswer === 'number' && typeof question.correct === 'number') {
@@ -230,15 +241,15 @@ export function classifyMistake(question, userAnswer, solveTimeMs = 0, confidenc
         return 'calculation';
       }
     }
-    return 'formula';
+    return 'formula recall';
   }
 
-  // 5. Calculation — quantitative topic
+  // 6. Calculation — quantitative topic
   if (question.category === 'Quantitative Aptitude' || question.type === 'NAT') {
     return 'calculation';
   }
 
-  // 6. Default — conceptual
+  // 7. Default — conceptual
   return 'conceptual';
 }
 

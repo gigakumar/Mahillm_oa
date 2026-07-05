@@ -28,6 +28,10 @@ export default function Signup() {
   const [demoMode, setDemoMode] = useState(false);
   const [timer, setTimer] = useState(0);
   const [verifyStatus, setVerifyStatus] = useState('');
+  const [phoneError, setPhoneError] = useState('');
+  const [simulatedOtpCode, setSimulatedOtpCode] = useState('');
+  const [useSimulatedOtp, setUseSimulatedOtp] = useState(true);
+  const [copied, setCopied] = useState(false);
 
   const otpRefs = [useRef(null), useRef(null), useRef(null), useRef(null), useRef(null), useRef(null)];
   const recaptchaVerifierRef = useRef(null);
@@ -139,35 +143,82 @@ export default function Signup() {
     }
   };
 
+  const validatePhoneNumber = (val) => {
+    if (!val) {
+      return 'Phone number is required.';
+    }
+    if (!val.startsWith('+')) {
+      return "Phone number must start with '+' and include country code (e.g. +91, +1).";
+    }
+    const cleanNumber = val.replace(/[\s-]/g, '');
+    if (!/^\+[0-9]+$/.test(cleanNumber)) {
+      return "Phone number can only contain digits, spaces, and dashes after the '+' prefix.";
+    }
+    const digitCount = cleanNumber.length - 1; // subtract 1 for '+'
+    if (digitCount < 7) {
+      return `Phone number is too short (${digitCount} digits). It should be at least 7 digits.`;
+    }
+    if (digitCount > 15) {
+      return `Phone number is too long (${digitCount} digits). It should be at most 15 digits.`;
+    }
+    return '';
+  };
+
+  const handlePhoneChange = (e) => {
+    const val = e.target.value;
+    setPhone(val);
+    setPhoneError(validatePhoneNumber(val));
+  };
+
+  const handlePhoneBlur = () => {
+    setPhoneError(validatePhoneNumber(phone));
+  };
+
   const handleSendSms = async (e) => {
-    e.preventDefault();
-    if (!phone.match(/^\+[1-9]\d{1,14}$/)) {
-      setError('Please enter your phone number with country code (e.g. +919876543210)');
+    if (e) e.preventDefault();
+    const validationError = validatePhoneNumber(phone);
+    if (validationError) {
+      setPhoneError(validationError);
+      setError('Please correct the phone number error before requesting a code.');
       return;
     }
+    setPhoneError('');
     setError('');
     setLoading(true);
-    try {
-      setupRecaptcha();
-      const verifier = recaptchaVerifierRef.current;
-      const confirmation = await signInWithPhoneNumber(auth, phone, verifier);
-      setConfirmationResult(confirmation);
-      setStep('phone-otp');
-      setTimer(60);
-      setDemoMode(false);
-    } catch (err) {
-      console.warn('Firebase SMS OTP failed:', err);
-      if (import.meta.env.PROD) {
-        setError('Phone verification is currently unavailable. Please use email verification or try again later. Details: ' + (err.message || 'Firebase error'));
-      } else {
-        // Fallback to Demo Mode so the user is never stuck in local dev
-        setError('SMS Auth not enabled in Firebase project. Switching to Demo Mode: Enter any 6 digits (e.g. 123456) to proceed.');
+
+    if (useSimulatedOtp) {
+      try {
+        const randomCode = Math.floor(100000 + Math.random() * 900000).toString();
+        setSimulatedOtpCode(randomCode);
         setDemoMode(true);
         setStep('phone-otp');
         setTimer(60);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
+    } else {
+      try {
+        setupRecaptcha();
+        const verifier = recaptchaVerifierRef.current;
+        const confirmation = await signInWithPhoneNumber(auth, phone, verifier);
+        setConfirmationResult(confirmation);
+        setStep('phone-otp');
+        setTimer(60);
+        setDemoMode(false);
+      } catch (err) {
+        console.warn('Firebase SMS OTP failed:', err);
+        setError('Phone verification failed: ' + (err.message || 'Firebase error') + '. Switching to Simulated OTP mode...');
+        setUseSimulatedOtp(true);
+        const randomCode = Math.floor(100000 + Math.random() * 900000).toString();
+        setSimulatedOtpCode(randomCode);
+        setDemoMode(true);
+        setStep('phone-otp');
+        setTimer(60);
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -200,12 +251,13 @@ export default function Signup() {
     setError('');
     setLoading(true);
     try {
-      if (demoMode && !import.meta.env.PROD) {
-        // In demo fallback, we simulate successful verification (dev only)
-        setVerifyStatus('Success! Account verified (Demo mode).');
-        setTimeout(() => navigate('/'), 1500);
-      } else if (demoMode && import.meta.env.PROD) {
-        setError('Demo mode is disabled in production. Real OTP verification is required.');
+      if (demoMode) {
+        if (code === simulatedOtpCode) {
+          setVerifyStatus('Success! Account verified (Simulated Mode).');
+          setTimeout(() => navigate('/'), 1500);
+        } else {
+          setError('Incorrect verification code. Please check the code in the SMS Simulator card above.');
+        }
       } else {
         await confirmationResult.confirm(code);
         setVerifyStatus('Success! Phone number verified.');
@@ -373,14 +425,36 @@ export default function Signup() {
                   <label className="form-label" htmlFor="phone-number">Phone Number</label>
                   <input
                     id="phone-number"
-                    className="input-field"
+                    className={`input-field ${phoneError ? 'input-error' : ''}`}
                     type="tel"
                     placeholder="+919876543210"
                     value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
+                    onChange={handlePhoneChange}
+                    onBlur={handlePhoneBlur}
                     required
                   />
+                  {phoneError && (
+                    <div className="input-feedback-error">
+                      <span>⚠️</span> {phoneError}
+                    </div>
+                  )}
                 </div>
+
+                <div 
+                  className="simulation-toggle-container"
+                  onClick={() => setUseSimulatedOtp(prev => !prev)}
+                >
+                  <input
+                    type="checkbox"
+                    id="use-simulation-checkbox"
+                    checked={useSimulatedOtp}
+                    onChange={() => {}} // handled by click on parent div
+                  />
+                  <label htmlFor="use-simulation-checkbox" className="simulation-toggle-label">
+                    Simulate SMS Delivery (Manual OTP)
+                  </label>
+                </div>
+
                 <div id="recaptcha-container"></div>
                 <button className="btn btn-primary btn-lg auth-submit" type="submit" disabled={loading}>
                   {loading ? 'Sending SMS...' : 'Send SMS Verification Code'}
@@ -401,6 +475,34 @@ export default function Signup() {
 
               {error && <div className="auth-error">{error}</div>}
               {verifyStatus && <div className="verify-status success">{verifyStatus}</div>}
+
+              {demoMode && simulatedOtpCode && (
+                <div className="simulated-sms-card">
+                  <div className="simulated-sms-header">
+                    <span className="simulated-sms-title">📩 SMS Simulator</span>
+                    <span className="simulated-sms-time">Just now</span>
+                  </div>
+                  <p className="simulated-sms-body">
+                    MechPrep: Your verification code is <strong>{simulatedOtpCode}</strong>.
+                  </p>
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-sm copy-otp-btn"
+                    style={{ width: 'auto', display: 'inline-flex', padding: '0.25rem 0.5rem', fontSize: '0.8rem' }}
+                    onClick={() => {
+                      try {
+                        navigator.clipboard.writeText(simulatedOtpCode);
+                        setCopied(true);
+                        setTimeout(() => setCopied(false), 2000);
+                      } catch (err) {
+                        console.warn("Failed to copy code to clipboard: ", err);
+                      }
+                    }}
+                  >
+                    {copied ? 'Copied! ✓' : 'Copy Code'}
+                  </button>
+                </div>
+              )}
 
               <form onSubmit={handleVerifyOtp} className="auth-form">
                 <div className="otp-inputs-wrapper">

@@ -173,3 +173,109 @@ describe('Observation Factory (observationFactory)', () => {
     expect(obsTypes).toContain("PANIC_SWITCH");
   });
 });
+
+import { compileAttemptFeatures } from '../engines/attemptFeatureCompiler.js';
+import { extractAttemptSignals } from '../engines/signalExtractionEngine.js';
+import { inferMistake } from '../engines/mistakeInferenceEngine.js';
+import { detectMistakePersistence } from '../engines/mistakePersistenceEngine.js';
+import { calculateConfidenceCalibration } from '../engines/metacognitionEngine.js';
+import { calculateEvidenceStrength } from '../engines/evidenceStrengthEngine.js';
+import { calculateDiagnosticNeeds } from '../engines/diagnosticPriorityEngine.js';
+
+describe('Phase 3B.1 Diagnostic Integrity Hardening', () => {
+  const dummyQuestionDb = [
+    {
+      id: 'Q1',
+      topic: 'Probability',
+      difficulty: 'hard',
+      expectedTimeMs: 40000,
+      correct: 'B',
+      distractors: {
+        'C': { type: 'unit_conversion' }
+      }
+    }
+  ];
+
+  it('compileAttemptFeatures: normalizes case and handles guess/Guess correctly', () => {
+    const attempt1 = { id: 'Q1', correct: false, solveTime: 10, confidence: 'Guess' };
+    const attempt2 = { id: 'Q1', correct: false, solveTime: 10, confidence: 'guess' };
+    
+    const feat1 = compileAttemptFeatures(attempt1, dummyQuestionDb);
+    const feat2 = compileAttemptFeatures(attempt2, dummyQuestionDb);
+
+    expect(feat1.confidence.tag).toBe('guess');
+    expect(feat1.confidence.probability).toBeCloseTo(0.33);
+    expect(feat2.confidence.tag).toBe('guess');
+  });
+
+  it('inferMistake: yields option_trap for distractor matches and changed correct answers', () => {
+    const attempt = {
+      id: 'Q1',
+      correct: false,
+      solveTime: 30,
+      confidence: 'sure',
+      events: [
+        { type: 'OPTION_SELECTED', option: 'B', timestamp: 1000 },
+        { type: 'OPTION_SELECTED', option: 'C', timestamp: 2000 }
+      ]
+    };
+    const feat = compileAttemptFeatures(attempt, dummyQuestionDb);
+    const signals = extractAttemptSignals(feat);
+    const result = inferMistake(signals, feat);
+
+    expect(result.primaryType).toBe('option_trap');
+    expect(result.supportingSignals).toContain('distractor_match');
+  });
+
+  it('detectMistakePersistence: counts weighted shares and labels trends correctly', () => {
+    const activeMistakes = [
+      { id: 'm1', mistakeType: 'conceptual', confidence: 0.9 },
+      { id: 'm2', mistakeType: 'conceptual', confidence: 0.9 },
+      { id: 'm3', mistakeType: 'calculation', confidence: 0.6 }
+    ];
+    const result = detectMistakePersistence(activeMistakes);
+    expect(result.totalMistakes).toBe(3);
+    expect(result.distribution.conceptual.rawCount).toBe(2);
+    expect(result.distribution.conceptual.share).toBeCloseTo(1.8 / 2.4, 2);
+    expect(result.distribution.conceptual.trend).toBe('emerging'); // < 3 count
+  });
+
+  it('calculateConfidenceCalibration: computes Brier score and calibrates topic overconfidence', () => {
+    // 3 attempts on same topic: all wrong but user marked "sure" (overconfident)
+    const attempts = [
+      { id: 'Q1', correct: false, solveTime: 30, confidence: 'sure' },
+      { id: 'Q1', correct: false, solveTime: 30, confidence: 'sure' },
+      { id: 'Q1', correct: false, solveTime: 30, confidence: 'sure' }
+    ];
+    const features = attempts.map(a => compileAttemptFeatures(a, dummyQuestionDb));
+    const result = calculateConfidenceCalibration(features);
+
+    expect(result.global.brierScore).toBeCloseTo(0.81, 2); // (0.9 - 0)^2 = 0.81
+    expect(result.overconfidentTopics).toContain('Probability');
+  });
+
+  it('evidenceStrengthEngine: evaluates dimensions and identifies gaps', () => {
+    const attempts = [
+      { id: 'Q1', correct: true, solveTime: 30, confidence: 'sure' }
+    ];
+    const features = attempts.map(a => compileAttemptFeatures(a, dummyQuestionDb));
+    const result = calculateEvidenceStrength(features, 'Probability');
+
+    expect(result.level).toBe('insufficient_data');
+    expect(result.missingEvidence).toContain('medium_difficulty_questions');
+  });
+
+  it('calculateDiagnosticNeeds: builds a priority sorting of topic drills', () => {
+    const elos = { 'Probability': 800, 'Thermodynamics': 1400 };
+    const sufficiency = {
+      'Probability': { score: 0.1, level: 'insufficient_data' },
+      'Thermodynamics': { score: 0.9, level: 'high_confidence' }
+    };
+    const metacognition = { overconfidentTopics: ['Probability'] };
+
+    const needs = calculateDiagnosticNeeds(elos, sufficiency, metacognition, {});
+    expect(needs[0].topicId).toBe('Probability');
+    expect(needs[0].priority).toBeGreaterThan(0.6);
+  });
+});
+

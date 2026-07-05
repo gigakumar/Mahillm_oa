@@ -9,9 +9,6 @@
   top: 0;
   z-index: 50;
   padding-bottom: 0.5rem;
-  /* Fade-out at bottom for a smooth blend */
-  mask-image: linear-gradient(to bottom, black 85%, transparent);
-  -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent);
 }
 
 .layout-main {
