@@ -54,3 +54,52 @@ export function traceConceptAttempts(attempts = [], initialState = {}) {
   });
   return state;
 }
+
+/**
+ * Updates knowledge states based on primary and supporting concepts.
+ * Primary concepts undergo standard BKT update.
+ * Supporting concepts only receive evidence counter increments.
+ * 
+ * @param {string} primaryConceptId 
+ * @param {string[]} supportingConceptIds 
+ * @param {boolean} isCorrect 
+ * @param {Object} currentStatesMap - Map of conceptId to its current BKT state
+ * @returns {Object} Updated currentStatesMap
+ */
+export function updateConceptKnowledge(primaryConceptId, supportingConceptIds = [], isCorrect, currentStatesMap = {}) {
+  const updatedStates = { ...currentStatesMap };
+
+  // Update primary concept using standard BKT
+  if (primaryConceptId) {
+    const currentState = updatedStates[primaryConceptId] || { ...BKT_DEFAULTS, evidenceCount: 0 };
+    updatedStates[primaryConceptId] = updateKnowledgeState(currentState, isCorrect);
+  }
+
+  // Update supporting concepts (contextual evidence counters only)
+  supportingConceptIds.forEach(conceptId => {
+    const currentState = updatedStates[conceptId] || {
+      ...BKT_DEFAULTS, 
+      evidenceCount: 0,
+      supportingEvidence: {
+        exposures: 0,
+        weightedCorrect: 0,
+        weightedIncorrect: 0
+      }
+    };
+
+    const weight = 0.35;
+    const currentSupporting = currentState.supportingEvidence || { exposures: 0, weightedCorrect: 0, weightedIncorrect: 0 };
+
+    updatedStates[conceptId] = {
+      ...currentState,
+      supportingEvidence: {
+        exposures: currentSupporting.exposures + 1,
+        weightedCorrect: currentSupporting.weightedCorrect + (isCorrect ? weight : 0),
+        weightedIncorrect: currentSupporting.weightedIncorrect + (!isCorrect ? weight : 0)
+      },
+      lastUpdatedAt: Date.now()
+    };
+  });
+
+  return updatedStates;
+}

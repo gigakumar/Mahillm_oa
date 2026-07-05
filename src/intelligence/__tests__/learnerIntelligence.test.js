@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { calculateMedian, calculateMAD, calculateRobustZScore } from '../statistics/robustStats';
-import { updateKnowledgeState, BKT_DEFAULTS } from '../models/knowledgeTracingEngine';
-import { calculateBetaBinomialCredibleInterval } from '../statistics/betaBinomial';
+import * as fs from 'fs';
+import * as path from 'path';
+import { calculateMedian, calculateMAD, calculateRobustZScore, resolveRobustScale } from '../statistics/robustStats';
+import { updateKnowledgeState, BKT_DEFAULTS, updateConceptKnowledge } from '../models/knowledgeTracingEngine';
+import { calculateBetaPosterior, evidenceWeight } from '../statistics/betaPosterior';
 import { calculateReadinessScore } from '../engines/readinessEngine';
 import { analyzeCalibration } from '../engines/calibrationEngine';
 import { classifyAttemptStrategy } from '../engines/strategyClassifier';
@@ -19,8 +21,21 @@ describe('Robust Statistics (robustStats)', () => {
 
   it('calculates robust z-score with outline thresholds', () => {
     const list = [40, 45, 50, 55, 60];
-    const score = calculateRobustZScore(120, list); // Outlier
+    const median = calculateMedian(list);
+    const mad = calculateMAD(list);
+    const score = calculateRobustZScore(120, median, mad); // Outlier
     expect(score).toBeGreaterThan(1.5);
+  });
+  
+  it('uses fallback scale if MAD is zero', () => {
+    const scale = resolveRobustScale({ questionStats: { values: [60, 60, 60, 60, 60] } });
+    expect(scale.source).toBe("INSUFFICIENT_VARIANCE");
+    
+    const scaleIqr = resolveRobustScale({ questionStats: { mad: 0, p75: 70, p25: 50 } }); // mock iqr > 0
+    expect(scaleIqr.source).toBe("IQR");
+    
+    const score = calculateRobustZScore(120, 60, 0, scaleIqr.scale);
+    expect(score).toBeGreaterThan(0);
   });
 });
 
@@ -45,13 +60,36 @@ describe('Bayesian Knowledge Tracing (BKT)', () => {
   });
 });
 
-describe('Beta-Binomial uncertainty intervals', () => {
+describe('BKT Concept Mapping (knowledgeTracingEngine)', () => {
+  it('updates primary concept using standard BKT', () => {
+    const states = {};
+    const updated = updateConceptKnowledge('FM_MAJOR_PIPE_LOSS', [], true, states);
+    expect(updated['FM_MAJOR_PIPE_LOSS'].pKnown).toBeGreaterThan(0.25);
+  });
+
+  it('updates supporting concepts using evidence counters only', () => {
+    const states = {};
+    const updated = updateConceptKnowledge('FM_MAJOR_PIPE_LOSS', ['FM_DARCY_WEISBACH'], true, states);
+    expect(updated['FM_DARCY_WEISBACH'].supportingEvidence.weightedCorrect).toBeCloseTo(0.35);
+    expect(updated['FM_DARCY_WEISBACH'].pKnown).toBe(0.25); // the default from BKT_DEFAULTS, no update happened for pKnown
+  });
+});
+
+describe('Weighted Beta Posterior uncertainty intervals', () => {
   it('calculates credible intervals and boundaries', () => {
-    const res = calculateBetaBinomialCredibleInterval({ successes: 10, failures: 2 });
+    const res = calculateBetaPosterior({ successEvidence: 10, failureEvidence: 2 });
     expect(res.mean).toBeCloseTo(12 / 16, 2);
     expect(res.lowerBound).toBeLessThan(res.mean);
     expect(res.upperBound).toBeGreaterThan(res.mean);
   });
+  
+  it('calculates evidence weights based on ELO delta', () => {
+    expect(evidenceWeight(1200, 1000)).toBeCloseTo(1.2);
+    expect(evidenceWeight(800, 1000)).toBeCloseTo(0.8);
+    expect(evidenceWeight(2000, 1000)).toBeCloseTo(1.5); // clamped
+    expect(evidenceWeight(0, 1000)).toBeCloseTo(0.5); // clamped
+  });
+
 });
 
 describe('Readiness Engine (readinessEngine)', () => {
@@ -99,5 +137,39 @@ describe('Strategy & Pacing Classifier (strategyClassifier)', () => {
       isCorrect: false
     });
     expect(res.strategyType).toBe("RUSHED_MISTAKE");
+  });
+});
+
+import { processAttemptEvents } from '../telemetry/telemetryProcessor';
+import { generateObservations } from '../observations/observationFactory';
+
+describe('Telemetry Processor (telemetryProcessor)', () => {
+  it('correctly processes golden fixture panicSwitchAttempt', () => {
+    const fixturePath = path.join(__dirname, '../__fixtures__/panicSwitchAttempt.json');
+    const rawData = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+    
+    const snapshot = processAttemptEvents(rawData, { questionId: 30417, answerIndex: 3 });
+    
+    expect(snapshot.derived.activeTimeMs).toBe(64000); // 65000 - 1000
+    expect(snapshot.derived.switchCount).toBe(3); // 1 -> 2, 2 -> 3, 3 -> 2
+    expect(snapshot.derived.firstAnswerCorrect).toBe(false); // option 1 !== 3
+    expect(snapshot.derived.finalAnswerCorrect).toBe(false); // option 2 !== 3
+    expect(snapshot.derived.confidence).toBe("SURE");
+  });
+});
+
+describe('Observation Factory (observationFactory)', () => {
+  it('generates proper observations for panic switch', () => {
+    const fixturePath = path.join(__dirname, '../__fixtures__/panicSwitchAttempt.json');
+    const rawData = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+    const snapshot = processAttemptEvents(rawData, { questionId: 30417, answerIndex: 3 });
+    
+    const observations = generateObservations(snapshot, { userId: 'u1', conceptIds: ['FM_1'] });
+    
+    // Should have INCORRECT, HIGH_CONFIDENCE_ERROR, PANIC_SWITCH
+    const obsTypes = observations.map(o => o.observationType);
+    expect(obsTypes).toContain("INCORRECT");
+    expect(obsTypes).toContain("HIGH_CONFIDENCE_ERROR");
+    expect(obsTypes).toContain("PANIC_SWITCH");
   });
 });

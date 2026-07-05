@@ -1,4 +1,4 @@
-import { calculateBetaBinomialCredibleInterval } from '../statistics/betaBinomial';
+import { calculateBetaPosterior } from '../statistics/betaPosterior';
 
 export const INTELLIGENCE_VERSION = "3.1.0";
 
@@ -11,13 +11,13 @@ export function calculateReadinessScore({
 }) {
   const totalAttempts = attempts.length;
 
-  // 1. Beta-Binomial Credible Interval on global evidence
+  // 1. Beta Posterior on global evidence
   const successes = attempts.filter(a => a.correct).length;
   const failures = totalAttempts - successes;
 
-  const interval = calculateBetaBinomialCredibleInterval({
-    successes,
-    failures,
+  const interval = calculateBetaPosterior({
+    successEvidence: successes,
+    failureEvidence: failures,
     priorAlpha: 2,
     priorBeta: 2
   });

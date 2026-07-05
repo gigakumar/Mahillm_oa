@@ -1,0 +1,12 @@
+{
+  "attemptId": "test_attempt_1",
+  "events": [
+    { "eventId": "evt_1", "sequence": 1, "type": "QUESTION_OPENED", "timestamp": 1000 },
+    { "eventId": "evt_2", "sequence": 2, "type": "OPTION_SELECTED", "option": 1, "timestamp": 20000 },
+    { "eventId": "evt_3", "sequence": 3, "type": "OPTION_SELECTED", "option": 2, "timestamp": 40000 },
+    { "eventId": "evt_4", "sequence": 4, "type": "OPTION_SELECTED", "option": 3, "timestamp": 60000 },
+    { "eventId": "evt_5", "sequence": 5, "type": "OPTION_SELECTED", "option": 2, "timestamp": 63000 },
+    { "eventId": "evt_6", "sequence": 6, "type": "CONFIDENCE_SELECTED", "confidence": "SURE", "timestamp": 64000 },
+    { "eventId": "evt_7", "sequence": 7, "type": "ANSWER_SUBMITTED", "timestamp": 65000 }
+  ]
+}

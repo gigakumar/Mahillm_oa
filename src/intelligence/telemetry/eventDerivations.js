@@ -4,10 +4,10 @@
 
 export function deriveSolveTime(events = []) {
   const openEvent = events.find(e => e.type === "QUESTION_OPENED");
-  const submitEvent = events.find(e => e.type === "ANSWER_SUBMITTED" || e.type === "TIMEOUT");
+  const submitEvent = events.find(e => e.type === "ANSWER_SUBMITTED" || e.type === "SUBMITTED" || e.type === "TIMEOUT");
 
   if (!openEvent || !submitEvent) return 0;
-  return Math.max(0, (submitEvent.timestamp - openEvent.timestamp) / 1000);
+  return Math.max(0, (new Date(submitEvent.timestamp).getTime() - new Date(openEvent.timestamp).getTime()) / 1000);
 }
 
 export function deriveSwitchCount(events = []) {
@@ -34,8 +34,13 @@ export function deriveIdleTimeMs(events = []) {
     if (e.type === "WINDOW_BLUR") {
       lastBlur = e.timestamp;
     } else if (e.type === "WINDOW_FOCUS" && lastBlur !== null) {
-      idleTime += Math.max(0, e.timestamp - lastBlur);
+      idleTime += Math.max(0, new Date(e.timestamp).getTime() - new Date(lastBlur).getTime());
       lastBlur = null;
+    } else if (e.type === "ANSWER_SUBMITTED" || e.type === "SUBMITTED" || e.type === "TIMEOUT") {
+      if (lastBlur !== null) {
+        idleTime += Math.max(0, new Date(e.timestamp).getTime() - new Date(lastBlur).getTime());
+        lastBlur = null;
+      }
     }
   });
 
@@ -61,4 +66,14 @@ export function deriveAnswerSwitches(events = []) {
     }
   }
   return list;
+}
+
+export function deriveActivePacing(events = []) {
+  const idleTimeMs = deriveIdleTimeMs(events);
+  const activeTimeMs = deriveActiveTimeMs(events);
+  
+  return {
+    activeTimeMs,
+    idleTimeMs
+  };
 }
