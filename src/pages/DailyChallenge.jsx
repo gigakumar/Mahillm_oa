@@ -63,6 +63,7 @@ export default function DailyChallenge() {
   const [completedData, setCompletedData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [loadingPools, setLoadingPools] = useState(false);
+  const [loadError, setLoadError] = useState(null);
   const [activeSession, setActiveSession] = useState(false); // active test running
 
   // Test states
@@ -126,9 +127,9 @@ export default function DailyChallenge() {
     return () => clearInterval(intervalId);
   }, [user]);
 
-  // 2. Load and deterministically select daily questions
   const startChallenge = async () => {
     setLoadingPools(true);
+    setLoadError(null);
     try {
       // Load all pool datasets in parallel
       const [me, qa, di, dilr, lr] = await Promise.all([
@@ -160,6 +161,7 @@ export default function DailyChallenge() {
       setSubmitted(false);
     } catch (e) {
       console.error("Error generating daily seeded challenge paper:", e);
+      setLoadError(e.message || String(e));
     } finally {
       setLoadingPools(false);
     }
@@ -260,6 +262,18 @@ export default function DailyChallenge() {
         <div className="loading" style={{ textAlign: 'center', padding: '5rem 0' }}>
           <div className="spinner" style={{ border: '4px solid var(--border)', borderTop: '4px solid var(--accent)', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite', margin: '0 auto 1rem auto' }}></div>
           <p>Connecting to daily challenge registers...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (loadError) {
+    return (
+      <div className="page-content daily-challenge-page">
+        <div className="card" style={{ maxWidth: '500px', margin: '3rem auto', textAlign: 'center', padding: '2rem' }}>
+          <AlertTriangle size={48} style={{ color: 'var(--danger)', margin: '0 auto 1rem' }} />
+          <h2 style={{ color: 'var(--danger)', marginBottom: '1rem' }}>Error Starting Challenge</h2>
+          <p style={{ color: 'var(--text-secondary)' }}>{loadError}</p>
         </div>
       </div>
     );

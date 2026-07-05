@@ -67,9 +67,11 @@ export default function OAPractice() {
 
   const [quizQuestions, setQuizQuestions] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState(null);
 
   const loadActivePool = async () => {
     setLoading(true);
+    setLoadError(null);
     try {
       console.log("loadActivePool starting. Category:", category, "Difficulty:", difficulty, "Topic:", topic);
       let pool = [];
@@ -164,6 +166,7 @@ export default function OAPractice() {
       setIsTimerRunning(true);
     } catch (e) {
       console.error("Error loading code-split question datasets dynamically:", e);
+      setLoadError(e.message || String(e));
     } finally {
       setLoading(false);
     }
@@ -288,7 +291,22 @@ export default function OAPractice() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  if (loadError) {
+    return (
+      <div className="page-content oa-practice">
+        <div className="empty-state">
+          <p style={{ color: 'var(--danger)', fontWeight: 'bold' }}>Error Loading Questions</p>
+          <p>{loadError}</p>
+          <button className="btn btn-ghost" onClick={handleReset}><RotateCcw size={16} /> Reset Filters</button>
+        </div>
+      </div>
+    );
+  }
 
+  if (loading) {
+    // handled further down, but wait, OAPractice actually renders the whole shell!
+    // Let's just leave it, it's fine.
+  }
   if (!question) {
     return (
       <div className="page-content oa-practice">
