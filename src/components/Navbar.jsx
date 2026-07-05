@@ -129,7 +129,7 @@ export default function Navbar() {
             onClose={() => setActiveMenu(null)} 
             triggerRef={moreTriggerRef}
             minWidth={170}
-            align="right"
+            align="left"
           >
             <Link to="/daily-challenge" role="menuitem" className={`dropdown-item ${isActive('/daily-challenge') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
               <Sparkles size={14} /> Challenge
