@@ -65,10 +65,7 @@ export default function OAPractice() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
 
-  const [topic, setTopic] = useState('all');
-  const [availableTopics, setAvailableTopics] = useState([]);
   const [quizQuestions, setQuizQuestions] = useState([]);
-  const [currentIdx, setCurrentIdx] = useState(0);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
   const [debugPoolLength, setDebugPoolLength] = useState(-1);
