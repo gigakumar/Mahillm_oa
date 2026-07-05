@@ -179,7 +179,10 @@ export default function TestSession() {
           // Fetch quarantined list
           const qList = new Set();
           try {
-            const qSnap = await getDocs(collection(db, 'quarantined_questions'));
+            const qSnap = await Promise.race([
+              getDocs(collection(db, 'quarantined_questions')),
+              new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore timeout')), 1500))
+            ]);
             qSnap.forEach(d => qList.add(d.id.toString()));
           } catch (e) {
             console.error("Error fetching quarantine list in test session:", e);

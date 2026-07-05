@@ -115,7 +115,10 @@ export default function OAPractice() {
       // Fetch quarantined list
       const qList = new Set();
       try {
-        const qSnap = await getDocs(collection(db, 'quarantined_questions'));
+        const qSnap = await Promise.race([
+          getDocs(collection(db, 'quarantined_questions')),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore timeout')), 1500))
+        ]);
         qSnap.forEach(d => qList.add(d.id.toString()));
       } catch (e) {
         console.error("Error fetching quarantine list in practice session:", e);
@@ -309,8 +312,12 @@ export default function OAPractice() {
   }
 
   if (loading) {
-    // handled further down, but wait, OAPractice actually renders the whole shell!
-    // Let's just leave it, it's fine.
+    return (
+      <div className="page-content oa-practice" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh' }}>
+        <div className="spinner" style={{ border: '4px solid var(--border)', borderTop: '4px solid var(--accent)', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite', margin: '0 auto 1rem auto' }}></div>
+        <p style={{ color: 'var(--text-secondary)' }}>Loading question bank...</p>
+      </div>
+    );
   }
   if (!question) {
     return (
