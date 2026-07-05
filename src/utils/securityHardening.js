@@ -39,6 +39,13 @@ if (import.meta.env.PROD) {
 
   // 1. Geometry-based detection (Docked DevTools check)
   const checkGeometry = () => {
+    // Mobile browsers often have large outer vs inner height discrepancies due to address bars/toolbars
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                     ('ontouchstart' in window) || 
+                     (navigator.maxTouchPoints > 0);
+                     
+    if (isMobile) return;
+
     const threshold = 160;
     const isDockedHorizontal = window.outerWidth - window.innerWidth > threshold;
     const isDockedVertical = window.outerHeight - window.innerHeight > threshold;
