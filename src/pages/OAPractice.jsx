@@ -312,6 +312,15 @@ export default function OAPractice() {
       <div className="page-content oa-practice">
         <div className="empty-state">
           <p>No questions found for this filter. Try a different category or difficulty.</p>
+          <div style={{ padding: '1rem', background: '#222', color: '#0f0', fontFamily: 'monospace', textAlign: 'left', marginTop: '1rem', whiteSpace: 'pre-wrap' }}>
+            DEBUG INFO:
+            {`\nCategory: "${category}"`}
+            {`\nDifficulty: "${difficulty}"`}
+            {`\nTopic: "${topic}"`}
+            {`\nQuizLength: ${quizQuestions.length}`}
+            {`\nLoadError: ${loadError}`}
+            {`\nURL Search: ${window.location.search}`}
+          </div>
           <button className="btn btn-ghost" onClick={handleReset}><RotateCcw size={16} /> Reset Filters</button>
         </div>
       </div>
