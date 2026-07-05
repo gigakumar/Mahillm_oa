@@ -65,9 +65,14 @@ export default function OAPractice() {
   const [timeLeft, setTimeLeft] = useState(60);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
 
+  const [topic, setTopic] = useState('all');
+  const [availableTopics, setAvailableTopics] = useState([]);
   const [quizQuestions, setQuizQuestions] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
+  const [debugPoolLength, setDebugPoolLength] = useState(-1);
+  const [debugFilteredLength, setDebugFilteredLength] = useState(-1);
 
   const loadActivePool = async () => {
     setLoading(true);
@@ -102,6 +107,8 @@ export default function OAPractice() {
         pool = [...me.default, ...qa.default, ...di.default, ...dilr.default, ...lr.default];
       }
 
+      setDebugPoolLength(pool ? pool.length : -1);
+
       console.log("Pool loaded. Size:", pool.length);
 
       // Dynamically extract unique topics for selection
@@ -130,6 +137,7 @@ export default function OAPractice() {
         filtered = filtered.filter(q => q.topic === topic);
       }
 
+      setDebugFilteredLength(filtered ? filtered.length : -1);
       console.log("After filter: category:", category, "diff:", difficulty, "topic:", topic, "count:", filtered.length);
 
       if (isAdaptive) {
@@ -312,11 +320,13 @@ export default function OAPractice() {
       <div className="page-content oa-practice">
         <div className="empty-state">
           <p>No questions found for this filter. Try a different category or difficulty.</p>
-          <div style={{ padding: '1rem', background: '#222', color: '#0f0', fontFamily: 'monospace', textAlign: 'left', marginTop: '1rem', whiteSpace: 'pre-wrap' }}>
+          <div style={{ padding: '1rem', background: '#222', color: '#0f0', fontFamily: 'monospace', textAlign: 'left', marginTop: '1rem', whiteSpace: 'pre-wrap', wordBreak: 'break-all', fontSize: '12px' }}>
             DEBUG INFO:
             {`\nCategory: "${category}"`}
             {`\nDifficulty: "${difficulty}"`}
             {`\nTopic: "${topic}"`}
+            {`\nPoolLength: ${debugPoolLength}`}
+            {`\nFilteredLength: ${debugFilteredLength}`}
             {`\nQuizLength: ${quizQuestions.length}`}
             {`\nLoadError: ${loadError}`}
             {`\nURL Search: ${window.location.search}`}

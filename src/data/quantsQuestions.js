@@ -79225,31 +79225,6 @@ export default [
     "verifiedPyq": false
   },
   {
-    "id": 23170,
-    "question": "Calculate the angle (in degrees) between the hour hand and the minute hand of a clock at 3:50.",
-    "options": [
-      "160.0°",
-      "185.0°",
-      "185.0°",
-      "175.0°"
-    ],
-    "correct": 3,
-    "explanation": "Angle formula: \\(|30H - 5.5M| = |30(3) - 5.5(50)| = |90 - 275.0| = 175.0^\\circ\\).",
-    "contextHtml": "Clocks check passed",
-    "difficulty": "Medium",
-    "topic": "Clocks & Calendars",
-    "category": "Quantitative Aptitude",
-    "type": "MCQ",
-    "originType": "generated_validated",
-    "templateClusterId": "cluster_f3298487cdd8",
-    "oaRelevanceScore": 85,
-    "qualityScore": 90,
-    "validationStatus": "passed",
-    "sourceName": "bulk_generator.py",
-    "sourceTier": "tier_3",
-    "verifiedPyq": false
-  },
-  {
     "id": 23171,
     "question": "Calculate the angle (in degrees) between the hour hand and the minute hand of a clock at 10:40.",
     "options": [
@@ -79285,31 +79260,6 @@ export default [
     ],
     "correct": 1,
     "explanation": "Angle formula: \\(|30H - 5.5M| = |30(3) - 5.5(40)| = |90 - 220.0| = 130.0^\\circ\\).",
-    "contextHtml": "Clocks check passed",
-    "difficulty": "Medium",
-    "topic": "Clocks & Calendars",
-    "category": "Quantitative Aptitude",
-    "type": "MCQ",
-    "originType": "generated_validated",
-    "templateClusterId": "cluster_f3298487cdd8",
-    "oaRelevanceScore": 85,
-    "qualityScore": 90,
-    "validationStatus": "passed",
-    "sourceName": "bulk_generator.py",
-    "sourceTier": "tier_3",
-    "verifiedPyq": false
-  },
-  {
-    "id": 23173,
-    "question": "Calculate the angle (in degrees) between the hour hand and the minute hand of a clock at 3:50.",
-    "options": [
-      "160.0°",
-      "185.0°",
-      "185.0°",
-      "175.0°"
-    ],
-    "correct": 3,
-    "explanation": "Angle formula: \\(|30H - 5.5M| = |30(3) - 5.5(50)| = |90 - 275.0| = 175.0^\\circ\\).",
     "contextHtml": "Clocks check passed",
     "difficulty": "Medium",
     "topic": "Clocks & Calendars",
@@ -79810,31 +79760,6 @@ export default [
     ],
     "correct": 1,
     "explanation": "Angle formula: \\(|30H - 5.5M| = |30(7) - 5.5(50)| = |210 - 275.0| = 65.0^\\circ\\).",
-    "contextHtml": "Clocks check passed",
-    "difficulty": "Medium",
-    "topic": "Clocks & Calendars",
-    "category": "Quantitative Aptitude",
-    "type": "MCQ",
-    "originType": "generated_validated",
-    "templateClusterId": "cluster_f3298487cdd8",
-    "oaRelevanceScore": 85,
-    "qualityScore": 90,
-    "validationStatus": "passed",
-    "sourceName": "bulk_generator.py",
-    "sourceTier": "tier_3",
-    "verifiedPyq": false
-  },
-  {
-    "id": 23194,
-    "question": "Calculate the angle (in degrees) between the hour hand and the minute hand of a clock at 8:10.",
-    "options": [
-      "175.0°",
-      "160.0°",
-      "185.0°",
-      "185.0°"
-    ],
-    "correct": 0,
-    "explanation": "Angle formula: \\(|30H - 5.5M| = |30(8) - 5.5(10)| = |240 - 55.0| = 175.0^\\circ\\).",
     "contextHtml": "Clocks check passed",
     "difficulty": "Medium",
     "topic": "Clocks & Calendars",
@@ -80725,31 +80650,6 @@ export default [
     "verifiedPyq": false
   },
   {
-    "id": 23230,
-    "question": "Calculate the angle (in degrees) between the hour hand and the minute hand of a clock at 3:50.",
-    "options": [
-      "185.0°",
-      "175.0°",
-      "160.0°",
-      "185.0°"
-    ],
-    "correct": 1,
-    "explanation": "Angle formula: \\(|30H - 5.5M| = |30(3) - 5.5(50)| = |90 - 275.0| = 175.0^\\circ\\).",
-    "contextHtml": "Clocks check passed",
-    "difficulty": "Medium",
-    "topic": "Clocks & Calendars",
-    "category": "Quantitative Aptitude",
-    "type": "MCQ",
-    "originType": "generated_validated",
-    "templateClusterId": "cluster_f3298487cdd8",
-    "oaRelevanceScore": 85,
-    "qualityScore": 90,
-    "validationStatus": "passed",
-    "sourceName": "bulk_generator.py",
-    "sourceTier": "tier_3",
-    "verifiedPyq": false
-  },
-  {
     "id": 23231,
     "question": "Calculate the angle (in degrees) between the hour hand and the minute hand of a clock at 5:30.",
     "options": [
@@ -80960,31 +80860,6 @@ export default [
     ],
     "correct": 1,
     "explanation": "Angle formula: \\(|30H - 5.5M| = |30(11) - 5.5(30)| = |330 - 165.0| = 165.0^\\circ\\).",
-    "contextHtml": "Clocks check passed",
-    "difficulty": "Medium",
-    "topic": "Clocks & Calendars",
-    "category": "Quantitative Aptitude",
-    "type": "MCQ",
-    "originType": "generated_validated",
-    "templateClusterId": "cluster_f3298487cdd8",
-    "oaRelevanceScore": 85,
-    "qualityScore": 90,
-    "validationStatus": "passed",
-    "sourceName": "bulk_generator.py",
-    "sourceTier": "tier_3",
-    "verifiedPyq": false
-  },
-  {
-    "id": 23240,
-    "question": "Calculate the angle (in degrees) between the hour hand and the minute hand of a clock at 3:50.",
-    "options": [
-      "185.0°",
-      "175.0°",
-      "160.0°",
-      "185.0°"
-    ],
-    "correct": 1,
-    "explanation": "Angle formula: \\(|30H - 5.5M| = |30(3) - 5.5(50)| = |90 - 275.0| = 175.0^\\circ\\).",
     "contextHtml": "Clocks check passed",
     "difficulty": "Medium",
     "topic": "Clocks & Calendars",
@@ -81725,31 +81600,6 @@ export default [
     "verifiedPyq": false
   },
   {
-    "id": 23270,
-    "question": "Calculate the angle (in degrees) between the hour hand and the minute hand of a clock at 8:10.",
-    "options": [
-      "185.0°",
-      "185.0°",
-      "175.0°",
-      "160.0°"
-    ],
-    "correct": 2,
-    "explanation": "Angle formula: \\(|30H - 5.5M| = |30(8) - 5.5(10)| = |240 - 55.0| = 175.0^\\circ\\).",
-    "contextHtml": "Clocks check passed",
-    "difficulty": "Medium",
-    "topic": "Clocks & Calendars",
-    "category": "Quantitative Aptitude",
-    "type": "MCQ",
-    "originType": "generated_validated",
-    "templateClusterId": "cluster_f3298487cdd8",
-    "oaRelevanceScore": 85,
-    "qualityScore": 90,
-    "validationStatus": "passed",
-    "sourceName": "bulk_generator.py",
-    "sourceTier": "tier_3",
-    "verifiedPyq": false
-  },
-  {
     "id": 23271,
     "question": "Calculate the angle (in degrees) between the hour hand and the minute hand of a clock at 3:40.",
     "options": [
@@ -81900,31 +81750,6 @@ export default [
     "verifiedPyq": false
   },
   {
-    "id": 23277,
-    "question": "Calculate the angle (in degrees) between the hour hand and the minute hand of a clock at 8:10.",
-    "options": [
-      "185.0°",
-      "160.0°",
-      "185.0°",
-      "175.0°"
-    ],
-    "correct": 3,
-    "explanation": "Angle formula: \\(|30H - 5.5M| = |30(8) - 5.5(10)| = |240 - 55.0| = 175.0^\\circ\\).",
-    "contextHtml": "Clocks check passed",
-    "difficulty": "Medium",
-    "topic": "Clocks & Calendars",
-    "category": "Quantitative Aptitude",
-    "type": "MCQ",
-    "originType": "generated_validated",
-    "templateClusterId": "cluster_f3298487cdd8",
-    "oaRelevanceScore": 85,
-    "qualityScore": 90,
-    "validationStatus": "passed",
-    "sourceName": "bulk_generator.py",
-    "sourceTier": "tier_3",
-    "verifiedPyq": false
-  },
-  {
     "id": 23278,
     "question": "Calculate the angle (in degrees) between the hour hand and the minute hand of a clock at 8:50.",
     "options": [
@@ -81960,31 +81785,6 @@ export default [
     ],
     "correct": 0,
     "explanation": "Angle formula: \\(|30H - 5.5M| = |30(8) - 5.5(30)| = |240 - 165.0| = 75.0^\\circ\\).",
-    "contextHtml": "Clocks check passed",
-    "difficulty": "Medium",
-    "topic": "Clocks & Calendars",
-    "category": "Quantitative Aptitude",
-    "type": "MCQ",
-    "originType": "generated_validated",
-    "templateClusterId": "cluster_f3298487cdd8",
-    "oaRelevanceScore": 85,
-    "qualityScore": 90,
-    "validationStatus": "passed",
-    "sourceName": "bulk_generator.py",
-    "sourceTier": "tier_3",
-    "verifiedPyq": false
-  },
-  {
-    "id": 23280,
-    "question": "Calculate the angle (in degrees) between the hour hand and the minute hand of a clock at 8:10.",
-    "options": [
-      "185.0°",
-      "175.0°",
-      "185.0°",
-      "160.0°"
-    ],
-    "correct": 1,
-    "explanation": "Angle formula: \\(|30H - 5.5M| = |30(8) - 5.5(10)| = |240 - 55.0| = 175.0^\\circ\\).",
     "contextHtml": "Clocks check passed",
     "difficulty": "Medium",
     "topic": "Clocks & Calendars",
@@ -82185,31 +81985,6 @@ export default [
     ],
     "correct": 2,
     "explanation": "Angle formula: \\(|30H - 5.5M| = |30(7) - 5.5(30)| = |210 - 165.0| = 45.0^\\circ\\).",
-    "contextHtml": "Clocks check passed",
-    "difficulty": "Medium",
-    "topic": "Clocks & Calendars",
-    "category": "Quantitative Aptitude",
-    "type": "MCQ",
-    "originType": "generated_validated",
-    "templateClusterId": "cluster_f3298487cdd8",
-    "oaRelevanceScore": 85,
-    "qualityScore": 90,
-    "validationStatus": "passed",
-    "sourceName": "bulk_generator.py",
-    "sourceTier": "tier_3",
-    "verifiedPyq": false
-  },
-  {
-    "id": 23289,
-    "question": "Calculate the angle (in degrees) between the hour hand and the minute hand of a clock at 3:50.",
-    "options": [
-      "160.0°",
-      "175.0°",
-      "185.0°",
-      "185.0°"
-    ],
-    "correct": 1,
-    "explanation": "Angle formula: \\(|30H - 5.5M| = |30(3) - 5.5(50)| = |90 - 275.0| = 175.0^\\circ\\).",
     "contextHtml": "Clocks check passed",
     "difficulty": "Medium",
     "topic": "Clocks & Calendars",
@@ -83125,31 +82900,6 @@ export default [
     "verifiedPyq": false
   },
   {
-    "id": 23326,
-    "question": "Calculate the angle (in degrees) between the hour hand and the minute hand of a clock at 8:10.",
-    "options": [
-      "185.0°",
-      "160.0°",
-      "175.0°",
-      "185.0°"
-    ],
-    "correct": 2,
-    "explanation": "Angle formula: \\(|30H - 5.5M| = |30(8) - 5.5(10)| = |240 - 55.0| = 175.0^\\circ\\).",
-    "contextHtml": "Clocks check passed",
-    "difficulty": "Medium",
-    "topic": "Clocks & Calendars",
-    "category": "Quantitative Aptitude",
-    "type": "MCQ",
-    "originType": "generated_validated",
-    "templateClusterId": "cluster_f3298487cdd8",
-    "oaRelevanceScore": 85,
-    "qualityScore": 90,
-    "validationStatus": "passed",
-    "sourceName": "bulk_generator.py",
-    "sourceTier": "tier_3",
-    "verifiedPyq": false
-  },
-  {
     "id": 23327,
     "question": "Calculate the angle (in degrees) between the hour hand and the minute hand of a clock at 1:30.",
     "options": [
@@ -83460,31 +83210,6 @@ export default [
     ],
     "correct": 3,
     "explanation": "Angle formula: \\(|30H - 5.5M| = |30(4) - 5.5(50)| = |120 - 275.0| = 155.0^\\circ\\).",
-    "contextHtml": "Clocks check passed",
-    "difficulty": "Medium",
-    "topic": "Clocks & Calendars",
-    "category": "Quantitative Aptitude",
-    "type": "MCQ",
-    "originType": "generated_validated",
-    "templateClusterId": "cluster_f3298487cdd8",
-    "oaRelevanceScore": 85,
-    "qualityScore": 90,
-    "validationStatus": "passed",
-    "sourceName": "bulk_generator.py",
-    "sourceTier": "tier_3",
-    "verifiedPyq": false
-  },
-  {
-    "id": 23340,
-    "question": "Calculate the angle (in degrees) between the hour hand and the minute hand of a clock at 8:10.",
-    "options": [
-      "185.0°",
-      "185.0°",
-      "175.0°",
-      "160.0°"
-    ],
-    "correct": 2,
-    "explanation": "Angle formula: \\(|30H - 5.5M| = |30(8) - 5.5(10)| = |240 - 55.0| = 175.0^\\circ\\).",
     "contextHtml": "Clocks check passed",
     "difficulty": "Medium",
     "topic": "Clocks & Calendars",
