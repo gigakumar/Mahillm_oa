@@ -1,5 +1,5 @@
 .leaderboard-page {
-  animation: pageIn 0.3s ease;
+  animation: pageIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .leaderboard-header {
@@ -7,17 +7,169 @@
 }
 
 .leaderboard-header h1 {
-  margin-bottom: 0.5rem;
   font-family: var(--font-display);
+  font-weight: 800;
+  color: var(--text-h);
 }
 
 .leaderboard-header p {
   color: var(--text-secondary);
 }
 
+/* Podium Styles */
+.podium-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  align-items: end;
+}
+
+.podium-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 1.5rem;
+  position: relative;
+  overflow: hidden;
+  justify-content: flex-end;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.podium-card:hover {
+  transform: translateY(-8px);
+}
+
+.gold-podium {
+  min-height: 290px;
+  border-color: rgba(245, 158, 11, 0.25);
+  box-shadow: 0 12px 32px rgba(245, 158, 11, 0.04);
+  padding-top: 2rem;
+}
+
+.gold-podium:hover {
+  box-shadow: 0 16px 40px rgba(245, 158, 11, 0.08);
+}
+
+.silver-podium {
+  min-height: 250px;
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.bronze-podium {
+  min-height: 230px;
+  border-color: rgba(180, 83, 9, 0.15);
+}
+
+.podium-rank {
+  position: absolute;
+  top: 8px;
+  left: 16px;
+  font-size: 2.5rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.gold-podium .podium-rank { color: rgba(245, 158, 11, 0.12); }
+.silver-podium .podium-rank { color: rgba(148, 163, 184, 0.08); }
+.bronze-podium .podium-rank { color: rgba(180, 83, 9, 0.08); }
+
+.podium-glow {
+  position: absolute;
+  top: -60px;
+  width: 150px;
+  height: 150px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.podium-crown {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  color: var(--warning);
+}
+
+.podium-avatar {
+  border-radius: 50%;
+  margin-bottom: 0.75rem;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.gold-podium .podium-avatar {
+  width: 80px;
+  height: 80px;
+  border: 4px solid var(--warning);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.25);
+}
+
+.silver-podium .podium-avatar {
+  width: 68px;
+  height: 68px;
+  border: 3px solid #94A3B8;
+  box-shadow: 0 0 12px rgba(148, 163, 184, 0.15);
+}
+
+.bronze-podium .podium-avatar {
+  width: 62px;
+  height: 62px;
+  border: 3px solid #B45309;
+  box-shadow: 0 0 10px rgba(180, 83, 9, 0.12);
+}
+
+.podium-username {
+  font-size: 1rem;
+  color: var(--text-h);
+  margin-bottom: 0.25rem;
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-align: center;
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.podium-badge {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.badge-gold {
+  color: var(--warning);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.badge-silver {
+  color: #94A3B8;
+  background: rgba(148, 163, 184, 0.1);
+}
+
+.badge-bronze {
+  color: #B45309;
+  background: rgba(180, 83, 9, 0.1);
+}
+
+.podium-stats {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Leaderboard Card & Table */
 .leaderboard-card {
   padding: 0;
   overflow: hidden;
+  border-radius: 20px;
 }
 
 .leaderboard-table-wrapper {
@@ -33,18 +185,20 @@
 
 .leaderboard-table th {
   padding: 1.25rem 1.5rem;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--text-muted);
   border-bottom: 1px solid var(--border);
-  background: var(--bg-body);
+  background: rgba(255, 255, 255, 0.02);
+  font-weight: 600;
 }
 
 .leaderboard-table td {
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--border);
   vertical-align: middle;
+  font-size: 0.9rem;
 }
 
 .leaderboard-table tr:last-child td {
@@ -52,18 +206,19 @@
 }
 
 .leaderboard-table tr:hover {
-  background: var(--bg-card-hover);
+  background: rgba(255, 255, 255, 0.01);
+}
+
+.podium-table-row {
+  background: rgba(255, 255, 255, 0.005);
 }
 
 .current-user-row {
-  background: var(--accent-soft);
-}
-.current-user-row:hover {
-  background: var(--accent-soft);
+  background: rgba(108, 92, 231, 0.05) !important;
 }
 
 .rank-cell {
-  width: 80px;
+  width: 70px;
   text-align: center;
 }
 
@@ -73,7 +228,7 @@
   color: var(--text-muted);
 }
 
-.gold { color: #F59E0B; }
+.gold { color: var(--warning); }
 .silver { color: #94A3B8; }
 .bronze { color: #B45309; }
 
@@ -84,22 +239,23 @@
 }
 
 .leader-avatar {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
-  border: 2px solid var(--border);
+  border: 1px solid var(--border);
 }
 
 .leader-name {
   font-weight: 600;
+  color: var(--text-h);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
 }
 
 .you-badge {
   font-size: 0.65rem;
-  padding: 0.15rem 0.4rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
 }
 
 .stat-with-icon {
@@ -112,7 +268,7 @@
 .xp-highlight {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.1rem;
+  color: var(--text-h);
 }
 
 .empty-row {
@@ -121,13 +277,56 @@
   color: var(--text-muted);
 }
 
+/* Animations */
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsiveness */
 @media (max-width: 768px) {
-  .leaderboard-table th, .leaderboard-table td {
-    padding: 1rem;
+  .podium-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
   }
   
-  .leader-avatar {
-    width: 24px;
-    height: 24px;
+  .podium-card {
+    min-height: auto !important;
+    padding: 1.25rem;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
+  
+  .podium-avatar {
+    margin-bottom: 0 !important;
+    width: 48px !important;
+    height: 48px !important;
+  }
+  
+  .podium-username {
+    text-align: left;
+    margin-bottom: 0;
+  }
+  
+  .podium-badge {
+    margin-bottom: 0;
+  }
+  
+  .podium-stats {
+    margin-left: auto;
+  }
+  
+  .podium-rank {
+    top: 10px;
+    right: 15px;
+    left: auto;
+    font-size: 1.5rem;
   }
 }

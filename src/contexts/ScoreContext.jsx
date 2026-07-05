@@ -37,7 +37,8 @@ export function ScoreProvider({ children }) {
           totalAttempted: data.totalAttempted || 0,
           totalCorrect: data.totalCorrect || 0,
           accuracy: data.totalAttempted ? Math.round((data.totalCorrect / data.totalAttempted) * 100) : 0,
-          bookmarked: data.bookmarked || []
+          bookmarked: data.bookmarked || [],
+          streak: data.streak || 0
         });
       } else {
         // Initialize new user

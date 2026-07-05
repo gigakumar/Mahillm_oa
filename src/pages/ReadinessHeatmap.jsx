@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useUserData } from '../contexts/UserDataContext';
+import { useScore } from '../contexts/ScoreContext';
 import { buildHeatmapData, getReadinessSummary } from '../utils/masteryUtils';
 import { useNavigate } from 'react-router-dom';
 import { compileLearnerState } from '../intelligence/learnerStateModel';
@@ -26,6 +27,7 @@ import './ReadinessHeatmap.css';
 export default function ReadinessHeatmap() {
   const navigate = useNavigate();
   const { masteryScores, questionProgress, spacedRepetition, mistakes } = useUserData();
+  const { scoreData } = useScore();
 
   const [activeTab, setActiveTab] = useState('analytics'); // 'analytics' | 'heatmap'
   const [allQuestions, setAllQuestions] = useState([]);
@@ -199,6 +201,29 @@ export default function ReadinessHeatmap() {
               </div>
             </div>
           )}
+
+          {/* Candidate Performance Summary */}
+          <div className="card" style={{ padding: '1.5rem', marginBottom: '1.5rem', border: '1px solid var(--border)', background: 'var(--bg-secondary)' }}>
+            <h3 style={{ margin: '0 0 1rem 0', fontFamily: 'var(--font-display)', fontSize: '1.1rem', color: 'var(--text-h)', fontWeight: 700 }}>Your Active Performance Telemetry</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
+              <div className="card" style={{ padding: '1rem', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column', gap: '0.25rem', border: '1px solid var(--border)' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Questions Attempted</span>
+                <strong style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-h)' }}>{scoreData?.totalAttempted || 0}</strong>
+              </div>
+              <div className="card" style={{ padding: '1rem', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column', gap: '0.25rem', border: '1px solid var(--border)' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Overall Accuracy</span>
+                <strong style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-h)' }}>{scoreData?.accuracy || 0}%</strong>
+              </div>
+              <div className="card" style={{ padding: '1rem', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column', gap: '0.25rem', border: '1px solid var(--border)' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Practice Streak</span>
+                <strong style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-h)' }}>{scoreData?.streak || 0}🔥</strong>
+              </div>
+              <div className="card" style={{ padding: '1rem', background: 'var(--bg-primary)', display: 'flex', flexDirection: 'column', gap: '0.25rem', border: '1px solid var(--border)' }}>
+                <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Experience points</span>
+                <strong style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-h)' }}>{scoreData?.xp || 0} XP</strong>
+              </div>
+            </div>
+          </div>
 
           {/* Main index card */}
           <div className="card" style={{ padding: '2rem', background: 'linear-gradient(135deg, rgba(108, 92, 231, 0.1) 0%, rgba(0, 184, 148, 0.05) 100%)', border: '1px solid var(--border)', marginBottom: '2rem', position: 'relative', overflow: 'hidden' }}>
