@@ -1,8 +1,8 @@
 export default {
-  "totalCount": 25482,
+  "totalCount": 19332,
   "categories": {
     "Mechanical Engineering": {
-      "count": 15567,
+      "count": 9417,
       "emoji": "🔩"
     },
     "Quantitative Aptitude": {

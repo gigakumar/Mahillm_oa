@@ -40,6 +40,11 @@ export default function OAPractice() {
   const [progressMap, setProgressMap] = useState({});
   
   const [category, setCategory] = useState(initialCat);
+  
+  useEffect(() => {
+    setCategory(initialCat);
+  }, [initialCat]);
+
   const [difficulty, setDifficulty] = useState('all');
   const [topic, setTopic] = useState('all');
   const [availableTopics, setAvailableTopics] = useState([]);
@@ -66,6 +71,7 @@ export default function OAPractice() {
   const loadActivePool = async () => {
     setLoading(true);
     try {
+      console.log("loadActivePool starting. Category:", category, "Difficulty:", difficulty, "Topic:", topic);
       let pool = [];
       if (category === 'Mechanical Engineering') {
         const mod = await import('../data/mechEngQuestions.js');
@@ -94,6 +100,8 @@ export default function OAPractice() {
         pool = [...me.default, ...qa.default, ...di.default, ...dilr.default, ...lr.default];
       }
 
+      console.log("Pool loaded. Size:", pool.length);
+
       // Dynamically extract unique topics for selection
       const uniqueTopics = ['all', ...new Set(pool.map(q => q.topic).filter(Boolean))].sort();
       setAvailableTopics(uniqueTopics);
@@ -108,6 +116,8 @@ export default function OAPractice() {
       }
 
       let filtered = pool.filter(q => !qList.has(q.id.toString()));
+      console.log("After quarantine filter:", filtered.length);
+
       if (category === 'bookmarked') {
         filtered = filtered.filter(q => scoreData?.bookmarked?.includes(q.id));
       }
@@ -117,6 +127,8 @@ export default function OAPractice() {
       if (topic !== 'all') {
         filtered = filtered.filter(q => q.topic === topic);
       }
+
+      console.log("After filter: category:", category, "diff:", difficulty, "topic:", topic, "count:", filtered.length);
 
       if (isAdaptive) {
         // Build userHistory proxy map for selectNextQuestions
@@ -160,7 +172,11 @@ export default function OAPractice() {
   useEffect(() => {
     if (prevCategoryRef.current !== category) {
       prevCategoryRef.current = category;
-      setTopic('all');
+      if (topic === 'all') {
+        loadActivePool();
+      } else {
+        setTopic('all');
+      }
       return;
     }
     loadActivePool();
