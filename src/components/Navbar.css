@@ -50,6 +50,8 @@
   background: transparent;
   padding: 0;
   border-radius: 0;
+  margin-right: auto;
+  margin-left: 2rem;
 }
 
 .nav-link {
@@ -241,6 +243,8 @@
     margin-top: 1rem;
     padding: 0;
     background: transparent;
+    margin-left: 0;
+    margin-right: 0;
   }
   
   .nav-links.open {

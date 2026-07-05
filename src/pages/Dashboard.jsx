@@ -305,7 +305,7 @@ export default function Dashboard() {
 
       {/* Footer */}
       <footer style={{ 
-        textAlign: 'left', 
+        textAlign: 'center', 
         padding: '2rem 0 1rem 0', 
         fontSize: '0.85rem', 
         color: 'var(--text-secondary)',
