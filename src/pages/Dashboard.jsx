@@ -302,6 +302,18 @@ export default function Dashboard() {
           <Link to="/skills" className="btn btn-secondary">View Skills</Link>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer style={{ 
+        textAlign: 'center', 
+        padding: '2rem 0 1rem 0', 
+        fontSize: '0.85rem', 
+        color: 'var(--text-secondary)',
+        borderTop: '1px solid var(--border-color)',
+        marginTop: '3rem'
+      }}>
+        made by @conc.nitric.acid🥶
+      </footer>
     </div>
   );
 }
