@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useUserData } from '../contexts/UserDataContext';
 import { db } from '../firebase';
-import { doc, setDoc, collection, getDocs } from 'firebase/firestore';
+import { getActiveSessionConfig } from '../utils/sessionConfigHelper';
+import { loadQuestionBanks, QuestionBankStatus } from '../utils/questionBankLoader';
+import { selectAdaptiveQuestions } from '../intelligence/questionIntelligence/adaptive/adaptiveQuestionSelector';
+import { compileLearnerState } from '../intelligence/learnerStateCompiler';
 import { HelpCircle, ChevronLeft, ChevronRight, CheckCircle2, Bookmark, Trash2, AlertTriangle } from 'lucide-react';
 import QuestionIntelligenceBadge from '../components/QuestionIntelligenceBadge';
 import './TestSession.css';
@@ -91,13 +94,19 @@ function sampleQuestions(config, pool) {
 
 export default function TestSession() {
   const { user } = useAuth();
-  const { recordDetailedAnswer } = useUserData();
+  const location = useLocation();
+  const { 
+    questionProgress, 
+    masteryScores, 
+    mistakes, 
+    spacedRepetition, 
+    recordDetailedAnswer 
+  } = useUserData();
   const navigate = useNavigate();
 
   const [config, setConfig] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   // States: key is question ID
@@ -113,88 +122,125 @@ export default function TestSession() {
   const [timeSpentMap, setTimeSpentMap] = useState({});
   const [answerHistory, setAnswerHistory] = useState({});
 
+  const [initStage, setInitStage] = useState('CONFIG_VALIDATING');
+  const [initError, setInitError] = useState(null);
+  const [takingLonger, setTakingLonger] = useState(false);
+  const [diagnosticsLog, setDiagnosticsLog] = useState(null);
+
   const timerRef = useRef(null);
 
   // Load or initialize test session
   useEffect(() => {
     async function initSession() {
-      const configStr = localStorage.getItem('current_test_config');
-      if (!configStr) {
-        navigate('/tests');
-        return;
-      }
-      const parsedConfig = JSON.parse(configStr);
-      setConfig(parsedConfig);
+      // 15 seconds watchdog timer
+      const watchdog = setTimeout(() => {
+        setInitStage('SESSION_INITIALIZATION_FAILED');
+        setInitError('Question bank initialization timed out.');
+      }, 15000);
 
-      // Enter Fullscreen on test start
+      // 5 seconds warning timer
+      const longerTimer = setTimeout(() => {
+        setTakingLonger(true);
+      }, 5000);
+
       try {
-        if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen().catch(() => {});
-        }
-      } catch (e) {}
+        setInitStage('CONFIG_VALIDATING');
+        const parsedConfig = getActiveSessionConfig(location.state);
+        setConfig(parsedConfig);
 
-      const sessionStr = localStorage.getItem('current_test_session');
-      if (sessionStr) {
-        // Resume session
-        const session = JSON.parse(sessionStr);
-        setQuestions(session.questions);
-        setCurrentIdx(session.currentIdx);
-        setSelectedOptions(session.selectedOptions || {});
-        setVisitedQuestions(session.visitedQuestions || {});
-        setMarkedForReview(session.markedForReview || {});
-        setAttemptId(session.attemptId || `attempt_${Date.now()}`);
-        setConfidences(session.confidences || {});
-        setTimeSpentMap(session.timeSpentMap || {});
-        setAnswerHistory(session.answerHistory || {});
-        
-        // Recover time from timestamp
-        const endTime = parseInt(localStorage.getItem('current_test_end_time') || '0');
-        const remaining = Math.max(0, endTime - Math.floor(Date.now() / 1000));
-        setTimerSeconds(remaining);
-      } else {
-        // Load required pools dynamically based on config distribution
-        setLoading(true);
+        // Enter Fullscreen on test start
         try {
-          const loadedPools = {};
-          const categoryPromises = [];
-          const dist = parsedConfig.distribution;
+          if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen().catch(() => {});
+          }
+        } catch (e) {}
 
-          if (dist['Mechanical Engineering'] > 0) {
-            categoryPromises.push(import('../data/mechEngQuestions.js').then(m => { loadedPools['Mechanical Engineering'] = m.default; }));
-          }
-          if (dist['Quantitative Aptitude'] > 0) {
-            categoryPromises.push(import('../data/quantsQuestions.js').then(m => { loadedPools['Quantitative Aptitude'] = m.default; }));
-          }
-          if (dist['Data Interpretation'] > 0) {
-            categoryPromises.push(import('../data/dataInterpretationQuestions.js').then(m => { loadedPools['Data Interpretation'] = m.default; }));
-          }
-          if (dist['DILR'] > 0) {
-            categoryPromises.push(import('../data/dilrQuestions.js').then(m => { loadedPools['DILR'] = m.default; }));
-          }
-          if (dist['Logical Reasoning'] > 0) {
-            categoryPromises.push(import('../data/logicalReasoningQuestions.js').then(m => { loadedPools['Logical Reasoning'] = m.default; }));
+        const sessionStr = localStorage.getItem('current_test_session');
+        if (sessionStr) {
+          // Resume session
+          const session = JSON.parse(sessionStr);
+          setQuestions(session.questions);
+          setCurrentIdx(session.currentIdx);
+          setSelectedOptions(session.selectedOptions || {});
+          setVisitedQuestions(session.visitedQuestions || {});
+          setMarkedForReview(session.markedForReview || {});
+          setAttemptId(session.attemptId || `attempt_${Date.now()}`);
+          setConfidences(session.confidences || {});
+          setTimeSpentMap(session.timeSpentMap || {});
+          setAnswerHistory(session.answerHistory || {});
+          
+          const endTime = parseInt(localStorage.getItem('current_test_end_time') || '0');
+          const remaining = Math.max(0, endTime - Math.floor(Date.now() / 1000));
+          setTimerSeconds(remaining);
+          
+          setInitStage('SESSION_READY');
+          clearTimeout(watchdog);
+          clearTimeout(longerTimer);
+        } else {
+          setInitStage('BANKS_LOADING');
+          
+          const category = parsedConfig.category || 'Mechanical Engineering';
+          const dist = parsedConfig.distribution || { [category]: 100 };
+          const requestedCategories = Object.keys(dist).filter(cat => dist[cat] > 0);
+
+          // Central loader (with 8-sec per-bank watchdog)
+          const loadState = await loadQuestionBanks(requestedCategories, [category]);
+          if (loadState.status === QuestionBankStatus.FAILED) {
+            throw new Error(loadState.error || 'Failed to load question banks.');
           }
 
-          await Promise.all(categoryPromises);
+          setInitStage('CANDIDATES_BUILDING');
+          let testQs = [];
 
-          // Fetch quarantined list
-          const qList = new Set();
-          try {
-            const qSnap = await Promise.race([
-              getDocs(collection(db, 'quarantined_questions')),
-              new Promise((_, reject) => setTimeout(() => reject(new Error('Firestore timeout')), 1500))
+          if (parsedConfig.mode === 'adaptive') {
+            setInitStage('QUESTIONS_SELECTING');
+            
+            // Dynamic compile of all questions to search against
+            const [me, qa, di, dilr, lr] = await Promise.all([
+              import('../data/mechEngQuestions.js'),
+              import('../data/quantsQuestions.js'),
+              import('../data/dataInterpretationQuestions.js'),
+              import('../data/dilrQuestions.js'),
+              import('../data/logicalReasoningQuestions.js')
             ]);
-            qSnap.forEach(d => qList.add(d.id.toString()));
-          } catch (e) {
-            console.error("Error fetching quarantine list in test session:", e);
+            const allQs = [...me.default, ...qa.default, ...di.default, ...dilr.default, ...lr.default];
+
+            // Build compiled attempts array
+            const compiledAttempts = [];
+            Object.keys(questionProgress || {}).forEach(qId => {
+              const prog = questionProgress[qId];
+              const quest = allQs.find(q => q.id.toString() === qId);
+              compiledAttempts.push({
+                id: parseInt(qId),
+                topic: quest ? quest.topic : 'General',
+                category: quest ? quest.category : 'General',
+                correct: prog.status === 'correct',
+                solveTime: (prog.solveTimeMs || 60000) / 1000,
+                timeRatio: (prog.solveTimeMs || 60000) / 60000,
+                confidence: prog.confidence || 'Sure',
+                changedAnswer: prog.changedAnswer || false,
+                date: prog.updatedAt || new Date().toISOString()
+              });
+            });
+
+            const learnerState = compileLearnerState(compiledAttempts, masteryScores, mistakes, spacedRepetition);
+            
+            // Select questions with fallback ladder and collapse diagnostics
+            const adaptiveResult = selectAdaptiveQuestions(parsedConfig, loadState.pools, learnerState);
+            testQs = adaptiveResult.questions;
+            setDiagnosticsLog(adaptiveResult.diagnostics);
+            console.log("[Adaptive Selection Diagnostics]", {
+              fallbackLevel: adaptiveResult.fallbackLevel,
+              diagnostics: adaptiveResult.diagnostics
+            });
+          } else {
+            testQs = sampleQuestions(parsedConfig, loadState.pools);
           }
 
-          // Filter pools
-          Object.keys(loadedPools).forEach(category => {
-            loadedPools[category] = loadedPools[category].filter(q => !qList.has(q.id.toString()));
-          });
+          if (!testQs || testQs.length === 0) {
+            throw new Error("No eligible questions could be prepared for this session.");
+          }
 
-          const testQs = sampleQuestions(parsedConfig, loadedPools);
           setQuestions(testQs);
           
           const newAttemptId = `attempt_${Date.now()}`;
@@ -218,28 +264,22 @@ export default function TestSession() {
             markedForReview: {},
             attemptId: newAttemptId
           }));
-        } catch (e) {
-          console.error("Error loading dynamic test session pools:", e);
-        } finally {
-          setLoading(false);
+          
+          setInitStage('SESSION_READY');
+          clearTimeout(watchdog);
+          clearTimeout(longerTimer);
         }
+      } catch (err) {
+        console.error("Error during dynamic session initialization:", err);
+        setInitStage('SESSION_INITIALIZATION_FAILED');
+        setInitError(err.message || 'Initialization failed.');
+        clearTimeout(watchdog);
+        clearTimeout(longerTimer);
       }
-
-      // Refresh protection warning
-      const handleBeforeUnload = (e) => {
-        e.preventDefault();
-        e.returnValue = 'Warning: Leaving this page will submit your exam.';
-        return e.returnValue;
-      };
-      window.addEventListener('beforeunload', handleBeforeUnload);
-
-      return () => {
-        window.removeEventListener('beforeunload', handleBeforeUnload);
-      };
     }
 
     initSession();
-  }, []);
+  }, [user, questionProgress]);
 
   // Timer interval setup
   useEffect(() => {
@@ -293,39 +333,7 @@ export default function TestSession() {
   const [adaptingMessage, setAdaptingMessage] = useState('');
 
   const handleNext = () => {
-    if (config?.mode === 'adaptive') {
-      setIsAdapting(true);
-      
-      const q = questions[currentIdx];
-      const ans = selectedOptions[q.id];
-      const hasAns = ans !== undefined && ans !== null && ans !== '';
-      
-      let isCorrect = false;
-      if (hasAns) {
-        if (q.type === 'NAT') {
-          isCorrect = Math.abs(Number(ans) - Number(q.correct)) <= 0.05;
-        } else if (q.type === 'MSQ') {
-          isCorrect = JSON.stringify([...ans].sort()) === JSON.stringify([...q.correct].sort());
-        } else {
-          isCorrect = ans === q.correct;
-        }
-      }
-
-      if (!hasAns) {
-        setAdaptingMessage('Response skipped.\n↘ Adapting trajectory...\n[Next Question: Recalibrating capability]');
-      } else if (!isCorrect) {
-        setAdaptingMessage('[x] Incorrect. Knowledge gap detected.\n↘ Adapting trajectory...\n[Next Question: Lower difficulty, same concept]');
-      } else {
-        setAdaptingMessage('[✓] Correct. Concept mastery confirmed.\n↗ Adapting trajectory...\n[Next Question: Higher difficulty, lateral concept]');
-      }
-
-      setTimeout(() => {
-        setIsAdapting(false);
-        proceedNext();
-      }, 1200);
-    } else {
-      proceedNext();
-    }
+    proceedNext();
   };
 
   const proceedNext = () => {
@@ -550,7 +558,38 @@ export default function TestSession() {
     navigate(`/tests/result/${testId}`);
   };
 
-  if (loading || questions.length === 0 || !config) {
+  if (initStage === 'SESSION_INITIALIZATION_FAILED') {
+    return (
+      <div className="loading-fullscreen" style={{
+        position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+        background: 'var(--bg-body)', display: 'flex', flexDirection: 'column',
+        justifyContent: 'center', alignItems: 'center', zIndex: 100000, padding: '2rem'
+      }}>
+        <h2 style={{ color: 'var(--danger)', marginBottom: '1.25rem', fontFamily: 'var(--font-display)' }}>SESSION COULD NOT START</h2>
+        <p style={{ color: 'var(--text-secondary)', textAlign: 'center', maxWidth: '480px', marginBottom: '2.5rem', lineHeight: 1.6 }}>
+          Mahi could not prepare this session.<br />
+          <strong>Reason:</strong> {initError || 'Question bank initialization timed out.'}
+        </p>
+        <div style={{ display: 'flex', gap: '1rem' }}>
+          <button className="btn btn-primary" onClick={() => window.location.reload()} style={{ padding: '0.75rem 1.5rem', fontWeight: 600 }}>
+            Retry Session
+          </button>
+          <button className="btn btn-secondary" onClick={() => navigate('/oa-practice')} style={{ padding: '0.75rem 1.5rem', fontWeight: 600 }}>
+            Return to Practice
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (initStage !== 'SESSION_READY') {
+    const isStageDone = (stage) => {
+      const stages = ['CONFIG_VALIDATING', 'BANKS_LOADING', 'CANDIDATES_BUILDING', 'QUESTIONS_SELECTING', 'SESSION_READY'];
+      const currentIdx = stages.indexOf(initStage);
+      const targetIdx = stages.indexOf(stage);
+      return targetIdx < currentIdx;
+    };
+
     return (
       <div className="loading-fullscreen" style={{
         position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -560,25 +599,44 @@ export default function TestSession() {
         <div className="spinner" style={{
           border: '4px solid var(--border)', borderTop: '4px solid var(--accent)',
           borderRadius: '50%', width: '50px', height: '50px',
-          animation: 'spin 1s linear infinite', marginBottom: '1.5rem'
+          animation: 'spin 1s linear infinite', marginBottom: '2rem'
         }}></div>
         <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
-        <h3>Preparing Exam Environment...</h3>
-        <p style={{ color: 'var(--text-secondary)' }}>Dynamically configuring test templates and sampling questions.</p>
-      </div>
-    );
-  }
-
-  // Adaptation Interstitial Overlay
-  if (isAdapting) {
-    return (
-      <div className="test-session-fullscreen" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-card)' }}>
-        <div style={{ padding: '2rem', background: 'rgba(0,0,0,0.5)', borderRadius: '12px', border: '1px solid rgba(139, 92, 246, 0.4)', maxWidth: '500px', width: '100%' }}>
-          <h3 style={{ margin: '0 0 1rem 0', color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>Evaluating response...</h3>
-          <pre style={{ whiteSpace: 'pre-wrap', color: 'rgba(255,255,255,0.8)', fontSize: '1rem', lineHeight: '1.6', margin: 0, fontFamily: 'var(--font-mono)' }}>
-            {adaptingMessage}
-          </pre>
+        
+        <h3 style={{ marginBottom: '1.5rem', fontFamily: 'var(--font-display)', fontSize: '1.25rem', letterSpacing: '0.05em' }}>PREPARING YOUR SESSION</h3>
+        
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', width: '300px', fontSize: '0.9rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', opacity: isStageDone('CONFIG_VALIDATING') ? 1 : 0.5 }}>
+            <span style={{ color: isStageDone('CONFIG_VALIDATING') ? 'var(--success)' : 'var(--text-secondary)', fontWeight: 'bold' }}>
+              {isStageDone('CONFIG_VALIDATING') ? '✓' : '○'}
+            </span>
+            <span>Session objective configured</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', opacity: isStageDone('BANKS_LOADING') ? 1 : 0.5 }}>
+            <span style={{ color: isStageDone('BANKS_LOADING') ? 'var(--success)' : 'var(--text-secondary)', fontWeight: 'bold' }}>
+              {isStageDone('BANKS_LOADING') ? '✓' : '○'}
+            </span>
+            <span>Question banks loaded</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', opacity: isStageDone('CANDIDATES_BUILDING') ? 1 : 0.5 }}>
+            <span style={{ color: isStageDone('CANDIDATES_BUILDING') ? 'var(--success)' : 'var(--text-secondary)', fontWeight: 'bold' }}>
+              {isStageDone('CANDIDATES_BUILDING') ? '✓' : '○'}
+            </span>
+            <span>Building candidate pool</span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', opacity: isStageDone('QUESTIONS_SELECTING') ? 1 : 0.5 }}>
+            <span style={{ color: isStageDone('QUESTIONS_SELECTING') ? 'var(--success)' : 'var(--text-secondary)', fontWeight: 'bold' }}>
+              {isStageDone('QUESTIONS_SELECTING') ? '✓' : '○'}
+            </span>
+            <span>Selecting questions</span>
+          </div>
         </div>
+
+        {takingLonger && (
+          <p style={{ marginTop: '1.5rem', color: 'var(--warning)', fontSize: '0.85rem', fontWeight: 600 }}>
+            This is taking longer than expected...
+          </p>
+        )}
       </div>
     );
   }

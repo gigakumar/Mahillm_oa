@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Target, Clock, Activity, AlertTriangle, Zap } from 'lucide-react';
+import { useUserData } from '../../contexts/UserDataContext';
 import './SessionBriefing.css';
 
 export default function SessionBriefing() {
   const navigate = useNavigate();
+  const { questionProgress } = useUserData();
   const [config, setConfig] = useState(null);
   const [calibrating, setCalibrating] = useState(true);
+
+  const totalAttempts = Object.keys(questionProgress || {}).length;
+  const isColdStart = totalAttempts < 10;
 
   useEffect(() => {
     const saved = localStorage.getItem('current_test_config');
@@ -135,10 +140,14 @@ export default function SessionBriefing() {
         </div>
 
         <div className="briefing-warning">
-          <AlertTriangle size={24} className="warning-icon" />
+          <Activity size={24} className="warning-icon" style={{ color: 'var(--accent)' }} />
           <div className="warning-text">
-            <strong>Active Calibration Warning</strong>
-            <p>This session will dynamically adapt in real-time. The next question is strictly selected based on your previous answer's latent traits.</p>
+            <strong>ADAPTIVE SESSION</strong>
+            <p>
+              {isColdStart 
+                ? "Mahi will use your answers to establish an initial ability and concept baseline. Question selection may adjust as evidence is collected."
+                : "Question selection adapts to your recent performance, concept stability, and session objective."}
+            </p>
           </div>
         </div>
 
@@ -149,7 +158,15 @@ export default function SessionBriefing() {
             disabled={calibrating}
           >
             <Zap size={20} fill={calibrating ? "none" : "currentColor"} />
-            {calibrating ? 'INITIALIZING ENGINE...' : 'INITIATE SESSION'}
+            {calibrating ? 'INITIALIZING ENGINE...' : (
+              intent === 'OPTIMAL' ? 'CONTINUE ADAPTIVE PATH' :
+              intent === 'WEAKNESS_REPAIR' ? 'START REPAIR SESSION' :
+              intent === 'STRETCH' ? 'START CHALLENGE' :
+              intent === 'DECAY_RECOVERY' ? 'START RECOVERY SESSION' :
+              intent === 'MISTAKE_REPAIR' ? 'START MISTAKE TRAINING' :
+              intent === 'CONCEPT_REPAIR' ? 'START CONCEPT REPAIR' :
+              'START ASSESSMENT'
+            )}
           </button>
         </div>
       </div>

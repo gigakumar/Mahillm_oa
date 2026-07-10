@@ -17,8 +17,10 @@ import {
   Brain,
   Clock,
   Calendar,
-  AlertTriangle
+  AlertTriangle,
+  BookOpen
 } from 'lucide-react';
+import { QuestionBankRegistry } from '../data/questionBankRegistry';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -301,6 +303,40 @@ export default function Dashboard() {
                 <strong>Test my readiness</strong>
                 <span>Run diagnostic benchmarks across all categories</span>
               </button>
+            </div>
+          </section>
+
+          {/* EXPLORE QUESTION BANKS */}
+          <section className="dashboard-section" style={{ marginTop: '2.5rem', marginBottom: '2.5rem' }}>
+            <h2 className="section-title"><BookOpen size={18} /> Explore Question Banks</h2>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginTop: '-0.75rem', marginBottom: '1.5rem' }}>
+              Practice directly from any category question bank.
+            </p>
+            <div className="links-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem' }}>
+              {QuestionBankRegistry.map(bank => (
+                <div key={bank.id} className="link-card card card-interactive" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '1.5rem' }}>
+                  <span style={{ fontSize: '1.5rem' }}>
+                    {bank.id === 'mechanical' ? '🔩' :
+                     bank.id === 'quantitative' ? '🧮' :
+                     bank.id === 'data-interpretation' ? '📊' :
+                     bank.id === 'dilr' ? '🧩' : '🧠'}
+                  </span>
+                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700 }}>{bank.label}</h3>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)', minHeight: '32px', lineHeight: 1.4 }}>
+                    {bank.topics.join(', ')}
+                  </p>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--accent)', fontWeight: 600, display: 'block', marginTop: '0.25rem' }}>
+                    {bank.estimatedCount.toLocaleString()} questions
+                  </span>
+                  <button 
+                    className="btn btn-secondary btn-sm" 
+                    style={{ marginTop: '1rem', width: '100%', padding: '0.4rem', fontWeight: 600 }}
+                    onClick={() => navigate(`/oa-practice?cat=${encodeURIComponent(bank.categoryKey)}`)}
+                  >
+                    Open Bank
+                  </button>
+                </div>
+              ))}
             </div>
           </section>
 
