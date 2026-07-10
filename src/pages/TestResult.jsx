@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import IntelligenceDrawer from '../components/IntelligenceDrawer';
+import QuestionIntelligenceBadge from '../components/QuestionIntelligenceBadge';
 import { useAuth } from '../contexts/AuthContext';
 import { useUserData } from '../contexts/UserDataContext';
 import { db } from '../firebase';
@@ -374,10 +376,11 @@ export default function TestResult() {
               <div key={idx} className="review-question-card card" style={{ borderLeft: `4px solid ${q.isAttempted ? (q.isCorrect ? 'var(--success)' : 'var(--danger)') : 'var(--border)'}` }}>
                 {/* Meta details */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                     <span className="badge">{q.category}</span>
-                    <span className="badge">{q.topic}</span>
+                    <span className="badge badge-secondary">{q.topic}</span>
                     <span className="badge badge-accent">{q.type}</span>
+                    <QuestionIntelligenceBadge attempts={q.stats?.totalAttempts || 0} />
                   </div>
                   <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                     {q.isAttempted && !q.isCorrect && (
@@ -452,6 +455,9 @@ export default function TestResult() {
                     <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5' }} dangerouslySetInnerHTML={{ __html: q.explanation }} />
                   </div>
                 )}
+                
+                {/* Intelligence Drawer (Phase 3B.3) */}
+                <IntelligenceDrawer question={q} />
               </div>
             );
           })}

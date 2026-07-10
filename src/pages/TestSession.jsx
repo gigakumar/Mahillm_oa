@@ -5,6 +5,7 @@ import { useUserData } from '../contexts/UserDataContext';
 import { db } from '../firebase';
 import { doc, setDoc, collection, getDocs } from 'firebase/firestore';
 import { HelpCircle, ChevronLeft, ChevronRight, CheckCircle2, Bookmark, Trash2, AlertTriangle } from 'lucide-react';
+import QuestionIntelligenceBadge from '../components/QuestionIntelligenceBadge';
 import './TestSession.css';
 
 // Dynamic imports metadata
@@ -288,7 +289,46 @@ export default function TestSession() {
     }));
   }, [questions, currentIdx, selectedOptions, visitedQuestions, markedForReview, attemptId, confidences, timeSpentMap, answerHistory]);
 
+  const [isAdapting, setIsAdapting] = useState(false);
+  const [adaptingMessage, setAdaptingMessage] = useState('');
+
   const handleNext = () => {
+    if (config?.mode === 'adaptive') {
+      setIsAdapting(true);
+      
+      const q = questions[currentIdx];
+      const ans = selectedOptions[q.id];
+      const hasAns = ans !== undefined && ans !== null && ans !== '';
+      
+      let isCorrect = false;
+      if (hasAns) {
+        if (q.type === 'NAT') {
+          isCorrect = Math.abs(Number(ans) - Number(q.correct)) <= 0.05;
+        } else if (q.type === 'MSQ') {
+          isCorrect = JSON.stringify([...ans].sort()) === JSON.stringify([...q.correct].sort());
+        } else {
+          isCorrect = ans === q.correct;
+        }
+      }
+
+      if (!hasAns) {
+        setAdaptingMessage('Response skipped.\n↘ Adapting trajectory...\n[Next Question: Recalibrating capability]');
+      } else if (!isCorrect) {
+        setAdaptingMessage('[x] Incorrect. Knowledge gap detected.\n↘ Adapting trajectory...\n[Next Question: Lower difficulty, same concept]');
+      } else {
+        setAdaptingMessage('[✓] Correct. Concept mastery confirmed.\n↗ Adapting trajectory...\n[Next Question: Higher difficulty, lateral concept]');
+      }
+
+      setTimeout(() => {
+        setIsAdapting(false);
+        proceedNext();
+      }, 1200);
+    } else {
+      proceedNext();
+    }
+  };
+
+  const proceedNext = () => {
     if (currentIdx < questions.length - 1) {
       const nextIdx = currentIdx + 1;
       setCurrentIdx(nextIdx);
@@ -527,6 +567,20 @@ export default function TestSession() {
     );
   }
 
+  // Adaptation Interstitial Overlay
+  if (isAdapting) {
+    return (
+      <div className="test-session-fullscreen" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-card)' }}>
+        <div style={{ padding: '2rem', background: 'rgba(0,0,0,0.5)', borderRadius: '12px', border: '1px solid rgba(139, 92, 246, 0.4)', maxWidth: '500px', width: '100%' }}>
+          <h3 style={{ margin: '0 0 1rem 0', color: 'var(--accent)', fontFamily: 'var(--font-mono)' }}>Evaluating response...</h3>
+          <pre style={{ whiteSpace: 'pre-wrap', color: 'rgba(255,255,255,0.8)', fontSize: '1rem', lineHeight: '1.6', margin: 0, fontFamily: 'var(--font-mono)' }}>
+            {adaptingMessage}
+          </pre>
+        </div>
+      </div>
+    );
+  }
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -571,6 +625,7 @@ export default function TestSession() {
               <span className="badge">{currentQuestion.category}</span>
               <span className="badge">{currentQuestion.topic}</span>
               <span className="badge badge-accent">{currentQuestion.type}</span>
+              <QuestionIntelligenceBadge attempts={currentQuestion.stats?.totalAttempts || 0} />
               <span className="badge">+1.0 / {config.negativeMarking ? '-0.33' : '0.0'} Marks</span>
             </div>
           </div>

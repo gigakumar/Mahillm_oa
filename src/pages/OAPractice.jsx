@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, Clock, Shuffle, List, Layers, Brain, Award } from 'lucide-react';
+import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, Clock, Shuffle, List, Layers, Brain, Award, Sparkles, Flame } from 'lucide-react';
+import IntelligenceDrawer from '../components/IntelligenceDrawer';
+import QuestionIntelligenceBadge from '../components/QuestionIntelligenceBadge';
 import { useScore } from '../contexts/ScoreContext';
 import { useUserData } from '../contexts/UserDataContext';
 import { selectNextQuestions, getAdaptiveSummary } from '../utils/adaptiveEngine';
@@ -625,6 +627,7 @@ export default function OAPractice() {
                 <span className={`badge badge-${question.difficulty === 'Easy' ? 'success' : question.difficulty === 'Medium' ? 'warning' : 'danger'}`}>
                   {question.difficulty}
                 </span>
+                <QuestionIntelligenceBadge attempts={question.stats?.totalAttempts || 0} />
                 {isAdaptive && selectionReasons[question.id] && (
                   <span className="reason-badge">
                     <Brain size={12} /> {selectionReasons[question.id]}
@@ -700,6 +703,9 @@ export default function OAPractice() {
                     <div dangerouslySetInnerHTML={{ __html: question.explanation }} />
                   </div>
                 )}
+                
+                {/* Intelligence Drawer (Phase 3B.3) */}
+                <IntelligenceDrawer question={question} />
               </div>
             )}
 

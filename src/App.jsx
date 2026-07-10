@@ -12,6 +12,7 @@ import Leaderboard from './pages/Leaderboard';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Tests from './pages/Tests';
+import SessionBriefing from './pages/tests/SessionBriefing';
 import TestSession from './pages/TestSession';
 import TestResult from './pages/TestResult';
 import Mistakes from './pages/Mistakes';
@@ -86,6 +87,13 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <Tests />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+                <Route path="/tests/session-briefing" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <SessionBriefing />
                     </Layout>
                   </ProtectedRoute>
                 } />
