@@ -307,6 +307,20 @@ export default function TestResult() {
             <span className="stat-value">{formatTime(result.timeSpentSeconds)}</span>
           </div>
         </div>
+        <div className="stat-card card">
+          <Clock size={24} className="stat-icon" style={{ color: 'var(--secondary)' }} />
+          <div>
+            <span className="stat-label">AVG TIME / Q</span>
+            <span className="stat-value">{result.attempted > 0 ? Math.round(result.timeSpentSeconds / result.attempted) : 0}s</span>
+          </div>
+        </div>
+        <div className="stat-card card">
+          <Award size={24} className="stat-icon" style={{ color: 'var(--accent)' }} />
+          <div>
+            <span className="stat-label">EST. PERCENTILE</span>
+            <span className="stat-value">{Math.min(99, Math.max(1, Math.round((result.accuracy || 0) * 0.8 + 15)))}th</span>
+          </div>
+        </div>
       </div>
 
       {/* Weak Areas Alerts */}
@@ -504,6 +518,11 @@ export default function TestResult() {
                     <span className="badge badge-secondary">{q.topic}</span>
                     <span className="badge badge-accent">{q.type}</span>
                     <QuestionIntelligenceBadge attempts={q.stats?.totalAttempts || 0} />
+                    {q.timeSpentSeconds !== undefined && (
+                      <span className="badge" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                        <Clock size={12} /> {q.timeSpentSeconds}s
+                      </span>
+                    )}
                   </div>
                   <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
                     {q.isAttempted && !q.isCorrect && (
@@ -514,6 +533,9 @@ export default function TestResult() {
                     <span style={{ fontWeight: 'bold', fontSize: '0.85rem', color: q.isAttempted ? (q.isCorrect ? 'var(--success)' : 'var(--danger)') : 'var(--text-secondary)' }}>
                       {q.isAttempted ? (q.isCorrect ? 'Correct ✓' : 'Incorrect ✗') : 'Unattempted'}
                     </span>
+                    <button className="icon-btn" onClick={() => {/* Add to bookmarks */}} title="Bookmark Question">
+                      <Bookmark size={14} />
+                    </button>
                     <button className="icon-btn" onClick={() => setReportingQ(q)} title="Report an issue with this question">
                       <Flag size={14} />
                     </button>

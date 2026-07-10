@@ -169,6 +169,21 @@ export default function RevisionSession() {
     );
   }
 
+  const handleForcePractice = () => {
+    const allItems = Object.values(spacedRepetition || {});
+    const upcoming = allItems
+      .sort((a, b) => new Date(a.nextReviewDate || 0) - new Date(b.nextReviewDate || 0))
+      .slice(0, 5);
+    
+    if (upcoming.length > 0) {
+      setDueList(upcoming);
+      setSessionCompleted(false);
+      setCurrentIdx(0);
+    } else {
+      alert("Your Mistake Notebook is completely empty. Practice some questions first!");
+    }
+  };
+
   if (dueList.length === 0 || sessionCompleted) {
     return (
       <div className="page-content revision-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
@@ -208,8 +223,8 @@ export default function RevisionSession() {
                 There are no questions due for spaced repetition revision today. Your memory is secure.
               </p>
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginTop: '1.5rem' }}>
-                <button className="btn btn-primary" onClick={() => navigate('/oa-practice')}>
-                  Practice Mode
+                <button className="btn btn-primary" onClick={handleForcePractice}>
+                  Force Practice Anyway
                 </button>
                 <button className="btn btn-secondary" onClick={() => navigate('/mistakes')}>
                   View Mistakes Notebook

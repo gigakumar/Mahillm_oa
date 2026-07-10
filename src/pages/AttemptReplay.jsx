@@ -128,10 +128,20 @@ export default function AttemptReplay() {
       {loading ? (
         <div style={{ textAlign: 'center', padding: '5rem 0' }}>Loading attempts database...</div>
       ) : progressList.length === 0 ? (
-        <div className="card" style={{ padding: '3rem', textAlign: 'center' }}>
-          <ShieldAlert size={48} style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }} />
-          <h3>No Attempts Found</h3>
-          <p style={{ color: 'var(--text-secondary)' }}>Solve questions in practice sessions or mocks to populate replay timelines.</p>
+        <div className="card" style={{ padding: '4rem', textAlign: 'center', maxWidth: '600px', margin: '0 auto' }}>
+          <ShieldAlert size={48} style={{ color: 'var(--text-secondary)', marginBottom: '1.5rem', opacity: 0.5 }} />
+          <h3 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>No Attempts Found</h3>
+          <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
+            Solve questions in practice sessions or mocks to populate replay timelines.
+          </p>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+            <button className="btn btn-primary" onClick={() => window.location.href = '/oa-practice'}>
+              Start Practice Mode
+            </button>
+            <button className="btn btn-secondary" onClick={() => window.location.href = '/tests'}>
+              Take a Mock Test
+            </button>
+          </div>
         </div>
       ) : (
         <div className="replay-container">

@@ -38,7 +38,17 @@ export default function Settings() {
           setGraduationYear(data.graduationYear || '2027');
           setTargetRole(data.targetRole || 'Graduate Engineer Trainee');
         } else {
-          setName(user.displayName || '');
+          const localData = localStorage.getItem(`user_profile_${user.uid}`);
+          if (localData) {
+            const data = JSON.parse(localData);
+            setName(data.name || user.displayName || '');
+            setBranch(data.branch || 'Mechanical Engineering');
+            setCollege(data.college || 'Birla Institute of Technology, Mesra');
+            setGraduationYear(data.graduationYear || '2027');
+            setTargetRole(data.targetRole || 'Graduate Engineer Trainee');
+          } else {
+            setName(user.displayName || '');
+          }
         }
       } catch (err) {
         console.error("Error loading settings:", err);
@@ -56,24 +66,32 @@ export default function Settings() {
 
     setSaving(true);
     setMessage('');
+    
+    const payload = {
+      name,
+      branch,
+      college,
+      graduationYear,
+      targetRole,
+      updatedAt: new Date().toISOString()
+    };
+
     try {
       const userRef = doc(db, 'users', user.uid);
-      await setDoc(userRef, {
-        name,
-        branch,
-        college,
-        graduationYear,
-        targetRole,
-        updatedAt: new Date().toISOString()
-      }, { merge: true });
+      await setDoc(userRef, payload, { merge: true });
 
       setMessage('Profile settings saved successfully!');
       setTimeout(() => {
         navigate('/profile');
       }, 1000);
     } catch (err) {
-      console.error("Error saving settings:", err);
-      setMessage('Failed to save settings. Please try again.');
+      console.warn("Firestore save failed, falling back to local storage:", err);
+      // Fallback for guests or permission denied
+      localStorage.setItem(`user_profile_${user.uid}`, JSON.stringify(payload));
+      setMessage('Profile settings saved locally!');
+      setTimeout(() => {
+        navigate('/profile');
+      }, 1000);
     } finally {
       setSaving(false);
     }

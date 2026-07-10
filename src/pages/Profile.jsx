@@ -52,6 +52,11 @@ export default function Profile() {
         const snap = await getDoc(userRef);
         if (snap.exists()) {
           setDbProfile(snap.data());
+        } else {
+          const localData = localStorage.getItem(`user_profile_${user.uid}`);
+          if (localData) {
+            setDbProfile(JSON.parse(localData));
+          }
         }
       } catch (err) {
         console.error("Error fetching academic profile:", err);

@@ -420,6 +420,42 @@ export default function TestSession() {
     setSelectedOptions(prev => ({ ...prev, [qId]: val }));
   };
 
+  // Keyboard Shortcuts
+  useEffect(() => {
+    if (questions.length === 0 || showConfirmSubmit) return;
+    
+    const handleKeyDown = (e) => {
+      // Don't trigger if user is typing in an input field (e.g. NAT)
+      if (e.target.tagName.toLowerCase() === 'input') return;
+
+      const q = questions[currentIdx];
+      switch(e.key) {
+        case 'ArrowRight':
+          handleNext();
+          break;
+        case 'ArrowLeft':
+          handlePrevious();
+          break;
+        case 'm':
+        case 'M':
+          handleMarkForReviewAndNext();
+          break;
+        case ' ': // Spacebar
+          e.preventDefault(); // prevent scrolling
+          handleClearResponse();
+          break;
+        case 'a': case 'A': if (q?.type !== 'NAT' && q?.options?.length > 0) handleOptionSelect(0); break;
+        case 'b': case 'B': if (q?.type !== 'NAT' && q?.options?.length > 1) handleOptionSelect(1); break;
+        case 'c': case 'C': if (q?.type !== 'NAT' && q?.options?.length > 2) handleOptionSelect(2); break;
+        case 'd': case 'D': if (q?.type !== 'NAT' && q?.options?.length > 3) handleOptionSelect(3); break;
+        default: break;
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [questions, currentIdx, showConfirmSubmit, selectedOptions, markedForReview]);
+
   const getQuestionStatusClass = (idx) => {
     const q = questions[idx];
     if (!q) return 'palette-btn not-visited';
