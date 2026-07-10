@@ -45,6 +45,169 @@ export function UserDataProvider({ children }) {
       return;
     }
 
+    // Auto-backfill attempts from completed tests or legacy arrays if questionProgress is empty
+    const checkAndBackfill = async () => {
+      try {
+        const progressColRef = collection(db, 'users', user.uid, 'questionProgress');
+        const progressSnap = await getDocs(progressColRef);
+        
+        const userRef = doc(db, 'users', user.uid);
+        const userSnap = await getDoc(userRef);
+        const userData = userSnap.exists() ? userSnap.data() : {};
+        const correctQs = userData.correctQuestions || [];
+        const incorrectQs = userData.incorrectQuestions || [];
+        
+        // If they have less than 10 progress entries but might have completed tests or legacy arrays, backfill!
+        if (progressSnap.size < 10 && (correctQs.length > 0 || incorrectQs.length > 0 || userData.totalAttempted > 0)) {
+          console.log(`[Backfill] Starting telemetry reconstruction for user.`);
+          
+          // Load question data files dynamically to get details (topics/categories)
+          const [me, qa, di, dilr, lr] = await Promise.all([
+            import('../data/mechEngQuestions.js'),
+            import('../data/quantsQuestions.js'),
+            import('../data/dataInterpretationQuestions.js'),
+            import('../data/dilrQuestions.js'),
+            import('../data/logicalReasoningQuestions.js')
+          ]);
+          const allQs = [...me.default, ...qa.default, ...di.default, ...dilr.default, ...lr.default];
+          
+          const batchPromises = [];
+          const processedQIds = new Set();
+
+          // Helper to build key matching buildCompositeKey in adaptiveEngine
+          const buildCompositeKey = (category, topic) => {
+            return `${category || 'unknown'}_${topic || 'unknown'}`.replace(/\s+/g, '_');
+          };
+
+          // 1. Backfill from legacy arrays
+          const migrateLegacyArrayItem = (qId, isCorrect) => {
+            const qIdStr = qId.toString();
+            if (processedQIds.has(qIdStr)) return;
+            processedQIds.add(qIdStr);
+
+            const quest = allQs.find(q => q.id.toString() === qIdStr);
+            if (!quest) return;
+
+            const progressRef = doc(db, 'users', user.uid, 'questionProgress', qIdStr);
+            batchPromises.push(setDoc(progressRef, {
+              status: isCorrect ? 'correct' : 'incorrect',
+              attempts: 1,
+              solveTimeMs: 45000,
+              confidence: 'sure',
+              updatedAt: new Date().toISOString()
+            }, { merge: true }));
+
+            const compositeKey = buildCompositeKey(quest.category, quest.topic);
+            const masteryRef = doc(db, 'users', user.uid, 'masteryData', compositeKey);
+            batchPromises.push(setDoc(masteryRef, {
+              category: quest.category,
+              topic: quest.topic,
+              score: isCorrect ? 0.65 : 0.35,
+              attempts: 1,
+              correctCount: isCorrect ? 1 : 0,
+              streak: isCorrect ? 1 : 0,
+              lastAttempted: new Date().toISOString(),
+              avgSolveTimeMs: 45000
+            }, { merge: true }));
+
+            if (!isCorrect) {
+              const mistakeRef = doc(db, 'users', user.uid, 'mistakes', qIdStr);
+              batchPromises.push(setDoc(mistakeRef, {
+                questionId: quest.id,
+                category: quest.category,
+                topic: quest.topic,
+                type: quest.type || 'MCQ',
+                mistakeType: 'conceptual',
+                firstIncorrectAt: new Date().toISOString(),
+                lastIncorrectAt: new Date().toISOString(),
+                timesIncorrect: 1,
+                isResolved: false,
+                resolvedAt: null,
+                userNote: ''
+              }, { merge: true }));
+            }
+          };
+
+          correctQs.forEach(qId => migrateLegacyArrayItem(qId, true));
+          incorrectQs.forEach(qId => migrateLegacyArrayItem(qId, false));
+
+          // 2. Backfill from completed tests
+          const testsColRef = collection(db, 'users', user.uid, 'tests');
+          const testsSnap = await getDocs(testsColRef);
+          
+          testsSnap.forEach((testDoc) => {
+            const testData = testDoc.data();
+            const report = testData.report || [];
+            
+            report.forEach((rep) => {
+              const qIdStr = rep.id.toString();
+              if (processedQIds.has(qIdStr)) return;
+              processedQIds.add(qIdStr);
+
+              const quest = allQs.find(q => q.id.toString() === qIdStr);
+              if (!quest) return;
+
+              const progressRef = doc(db, 'users', user.uid, 'questionProgress', qIdStr);
+              batchPromises.push(setDoc(progressRef, {
+                status: rep.isCorrect ? 'correct' : 'incorrect',
+                attempts: 1,
+                solveTimeMs: rep.timeSpent ? rep.timeSpent * 1000 : 45000,
+                confidence: rep.confidence || 'sure',
+                updatedAt: testData.submittedAt || new Date().toISOString()
+              }, { merge: true }));
+
+              const compositeKey = buildCompositeKey(quest.category, quest.topic);
+              const masteryRef = doc(db, 'users', user.uid, 'masteryData', compositeKey);
+              batchPromises.push(setDoc(masteryRef, {
+                category: quest.category,
+                topic: quest.topic,
+                score: rep.isCorrect ? 0.65 : 0.35,
+                attempts: 1,
+                correctCount: rep.isCorrect ? 1 : 0,
+                streak: rep.isCorrect ? 1 : 0,
+                lastAttempted: testData.submittedAt || new Date().toISOString(),
+                avgSolveTimeMs: rep.timeSpent ? rep.timeSpent * 1000 : 45000
+              }, { merge: true }));
+
+              if (!rep.isCorrect) {
+                const mistakeRef = doc(db, 'users', user.uid, 'mistakes', qIdStr);
+                batchPromises.push(setDoc(mistakeRef, {
+                  questionId: quest.id,
+                  category: quest.category,
+                  topic: quest.topic,
+                  type: quest.type || 'MCQ',
+                  mistakeType: 'conceptual',
+                  firstIncorrectAt: testData.submittedAt || new Date().toISOString(),
+                  lastIncorrectAt: testData.submittedAt || new Date().toISOString(),
+                  timesIncorrect: 1,
+                  isResolved: false,
+                  resolvedAt: null,
+                  userNote: ''
+                }, { merge: true }));
+              }
+            });
+          });
+
+          if (batchPromises.length > 0) {
+            await Promise.all(batchPromises);
+            console.log(`[Backfill] Successfully backfilled ${processedQIds.size} question attempts.`);
+            
+            // Clean up legacy arrays to prevent repeated migration
+            if (correctQs.length > 0 || incorrectQs.length > 0) {
+              await updateDoc(userRef, {
+                correctQuestions: [],
+                incorrectQuestions: []
+              });
+            }
+          }
+        }
+      } catch (err) {
+        console.error("[Backfill] Error reconstructing history:", err);
+      }
+    };
+
+    checkAndBackfill();
+
     setLoading(true);
 
     const userDocRef = doc(db, 'users', user.uid);
@@ -223,6 +386,7 @@ export function UserDataProvider({ children }) {
       // 5. Extended detailed questionProgress log
       const progressRef = doc(db, 'users', user.uid, 'questionProgress', qId);
       await setDoc(progressRef, {
+        status: isCorrect ? 'correct' : 'incorrect',
         attempts: increment(1),
         solveTimeMs,
         confidence,
