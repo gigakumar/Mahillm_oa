@@ -1,0 +1,208 @@
+.drawer-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10000;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.concept-drawer {
+  width: 100%;
+  max-width: 460px;
+  background: var(--bg-card);
+  height: 100%;
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border-color);
+  animation: slideInRight 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.drawer-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.category-tag {
+  font-size: 0.75rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.drawer-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.close-btn:hover {
+  color: var(--text-primary);
+}
+
+.drawer-content {
+  padding: 2rem 1.5rem;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.stats-row-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.stat-box {
+  background: var(--bg-body);
+  border: 1px solid var(--border-color);
+  padding: 0.75rem 0.5rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.stat-box .lbl {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.stat-box .val {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.status-badge-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+}
+
+.status-badge-row .lbl {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.status-badge-val {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.status-unstable { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+.status-mastered { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.status-weak { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+.status-unknown { background: rgba(255, 255, 255, 0.08); color: var(--text-secondary); }
+
+.details-section h3 {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.diagnosis-text {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.failure-pattern-box {
+  background: rgba(239, 68, 68, 0.05);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.failure-pattern-box strong {
+  color: #ef4444;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.failure-pattern-box p {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.action-recommend-box {
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  padding: 1.25rem;
+  border-radius: 8px;
+}
+
+.action-recommend-box strong {
+  color: #a78bfa;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.action-recommend-box p {
+  margin: 0 0 1rem 0;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.zero-telemetry-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  gap: 1rem;
+}
+
+.zero-telemetry-state .warning-icon {
+  color: var(--warning);
+}
+
+.exposure-requirements {
+  background: rgba(255,255,255,0.02);
+  padding: 1rem;
+  border-radius: 8px;
+  width: 100%;
+  text-align: left;
+  font-size: 0.85rem;
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

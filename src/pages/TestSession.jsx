@@ -503,6 +503,8 @@ export default function TestSession() {
     
     const testResult = {
       testName: config.name,
+      mode: config.mode || 'preset',
+      intent: config.intent || 'OPTIMAL',
       total: questions.length,
       attempted: correctCount + incorrectCount,
       correct: correctCount,

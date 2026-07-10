@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { db } from '../firebase';
 import { collection, query, getDocs, orderBy } from 'firebase/firestore';
-import { Clipboard, Play, RotateCcw, BarChart2, Plus, RefreshCw, Trash2, Calendar, Award } from 'lucide-react';
+import { Clipboard, Play, RotateCcw, BarChart2, Plus, RefreshCw, Trash2, Calendar, Award, Lock, Unlock } from 'lucide-react';
+import { MOCK_TESTS } from '../data/mockSeriesConfig';
 import './Tests.css';
 
 import metadata from '../data/metadata';
@@ -20,7 +21,7 @@ export default function Tests() {
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  const [activeTab, setActiveTab] = useState('presets'); // 'presets' | 'custom' | 'history'
+  const [activeTab, setActiveTab] = useState('mocks'); // 'mocks' | 'presets' | 'custom' | 'history'
   const [history, setHistory] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
 
@@ -163,6 +164,9 @@ export default function Tests() {
 
       {/* Tabs */}
       <div className="portal-tabs">
+        <button className={`tab-btn ${activeTab === 'mocks' ? 'active' : ''}`} onClick={() => setActiveTab('mocks')}>
+          <Award size={16} /> Mock Series
+        </button>
         <button className={`tab-btn ${activeTab === 'presets' ? 'active' : ''}`} onClick={() => setActiveTab('presets')}>
           <Clipboard size={16} /> Exam Presets
         </button>
@@ -176,6 +180,62 @@ export default function Tests() {
 
       {/* Active Tab View */}
       <div className="portal-view card">
+        {activeTab === 'mocks' && (
+          <div className="mocks-list" style={{ animation: 'fadeIn 0.3s ease-out' }}>
+            <h2>Scheduled Mock Test Series 🏆</h2>
+            <p className="section-desc">Locked tests will unlock automatically on their scheduled release dates.</p>
+            
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginTop: '1.5rem' }}>
+              {MOCK_TESTS.map(mock => {
+                const isLocked = new Date() < new Date(mock.unlockDate);
+                const dateStr = new Date(mock.unlockDate).toLocaleDateString('en-IN', {
+                  day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit'
+                });
+
+                return (
+                  <div key={mock.id} className="card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem', background: 'var(--bg-body)', borderTop: isLocked ? '4px solid var(--border)' : '4px solid var(--success)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>{mock.name}</h3>
+                      {isLocked ? <Lock size={16} style={{ color: 'var(--text-secondary)' }} /> : <Unlock size={16} style={{ color: 'var(--success)' }} />}
+                    </div>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.4 }}>{mock.description}</p>
+                    <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.8rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
+                      <span className="badge" style={{ background: 'var(--bg-card)' }}>{mock.duration} Mins</span>
+                      <span className="badge" style={{ background: 'var(--bg-card)' }}>{mock.count} Qs</span>
+                      {mock.negativeMarking && <span className="badge badge-danger-soft">-1/3 Mark</span>}
+                    </div>
+                    
+                    {isLocked ? (
+                      <div style={{ marginTop: 'auto', fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                        Unlocks: {dateStr}
+                      </div>
+                    ) : (
+                      <button 
+                        className="btn btn-primary" 
+                        style={{ marginTop: 'auto', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', width: 'fit-content' }}
+                        onClick={() => {
+                          localStorage.setItem('current_test_config', JSON.stringify({
+                            name: mock.name,
+                            duration: mock.duration,
+                            difficulty: 'all',
+                            negativeMarking: mock.negativeMarking,
+                            distribution: mock.distribution,
+                            count: mock.count
+                          }));
+                          localStorage.removeItem('current_test_session');
+                          navigate('/tests/session');
+                        }}
+                      >
+                        <Play size={12} fill="currentColor" /> Start Mock
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {activeTab === 'presets' && (
           <div className="presets-list">
             <h2>Select a Test Preset ⚡</h2>

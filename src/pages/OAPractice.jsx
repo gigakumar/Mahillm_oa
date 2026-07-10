@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, Clock, Shuffle, List, Layers, Brain, Award, Sparkles, Flame } from 'lucide-react';
 import IntelligenceDrawer from '../components/IntelligenceDrawer';
 import QuestionIntelligenceBadge from '../components/QuestionIntelligenceBadge';
@@ -34,19 +34,26 @@ function shuffleArray(arr) {
 }
 
 export default function OAPractice() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const initialCat = searchParams.get('cat') || 'all';
+  const catParam = searchParams.get('cat');
+  const topicParam = searchParams.get('topic');
 
   const { scoreData, toggleBookmark } = useScore();
   const { masteryScores, mistakes, spacedRepetition, recordDetailedAnswer } = useUserData();
   const [progressMap, setProgressMap] = useState({});
   const [xpFeedback, setXpFeedback] = useState(null);
   
-  const [category, setCategory] = useState(initialCat);
+  const [isSessionActive, setIsSessionActive] = useState(!!catParam);
+  const [category, setCategory] = useState(catParam || 'all');
   
   useEffect(() => {
-    setCategory(initialCat);
-  }, [initialCat]);
+    if (catParam) {
+      setCategory(catParam);
+      if (topicParam) setTopic(topicParam);
+      setIsSessionActive(true);
+    }
+  }, [catParam, topicParam]);
 
   const [difficulty, setDifficulty] = useState('all');
   const [topic, setTopic] = useState('all');
@@ -184,6 +191,7 @@ export default function OAPractice() {
   };
 
   useEffect(() => {
+    if (!isSessionActive) return;
     if (prevCategoryRef.current !== category) {
       prevCategoryRef.current = category;
       if (topic === 'all') {
@@ -194,7 +202,7 @@ export default function OAPractice() {
       return;
     }
     loadActivePool();
-  }, [category, difficulty, topic, isAdaptive]);
+  }, [category, difficulty, topic, isAdaptive, isSessionActive]);
 
   const regenerateQuiz = () => {
     loadActivePool();
@@ -360,10 +368,104 @@ export default function OAPractice() {
     );
   }
 
+  if (!isSessionActive) {
+    const handleStartIntent = (intentName, customTopic = null) => {
+      localStorage.setItem('current_test_config', JSON.stringify({
+        mode: 'adaptive',
+        intent: intentName,
+        targetConcept: customTopic,
+        category: 'Mechanical Engineering', // default fallback
+        duration: 18,
+        count: 12
+      }));
+      navigate('/tests/session-briefing');
+    };
+
+    const handleCategoryClick = (catName) => {
+      setCategory(catName);
+      setTopic('all');
+      setIsSessionActive(true);
+    };
+
+    return (
+      <div className="page-content practice-page practice-hub">
+        <header className="intel-header">
+          <h1>Practice Hub</h1>
+          <p className="subtitle">
+            Choose your learning route: launch targeted adaptive intent sessions or browse the question bank.
+          </p>
+        </header>
+
+        {/* ADAPTIVE PRACTICE SECTION */}
+        <section className="intel-section card" style={{ padding: '2rem', marginBottom: '2.5rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-display)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+            <Brain size={20} style={{ color: 'var(--accent)' }} /> Adaptive Practice Intents
+          </h2>
+          <div className="intents-grid">
+            <button className="intent-card card" onClick={() => handleStartIntent('OPTIMAL')}>
+              <strong>Continue my path</strong>
+              <span>Adaptive traversal through optimal syllabus route</span>
+            </button>
+            <button className="intent-card card" onClick={() => handleStartIntent('WEAKNESS_REPAIR')}>
+              <strong>Repair weaknesses</strong>
+              <span>Target and patch performance loops and prerequisites</span>
+            </button>
+            <button className="intent-card card" onClick={() => handleStartIntent('STRETCH')}>
+              <strong>Challenge me</strong>
+              <span>Push Elos above your estimated ability boundary</span>
+            </button>
+            <button className="intent-card card" onClick={() => handleStartIntent('DECAY_RECOVERY')}>
+              <strong>Recover forgotten concepts</strong>
+              <span>Reinforce items identified with high decay risk</span>
+            </button>
+            <button className="intent-card card" onClick={() => handleStartIntent('MISTAKE_REPAIR')}>
+              <strong>Fix my mistakes</strong>
+              <span>Train specifically on active mistakes notebook</span>
+            </button>
+          </div>
+        </section>
+
+        {/* BROWSE QUESTION BANK SECTION */}
+        <section className="intel-section">
+          <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-display)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
+            <BookOpen size={20} style={{ color: 'var(--primary)' }} /> Browse Question Bank
+          </h2>
+          <div className="links-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem' }}>
+            <div className="link-card card card-interactive" onClick={() => handleCategoryClick('Mechanical Engineering')} style={{ cursor: 'pointer' }}>
+              <span className="link-emoji">🔩</span>
+              <h3>Mechanical Engg</h3>
+              <p>Thermo, Fluids, SOM, Manufacturing, Machine Design & more</p>
+            </div>
+            <div className="link-card card card-interactive" onClick={() => handleCategoryClick('Quantitative Aptitude')} style={{ cursor: 'pointer' }}>
+              <span className="link-emoji">🧮</span>
+              <h3>Quantitative Aptitude</h3>
+              <p>Percentages, Profit & Loss, Time & Work, Algebra, Geometry</p>
+            </div>
+            <div className="link-card card card-interactive" onClick={() => handleCategoryClick('Data Interpretation')} style={{ cursor: 'pointer' }}>
+              <span className="link-emoji">📊</span>
+              <h3>Data Interpretation</h3>
+              <p>Tables, Bar, Pie, Line charts — read data, spot trends</p>
+            </div>
+            <div className="link-card card card-interactive" onClick={() => handleCategoryClick('DILR')} style={{ cursor: 'pointer' }}>
+              <span className="link-emoji">🧩</span>
+              <h3>DILR Puzzles</h3>
+              <p>Logical Seating arrangements, constraint satisfaction, ordering</p>
+            </div>
+            <div className="link-card card card-interactive" onClick={() => handleCategoryClick('Logical Reasoning')} style={{ cursor: 'pointer' }}>
+              <span className="link-emoji">🧠</span>
+              <h3>Logical Reasoning</h3>
+              <p>Series, coding-decoding, direction sense, syllogisms</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   const progress = quizQuestions.length > 0 ? ((currentIdx + 1) / quizQuestions.length) * 100 : 0;
 
   return (
-    <div className="page-content oa-practice">
+    <div className="page-content practice-page">
       {xpFeedback && (
         <div className={`floating-xp-toast ${xpFeedback.isCorrect ? 'correct' : 'incorrect'}`}>
           <div className="xp-toast-content">

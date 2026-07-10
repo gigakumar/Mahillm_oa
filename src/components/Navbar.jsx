@@ -18,7 +18,8 @@ import {
   FileText,
   Play,
   ChevronDown,
-  User
+  User,
+  Brain
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -109,8 +110,8 @@ export default function Navbar() {
             </span>
           )}
         </Link>
-        <Link to="/readiness" className={`nav-link ${isActive('/readiness') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-          <BarChart2 size={16} /> Readiness
+        <Link to="/intelligence" className={`nav-link ${isActive('/intelligence') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+          <Brain size={16} /> Intelligence
         </Link>
 
         {/* More dropdown */}

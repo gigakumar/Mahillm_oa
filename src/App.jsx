@@ -17,7 +17,7 @@ import TestSession from './pages/TestSession';
 import TestResult from './pages/TestResult';
 import Mistakes from './pages/Mistakes';
 import RevisionSession from './pages/RevisionSession';
-import ReadinessHeatmap from './pages/ReadinessHeatmap';
+import Intelligence from './pages/Intelligence';
 import AttemptReplay from './pages/AttemptReplay';
 import AdminDashboard from './pages/AdminDashboard';
 import DailyChallenge from './pages/DailyChallenge';
@@ -129,9 +129,13 @@ function App() {
                 } />
 
                 <Route path="/readiness" element={
+                  <Navigate to="/intelligence" replace />
+                } />
+
+                <Route path="/intelligence" element={
                   <ProtectedRoute>
                     <Layout>
-                      <ReadinessHeatmap />
+                      <Intelligence />
                     </Layout>
                   </ProtectedRoute>
                 } />

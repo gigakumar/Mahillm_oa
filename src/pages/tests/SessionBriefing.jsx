@@ -28,9 +28,58 @@ export default function SessionBriefing() {
 
   if (!config) return null;
 
+  const intent = config.intent || 'OPTIMAL';
+
+  const intentDetails = {
+    OPTIMAL: {
+      title: "OPTIMAL SYLLABUS PATH",
+      difficulty: "DYNAMIC (Targeting 75% Success)",
+      objective: "Calibrating your optimal mastery progression route across all categories.",
+      composition: "Target difficulty: 50% | Above: 25% | Below: 25%"
+    },
+    WEAKNESS_REPAIR: {
+      title: "WEAKNESS REPAIR SESSION",
+      difficulty: "STABILIZING",
+      objective: "Target and repair active performance weakness loops and prerequisite concept gaps.",
+      composition: "Target difficulty: 40% | Prerequisite: 40% | Below: 20%"
+    },
+    STRETCH: {
+      title: "CHALLENGE SESSION",
+      difficulty: "STRETCH",
+      objective: "Test performance above your current estimated ability boundary.",
+      composition: "Target difficulty: 35% | Above target: 60% | Below target: 5%"
+    },
+    DECAY_RECOVERY: {
+      title: "DECAY RECOVERY SESSION",
+      difficulty: "RETENTION REINFORCEMENT",
+      objective: "Reinforce concepts identified as having high memory decay risk.",
+      composition: "Decaying concepts: 70% | Baseline: 30%"
+    },
+    MISTAKE_REPAIR: {
+      title: "MISTAKE REPAIR SESSION",
+      difficulty: "FOCUSED",
+      objective: "Train specifically on patterns retrieved from your active Mistakes Notebook.",
+      composition: "Mistake fingerprinted: 80% | Unseen: 20%"
+    },
+    ASSESSMENT: {
+      title: "READINESS ASSESSMENT",
+      difficulty: "BENCHMARK CALIBRATION",
+      objective: "Run diagnostics to establish baseline syllabus readiness scores.",
+      composition: "Balanced coverage: 100%"
+    },
+    CONCEPT_REPAIR: {
+      title: "CONCEPT REPAIR: " + (config.targetConcept || "General"),
+      difficulty: "FOCUSED CALIBRATION",
+      objective: `Directly targets stability restoration for concept: ${config.targetConcept || "General"}.`,
+      composition: `${config.targetConcept || "General"}: 75% | Mixed: 25%`
+    }
+  };
+
+  const details = intentDetails[intent] || intentDetails.OPTIMAL;
+
   return (
     <div className="page-content briefing-page">
-      <button className="btn-back" onClick={() => navigate('/dashboard')}>
+      <button className="btn-back" onClick={() => navigate('/')}>
         <ChevronLeft size={20} /> Back to Command Center
       </button>
 
@@ -40,7 +89,7 @@ export default function SessionBriefing() {
             <div className={`pulse-ring ${calibrating ? 'active' : ''}`}></div>
             <div className="pulse-dot"></div>
           </div>
-          <h1>{calibrating ? 'CALIBRATING SESSION...' : 'ADAPTIVE SESSION READY'}</h1>
+          <h1>{calibrating ? 'CALIBRATING SESSION...' : details.title}</h1>
         </div>
 
         <div className="briefing-grid">
@@ -48,22 +97,24 @@ export default function SessionBriefing() {
             <div className="detail-item">
               <Target size={18} className="detail-icon" />
               <div className="detail-text">
-                <span className="label">Session Intent</span>
-                <span className="value">CONTINUE ADAPTIVE PATH</span>
+                <span className="label">Session Objective</span>
+                <span className="value" style={{ fontSize: '1rem', fontWeight: 'normal', fontFamily: 'inherit', color: 'var(--text-secondary)' }}>
+                  {details.objective}
+                </span>
               </div>
             </div>
             <div className="detail-item">
               <Activity size={18} className="detail-icon" />
               <div className="detail-text">
-                <span className="label">Difficulty Strategy</span>
-                <span className="value">DYNAMIC (Targeting 75% Success)</span>
+                <span className="label">Composition Strategy</span>
+                <span className="value">{details.composition}</span>
               </div>
             </div>
             <div className="detail-item">
               <Clock size={18} className="detail-icon" />
               <div className="detail-text">
                 <span className="label">Length & Time</span>
-                <span className="value">{config.count} questions · ~{config.duration} mins</span>
+                <span className="value">{config.count || 12} questions · ~{config.duration || 18} mins</span>
               </div>
             </div>
           </div>
@@ -72,16 +123,12 @@ export default function SessionBriefing() {
             <h3>TARGET TOPICS</h3>
             <ul className="target-list">
               <li>
-                <span className="topic-cat">Thermodynamics</span>
-                <span className="topic-focus">Priority: Entropy</span>
+                <span className="topic-cat">{config.targetConcept ? config.category : "Thermodynamics"}</span>
+                <span className="topic-focus">{config.targetConcept ? `Focus: ${config.targetConcept}` : "Priority: Entropy"}</span>
               </li>
               <li>
-                <span className="topic-cat">Strength of Materials</span>
-                <span className="topic-focus">Priority: Bending Stresses</span>
-              </li>
-              <li>
-                <span className="topic-cat">Quantitative Aptitude</span>
-                <span className="topic-focus">Maintaining Baseline</span>
+                <span className="topic-cat">{config.targetConcept ? "Quantitative Aptitude" : "Strength of Materials"}</span>
+                <span className="topic-focus">{config.targetConcept ? "Maintaining baseline" : "Priority: Bending Stresses"}</span>
               </li>
             </ul>
           </div>
