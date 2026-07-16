@@ -24,6 +24,7 @@ import DailyChallenge from './pages/DailyChallenge';
 import Formulas from './pages/Formulas';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
+import Stats from './pages/Stats';
 
 
 function ProtectedRoute({ children }) {
@@ -79,6 +80,14 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <Leaderboard />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/stats" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Stats />
                     </Layout>
                   </ProtectedRoute>
                 } />

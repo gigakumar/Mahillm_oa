@@ -113,6 +113,9 @@ export default function Navbar() {
         <Link to="/intelligence" className={`nav-link ${isActive('/intelligence') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
           <Brain size={16} /> Intelligence
         </Link>
+        <Link to="/stats" className={`nav-link ${isActive('/stats') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+          <BarChart2 size={16} /> Stats
+        </Link>
 
         {/* More dropdown */}
         <div className="nav-dropdown-wrapper">

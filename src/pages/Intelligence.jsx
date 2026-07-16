@@ -231,6 +231,90 @@ export default function Intelligence() {
         </div>
       </section>
 
+      {/* COGNITIVE INSIGHTS SECTION */}
+      <section className="intel-insights-section" style={{ marginTop: '2rem', marginBottom: '2rem' }}>
+        <div className="section-header">
+          <h2><Brain size={20} /> Cognitive Insights</h2>
+          <span className="tag-secondary">AI-Generated Learning Diagnostics</span>
+        </div>
+        
+        {isZeroData || activeInsights.length === 0 ? (
+          <div className="card empty-insights-card">
+            <div className="empty-insights-icon">🎉</div>
+            <h3>No active learning issues detected</h3>
+            <p>Keep practicing to generate insights on your learning patterns, confidence, and mistakes.</p>
+          </div>
+        ) : (
+          <div className="insights-list">
+            {activeInsights.map(insight => (
+              <div key={insight.insightId} className={`card insight-card severity-${insight.severity.toLowerCase()}`}>
+                <div className="insight-card-header">
+                  <div className="insight-title-row">
+                    <span className={`badge badge-${insight.severity === 'HIGH' ? 'danger' : 'warning'}-soft insight-severity-badge`}>
+                      {insight.severity} PRIORITY
+                    </span>
+                    <h3>{insight.title}</h3>
+                  </div>
+                  <div className="insight-confidence-wrapper">
+                    <span className="confidence-label">Confidence</span>
+                    <div className="confidence-track">
+                      <div className="confidence-fill" style={{ width: `${Math.round(insight.confidence * 100)}%` }}></div>
+                    </div>
+                    <span className="confidence-value">{Math.round(insight.confidence * 100)}%</span>
+                  </div>
+                </div>
+                
+                <p className="insight-summary">{insight.summary}</p>
+                
+                <div className="insight-evidence-bar">
+                  <Activity size={14} />
+                  <span>Based on {insight.evidence.evidenceCount}/{insight.evidence.sampleSize} questions ({Math.round(insight.evidence.currentRate)}%)</span>
+                </div>
+                
+                <div className="insight-affected-concepts">
+                  <span className="affected-label">Affected Concepts:</span>
+                  <div className="affected-chips">
+                    {insight.affectedConcepts.map(concept => (
+                      <button 
+                        key={concept} 
+                        className="concept-chip"
+                        onClick={() => navigate(`/oa-practice?topic=${encodeURIComponent(concept)}`)}
+                      >
+                        {concept}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="insight-actions">
+                  <button 
+                    className="btn btn-primary insight-cta-btn"
+                    onClick={() => {
+                      if (insight.recommendedIntent === 'MISTAKE_REPAIR') navigate('/mistakes');
+                      else if (insight.recommendedIntent === 'WEAKNESS_REPAIR') handleIntentLaunch('WEAKNESS_REPAIR');
+                      else if (insight.recommendedIntent === 'STRETCH') handleIntentLaunch('STRETCH');
+                      else if (insight.recommendedIntent === 'DECAY_RECOVERY') navigate('/revision');
+                      else navigate('/oa-practice');
+                    }}
+                  >
+                    {insight.recommendedIntent === 'MISTAKE_REPAIR' ? 'Fix these mistakes →' :
+                     insight.recommendedIntent === 'WEAKNESS_REPAIR' ? 'Target weak topics →' :
+                     insight.recommendedIntent === 'STRETCH' ? 'Challenge yourself →' :
+                     insight.recommendedIntent === 'DECAY_RECOVERY' ? 'Start revision →' : 'Practice now →'}
+                  </button>
+                  <button 
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => setSelectedInsight(insight)}
+                  >
+                    View Evidence
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
       {/* 12-COLUMN MAIN LAYOUT GRID */}
       <div className="intel-grid">
         

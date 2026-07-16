@@ -1,27 +1,54 @@
 import { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore';
-import { Trophy, Medal, Star, Shield, Award } from 'lucide-react';
+import { Trophy, Medal, Star, Shield, Award, Zap, Activity, Target } from 'lucide-react';
 import './Leaderboard.css';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Leaderboard() {
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('xp');
+  const [timeframe, setTimeframe] = useState('all-time');
   const { user } = useAuth();
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
+      setLoading(true);
       try {
         const usersRef = collection(db, 'users');
-        const q = query(usersRef, orderBy('xp', 'desc'), limit(50));
+        
+        let q;
+        let field = 'xp';
+        if (activeTab === 'streak') field = 'streak';
+        if (activeTab === 'questions') field = 'totalAttempted';
+        
+        if (timeframe === 'weekly') field = `${field}_weekly`;
+        if (timeframe === 'monthly') field = `${field}_monthly`;
+
+        if (activeTab === 'accuracy') {
+          q = query(usersRef, orderBy('totalAttempted', 'desc'), limit(100));
+        } else {
+          // If timeframe fields don't exist yet, it might return empty. 
+          // For now, if timeframe is not all-time, we will try to fetch but gracefully handle empty
+          q = query(usersRef, orderBy(field, 'desc'), limit(50));
+        }
+
         const querySnapshot = await getDocs(q);
         
-        const leaderboardData = [];
+        let leaderboardData = [];
         querySnapshot.forEach((doc) => {
           leaderboardData.push({ id: doc.id, ...doc.data() });
         });
         
+        if (activeTab === 'accuracy') {
+          leaderboardData.forEach(user => {
+            user.computedAccuracy = user.totalAttempted ? (user.totalCorrect || 0) / user.totalAttempted : 0;
+          });
+          leaderboardData.sort((a, b) => b.computedAccuracy - a.computedAccuracy);
+          leaderboardData = leaderboardData.slice(0, 50);
+        }
+
         setLeaders(leaderboardData);
       } catch (error) {
         console.error("Error fetching leaderboard: ", error);
@@ -31,7 +58,7 @@ export default function Leaderboard() {
     };
 
     fetchLeaderboard();
-  }, []);
+  }, [activeTab, timeframe]);
 
   // Split top 3 for podium and others for table list
   const topThree = leaders.slice(0, 3);
@@ -63,6 +90,53 @@ export default function Leaderboard() {
         </div>
         <p>Compete with other engineers. Solve placement questions to claim your position at the top.</p>
       </header>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div className="leaderboard-tabs" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+          <button 
+            className={`btn ${activeTab === 'xp' ? 'btn-primary' : 'btn-ghost'}`}
+            onClick={() => setActiveTab('xp')}
+          >
+            <Zap size={16} /> Total XP
+          </button>
+          <button 
+            className={`btn ${activeTab === 'accuracy' ? 'btn-primary' : 'btn-ghost'}`}
+            onClick={() => setActiveTab('accuracy')}
+          >
+            <Target size={16} /> Accuracy
+          </button>
+          <button 
+            className={`btn ${activeTab === 'streak' ? 'btn-primary' : 'btn-ghost'}`}
+            onClick={() => setActiveTab('streak')}
+          >
+            <Activity size={16} /> Streak
+          </button>
+          <button 
+            className={`btn ${activeTab === 'questions' ? 'btn-primary' : 'btn-ghost'}`}
+            onClick={() => setActiveTab('questions')}
+          >
+            <Award size={16} /> Questions Solved
+          </button>
+        </div>
+
+        <div className="timeframe-tabs" style={{ display: 'flex', background: 'var(--bg-secondary)', padding: '0.25rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-color)' }}>
+          <button 
+            className={`btn ${timeframe === 'weekly' ? 'btn-primary' : 'btn-ghost'}`}
+            style={{ padding: '0.25rem 0.75rem', fontSize: '0.85rem' }}
+            onClick={() => setTimeframe('weekly')}
+          >Weekly</button>
+          <button 
+            className={`btn ${timeframe === 'monthly' ? 'btn-primary' : 'btn-ghost'}`}
+            style={{ padding: '0.25rem 0.75rem', fontSize: '0.85rem' }}
+            onClick={() => setTimeframe('monthly')}
+          >Monthly</button>
+          <button 
+            className={`btn ${timeframe === 'all-time' ? 'btn-primary' : 'btn-ghost'}`}
+            style={{ padding: '0.25rem 0.75rem', fontSize: '0.85rem' }}
+            onClick={() => setTimeframe('all-time')}
+          >All Time</button>
+        </div>
+      </div>
 
       {loading ? (
         <div className="loading-state card" style={{ padding: '4rem', textAlign: 'center' }}>
@@ -181,9 +255,10 @@ export default function Leaderboard() {
                     <th>Rank</th>
                     <th>Engineer</th>
                     <th>Placement Tier</th>
-                    <th>Accuracy</th>
-                    <th>Questions</th>
-                    <th>Total XP</th>
+                    <th style={{ color: activeTab === 'accuracy' ? 'var(--accent)' : 'inherit' }}>Accuracy</th>
+                    <th style={{ color: activeTab === 'questions' ? 'var(--accent)' : 'inherit' }}>Questions</th>
+                    <th style={{ color: activeTab === 'xp' ? 'var(--accent)' : 'inherit' }}>Total XP</th>
+                    <th style={{ color: activeTab === 'streak' ? 'var(--accent)' : 'inherit' }}>Streak</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -221,18 +296,20 @@ export default function Leaderboard() {
                               {badgeInfo.label}
                             </span>
                           </td>
-                          <td>
-                            <div className="stat-with-icon">
-                              <Shield size={14} className={accuracy >= 80 ? 'text-success' : accuracy >= 50 ? 'text-warning' : 'text-danger'} />
+                          <td className="accuracy-col" style={{ color: activeTab === 'accuracy' ? 'var(--accent)' : 'inherit' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                              <div style={{ width: '40px', height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
+                                <div style={{ height: '100%', width: `${accuracy}%`, background: 'var(--accent)' }}></div>
+                              </div>
                               {accuracy}%
                             </div>
                           </td>
-                          <td>{leader.totalAttempted || 0}</td>
-                          <td className="xp-cell">
-                            <div className="stat-with-icon xp-highlight">
-                              <Star size={14} className="gold" fill="var(--warning)" style={{ border: 'none' }} />
-                              {leader.xp || 0}
-                            </div>
+                          <td style={{ color: activeTab === 'questions' ? 'var(--text-primary)' : 'inherit' }}>{leader.totalAttempted || 0}</td>
+                          <td className="xp-col" style={{ color: activeTab === 'xp' ? 'var(--warning)' : 'inherit' }}>
+                            <strong>{leader.xp || 0}</strong> <span style={{ fontSize: '0.75rem' }}>XP</span>
+                          </td>
+                          <td style={{ color: activeTab === 'streak' ? 'var(--danger)' : 'inherit' }}>
+                            {leader.streak || 0}🔥
                           </td>
                         </tr>
                       );

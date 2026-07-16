@@ -454,5 +454,101 @@
   .links-grid { grid-template-columns: 1fr; }
   .module-banner { flex-direction: column; align-items: flex-start; }
   .upcoming-test-alert { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .company-cards-grid { grid-template-columns: 1fr; }
 }
 
+/* Company Placement Readiness */
+.company-readiness-section {
+  width: 100%;
+}
+
+.company-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.company-placeholder-card {
+  padding: 4rem 2rem;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.placeholder-content {
+  max-width: 400px;
+}
+
+.placeholder-content h4 {
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.placeholder-content p {
+  color: var(--text-secondary);
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.company-card {
+  padding: 1.5rem;
+  background: rgba(30, 30, 40, 0.4);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.company-card:hover {
+  transform: translateY(-2px);
+  background: rgba(30, 30, 40, 0.6);
+}
+
+.company-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.company-info h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.2rem;
+  font-family: var(--font-display);
+}
+
+.company-role {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.company-prob {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.company-progress-container {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.company-card-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.company-card-footer {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  justify-content: flex-end;
+}

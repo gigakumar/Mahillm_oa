@@ -1,15 +1,19 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, Clock, Shuffle, List, Layers, Brain, Award, Sparkles, Flame } from 'lucide-react';
+import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, BookOpen, Clock, Shuffle, List, Layers, Brain, Award, Sparkles, Flame, Zap, Target, RefreshCw, TrendingUp, AlertTriangle } from 'lucide-react';
 import IntelligenceDrawer from '../components/IntelligenceDrawer';
 import QuestionIntelligenceBadge from '../components/QuestionIntelligenceBadge';
 import { useScore } from '../contexts/ScoreContext';
 import { useUserData } from '../contexts/UserDataContext';
 import { selectNextQuestions, getAdaptiveSummary } from '../utils/adaptiveEngine';
+import { QuestionBankRegistry } from '../data/questionBankRegistry';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import './OAPractice.css';
 import './AdaptivePractice.css';
+
+// Cache loaded question banks to avoid re-importing on filter changes
+const questionBankCache = {};
 
 
 const CATEGORIES = [
@@ -71,6 +75,11 @@ export default function OAPractice() {
   const [confidences, setConfidences] = useState({});
   const [currentTimeline, setCurrentTimeline] = useState([]);
   
+  // Intelligence States
+  const [recentSolveTimes, setRecentSolveTimes] = useState([]);
+  const [sessionSureWrong, setSessionSureWrong] = useState(0);
+  const [dismissSureWrong, setDismissSureWrong] = useState(false);
+  
   // Timer State
   const [timeLeft, setTimeLeft] = useState(60);
   const [isTimerRunning, setIsTimerRunning] = useState(true);
@@ -81,48 +90,57 @@ export default function OAPractice() {
   const [debugPoolLength, setDebugPoolLength] = useState(-1);
   const [debugFilteredLength, setDebugFilteredLength] = useState(-1);
 
+  // Load a single question bank with caching
+  const loadBank = useCallback(async (bankEntry) => {
+    if (questionBankCache[bankEntry.id]) {
+      return questionBankCache[bankEntry.id];
+    }
+    const mod = await bankEntry.loader();
+    questionBankCache[bankEntry.id] = mod.default;
+    return mod.default;
+  }, []);
+
   const loadActivePool = async () => {
     setLoading(true);
     setLoadError(null);
     try {
       console.log("loadActivePool starting. Category:", category, "Difficulty:", difficulty, "Topic:", topic);
       let pool = [];
-      if (category === 'Mechanical Engineering') {
-        const mod = await import('../data/mechEngQuestions.js');
-        pool = mod.default;
-      } else if (category === 'Quantitative Aptitude') {
-        const mod = await import('../data/quantsQuestions.js');
-        pool = mod.default;
-      } else if (category === 'Data Interpretation') {
-        const mod = await import('../data/dataInterpretationQuestions.js');
-        pool = mod.default;
-      } else if (category === 'DILR') {
-        const mod = await import('../data/dilrQuestions.js');
-        pool = mod.default;
-      } else if (category === 'Logical Reasoning') {
-        const mod = await import('../data/logicalReasoningQuestions.js');
-        pool = mod.default;
-      } else if (category === 'all' || category === 'bookmarked') {
-        // Load all categories dynamically in parallel
-        const [me, qa, di, dilr, lr] = await Promise.all([
-          import('../data/mechEngQuestions.js'),
-          import('../data/quantsQuestions.js'),
-          import('../data/dataInterpretationQuestions.js'),
-          import('../data/dilrQuestions.js'),
-          import('../data/logicalReasoningQuestions.js')
-        ]);
-        pool = [...me.default, ...qa.default, ...di.default, ...dilr.default, ...lr.default];
+
+      if (category === 'all' || category === 'bookmarked') {
+        // For 'all'/'bookmarked': load ONE random bank first for instant display,
+        // then load remaining banks in background
+        const enabledBanks = QuestionBankRegistry.filter(b => b.enabled);
+        const randomBank = enabledBanks[Math.floor(Math.random() * enabledBanks.length)];
+        
+        // Load first bank fast
+        const firstPool = await loadBank(randomBank);
+        pool = [...firstPool];
+        
+        // Load remaining banks in parallel
+        const remainingBanks = enabledBanks.filter(b => b.id !== randomBank.id);
+        const remainingPools = await Promise.all(
+          remainingBanks.map(b => loadBank(b))
+        );
+        remainingPools.forEach(p => { pool = pool.concat(p); });
+      } else {
+        // Single category: use registry lookup
+        const bankEntry = QuestionBankRegistry.find(
+          b => b.categoryKey === category || b.label === category
+        );
+        if (bankEntry) {
+          pool = await loadBank(bankEntry);
+        }
       }
 
       setDebugPoolLength(pool ? pool.length : -1);
-
       console.log("Pool loaded. Size:", pool.length);
 
       // Dynamically extract unique topics for selection
       const uniqueTopics = ['all', ...new Set(pool.map(q => q.topic).filter(Boolean))].sort();
       setAvailableTopics(uniqueTopics);
 
-      // Fetch quarantined list
+      // Fetch quarantined list with a short timeout to not block UI
       const qList = new Set();
       try {
         const qSnap = await Promise.race([
@@ -131,10 +149,12 @@ export default function OAPractice() {
         ]);
         qSnap.forEach(d => qList.add(d.id.toString()));
       } catch (e) {
-        console.error("Error fetching quarantine list in practice session:", e);
+        console.warn("Quarantine list unavailable, skipping:", e.message);
       }
 
-      let filtered = pool.filter(q => !qList.has(q.id.toString()));
+      let filtered = qList.size > 0 
+        ? pool.filter(q => !qList.has(q.id.toString()))
+        : pool;
       console.log("After quarantine filter:", filtered.length);
 
       if (category === 'bookmarked') {
@@ -151,7 +171,6 @@ export default function OAPractice() {
       console.log("After filter: category:", category, "diff:", difficulty, "topic:", topic, "count:", filtered.length);
 
       if (isAdaptive) {
-        // Build userHistory proxy map for selectNextQuestions
         const userHistoryProxy = {};
         Object.keys(spacedRepetition).forEach(id => {
           userHistoryProxy[id] = { totalAttempts: 1, correctCount: spacedRepetition[id].lastResult === 'correct' ? 1 : 0 };
@@ -183,7 +202,7 @@ export default function OAPractice() {
       setTimeLeft(60);
       setIsTimerRunning(true);
     } catch (e) {
-      console.error("Error loading code-split question datasets dynamically:", e);
+      console.error("Error loading question datasets:", e);
       setLoadError(e.message || String(e));
     } finally {
       setLoading(false);
@@ -269,6 +288,13 @@ export default function OAPractice() {
       ...currentTimeline,
       { action: 'submit', time: 60 }
     ];
+    
+    setRecentSolveTimes(prev => {
+      const newArr = [...prev, 60000];
+      if (newArr.length > 5) newArr.shift();
+      return newArr;
+    });
+
     const res = await recordDetailedAnswer(question, false, 60000, 'guess', finalTimeline);
     if (res) {
       setXpFeedback({
@@ -294,6 +320,17 @@ export default function OAPractice() {
       ...currentTimeline,
       { action: 'submit', time: Math.max(0, 60 - timeLeft) }
     ];
+    
+    setRecentSolveTimes(prev => {
+      const newArr = [...prev, solveTimeMs];
+      if (newArr.length > 5) newArr.shift();
+      return newArr;
+    });
+
+    if (confidence === 'Sure' && !isCorrect) {
+      setSessionSureWrong(prev => prev + 1);
+    }
+
     const res = await recordDetailedAnswer(question, isCorrect, solveTimeMs, confidence, finalTimeline);
     if (res) {
       setXpFeedback({
@@ -340,9 +377,38 @@ export default function OAPractice() {
 
   if (loading) {
     return (
-      <div className="page-content oa-practice" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '50vh' }}>
-        <div className="spinner" style={{ border: '4px solid var(--border)', borderTop: '4px solid var(--accent)', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite', margin: '0 auto 1rem auto' }}></div>
-        <p style={{ color: 'var(--text-secondary)' }}>Loading question bank...</p>
+      <div className="page-content oa-practice">
+        <div className="loading-skeleton-container">
+          <div className="loading-skeleton-header">
+            <div className="skeleton-pulse skeleton-title"></div>
+            <div className="skeleton-pulse skeleton-subtitle"></div>
+          </div>
+          <div className="loading-skeleton-progress">
+            <div className="skeleton-pulse skeleton-progress-bar"></div>
+          </div>
+          <div className="loading-skeleton-card card">
+            <div className="skeleton-badges">
+              <div className="skeleton-pulse skeleton-badge"></div>
+              <div className="skeleton-pulse skeleton-badge"></div>
+              <div className="skeleton-pulse skeleton-badge-timer"></div>
+            </div>
+            <div className="skeleton-pulse skeleton-question-line long"></div>
+            <div className="skeleton-pulse skeleton-question-line medium"></div>
+            <div className="skeleton-options">
+              <div className="skeleton-pulse skeleton-option"></div>
+              <div className="skeleton-pulse skeleton-option"></div>
+              <div className="skeleton-pulse skeleton-option"></div>
+              <div className="skeleton-pulse skeleton-option"></div>
+            </div>
+            <div className="skeleton-actions">
+              <div className="skeleton-pulse skeleton-btn"></div>
+            </div>
+          </div>
+          <p className="loading-status-text">
+            <span className="loading-dot-animation"></span>
+            Preparing your questions
+          </p>
+        </div>
       </div>
     );
   }
@@ -387,75 +453,94 @@ export default function OAPractice() {
       setIsSessionActive(true);
     };
 
+    const categoryCards = [
+      { cat: 'Mechanical Engineering', emoji: '🔩', title: 'Mechanical Engg', desc: 'Thermo, Fluids, SOM, Manufacturing, Machine Design & more', count: '9,400+', gradient: 'linear-gradient(135deg, rgba(255,107,0,0.15), rgba(255,107,0,0.03))' },
+      { cat: 'Quantitative Aptitude', emoji: '🧮', title: 'Quantitative Aptitude', desc: 'Percentages, Profit & Loss, Time & Work, Algebra, Geometry', count: '3,400+', gradient: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.03))' },
+      { cat: 'Data Interpretation', emoji: '📊', title: 'Data Interpretation', desc: 'Tables, Bar, Pie, Line charts — read data, spot trends', count: '1,500+', gradient: 'linear-gradient(135deg, rgba(6,182,212,0.15), rgba(6,182,212,0.03))' },
+      { cat: 'DILR', emoji: '🧩', title: 'DILR Puzzles', desc: 'Seating arrangements, constraint satisfaction, ordering', count: '2,000+', gradient: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.03))' },
+      { cat: 'Logical Reasoning', emoji: '🧠', title: 'Logical Reasoning', desc: 'Series, coding-decoding, direction sense, syllogisms', count: '3,000+', gradient: 'linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.03))' },
+    ];
+
+    const intentCards = [
+      { intent: 'OPTIMAL', icon: <Zap size={20} />, title: 'Continue my path', desc: 'Adaptive traversal through optimal syllabus route', color: 'var(--accent)' },
+      { intent: 'WEAKNESS_REPAIR', icon: <Target size={20} />, title: 'Repair weaknesses', desc: 'Target and patch performance loops and prerequisites', color: 'var(--danger)' },
+      { intent: 'STRETCH', icon: <TrendingUp size={20} />, title: 'Challenge me', desc: 'Push beyond your estimated ability boundary', color: 'var(--secondary)' },
+      { intent: 'DECAY_RECOVERY', icon: <RefreshCw size={20} />, title: 'Recover forgotten', desc: 'Reinforce items identified with high decay risk', color: 'var(--warning)' },
+      { intent: 'MISTAKE_REPAIR', icon: <AlertTriangle size={20} />, title: 'Fix my mistakes', desc: 'Train specifically on active mistakes notebook', color: 'var(--tertiary)' },
+    ];
+
     return (
       <div className="page-content practice-page practice-hub">
-        <header className="intel-header">
-          <h1>Practice Hub</h1>
-          <p className="subtitle">
-            Choose your learning route: launch targeted adaptive intent sessions or browse the question bank.
-          </p>
+        <header className="hub-header">
+          <div className="hub-header-content">
+            <h1 className="hub-title">
+              <span className="hub-title-icon">🎯</span>
+              Practice Hub
+            </h1>
+            <p className="hub-subtitle">
+              Choose your learning route: launch targeted adaptive sessions or browse the full question bank.
+            </p>
+          </div>
+          <div className="hub-stats">
+            <div className="hub-stat">
+              <span className="hub-stat-value">19,300+</span>
+              <span className="hub-stat-label">Questions</span>
+            </div>
+            <div className="hub-stat">
+              <span className="hub-stat-value">5</span>
+              <span className="hub-stat-label">Categories</span>
+            </div>
+          </div>
         </header>
 
         {/* ADAPTIVE PRACTICE SECTION */}
-        <section className="intel-section card" style={{ padding: '2rem', marginBottom: '2.5rem' }}>
-          <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-display)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-            <Brain size={20} style={{ color: 'var(--accent)' }} /> Adaptive Practice Intents
-          </h2>
+        <section className="hub-section">
+          <div className="hub-section-header">
+            <Brain size={20} className="hub-section-icon" />
+            <h2>Adaptive Practice Intents</h2>
+          </div>
           <div className="intents-grid">
-            <button className="intent-card card" onClick={() => handleStartIntent('OPTIMAL')}>
-              <strong>Continue my path</strong>
-              <span>Adaptive traversal through optimal syllabus route</span>
-            </button>
-            <button className="intent-card card" onClick={() => handleStartIntent('WEAKNESS_REPAIR')}>
-              <strong>Repair weaknesses</strong>
-              <span>Target and patch performance loops and prerequisites</span>
-            </button>
-            <button className="intent-card card" onClick={() => handleStartIntent('STRETCH')}>
-              <strong>Challenge me</strong>
-              <span>Push Elos above your estimated ability boundary</span>
-            </button>
-            <button className="intent-card card" onClick={() => handleStartIntent('DECAY_RECOVERY')}>
-              <strong>Recover forgotten concepts</strong>
-              <span>Reinforce items identified with high decay risk</span>
-            </button>
-            <button className="intent-card card" onClick={() => handleStartIntent('MISTAKE_REPAIR')}>
-              <strong>Fix my mistakes</strong>
-              <span>Train specifically on active mistakes notebook</span>
-            </button>
+            {intentCards.map(({ intent, icon, title, desc, color }) => (
+              <button key={intent} className="intent-card-v2" onClick={() => handleStartIntent(intent)}>
+                <div className="intent-icon-wrap" style={{ '--intent-color': color }}>
+                  {icon}
+                </div>
+                <div className="intent-card-body">
+                  <strong>{title}</strong>
+                  <span>{desc}</span>
+                </div>
+                <ChevronRight size={16} className="intent-chevron" />
+              </button>
+            ))}
           </div>
         </section>
 
         {/* BROWSE QUESTION BANK SECTION */}
-        <section className="intel-section">
-          <h2 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-display)', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem' }}>
-            <BookOpen size={20} style={{ color: 'var(--primary)' }} /> Browse Question Bank
-          </h2>
-          <div className="links-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem' }}>
-            <div className="link-card card card-interactive" onClick={() => handleCategoryClick('Mechanical Engineering')} style={{ cursor: 'pointer' }}>
-              <span className="link-emoji">🔩</span>
-              <h3>Mechanical Engg</h3>
-              <p>Thermo, Fluids, SOM, Manufacturing, Machine Design & more</p>
-            </div>
-            <div className="link-card card card-interactive" onClick={() => handleCategoryClick('Quantitative Aptitude')} style={{ cursor: 'pointer' }}>
-              <span className="link-emoji">🧮</span>
-              <h3>Quantitative Aptitude</h3>
-              <p>Percentages, Profit & Loss, Time & Work, Algebra, Geometry</p>
-            </div>
-            <div className="link-card card card-interactive" onClick={() => handleCategoryClick('Data Interpretation')} style={{ cursor: 'pointer' }}>
-              <span className="link-emoji">📊</span>
-              <h3>Data Interpretation</h3>
-              <p>Tables, Bar, Pie, Line charts — read data, spot trends</p>
-            </div>
-            <div className="link-card card card-interactive" onClick={() => handleCategoryClick('DILR')} style={{ cursor: 'pointer' }}>
-              <span className="link-emoji">🧩</span>
-              <h3>DILR Puzzles</h3>
-              <p>Logical Seating arrangements, constraint satisfaction, ordering</p>
-            </div>
-            <div className="link-card card card-interactive" onClick={() => handleCategoryClick('Logical Reasoning')} style={{ cursor: 'pointer' }}>
-              <span className="link-emoji">🧠</span>
-              <h3>Logical Reasoning</h3>
-              <p>Series, coding-decoding, direction sense, syllogisms</p>
-            </div>
+        <section className="hub-section">
+          <div className="hub-section-header">
+            <BookOpen size={20} className="hub-section-icon" />
+            <h2>Browse Question Bank</h2>
+          </div>
+          <div className="category-grid">
+            {categoryCards.map(({ cat, emoji, title, desc, count, gradient }) => (
+              <div
+                key={cat}
+                className="category-card"
+                onClick={() => handleCategoryClick(cat)}
+                style={{ '--card-gradient': gradient }}
+              >
+                <div className="category-card-top">
+                  <span className="category-emoji">{emoji}</span>
+                  <span className="category-count">{count}</span>
+                </div>
+                <h3 className="category-title">{title}</h3>
+                <p className="category-desc">{desc}</p>
+                <div className="category-card-action">
+                  <span>Start practicing</span>
+                  <ChevronRight size={14} />
+                </div>
+              </div>
+            ))}
           </div>
         </section>
       </div>
@@ -586,10 +671,21 @@ export default function OAPractice() {
       )}
 
       {loading ? (
-        <div className="loading" style={{ textAlign: 'center', padding: '5rem 0' }}>
-          <div className="spinner" style={{ border: '4px solid var(--border)', borderTop: '4px solid var(--accent)', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite', margin: '0 auto 1rem auto' }}></div>
-          <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
-          <p style={{ color: 'var(--text-secondary)' }}>Loading code-split practice pool...</p>
+        <div className="loading-skeleton-container">
+          <div className="loading-skeleton-card card">
+            <div className="skeleton-badges">
+              <div className="skeleton-pulse skeleton-badge"></div>
+              <div className="skeleton-pulse skeleton-badge"></div>
+            </div>
+            <div className="skeleton-pulse skeleton-question-line long"></div>
+            <div className="skeleton-pulse skeleton-question-line medium"></div>
+            <div className="skeleton-options">
+              <div className="skeleton-pulse skeleton-option"></div>
+              <div className="skeleton-pulse skeleton-option"></div>
+              <div className="skeleton-pulse skeleton-option"></div>
+              <div className="skeleton-pulse skeleton-option"></div>
+            </div>
+          </div>
         </div>
       ) : viewMode === 'list' ? (
         <div className="questions-list" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', marginTop: '1rem' }}>
@@ -721,6 +817,28 @@ export default function OAPractice() {
             </div>
           </div>
 
+          {sessionSureWrong >= 3 && !dismissSureWrong && (
+            <div className="overconfidence-banner" style={{
+              background: 'linear-gradient(90deg, rgba(245, 158, 11, 0.2), rgba(245, 158, 11, 0.05))',
+              border: '1px solid var(--warning)',
+              borderLeft: '4px solid var(--warning)',
+              padding: '1rem',
+              borderRadius: '8px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '1.5rem'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <span style={{ fontSize: '1.25rem' }}>🧠</span>
+                <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>Overconfidence pattern detected — you've been confident but wrong {sessionSureWrong} times this session</span>
+              </div>
+              <button onClick={() => setDismissSureWrong(true)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+                <XCircle size={18} />
+              </button>
+            </div>
+          )}
+
           {/* Question Card */}
           <div className="question-card card">
             <div className="question-header-row">
@@ -761,6 +879,30 @@ export default function OAPractice() {
               </div>
             </div>
 
+            {recentSolveTimes.length > 0 && (
+              <div className="sparkline-container" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Recent Pace:</span>
+                <svg viewBox="0 0 100 30" style={{ width: '80px', height: '24px', overflow: 'visible' }}>
+                  <polyline 
+                    fill="none" 
+                    stroke="var(--accent)" 
+                    strokeWidth="2" 
+                    points={recentSolveTimes.map((time, i) => {
+                      const x = (i / 4) * 100;
+                      // map 0-60s to 30-0 y coords (lower time = higher point or lower point? let's make longer time = higher y)
+                      const y = Math.min(30, Math.max(0, (time / 60000) * 30));
+                      return `${x},${y}`;
+                    }).join(' ')} 
+                  />
+                  {recentSolveTimes.map((time, i) => {
+                    const x = (i / 4) * 100;
+                    const y = Math.min(30, Math.max(0, (time / 60000) * 30));
+                    return <circle key={i} cx={x} cy={y} r="3" fill="var(--accent)" />;
+                  })}
+                </svg>
+              </div>
+            )}
+
             {question.contextHtml && (
               <div className="question-context card" style={{ marginBottom: '1.5rem', background: 'var(--bg-body)', padding: '1rem' }} dangerouslySetInnerHTML={{ __html: question.contextHtml }} />
             )}
@@ -799,6 +941,28 @@ export default function OAPractice() {
                   <h3>{selected === question.correct ? 'Correct! 🎉' : 'Incorrect'}</h3>
                   {selected === question.correct ? <span className="xp-gain">+10 XP</span> : null}
                 </div>
+
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+                  {(() => {
+                    const timeMs = (60 - timeLeft) * 1000;
+                    if (timeMs < 8000) return <span className="badge" style={{ background: '#e17055', color: '#fff' }}>⚡ Too Fast</span>;
+                    if (timeMs <= 40000) return <span className="badge" style={{ background: '#00b894', color: '#fff' }}>✅ Optimal</span>;
+                    if (timeMs <= 55000) return <span className="badge" style={{ background: '#fdcb6e', color: '#000' }}>🟡 Slightly Slow</span>;
+                    return <span className="badge" style={{ background: '#d63031', color: '#fff' }}>⏰ Time Pressure</span>;
+                  })()}
+
+                  {confidences[question.id] === 'Sure' && selected !== question.correct && (
+                    <span className="badge" style={{ background: 'var(--warning)', color: '#000' }}>
+                      ⚠️ Misconception signal — you were confident but incorrect
+                    </span>
+                  )}
+                  {(confidences[question.id] === 'Guess' || confidences[question.id] === 'Unsure') && selected === question.correct && (
+                    <span className="badge" style={{ background: 'var(--secondary)', color: '#fff' }}>
+                      💡 Lucky guess — queued for spaced repetition review
+                    </span>
+                  )}
+                </div>
+
                 {question.explanation && (
                   <div className="explanation">
                     <strong>Explanation:</strong>

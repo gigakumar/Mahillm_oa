@@ -16,7 +16,11 @@ export function ScoreProvider({ children }) {
     totalAttempted: 0,
     totalCorrect: 0,
     accuracy: 0,
-    bookmarked: []
+    bookmarked: [],
+    streak: 0,
+    longestStreak: 0,
+    fastestSolveTime: null,
+    dailyStats: {}
   });
   const [loading, setLoading] = useState(true);
 
@@ -38,7 +42,10 @@ export function ScoreProvider({ children }) {
           totalCorrect: data.totalCorrect || 0,
           accuracy: data.totalAttempted ? Math.round((data.totalCorrect / data.totalAttempted) * 100) : 0,
           bookmarked: data.bookmarked || [],
-          streak: data.streak || 0
+          streak: data.streak || 0,
+          longestStreak: data.longestStreak || 0,
+          fastestSolveTime: data.fastestSolveTime || null,
+          dailyStats: data.dailyStats || {}
         });
       } else {
         // Initialize new user
@@ -122,8 +129,28 @@ export function ScoreProvider({ children }) {
         streak: newStreak
       };
       
+      const todayStr = new Date().toISOString().split('T')[0];
+      updates[`dailyStats.${todayStr}.xp`] = increment(xpEarned);
+      updates[`dailyStats.${todayStr}.questions`] = increment(1);
+      
+      if (userSnap.exists()) {
+        const userData = userSnap.data();
+        if (newStreak > (userData.longestStreak || 0)) {
+          updates.longestStreak = newStreak;
+        }
+        if (solveTimeMs > 0 && isCorrect) {
+          if (!userData.fastestSolveTime || solveTimeMs < userData.fastestSolveTime) {
+            updates.fastestSolveTime = solveTimeMs;
+          }
+        }
+      }
+      
       if (isCorrect) {
         updates.totalCorrect = increment(1);
+        updates[`dailyStats.${todayStr}.correct`] = increment(1);
+      }
+      if (solveTimeMs > 0) {
+        updates[`dailyStats.${todayStr}.studyMinutes`] = increment(solveTimeMs / (1000 * 60));
       }
       
       await updateDoc(userRef, updates);

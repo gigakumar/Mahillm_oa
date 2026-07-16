@@ -5,6 +5,7 @@ import { useUserData } from '../contexts/UserDataContext';
 import { compileLearnerState } from '../intelligence/learnerStateModel';
 import { deriveInsights } from '../intelligence/learnerInsights/cognitiveInsightEngine';
 import { MOCK_TESTS } from '../data/mockSeriesConfig';
+import { companyProfiles } from '../config/companyProfiles';
 import { getWeakestTopics } from '../utils/adaptiveEngine';
 import { 
   Play, 
@@ -247,6 +248,58 @@ export default function Dashboard() {
                 )}
               </div>
             </div>
+          </section>
+
+          {/* COMPANY PLACEMENT READINESS */}
+          <section className="dashboard-section company-readiness-section" style={{ marginTop: '2.5rem' }}>
+            <h2 className="section-title"><Lock size={18} /> Company Placement Readiness</h2>
+            
+            {isZeroData ? (
+              <div className="card company-placeholder-card">
+                <div className="placeholder-content">
+                  <Unlock size={32} style={{ opacity: 0.5, marginBottom: '1rem' }} />
+                  <h4>Complete calibration to see your placement readiness</h4>
+                  <p>Mahi needs more data to predict your clearing probability for top companies.</p>
+                </div>
+              </div>
+            ) : (
+              <div className="company-cards-grid">
+                {companyProfiles.map(company => {
+                  const userReadinessPct = Math.round(learnerState.global.readiness * 100);
+                  const passProb = Math.round(Math.max(0, Math.min(100, 90 * (userReadinessPct / company.minPassReadiness))));
+                  
+                  let barColor = 'var(--danger)';
+                  if (passProb >= 80) barColor = 'var(--success)';
+                  else if (passProb >= 50) barColor = 'var(--warning)';
+
+                  return (
+                    <div key={company.companyId} className="card company-card">
+                      <div className="company-card-header">
+                        <div className="company-info">
+                          <h3>{company.name}</h3>
+                          <span className="company-role">{company.role}</span>
+                        </div>
+                        <div className="company-prob" style={{ color: barColor }}>
+                          {passProb}%
+                        </div>
+                      </div>
+                      
+                      <div className="company-progress-container">
+                        <div className="company-card-bar" style={{ 
+                          width: `${passProb}%`, 
+                          background: barColor,
+                          boxShadow: `0 0 10px ${barColor}40` 
+                        }}></div>
+                      </div>
+                      
+                      <div className="company-card-footer">
+                        <span>Need {company.minPassReadiness}/100 to clear</span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </section>
 
           {/* ACTIVE INTELLIGENCE INSIGHTS */}

@@ -16,6 +16,8 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { getWeakestTopics } from '../utils/adaptiveEngine';
+import { getDueQuestions } from '../utils/spacedRepetition';
 import './DailyChallenge.css';
 
 // ──────────────────────────────────────────────
@@ -55,7 +57,7 @@ function seededShuffle(array, nextRandom) {
 
 export default function DailyChallenge() {
   const { user } = useAuth();
-  const { recordDetailedAnswer } = useUserData();
+  const { recordDetailedAnswer, masteryScores, spacedRepetition, questionProgress } = useUserData();
   const { recordAnswer } = useScore(); // compat
   const navigate = useNavigate();
 
@@ -73,6 +75,7 @@ export default function DailyChallenge() {
   const [submitted, setSubmitted] = useState(false);
   const [testTimeRemaining, setTestTimeRemaining] = useState(600); // 10 minutes (600s)
   const [testTimeSpent, setTestTimeSpent] = useState(0);
+  const [mixBreakdown, setMixBreakdown] = useState(null);
 
   // Time remaining until next challenge (midnight)
   const [timeUntilReset, setTimeUntilReset] = useState('');
@@ -148,10 +151,80 @@ export default function DailyChallenge() {
       const seed = getSeedForDate(dateStr);
       const rng = seedRandom(seed);
 
-      // Shuffle pool deterministically and pick top 10 questions
-      const shuffled = seededShuffle(pool, rng);
-      const challengeQs = shuffled.slice(0, 10);
+      let challengeQs = [];
+      const breakdown = { weak: 0, revision: 0, new: 0, boost: 0 };
+      
+      if (Object.keys(masteryScores || {}).length < 10) {
+        // Fallback to purely random
+        const shuffled = seededShuffle(pool, rng);
+        challengeQs = shuffled.slice(0, 10);
+      } else {
+        const poolMap = new Map(pool.map(q => [q.id, q]));
+        const usedIds = new Set();
+        
+        // 1. Spaced Repetition (3 questions)
+        const due = getDueQuestions(spacedRepetition || {});
+        for (const item of due) {
+          if (breakdown.revision >= 3) break;
+          if (poolMap.has(item.questionId)) {
+            usedIds.add(item.questionId);
+            challengeQs.push(poolMap.get(item.questionId));
+            breakdown.revision++;
+          }
+        }
+        
+        // 2. Weak Topics (3 questions)
+        const weakTopics = getWeakestTopics(masteryScores || {}, 5); 
+        const weakTopicNames = new Set(weakTopics.map(t => t.topic));
+        const weakPool = pool.filter(q => weakTopicNames.has(q.topic) && !usedIds.has(q.id));
+        const shuffledWeak = seededShuffle(weakPool, rng);
+        for (const q of shuffledWeak) {
+          if (breakdown.weak >= 3) break;
+          usedIds.add(q.id);
+          challengeQs.push(q);
+          breakdown.weak++;
+        }
+        
+        // 3. New/Unseen (2 questions)
+        const seenIds = new Set(Object.keys(questionProgress || {}));
+        const newPool = pool.filter(q => !seenIds.has(q.id) && !usedIds.has(q.id));
+        const shuffledNew = seededShuffle(newPool, rng);
+        for (const q of shuffledNew) {
+          if (breakdown.new >= 2) break;
+          usedIds.add(q.id);
+          challengeQs.push(q);
+          breakdown.new++;
+        }
+        
+        // 4. Boosters (2 questions) - Top mastery topics
+        const masteredTopics = Object.values(masteryScores || {})
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 5);
+        const boostTopicNames = new Set(masteredTopics.map(t => t.topic));
+        const boostPool = pool.filter(q => boostTopicNames.has(q.topic) && !usedIds.has(q.id));
+        const shuffledBoost = seededShuffle(boostPool, rng);
+        for (const q of shuffledBoost) {
+          if (breakdown.boost >= 2) break;
+          usedIds.add(q.id);
+          challengeQs.push(q);
+          breakdown.boost++;
+        }
+        
+        // 5. Fill remaining
+        if (challengeQs.length < 10) {
+          const remainingPool = pool.filter(q => !usedIds.has(q.id));
+          const shuffledRem = seededShuffle(remainingPool, rng);
+          for (const q of shuffledRem) {
+            if (challengeQs.length >= 10) break;
+            challengeQs.push(q);
+          }
+        }
+        
+        // Final shuffle so the mix is interleaved, seeded by date for reproducibility
+        challengeQs = seededShuffle(challengeQs, rng);
+      }
 
+      setMixBreakdown(breakdown);
       setQuestions(challengeQs);
       setActiveSession(true);
       setTestTimeRemaining(600); // 10 minutes
@@ -338,6 +411,16 @@ export default function DailyChallenge() {
             <Clock size={16} /> {formatTimeRemaining(testTimeRemaining)}
           </div>
         </header>
+
+        {mixBreakdown && (
+          <div className="daily-mix-breakdown" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1.5rem', padding: '0.75rem 1rem', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Today's Mix:</span>
+            {mixBreakdown.weak > 0 && <span className="badge" style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444' }}>🎯 {mixBreakdown.weak} Weak Topic</span>}
+            {mixBreakdown.revision > 0 && <span className="badge" style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6' }}>🔁 {mixBreakdown.revision} Revision</span>}
+            {mixBreakdown.new > 0 && <span className="badge" style={{ background: 'rgba(168, 85, 247, 0.15)', color: '#a855f7' }}>✨ {mixBreakdown.new} New</span>}
+            {mixBreakdown.boost > 0 && <span className="badge" style={{ background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e' }}>💪 {mixBreakdown.boost} Boost</span>}
+          </div>
+        )}
 
         {loadingPools || !question ? (
           <div className="card text-center" style={{ padding: '4rem 2rem' }}>
