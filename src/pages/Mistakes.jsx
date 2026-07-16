@@ -16,6 +16,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import './Mistakes.css';
 
 const MISTAKE_REASONS = [
@@ -175,6 +176,19 @@ export default function Mistakes() {
   const sortedWeakTopics = Object.entries(topWeakTopic).sort((a, b) => b[1] - a[1]);
   const primaryWeakness = sortedWeakTopics[0] ? `${sortedWeakTopics[0][0]} (${sortedWeakTopics[0][1]} failures)` : 'None';
 
+  // Prepare data for Mistake Fingerprint Chart
+  const fingerprintData = MISTAKE_REASONS.map(r => ({
+    name: r.label,
+    shortName: r.label.split(' ')[0], // e.g. "Conceptual"
+    count: reasonStats[r.value] || 0,
+    fill: r.value === 'conceptual' ? '#ef4444' : 
+          r.value === 'calculation' ? '#f97316' : 
+          r.value === 'formula' ? '#eab308' : 
+          r.value === 'unit_conversion' ? '#3b82f6' : 
+          r.value === 'misread' ? '#a855f7' : 
+          r.value === 'time_pressure' ? '#64748b' : '#94a3b8'
+  })).filter(d => d.count > 0);
+
   // Pagination slice
   const totalPages = Math.ceil(filteredMistakes.length / itemsPerPage);
   const paginatedMistakes = filteredMistakes.slice(
@@ -246,20 +260,50 @@ export default function Mistakes() {
         </div>
       </div>
 
-      {/* Breakdown Block */}
+      {/* Breakdown Block & Fingerprint Chart */}
       <div className="card" style={{ padding: '1.25rem', marginBottom: '2rem' }}>
-        <h3 style={{ margin: '0 0 1rem 0', fontFamily: 'var(--font-display)', fontSize: '1.1rem' }}>Mistake Reason Distribution</h3>
-        <div className="mistakes-breakdown">
-          {MISTAKE_REASONS.map(r => {
-            const count = reasonStats[r.value] || 0;
-            if (count === 0) return null;
-            return (
-              <span key={r.value} className={`badge badge-reason ${r.value}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', padding: '0.4rem 0.75rem', borderRadius: 'var(--radius-md)' }}>
-                {r.emoji} {r.label}: {count}
-              </span>
-            );
-          })}
-        </div>
+        <h3 style={{ margin: '0 0 1.5rem 0', fontFamily: 'var(--font-display)', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Activity size={20} /> Your Mistake Fingerprint
+        </h3>
+        
+        {fingerprintData.length > 0 ? (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem', alignItems: 'center' }}>
+            <div className="mistakes-breakdown" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {MISTAKE_REASONS.map(r => {
+                const count = reasonStats[r.value] || 0;
+                if (count === 0) return null;
+                return (
+                  <span key={r.value} className={`badge badge-reason ${r.value}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)', fontSize: '0.9rem' }}>
+                    <span>{r.emoji}</span>
+                    <span style={{ flex: 1 }}>{r.label}</span>
+                    <strong style={{ opacity: 0.8 }}>{count}</strong>
+                  </span>
+                );
+              })}
+            </div>
+            
+            <div style={{ height: 220, width: '100%' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={fingerprintData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(255,255,255,0.05)" />
+                  <XAxis type="number" hide />
+                  <YAxis dataKey="shortName" type="category" axisLine={false} tickLine={false} fontSize={12} stroke="var(--text-secondary)" width={100} />
+                  <Tooltip 
+                    cursor={{fill: 'rgba(255,255,255,0.05)'}} 
+                    contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+                  />
+                  <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                    {fingerprintData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        ) : (
+          <p style={{ color: 'var(--text-secondary)' }}>No active mistakes to fingerprint.</p>
+        )}
       </div>
 
       {/* Filter panel */}

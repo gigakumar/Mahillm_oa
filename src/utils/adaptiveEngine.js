@@ -59,9 +59,10 @@ export function selectNextQuestions(allQuestions, userMastery = {}, userHistory 
 
     // 1. Weakness score — lower mastery = higher priority
     const masteryScore = mastery ? mastery.score : 0.5; // default 0.5 for unseen topics
+    const attempts = mastery ? mastery.attempts : 0;
     const weaknessScore = 1 - masteryScore;
     score += WEIGHTS.weakness * weaknessScore;
-    if (masteryScore < 0.4) {
+    if (masteryScore < 0.4 && attempts > 2) {
       reason = `Weak topic: ${q.topic} (${Math.round(masteryScore * 100)}%)`;
     }
 
@@ -95,7 +96,34 @@ export function selectNextQuestions(allQuestions, userMastery = {}, userHistory 
       score += WEIGHTS.unseen * 0.1;
     }
 
-    // 5. Diversity penalty applied during selection (not here)
+    // 5. Adaptive Difficulty (Skill ± Uncertainty)
+    let uncertainty = 1.0;
+    const daysSince = mastery && mastery.lastAttempted ? (now - mastery.lastAttempted) / (1000 * 60 * 60 * 24) : 999;
+    if (attempts > 0) {
+      uncertainty = Math.max(0.1, 1 - (attempts * 0.15)); // drops by 15% per attempt
+      uncertainty += Math.min(0.5, daysSince / 30); // rises with time decay
+      uncertainty = Math.min(1.0, uncertainty);
+    }
+    
+    const effectiveSkillLower = Math.max(0, masteryScore - (uncertainty * 0.25));
+    const effectiveSkillUpper = Math.min(1, masteryScore + (uncertainty * 0.25));
+    
+    let expectedDiffNum = 0.5; // medium default
+    const qDiff = (q.difficulty || 'medium').toLowerCase();
+    if (qDiff === 'easy') expectedDiffNum = 0.25;
+    if (qDiff === 'hard') expectedDiffNum = 0.85;
+    
+    if (expectedDiffNum >= effectiveSkillLower && expectedDiffNum <= effectiveSkillUpper) {
+      score += 0.25; // Bonus for matching calibrated skill window
+      if (!reason && uncertainty < 0.4) reason = `Calibrated to your skill level`;
+      if (!reason && uncertainty >= 0.4) reason = `Exploring your skill boundary`;
+    } else if (expectedDiffNum > effectiveSkillUpper) {
+      score -= 0.15; // Penalty for being too hard right now
+    } else {
+      score -= 0.1; // Minor penalty for being too easy
+    }
+
+    // 6. Diversity penalty applied during selection (not here)
 
     if (!reason) {
       reason = 'Balanced practice';

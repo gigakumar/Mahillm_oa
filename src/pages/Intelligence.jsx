@@ -348,9 +348,9 @@ export default function Intelligence() {
 
                       {isExpanded && (
                         <div className="category-node-children">
-                          <div className="children-header-row">
+                          <div className="children-header-row" style={{ display: 'grid', gridTemplateColumns: '2fr 3fr 1fr 1fr', gap: '1rem', padding: '0.5rem 1rem', fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
                             <span>Concept</span>
-                            <span>Mastery</span>
+                            <span>Mastery Progress</span>
                             <span>Stability</span>
                             <span>State</span>
                           </div>
@@ -366,12 +366,26 @@ export default function Intelligence() {
                                 key={topic.topic} 
                                 className="concept-row-node"
                                 onClick={() => handleConceptClick(cat.category, topic)}
+                                style={{ display: 'grid', gridTemplateColumns: '2fr 3fr 1fr 1fr', gap: '1rem', alignItems: 'center', padding: '0.5rem 1rem' }}
                               >
                                 <span className="c-name">{topic.topic}</span>
-                                <span className="c-val">{isZeroData ? '—' : `${mastery}%`}</span>
-                                <span className="c-val">{isZeroData ? '—' : `${stability}%`}</span>
-                                <span className={`c-state state-${state.toLowerCase()}`}>{state}</span>
-                                <span className="c-trend">{trendStr}</span>
+                                
+                                <div className="mastery-bar-container" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                  <div style={{ flex: 1, height: '6px', background: 'var(--bg-card)', borderRadius: '3px', overflow: 'hidden' }}>
+                                    {!isZeroData && (
+                                      <div style={{ 
+                                        width: `${mastery}%`, 
+                                        height: '100%', 
+                                        background: mastery > 70 ? 'var(--success)' : mastery > 40 ? 'var(--warning)' : 'var(--danger)',
+                                        transition: 'width 1s ease'
+                                      }}></div>
+                                    )}
+                                  </div>
+                                  <span className="c-val" style={{ width: '40px', fontSize: '0.85rem', fontWeight: 'bold' }}>{isZeroData ? '—' : `${mastery}%`}</span>
+                                </div>
+                                
+                                <span className="c-val" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{isZeroData ? '—' : `${stability}%`}</span>
+                                <span className={`c-state state-${state.toLowerCase()}`} style={{ justifySelf: 'start' }}>{state}</span>
                               </div>
                             );
                           })}

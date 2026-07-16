@@ -964,11 +964,58 @@ export default function OAPractice() {
                 </div>
 
                 {question.explanation && (
-                  <div className="explanation">
+                  <div className="explanation" style={{ display: 'none' }}>
                     <strong>Explanation:</strong>
                     <div dangerouslySetInnerHTML={{ __html: question.explanation }} />
                   </div>
                 )}
+                
+                {/* AI Tutor Card (Phase 2) */}
+                <div className="ai-tutor-card" style={{
+                  background: 'linear-gradient(180deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%)',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '12px',
+                  padding: '1.5rem',
+                  marginTop: '1.5rem',
+                  textAlign: 'left'
+                }}>
+                  <div className="tutor-header" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem', color: 'var(--primary)' }}>
+                    <Brain size={20} />
+                    <h4 style={{ margin: 0, fontSize: '1.1rem' }}>AI Tutor Analysis</h4>
+                  </div>
+                  
+                  <div className="insight-grid" style={{ display: 'grid', gridTemplateColumns: selected === question.correct ? '1fr' : '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                    {selected !== question.correct && (
+                      <div className="insight-box danger" style={{ background: 'rgba(239, 68, 68, 0.05)', borderLeft: '3px solid var(--danger)', padding: '1rem', borderRadius: '0 8px 8px 0' }}>
+                        <strong style={{ display: 'block', color: 'var(--danger)', marginBottom: '0.5rem', fontSize: '0.85rem', textTransform: 'uppercase' }}>Why your choice is incorrect</strong>
+                        <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                          {question.ai_wrong || `Option ${String.fromCharCode(65 + selected)} is a common misconception. You likely calculated the intermediate step but missed the final conversion.`}
+                        </p>
+                      </div>
+                    )}
+                    <div className="insight-box success" style={{ background: 'rgba(16, 185, 129, 0.05)', borderLeft: '3px solid var(--success)', padding: '1rem', borderRadius: '0 8px 8px 0' }}>
+                      <strong style={{ display: 'block', color: 'var(--success)', marginBottom: '0.5rem', fontSize: '0.85rem', textTransform: 'uppercase' }}>Why Option {String.fromCharCode(65 + question.correct)} is correct</strong>
+                      <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                        {question.ai_correct || (question.explanation !== 'Coming soon' ? question.explanation : `The correct application of the principle yields this result by balancing the fundamental equations.`)}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="insight-row" style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+                    <div className="insight-item" style={{ flex: '1', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Formula Used</strong>
+                      <code style={{ background: 'var(--bg-body)', padding: '0.25rem 0.5rem', borderRadius: '4px', color: 'var(--accent)', fontSize: '0.9rem' }}>
+                        {question.formula || "Q = \u0394U + W"}
+                      </code>
+                    </div>
+                    <div className="insight-item" style={{ flex: '1', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Exam Trick</strong>
+                      <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--warning)' }}>
+                        {question.trick || "Watch out for units of pressure. Always convert bar to MPa before computing."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
                 
                 {/* Intelligence Drawer (Phase 3B.3) */}
                 <IntelligenceDrawer question={question} />
