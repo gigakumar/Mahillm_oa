@@ -287,6 +287,10 @@ export function UserDataProvider({ children }) {
         category: question.category,
         topic: question.topic,
         score: 0.5,
+        pKnow: 0.5,
+        pLearn: 0.1,
+        pGuess: 0.2,
+        pSlip: 0.1,
         attempts: 0,
         correctCount: 0,
         streak: 0,
@@ -295,7 +299,7 @@ export function UserDataProvider({ children }) {
       };
 
       const newStreak = isCorrect ? currentMasteryDoc.streak + 1 : 0;
-      const newScore = updateMasteryScore(currentMasteryDoc.score, isCorrect, solveTimeMs, newStreak);
+      const newBktState = updateMasteryScore(currentMasteryDoc, isCorrect, solveTimeMs, newStreak, confidence);
       const newAttempts = currentMasteryDoc.attempts + 1;
       const newCorrectCount = isCorrect ? currentMasteryDoc.correctCount + 1 : currentMasteryDoc.correctCount;
       const newAvgSolveTime = currentMasteryDoc.avgSolveTimeMs 
@@ -306,7 +310,11 @@ export function UserDataProvider({ children }) {
       await setDoc(masteryRef, {
         category: question.category,
         topic: question.topic,
-        score: newScore,
+        score: newBktState.pKnow, // legacy fallback mapping
+        pKnow: newBktState.pKnow,
+        pLearn: newBktState.pLearn,
+        pGuess: newBktState.pGuess,
+        pSlip: newBktState.pSlip,
         attempts: newAttempts,
         correctCount: newCorrectCount,
         streak: newStreak,

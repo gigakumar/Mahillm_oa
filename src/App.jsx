@@ -19,6 +19,7 @@ import Mistakes from './pages/Mistakes';
 import RevisionSession from './pages/RevisionSession';
 import Intelligence from './pages/Intelligence';
 import AttemptReplay from './pages/AttemptReplay';
+import Timeline from './pages/Timeline';
 import AdminDashboard from './pages/AdminDashboard';
 import DailyChallenge from './pages/DailyChallenge';
 import Formulas from './pages/Formulas';
@@ -145,6 +146,14 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <Intelligence />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/timeline" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Timeline />
                     </Layout>
                   </ProtectedRoute>
                 } />

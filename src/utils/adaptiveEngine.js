@@ -8,6 +8,9 @@
  * All functions are pure — no side effects, no React, no Firebase.
  */
 
+import { updateBKT, migrateScoreToBKT } from '../intelligence/engines/bktEngine.js';
+import { calculateIRTProbability, getDefaultIRTParams } from '../intelligence/engines/irtEngine.js';
+
 // ──────────────────────────────────────────────
 // Constants
 // ──────────────────────────────────────────────
@@ -58,12 +61,13 @@ export function selectNextQuestions(allQuestions, userMastery = {}, userHistory 
     let reason = '';
 
     // 1. Weakness score — lower mastery = higher priority
-    const masteryScore = mastery ? mastery.score : 0.5; // default 0.5 for unseen topics
+    const bkt = mastery && mastery.pKnow !== undefined ? mastery : (mastery ? migrateScoreToBKT(mastery.score) : { pKnow: 0.5 });
+    const pKnow = bkt.pKnow;
     const attempts = mastery ? mastery.attempts : 0;
-    const weaknessScore = 1 - masteryScore;
+    const weaknessScore = 1 - pKnow;
     score += WEIGHTS.weakness * weaknessScore;
-    if (masteryScore < 0.4 && attempts > 2) {
-      reason = `Weak topic: ${q.topic} (${Math.round(masteryScore * 100)}%)`;
+    if (pKnow < 0.4 && attempts > 2) {
+      reason = `Weak topic: ${q.topic} (${Math.round(pKnow * 100)}%)`;
     }
 
     // 2. Mistake score — repeated mistakes boost priority
@@ -96,31 +100,19 @@ export function selectNextQuestions(allQuestions, userMastery = {}, userHistory 
       score += WEIGHTS.unseen * 0.1;
     }
 
-    // 5. Adaptive Difficulty (Skill ± Uncertainty)
-    let uncertainty = 1.0;
-    const daysSince = mastery && mastery.lastAttempted ? (now - mastery.lastAttempted) / (1000 * 60 * 60 * 24) : 999;
-    if (attempts > 0) {
-      uncertainty = Math.max(0.1, 1 - (attempts * 0.15)); // drops by 15% per attempt
-      uncertainty += Math.min(0.5, daysSince / 30); // rises with time decay
-      uncertainty = Math.min(1.0, uncertainty);
-    }
+    // 5. Adaptive Difficulty via IRT
+    // Calculate expected success probability using IRT parameters
+    const irtParams = getDefaultIRTParams(q.difficulty);
+    const expectedProb = calculateIRTProbability(pKnow, irtParams.a, irtParams.b, irtParams.c);
     
-    const effectiveSkillLower = Math.max(0, masteryScore - (uncertainty * 0.25));
-    const effectiveSkillUpper = Math.min(1, masteryScore + (uncertainty * 0.25));
-    
-    let expectedDiffNum = 0.5; // medium default
-    const qDiff = (q.difficulty || 'medium').toLowerCase();
-    if (qDiff === 'easy') expectedDiffNum = 0.25;
-    if (qDiff === 'hard') expectedDiffNum = 0.85;
-    
-    if (expectedDiffNum >= effectiveSkillLower && expectedDiffNum <= effectiveSkillUpper) {
-      score += 0.25; // Bonus for matching calibrated skill window
-      if (!reason && uncertainty < 0.4) reason = `Calibrated to your skill level`;
-      if (!reason && uncertainty >= 0.4) reason = `Exploring your skill boundary`;
-    } else if (expectedDiffNum > effectiveSkillUpper) {
-      score -= 0.15; // Penalty for being too hard right now
+    // Target Zone of Proximal Development: roughly 65% to 85% expected probability
+    if (expectedProb >= 0.65 && expectedProb <= 0.85) {
+      score += 0.25; // Bonus for being right in the learning zone
+      if (!reason) reason = `Calibrated for optimal learning (P ≈ ${Math.round(expectedProb*100)}%)`;
+    } else if (expectedProb < 0.65) {
+      score -= (0.65 - expectedProb); // Penalty for being too hard
     } else {
-      score -= 0.1; // Minor penalty for being too easy
+      score -= (expectedProb - 0.85) * 0.5; // Minor penalty for being too easy
     }
 
     // 6. Diversity penalty applied during selection (not here)
@@ -178,38 +170,35 @@ export function selectNextQuestions(allQuestions, userMastery = {}, userHistory 
 // ──────────────────────────────────────────────
 
 /**
- * Compute the updated mastery score after answering a question.
+ * Compute the updated Bayesian mastery state after answering a question.
  *
- * @param {number} currentScore  Current mastery score (0–1)
+ * @param {Object|number} currentState  Current BKT state (or legacy score)
  * @param {boolean} isCorrect    Whether the answer was correct
  * @param {number} solveTimeMs   Time taken to solve (milliseconds)
  * @param {number} streak        Current consecutive correct answers in this topic
- * @returns {number} Updated mastery score (0–1)
+ * @param {string} confidence    User's confidence level
+ * @returns {Object} Updated BKT state { pKnow, pLearn, pGuess, pSlip }
  */
-export function updateMasteryScore(currentScore, isCorrect, solveTimeMs = 0, streak = 0) {
-  let score = currentScore;
-
-  if (isCorrect) {
-    // Base gain: diminishing returns as mastery increases
-    let gain = MASTERY_K * (1 - score);
-
-    // Speed bonus: solving in < 45s gives up to 10% extra
-    if (solveTimeMs > 0 && solveTimeMs < 45000) {
-      gain *= 1.1;
-    }
-
-    // Streak bonus: consecutive correct answers in the same topic
-    const streakBonus = Math.min(streak * 0.02, 0.1);
-    gain += streakBonus * (1 - score);
-
-    score += gain;
-  } else {
-    // Mistakes hurt more than correct answers help (asymmetric)
-    const loss = MASTERY_K * score * 1.2;
-    score -= loss;
+export function updateMasteryScore(currentState, isCorrect, solveTimeMs = 0, streak = 0, confidence = null) {
+  let bkt = currentState;
+  
+  // Migrate if legacy number
+  if (typeof bkt === 'number' || !bkt || bkt.pKnow === undefined) {
+    bkt = migrateScoreToBKT(typeof bkt === 'number' ? bkt : 0.3);
   }
 
-  return Math.max(0, Math.min(1, score));
+  // Speed and streak adjustments to pLearn
+  let dynamicPLearn = bkt.pLearn;
+  
+  if (isCorrect) {
+    if (solveTimeMs > 0 && solveTimeMs < 45000) dynamicPLearn *= 1.2; // faster -> learned better
+    dynamicPLearn += Math.min(streak * 0.02, 0.1);
+  } else {
+    // Repeated mistakes don't drop pLearn, they just don't increase it
+    dynamicPLearn = Math.max(0.05, dynamicPLearn * 0.9);
+  }
+
+  return updateBKT(isCorrect, bkt.pKnow, Math.min(0.5, dynamicPLearn), bkt.pGuess, bkt.pSlip, confidence);
 }
 
 
@@ -314,11 +303,14 @@ export function parseCompositeKey(compositeKey) {
  */
 export function getWeakestTopics(userMastery, n = 5) {
   const entries = Object.entries(userMastery)
-    .map(([key, data]) => ({
-      ...parseCompositeKey(key),
-      score: data.score,
-      attempts: data.attempts,
-    }))
+    .map(([key, data]) => {
+      const bkt = data.pKnow !== undefined ? data : migrateScoreToBKT(data.score);
+      return {
+        ...parseCompositeKey(key),
+        score: bkt.pKnow, // use pKnow for sorting weak topics
+        attempts: data.attempts,
+      };
+    })
     .filter(e => e.attempts > 0) // exclude unattempted
     .sort((a, b) => a.score - b.score);
 

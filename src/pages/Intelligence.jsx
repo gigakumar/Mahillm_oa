@@ -321,79 +321,44 @@ export default function Intelligence() {
         {/* LEFT COLUMN (8 cols): SKILL GENOME & SCATTER MAP */}
         <div className="intel-left-column">
           
-          {/* SKILL GENOME */}
+          {/* WEAK TOPIC HEATMAP */}
           <section className="intel-section card">
             <div className="section-header">
-              <h2><Brain size={20} /> Skill Genome</h2>
-              <span className="tag-secondary">Expandable Concept Tree</span>
+              <h2><Target size={20} /> Topic Mastery Heatmap</h2>
+              <span className="tag-secondary">Density visualization</span>
             </div>
 
             {loadingPools ? (
-              <div className="loading-small">Building syllabus hierarchy...</div>
+              <div className="loading-small">Loading heatmap...</div>
             ) : (
-              <div className="genome-tree">
-                {rawHeatmapData.map(cat => {
-                  const isExpanded = expandedCategories[cat.category];
-                  return (
-                    <div key={cat.category} className="genome-category-node">
-                      <div className="category-node-header" onClick={() => toggleCategory(cat.category)}>
-                        <span className="category-title">
-                          <span className="chevron-icon">{isExpanded ? '▼' : '▶'}</span>
-                          {cat.category}
-                        </span>
-                        <span className="category-meta">
-                          {cat.questionsAttempted} / {cat.totalQuestions} Qs
-                        </span>
-                      </div>
+              <div className="heatmap-container">
+                {rawHeatmapData.map(cat => (
+                  <div key={cat.category} className="heatmap-category">
+                    <h3 className="heatmap-cat-title">{cat.category}</h3>
+                    <div className="heatmap-topics">
+                      {cat.topics.map(topic => {
+                        const mastery = Math.round(topic.masteryScore * 100);
+                        const blocks = Math.floor(mastery / 10);
+                        const blockArray = Array.from({ length: 10 }, (_, i) => i < blocks);
 
-                      {isExpanded && (
-                        <div className="category-node-children">
-                          <div className="children-header-row" style={{ display: 'grid', gridTemplateColumns: '2fr 3fr 1fr 1fr', gap: '1rem', padding: '0.5rem 1rem', fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'uppercase' }}>
-                            <span>Concept</span>
-                            <span>Mastery Progress</span>
-                            <span>Stability</span>
-                            <span>State</span>
+                        return (
+                          <div key={topic.topic} className="heatmap-row" onClick={() => handleConceptClick(cat.category, topic)}>
+                            <div className="heatmap-topic-name">{topic.topic}</div>
+                            <div className="heatmap-blocks">
+                              {blockArray.map((isFilled, idx) => (
+                                <div 
+                                  key={idx} 
+                                  className={`heatmap-block ${isFilled ? 'filled' : 'empty'} ${mastery < 50 ? 'weak' : mastery > 80 ? 'strong' : 'moderate'}`}
+                                ></div>
+                              ))}
+                            </div>
+                            <div className="heatmap-score">{mastery}%</div>
                           </div>
-                          {cat.topics.map(topic => {
-                            const mastery = Math.round(topic.masteryScore * 100);
-                            const recallVal = learnerState.retentionMap?.[topic.topic] ?? 0.5;
-                            const stability = Math.round(recallVal * 100);
-                            const state = isZeroData ? 'UNKNOWN' : topic.status.toUpperCase();
-                            const trendStr = isZeroData ? '→' : (mastery > 70 ? '↑' : '→');
-
-                            return (
-                              <div 
-                                key={topic.topic} 
-                                className="concept-row-node"
-                                onClick={() => handleConceptClick(cat.category, topic)}
-                                style={{ display: 'grid', gridTemplateColumns: '2fr 3fr 1fr 1fr', gap: '1rem', alignItems: 'center', padding: '0.5rem 1rem' }}
-                              >
-                                <span className="c-name">{topic.topic}</span>
-                                
-                                <div className="mastery-bar-container" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                                  <div style={{ flex: 1, height: '6px', background: 'var(--bg-card)', borderRadius: '3px', overflow: 'hidden' }}>
-                                    {!isZeroData && (
-                                      <div style={{ 
-                                        width: `${mastery}%`, 
-                                        height: '100%', 
-                                        background: mastery > 70 ? 'var(--success)' : mastery > 40 ? 'var(--warning)' : 'var(--danger)',
-                                        transition: 'width 1s ease'
-                                      }}></div>
-                                    )}
-                                  </div>
-                                  <span className="c-val" style={{ width: '40px', fontSize: '0.85rem', fontWeight: 'bold' }}>{isZeroData ? '—' : `${mastery}%`}</span>
-                                </div>
-                                
-                                <span className="c-val" style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{isZeroData ? '—' : `${stability}%`}</span>
-                                <span className={`c-state state-${state.toLowerCase()}`} style={{ justifySelf: 'start' }}>{state}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                        );
+                      })}
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             )}
             

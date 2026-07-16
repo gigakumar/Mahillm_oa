@@ -22,6 +22,7 @@ import {
   BookOpen
 } from 'lucide-react';
 import { QuestionBankRegistry } from '../data/questionBankRegistry';
+import AIStudyCoach from '../components/AIStudyCoach';
 import './Dashboard.css';
 
 export default function Dashboard() {
@@ -153,6 +154,13 @@ export default function Dashboard() {
         </div>
       ) : (
         <>
+          <AIStudyCoach 
+            masteryScores={masteryScores} 
+            spacedRepetition={spacedRepetition} 
+            questionProgress={questionProgress} 
+            mistakes={mistakes} 
+            topicElo={topicElo} 
+          />
           {/* PLACEMENT READINESS PANEL */}
           <section className="command-center-panel card">
             <div className="cc-top">
