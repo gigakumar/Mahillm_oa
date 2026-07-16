@@ -155,6 +155,10 @@ export default function OAPractice() {
       let filtered = qList.size > 0 
         ? pool.filter(q => !qList.has(q.id.toString()))
         : pool;
+        
+      // Ensure we only load questions that have options (MCQs) since OAPractice doesn't have NAT/MSQ input UI yet
+      filtered = filtered.filter(q => q.type === 'MCQ' || (q.options && q.options.length > 0 && q.type !== 'NAT'));
+      
       console.log("After quarantine filter:", filtered.length);
 
       if (category === 'bookmarked') {

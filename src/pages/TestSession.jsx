@@ -523,16 +523,16 @@ export default function TestSession() {
 
       detailedReport.push({
         id: q.id,
-        question: q.question,
-        options: q.options,
-        correct: q.correct,
-        userAnswer: ans || null,
+        question: q.question || '',
+        options: q.options || [],
+        correct: q.correct !== undefined ? q.correct : null,
+        userAnswer: ans !== undefined ? ans : null,
         isCorrect,
         isAttempted,
         explanation: q.explanation || '',
-        category: q.category,
-        topic: q.topic,
-        type: q.type,
+        category: q.category || 'General',
+        topic: q.topic || 'General',
+        type: q.type || 'MCQ',
         confidence: confidences[q.id] || null,
         timeSpentSeconds: timeSpentMap[q.id] || 0,
         answerHistory: answerHistory[q.id] || []
