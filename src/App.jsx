@@ -20,6 +20,7 @@ import RevisionSession from './pages/RevisionSession';
 import Intelligence from './pages/Intelligence';
 import AttemptReplay from './pages/AttemptReplay';
 import Timeline from './pages/Timeline';
+import HowAIThinks from './pages/HowAIThinks';
 import AdminDashboard from './pages/AdminDashboard';
 import DailyChallenge from './pages/DailyChallenge';
 import Formulas from './pages/Formulas';
@@ -154,6 +155,14 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <Timeline />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/how-ai-thinks" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <HowAIThinks />
                     </Layout>
                   </ProtectedRoute>
                 } />

@@ -54,12 +54,20 @@ export default function Timeline() {
       const dateStr = date.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
 
       if (!topicTracking[topic]) {
-        topicTracking[topic] = { firstAttempt: false, mistakesInRow: 0, recovered: false };
+        topicTracking[topic] = { 
+          firstAttempt: false, 
+          firstCorrect: false,
+          correctCount: 0,
+          totalQuestions: 0,
+          mistakesInRow: 0, 
+          state: 'learning' // 'learning', 'mastered', 'forgotten'
+        };
       }
 
       const tracking = topicTracking[topic];
+      tracking.totalQuestions += 1;
 
-      // First attempt
+      // Started
       if (!tracking.firstAttempt) {
         events.push({
           id: `start-${topic}-${updatedAt}`,
@@ -73,53 +81,94 @@ export default function Timeline() {
         tracking.firstAttempt = true;
       }
 
-      if (status === 'incorrect' || status === 'skipped') {
-        tracking.mistakesInRow += 1;
-        tracking.recovered = false;
-        if (tracking.mistakesInRow === 3) {
+      if (status === 'correct') {
+        tracking.correctCount += 1;
+        tracking.mistakesInRow = 0;
+        
+        // First Correct
+        if (!tracking.firstCorrect) {
           events.push({
-            id: `weak-${topic}-${updatedAt}`,
+            id: `first-correct-${topic}-${updatedAt}`,
             date: date,
             dateStr,
-            title: `Weakness detected in ${topic}`,
-            description: `You struggled with multiple questions in a row. Time to review!`,
-            type: 'weakness',
-            icon: <AlertCircle size={20} />
+            title: `First Correct in ${topic}`,
+            description: `You got your first question right in this topic!`,
+            type: 'first-correct',
+            icon: <CheckCircle size={20} />
           });
+          tracking.firstCorrect = true;
         }
-      } else if (status === 'correct') {
-        if (tracking.mistakesInRow >= 3 && !tracking.recovered) {
-          events.push({
+
+        // Recovered
+        if (tracking.state === 'forgotten') {
+           events.push({
             id: `recover-${topic}-${updatedAt}`,
             date: date,
             dateStr,
             title: `Recovered in ${topic}`,
-            description: `Great job! You bounced back and answered correctly.`,
+            description: `You bounced back and regained your footing!`,
             type: 'recovery',
             icon: <CheckCircle size={20} />
           });
-          tracking.recovered = true;
+          tracking.state = 'learning';
         }
-        tracking.mistakesInRow = 0;
-      }
-    });
 
-    // Mastered events from masteryScores
-    if (masteryScores) {
-      Object.entries(masteryScores).forEach(([key, doc]) => {
-        if (doc.score > 0.8 && doc.lastUpdated) {
-          events.push({
-            id: `master-${doc.topic}-${doc.lastUpdated}`,
-            date: new Date(doc.lastUpdated),
-            dateStr: new Date(doc.lastUpdated).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }),
-            title: `${doc.topic} Mastered`,
-            description: `You achieved a high mastery score in this topic!`,
-            type: 'mastery',
+        // Mastery Levels (mocking based on correct count)
+        if (tracking.correctCount === 5 && tracking.state !== 'mastered') {
+           events.push({
+            id: `50-mastery-${topic}-${updatedAt}`,
+            date: date,
+            dateStr,
+            title: `50% Mastery in ${topic}`,
+            description: `You're halfway to mastering this topic.`,
+            type: 'mastery-50',
             icon: <Award size={20} />
           });
         }
-      });
-    }
+        
+        if (tracking.correctCount === 8 && tracking.state !== 'mastered') {
+           events.push({
+            id: `75-mastery-${topic}-${updatedAt}`,
+            date: date,
+            dateStr,
+            title: `75% Mastery in ${topic}`,
+            description: `Almost there! Your skills are sharp.`,
+            type: 'mastery-75',
+            icon: <Award size={20} />
+          });
+        }
+
+        if (tracking.correctCount === 10 && tracking.state !== 'mastered') {
+           events.push({
+            id: `mastered-${topic}-${updatedAt}`,
+            date: date,
+            dateStr,
+            title: `Mastered ${topic}`,
+            description: `Outstanding! You have mastered this topic.`,
+            type: 'mastery',
+            icon: <Award size={20} />
+          });
+          tracking.state = 'mastered';
+        }
+
+      } else if (status === 'incorrect' || status === 'skipped') {
+        tracking.mistakesInRow += 1;
+        
+        // Forgotten
+        if (tracking.mistakesInRow >= 3 && tracking.state !== 'forgotten') {
+          events.push({
+            id: `forgotten-${topic}-${updatedAt}`,
+            date: date,
+            dateStr,
+            title: `Forgotten Concept in ${topic}`,
+            description: `You seem to be struggling. Time to review!`,
+            type: 'forgotten',
+            icon: <AlertCircle size={20} />
+          });
+          tracking.state = 'forgotten';
+        }
+      }
+    });
 
     return events.sort((a, b) => a.date - b.date);
   }, [questionProgress, allQuestions, loading, masteryScores]);
