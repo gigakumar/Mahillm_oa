@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import IntelligenceDrawer from '../components/IntelligenceDrawer';
 import QuestionIntelligenceBadge from '../components/QuestionIntelligenceBadge';
 import { useAuth } from '../contexts/AuthContext';
@@ -8,13 +8,14 @@ import { db } from '../firebase';
 import { doc, getDoc, setDoc, addDoc, collection } from 'firebase/firestore';
 import { Check, X, Award, Clock, Target, AlertTriangle, AlertCircle, Bookmark, Share2, CornerDownRight, Flag, Brain } from 'lucide-react';
 import './TestResult.css';
-
+ 
 export default function TestResult() {
   const { testId } = useParams();
   const { user } = useAuth();
   const { masteryScores } = useUserData();
   const navigate = useNavigate();
-
+  const location = useLocation();
+ 
   const [loading, setLoading] = useState(true);
   const [result, setResult] = useState(null);
   const [showRawResults, setShowRawResults] = useState(false);
@@ -27,10 +28,15 @@ export default function TestResult() {
   const [issueType, setIssueType] = useState('Incorrect Answer Key');
   const [issueDetails, setIssueDetails] = useState('');
   const [reportSuccess, setReportSuccess] = useState(false);
-
+ 
   useEffect(() => {
-    loadTestResult();
-  }, [testId, user]);
+    if (location.state?.result) {
+      setResult(location.state.result);
+      setLoading(false);
+    } else {
+      loadTestResult();
+    }
+  }, [testId, user, location.state]);
 
   const loadTestResult = async () => {
     setLoading(true);

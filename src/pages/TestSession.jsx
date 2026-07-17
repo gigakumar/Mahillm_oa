@@ -592,7 +592,7 @@ export default function TestSession() {
     localStorage.removeItem('current_test_config');
     localStorage.removeItem('current_test_end_time');
 
-    navigate(`/tests/result/${testId}`);
+    navigate(`/tests/result/${testId}`, { state: { result: testResult } });
   };
 
   if (initStage === 'SESSION_INITIALIZATION_FAILED') {
