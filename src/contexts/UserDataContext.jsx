@@ -17,6 +17,7 @@ import { useScore } from './ScoreContext';
 import { updateMasteryScore, classifyMistake, buildCompositeKey } from '../utils/adaptiveEngine';
 import { scheduleReview } from '../utils/spacedRepetition';
 import { validateAttemptTelemetry } from '../intelligence/telemetry/telemetrySchema';
+import { applyDecay, migrateScoreToBKT } from '../intelligence/engines/bktEngine';
 
 const UserDataContext = createContext();
 
@@ -220,7 +221,28 @@ export function UserDataProvider({ children }) {
     const unsubMastery = onSnapshot(masteryColRef, (snapshot) => {
       const scores = {};
       snapshot.forEach((doc) => {
-        scores[doc.id] = doc.data();
+        const data = doc.data();
+        
+        // Decay logic
+        if (data.lastAttempted && data.pKnow !== undefined) {
+          const daysSinceLastReview = (Date.now() - new Date(data.lastAttempted).getTime()) / (1000 * 60 * 60 * 24);
+          if (daysSinceLastReview > 1) {
+            data.pKnow = applyDecay(data.pKnow, daysSinceLastReview);
+          }
+        }
+        
+        // Migrate legacy scores
+        if (data.pKnow === undefined && data.score !== undefined) {
+          const migrated = migrateScoreToBKT(data.score);
+          data.pKnow = migrated.pKnow;
+          data.pLearn = migrated.pLearn;
+          data.pGuess = migrated.pGuess;
+          data.pSlip = migrated.pSlip;
+          data.originalScore = data.score;
+          data.migrated = true;
+        }
+
+        scores[doc.id] = data;
       });
       setMasteryScores(scores);
     }, (err) => console.error("Error syncing masteryData:", err));
@@ -284,8 +306,8 @@ export function UserDataProvider({ children }) {
     try {
       // 2. Fetch or initialize topic mastery
       const currentMasteryDoc = masteryScores[compositeKey] || {
-        category: question.category,
-        topic: question.topic,
+        category: question.category || 'General',
+        topic: question.topic || 'General',
         score: 0.5,
         pKnow: 0.5,
         pLearn: 0.1,
@@ -308,8 +330,8 @@ export function UserDataProvider({ children }) {
 
       const masteryRef = doc(db, 'users', user.uid, 'masteryData', compositeKey);
       await setDoc(masteryRef, {
-        category: question.category,
-        topic: question.topic,
+        category: question.category || 'General',
+        topic: question.topic || 'General',
         score: newBktState.pKnow, // legacy fallback mapping
         pKnow: newBktState.pKnow,
         pLearn: newBktState.pLearn,
@@ -374,9 +396,9 @@ export function UserDataProvider({ children }) {
         const autoClass = classifyMistake(question, null, solveTimeMs, confidence, hasSwitched);
         await setDoc(mistakeRef, {
           questionId: question.id,
-          category: question.category,
-          topic: question.topic,
-          type: question.type,
+          category: question.category || 'General',
+          topic: question.topic || 'General',
+          type: question.type || 'MCQ',
           mistakeType: existingMistake?.mistakeType || autoClass,
           userOverrideType: existingMistake?.userOverrideType || null,
           firstIncorrectAt: existingMistake?.firstIncorrectAt || new Date().toISOString(),

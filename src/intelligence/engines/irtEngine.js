@@ -15,15 +15,14 @@
  * @param {number} c - Guessing parameter (pseudo-guessing chance)
  * @returns {number} Probability of correct response (0-1)
  */
-export function calculateIRTProbability(theta, a, b, c) {
+export function calculateIRTProbability(theta, b) {
   // Map theta from [0, 1] (BKT) to a standard normal distribution roughly [-3, 3]
   // A simple linear mapping for now:
   const scaledTheta = (theta - 0.5) * 6; // 0 -> -3, 1 -> 3
   const scaledB = (b - 0.5) * 6;
 
-  const exponent = -a * (scaledTheta - scaledB);
-  const prob = c + (1 - c) / (1 + Math.exp(exponent));
-  return prob;
+  const exponent = -(scaledTheta - scaledB);
+  return 1 / (1 + Math.exp(exponent));
 }
 
 /**

@@ -32,6 +32,7 @@ export function getActiveSessionConfig(locationState = null) {
   // 4. Default safe baseline calibration config fallback
   const defaultFallback = {
     valid: true,
+    name: 'Adaptive Session: ASSESSMENT',
     mode: 'adaptive',
     intent: 'ASSESSMENT',
     category: 'Mechanical Engineering',
@@ -57,6 +58,9 @@ export function persistSessionConfig(config) {
 
 function validateConfig(config) {
   if (!config || typeof config !== 'object') return false;
+  if (!config.name) {
+    config.name = config.mode === 'adaptive' ? `Adaptive Session: ${config.intent || 'Practice'}` : 'Practice Session';
+  }
   if (!config.category) {
     config.category = 'Mechanical Engineering';
   }

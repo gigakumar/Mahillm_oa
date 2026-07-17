@@ -546,7 +546,7 @@ export default function TestSession() {
     const timeSpent = config.duration * 60 - timerSeconds;
     
     const testResult = {
-      testName: config.name,
+      testName: config.name || 'Practice Session',
       mode: config.mode || 'preset',
       intent: config.intent || 'OPTIMAL',
       total: questions.length,

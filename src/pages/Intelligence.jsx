@@ -74,7 +74,7 @@ export default function Intelligence() {
     const prog = questionProgress[qId];
     const quest = allQuestions.find(q => q.id.toString() === qId);
     compiledAttempts.push({
-      id: parseInt(qId),
+      id: qId,
       topic: quest ? quest.topic : 'General',
       category: quest ? quest.category : 'General',
       correct: prog.status === 'correct',
