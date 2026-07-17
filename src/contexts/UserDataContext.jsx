@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { db } from '../firebase';
 import {
   doc,
@@ -34,6 +34,15 @@ export function UserDataProvider({ children }) {
   const [spacedRepetition, setSpacedRepetition] = useState({});
   const [questionProgress, setQuestionProgress] = useState({});
   const [loading, setLoading] = useState(true);
+
+  // Refs to always have fresh state inside callbacks without needing them as deps
+  const mistakesRef = useRef({});
+  const spacedRepRef = useRef({});
+  const masteryRef = useRef({});
+
+  useEffect(() => { mistakesRef.current = mistakes; }, [mistakes]);
+  useEffect(() => { spacedRepRef.current = spacedRepetition; }, [spacedRepetition]);
+  useEffect(() => { masteryRef.current = masteryScores; }, [masteryScores]);
 
   // Load and listen to user's adaptive data
   useEffect(() => {
@@ -288,8 +297,10 @@ export function UserDataProvider({ children }) {
 
   /**
    * Records a detailed answer response for adaptive algorithms.
+   * Wrapped in useCallback to avoid stale closures — reads live data
+   * via refs (mistakesRef, spacedRepRef, masteryRef) instead of state.
    */
-  const recordDetailedAnswer = async (question, isCorrect, solveTimeMs = 0, confidence = null, timeline = []) => {
+  const recordDetailedAnswer = useCallback(async (question, isCorrect, solveTimeMs = 0, confidence = null, timeline = []) => {
     if (!user) return;
 
     const qId = question.id.toString();
@@ -304,8 +315,8 @@ export function UserDataProvider({ children }) {
     }
 
     try {
-      // 2. Fetch or initialize topic mastery
-      const currentMasteryDoc = masteryScores[compositeKey] || {
+      // 2. Fetch or initialize topic mastery (use ref for fresh data)
+      const currentMasteryDoc = masteryRef.current[compositeKey] || {
         category: question.category || 'General',
         topic: question.topic || 'General',
         score: 0.5,
@@ -344,9 +355,9 @@ export function UserDataProvider({ children }) {
         avgSolveTimeMs: Math.round(newAvgSolveTime)
       });
 
-      // 3. Spaced Repetition log
-      const spacedRef = doc(db, 'users', user.uid, 'spacedRepetition', qId);
-      const currentSR = spacedRepetition[qId];
+      // 3. Spaced Repetition log — use ref for fresh data
+      const srDocRef = doc(db, 'users', user.uid, 'spacedRepetition', qId);
+      const currentSR = spacedRepRef.current[qId];
 
       if (!isCorrect) {
         // Reset or initialize spaced rep queue for this question
@@ -357,7 +368,7 @@ export function UserDataProvider({ children }) {
           currentSR ? currentSR.repetitionCount : 0
         );
 
-        await setDoc(spacedRef, {
+        await setDoc(srDocRef, {
           questionId: question.id,
           interval: nextSchedule.interval,
           easeFactor: nextSchedule.easeFactor,
@@ -375,7 +386,7 @@ export function UserDataProvider({ children }) {
           currentSR.repetitionCount
         );
 
-        await setDoc(spacedRef, {
+        await setDoc(srDocRef, {
           questionId: question.id,
           interval: nextSchedule.interval,
           easeFactor: nextSchedule.easeFactor,
@@ -386,31 +397,48 @@ export function UserDataProvider({ children }) {
         });
       }
 
-      // 4. Mistake Notebook logging
-      const mistakeRef = doc(db, 'users', user.uid, 'mistakes', qId);
-      const existingMistake = mistakes[qId];
+      // 4. Mistake Notebook logging — use ref for fresh, non-stale data
+      const mistakeDocRef = doc(db, 'users', user.uid, 'mistakes', qId);
+      const existingMistake = mistakesRef.current[qId];
 
       if (!isCorrect) {
         const selections = (timeline || []).filter(e => e.action === "select" || e.type === "OPTION_SELECTED");
         const hasSwitched = selections.length > 1;
         const autoClass = classifyMistake(question, null, solveTimeMs, confidence, hasSwitched);
-        await setDoc(mistakeRef, {
-          questionId: question.id,
-          category: question.category || 'General',
-          topic: question.topic || 'General',
-          type: question.type || 'MCQ',
-          mistakeType: existingMistake?.mistakeType || autoClass,
-          userOverrideType: existingMistake?.userOverrideType || null,
-          firstIncorrectAt: existingMistake?.firstIncorrectAt || new Date().toISOString(),
-          lastIncorrectAt: new Date().toISOString(),
-          timesIncorrect: increment(1),
-          isResolved: false,
-          resolvedAt: null,
-          userNote: existingMistake?.userNote || ''
-        }, { merge: true });
+
+        if (existingMistake) {
+          // Document exists — use updateDoc so that increment() works correctly
+          await updateDoc(mistakeDocRef, {
+            lastIncorrectAt: new Date().toISOString(),
+            timesIncorrect: increment(1),
+            isResolved: false,
+            resolvedAt: null,
+            // Preserve user override type; only auto-update if not overridden
+            mistakeType: existingMistake.userOverrideType ? existingMistake.mistakeType : autoClass
+          });
+        } else {
+          // First time wrong — create new document with setDoc (no increment needed)
+          await setDoc(mistakeDocRef, {
+            questionId: question.id,
+            category: question.category || 'General',
+            topic: question.topic || 'General',
+            type: question.type || 'MCQ',
+            mistakeType: autoClass,
+            userOverrideType: null,
+            firstIncorrectAt: new Date().toISOString(),
+            lastIncorrectAt: new Date().toISOString(),
+            timesIncorrect: 1,
+            isResolved: false,
+            resolvedAt: null,
+            userNote: ''
+          });
+        }
       } else if (existingMistake && !existingMistake.isResolved) {
-        // Answered correctly, potentially resolve or increment progress
-        // Note: Spaced Repetition manages revision cycle, we don't auto-resolve mistakes until user reviews
+        // Answered correctly after a mistake — mark as resolved
+        await updateDoc(mistakeDocRef, {
+          isResolved: true,
+          resolvedAt: new Date().toISOString()
+        });
       }
 
       // 5. Extended detailed questionProgress log
@@ -483,7 +511,8 @@ export function UserDataProvider({ children }) {
       console.error("Error recording detailed answer:", error);
     }
     return xpResult;
-  };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, recordAnswer]);
 
   /**
    * Manually override a mistake classification.
