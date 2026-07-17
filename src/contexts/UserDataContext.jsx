@@ -39,10 +39,12 @@ export function UserDataProvider({ children }) {
   const mistakesRef = useRef({});
   const spacedRepRef = useRef({});
   const masteryRef = useRef({});
+  const progressRefObj = useRef({});
 
   useEffect(() => { mistakesRef.current = mistakes; }, [mistakes]);
   useEffect(() => { spacedRepRef.current = spacedRepetition; }, [spacedRepetition]);
   useEffect(() => { masteryRef.current = masteryScores; }, [masteryScores]);
+  useEffect(() => { progressRefObj.current = questionProgress; }, [questionProgress]);
 
   // Load and listen to user's adaptive data
   useEffect(() => {
@@ -443,14 +445,27 @@ export function UserDataProvider({ children }) {
 
       // 5. Extended detailed questionProgress log
       const progressRef = doc(db, 'users', user.uid, 'questionProgress', qId);
-      await setDoc(progressRef, {
-        status: isCorrect ? 'correct' : 'incorrect',
-        attempts: increment(1),
-        solveTimeMs,
-        confidence,
-        timeline: timeline || [],
-        updatedAt: new Date().toISOString()
-      }, { merge: true });
+      const existingProgress = progressRefObj.current[qId];
+      
+      if (existingProgress) {
+        await updateDoc(progressRef, {
+          status: isCorrect ? 'correct' : 'incorrect',
+          attempts: increment(1),
+          solveTimeMs,
+          confidence,
+          timeline: timeline || [],
+          updatedAt: new Date().toISOString()
+        });
+      } else {
+        await setDoc(progressRef, {
+          status: isCorrect ? 'correct' : 'incorrect',
+          attempts: 1,
+          solveTimeMs,
+          confidence,
+          timeline: timeline || [],
+          updatedAt: new Date().toISOString()
+        });
+      }
 
       // 6. Write canonical event-based telemetry document
       const attemptId = "ATT_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
