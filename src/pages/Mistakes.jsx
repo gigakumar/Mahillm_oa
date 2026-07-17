@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useUserData } from '../contexts/UserDataContext';
 import { useScore } from '../contexts/ScoreContext';
+import { getBankByCategory } from '../data/questionBankRegistry';
 import { 
   AlertTriangle, 
   CheckCircle, 
@@ -63,40 +64,17 @@ export default function Mistakes() {
       const pools = { ...loadedQuestions };
       const categoryPromises = [];
 
-      if (representedCategories.has('Mechanical Engineering') && !pools['Mechanical Engineering']) {
-        categoryPromises.push(
-          import('../data/mechEngQuestions.js').then(m => {
-            pools['Mechanical Engineering'] = m.default;
-          })
-        );
-      }
-      if (representedCategories.has('Quantitative Aptitude') && !pools['Quantitative Aptitude']) {
-        categoryPromises.push(
-          import('../data/quantsQuestions.js').then(m => {
-            pools['Quantitative Aptitude'] = m.default;
-          })
-        );
-      }
-      if (representedCategories.has('Data Interpretation') && !pools['Data Interpretation']) {
-        categoryPromises.push(
-          import('../data/dataInterpretationQuestions.js').then(m => {
-            pools['Data Interpretation'] = m.default;
-          })
-        );
-      }
-      if (representedCategories.has('DILR') && !pools['DILR']) {
-        categoryPromises.push(
-          import('../data/dilrQuestions.js').then(m => {
-            pools['DILR'] = m.default;
-          })
-        );
-      }
-      if (representedCategories.has('Logical Reasoning') && !pools['Logical Reasoning']) {
-        categoryPromises.push(
-          import('../data/logicalReasoningQuestions.js').then(m => {
-            pools['Logical Reasoning'] = m.default;
-          })
-        );
+      for (const category of representedCategories) {
+        if (!pools[category]) {
+          const bank = getBankByCategory(category);
+          if (bank) {
+            categoryPromises.push(
+              bank.loader().then(m => {
+                pools[category] = m.default;
+              })
+            );
+          }
+        }
       }
 
       try {

@@ -2,7 +2,11 @@ export const QuestionBankRegistry = [
   {
     id: "mechanical",
     label: "Mechanical Engineering",
-    loader: () => import('../data/mechEngQuestions.js'),
+    loader: async () => {
+      const res = await fetch('/data/mechEngQuestions.json');
+      const data = await res.json();
+      return { default: data };
+    },
     enabled: true,
     estimatedCount: 27368,
     categoryKey: 'Mechanical Engineering',
@@ -11,7 +15,11 @@ export const QuestionBankRegistry = [
   {
     id: "quantitative",
     label: "Quantitative Aptitude",
-    loader: () => import('../data/quantsQuestions.js'),
+    loader: async () => {
+      const res = await fetch('/data/quantsQuestions.json');
+      const data = await res.json();
+      return { default: data };
+    },
     enabled: true,
     estimatedCount: 3404,
     categoryKey: 'Quantitative Aptitude',
@@ -20,7 +28,11 @@ export const QuestionBankRegistry = [
   {
     id: "data-interpretation",
     label: "Data Interpretation",
-    loader: () => import('../data/dataInterpretationQuestions.js'),
+    loader: async () => {
+      const res = await fetch('/data/dataInterpretationQuestions.json');
+      const data = await res.json();
+      return { default: data };
+    },
     enabled: true,
     estimatedCount: 1500,
     categoryKey: 'Data Interpretation',
@@ -29,7 +41,11 @@ export const QuestionBankRegistry = [
   {
     id: "dilr",
     label: "DILR Puzzles",
-    loader: () => import('../data/dilrQuestions.js'),
+    loader: async () => {
+      const res = await fetch('/data/dilrQuestions.json');
+      const data = await res.json();
+      return { default: data };
+    },
     enabled: true,
     estimatedCount: 2000,
     categoryKey: 'DILR',
@@ -38,7 +54,11 @@ export const QuestionBankRegistry = [
   {
     id: "logical-reasoning",
     label: "Logical Reasoning",
-    loader: () => import('../data/logicalReasoningQuestions.js'),
+    loader: async () => {
+      const res = await fetch('/data/logicalReasoningQuestions.json');
+      const data = await res.json();
+      return { default: data };
+    },
     enabled: true,
     estimatedCount: 3000,
     categoryKey: 'Logical Reasoning',

@@ -39,7 +39,7 @@ function shuffleArray(arr) {
 
 export default function OAPractice() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const catParam = searchParams.get('cat');
   const topicParam = searchParams.get('topic');
 
@@ -56,6 +56,10 @@ export default function OAPractice() {
       setCategory(catParam);
       if (topicParam) setTopic(topicParam);
       setIsSessionActive(true);
+    } else {
+      setIsSessionActive(false);
+      setCategory('all');
+      setTopic('all');
     }
   }, [catParam, topicParam]);
 
@@ -355,10 +359,8 @@ export default function OAPractice() {
 
   const handleReset = () => {
     setIsAdaptive(false);
-    setCategory('all');
     setDifficulty('all');
-    setTopic('all');
-    regenerateQuiz();
+    setSearchParams({});
   };
   
   const formatTime = (seconds) => {
@@ -452,9 +454,7 @@ export default function OAPractice() {
     };
 
     const handleCategoryClick = (catName) => {
-      setCategory(catName);
-      setTopic('all');
-      setIsSessionActive(true);
+      setSearchParams({ cat: catName });
     };
 
     const categoryCards = [

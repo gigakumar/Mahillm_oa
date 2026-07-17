@@ -115,7 +115,9 @@ export function selectNextQuestions(allQuestions, userMastery = {}, userHistory 
       score -= (expectedProb - 0.85) * 0.5; // Minor penalty for being too easy
     }
 
-    // 6. Diversity penalty applied during selection (not here)
+    // 6. Random jumble noise to avoid deterministic repetition of the same question sets
+    const jumbleNoise = Math.random() * 0.35;
+    score += jumbleNoise;
 
     if (!reason) {
       reason = 'Balanced practice';
