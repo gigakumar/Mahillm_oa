@@ -1,5 +1,0 @@
-connectorId: "mech-prep-app-connector"
-generate:
-  javascriptSdk:
-    outputDir: "../../src/lib/dataconnect"
-    package: "@mech-prep-app/dataconnect"

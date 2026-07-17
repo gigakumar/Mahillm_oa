@@ -18,14 +18,6 @@ import { updateMasteryScore, classifyMistake, buildCompositeKey } from '../utils
 import { scheduleReview } from '../utils/spacedRepetition';
 import { validateAttemptTelemetry } from '../intelligence/telemetry/telemetrySchema';
 import { applyDecay, migrateScoreToBKT } from '../intelligence/engines/bktEngine';
-import { subscribe } from 'firebase/data-connect';
-import {
-  upsertMistake,
-  resolveMistake as dcResolveMistake,
-  updateMistakeNote as dcUpdateMistakeNote,
-  updateMistakeType as dcUpdateMistakeType,
-  listUserMistakesRef
-} from '../lib/dataconnect';
 
 const UserDataContext = createContext();
 
@@ -131,8 +123,9 @@ export function UserDataProvider({ children }) {
             }, { merge: true }));
 
             if (!isCorrect) {
-              const mistakeRef = doc(db, 'users', user.uid, 'mistakes', qIdStr);
+              const mistakeRef = doc(db, 'mahi-oa', `${user.uid}_${qIdStr}`);
               batchPromises.push(setDoc(mistakeRef, {
+                userId: user.uid,
                 questionId: quest.id,
                 category: quest.category,
                 topic: quest.topic,
@@ -190,8 +183,9 @@ export function UserDataProvider({ children }) {
               }, { merge: true }));
 
               if (!rep.isCorrect) {
-                const mistakeRef = doc(db, 'users', user.uid, 'mistakes', qIdStr);
+                const mistakeRef = doc(db, 'mahi-oa', `${user.uid}_${qIdStr}`);
                 batchPromises.push(setDoc(mistakeRef, {
+                  userId: user.uid,
                   questionId: quest.id,
                   category: quest.category,
                   topic: quest.topic,
@@ -232,7 +226,7 @@ export function UserDataProvider({ children }) {
 
     const userDocRef = doc(db, 'users', user.uid);
     const masteryColRef = collection(db, 'users', user.uid, 'masteryData');
-    const mistakesColRef = collection(db, 'users', user.uid, 'mistakes');
+    const mistakesColRef = collection(db, 'mahi-oa');
     const spacedRepColRef = collection(db, 'users', user.uid, 'spacedRepetition');
     const progressColRef = collection(db, 'users', user.uid, 'questionProgress');
 
@@ -266,17 +260,16 @@ export function UserDataProvider({ children }) {
       setMasteryScores(scores);
     }, (err) => console.error("Error syncing masteryData:", err));
 
-    // Listen to mistakes via Data Connect (PostgreSQL)
-    const mistakesQueryRef = listUserMistakesRef({ userId: user.uid });
-    const unsubMistakes = subscribe(mistakesQueryRef, (result) => {
-      if (result.data) {
-        const mList = {};
-        result.data.mistakes.forEach(m => {
-          mList[m.questionId] = m;
-        });
-        setMistakes(mList);
-      }
-    });
+    // Listen to mistakes (active ones) in mahi-oa collection
+    const qMistakes = query(mistakesColRef, where("userId", "==", user.uid));
+    const unsubMistakes = onSnapshot(qMistakes, (snapshot) => {
+      const mList = {};
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        mList[data.questionId] = data; // map by questionId, not doc.id
+      });
+      setMistakes(mList);
+    }, (err) => console.error("Error syncing mistakes:", err));
 
     // Listen to spaced repetition queue
     const unsubSpaced = onSnapshot(spacedRepColRef, (snapshot) => {
@@ -410,7 +403,8 @@ export function UserDataProvider({ children }) {
         });
       }
 
-      // 4. Mistake Notebook logging (Data Connect / Postgres)
+      // 4. Mistake Notebook logging — use ref for fresh, non-stale data
+      const mistakeDocRef = doc(db, 'mahi-oa', `${user.uid}_${qId}`);
       const existingMistake = mistakesRef.current[qId];
 
       if (!isCorrect) {
@@ -418,26 +412,38 @@ export function UserDataProvider({ children }) {
         const hasSwitched = selections.length > 1;
         const autoClass = classifyMistake(question, null, solveTimeMs, confidence, hasSwitched);
 
-        const firstIncorrectAt = existingMistake ? existingMistake.firstIncorrectAt : new Date().toISOString();
-        const timesIncorrect = existingMistake ? existingMistake.timesIncorrect + 1 : 1;
-        const mistakeType = (existingMistake && existingMistake.userOverrideType) ? existingMistake.mistakeType : autoClass;
-
-        await upsertMistake({
-          userId: user.uid,
-          questionId: qId,
-          category: question.category || 'General',
-          topic: question.topic || 'General',
-          type: question.type || 'MCQ',
-          mistakeType,
-          firstIncorrectAt,
-          lastIncorrectAt: new Date().toISOString(),
-          timesIncorrect,
-          isResolved: false
-        });
+        if (existingMistake) {
+          // Document exists — use updateDoc so that increment() works correctly
+          await updateDoc(mistakeDocRef, {
+            lastIncorrectAt: new Date().toISOString(),
+            timesIncorrect: increment(1),
+            isResolved: false,
+            resolvedAt: null,
+            // Preserve user override type; only auto-update if not overridden
+            mistakeType: existingMistake.userOverrideType ? existingMistake.mistakeType : autoClass
+          });
+        } else {
+          // First time wrong — create new document with setDoc (no increment needed)
+          await setDoc(mistakeDocRef, {
+            userId: user.uid,
+            questionId: question.id,
+            category: question.category || 'General',
+            topic: question.topic || 'General',
+            type: question.type || 'MCQ',
+            mistakeType: autoClass,
+            userOverrideType: null,
+            firstIncorrectAt: new Date().toISOString(),
+            lastIncorrectAt: new Date().toISOString(),
+            timesIncorrect: 1,
+            isResolved: false,
+            resolvedAt: null,
+            userNote: ''
+          });
+        }
       } else if (existingMistake && !existingMistake.isResolved) {
-        await dcResolveMistake({
-          userId: user.uid,
-          questionId: qId,
+        // Answered correctly after a mistake — mark as resolved
+        await updateDoc(mistakeDocRef, {
+          isResolved: true,
           resolvedAt: new Date().toISOString()
         });
       }
@@ -533,10 +539,9 @@ export function UserDataProvider({ children }) {
    */
   const updateMistakeType = async (questionId, newType) => {
     if (!user) return;
+    const mistakeRef = doc(db, 'mahi-oa', `${user.uid}_${questionId.toString()}`);
     try {
-      await dcUpdateMistakeType({
-        userId: user.uid,
-        questionId: questionId.toString(),
+      await updateDoc(mistakeRef, {
         userOverrideType: newType
       });
     } catch (e) {
@@ -549,10 +554,10 @@ export function UserDataProvider({ children }) {
    */
   const resolveMistake = async (questionId, resolved = true) => {
     if (!user) return;
+    const mistakeRef = doc(db, 'mahi-oa', `${user.uid}_${questionId.toString()}`);
     try {
-      await dcResolveMistake({
-        userId: user.uid,
-        questionId: questionId.toString(),
+      await updateDoc(mistakeRef, {
+        isResolved: resolved,
         resolvedAt: resolved ? new Date().toISOString() : null
       });
     } catch (e) {
@@ -565,10 +570,9 @@ export function UserDataProvider({ children }) {
    */
   const updateMistakeNote = async (questionId, note) => {
     if (!user) return;
+    const mistakeRef = doc(db, 'mahi-oa', `${user.uid}_${questionId.toString()}`);
     try {
-      await dcUpdateMistakeNote({
-        userId: user.uid,
-        questionId: questionId.toString(),
+      await updateDoc(mistakeRef, {
         userNote: note
       });
     } catch (e) {
