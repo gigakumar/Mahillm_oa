@@ -4,7 +4,7 @@ export const QuestionBankRegistry = [
     label: "Mechanical Engineering",
     loader: () => import('../data/mechEngQuestions.js'),
     enabled: true,
-    estimatedCount: 9417,
+    estimatedCount: 27368,
     categoryKey: 'Mechanical Engineering',
     topics: ["Thermodynamics", "Fluid Mechanics", "SOM", "Manufacturing", "Machine Design"]
   },
@@ -13,7 +13,7 @@ export const QuestionBankRegistry = [
     label: "Quantitative Aptitude",
     loader: () => import('../data/quantsQuestions.js'),
     enabled: true,
-    estimatedCount: 3415,
+    estimatedCount: 3404,
     categoryKey: 'Quantitative Aptitude',
     topics: ["Percentages", "Profit & Loss", "Time & Work", "Algebra", "Geometry"]
   },
