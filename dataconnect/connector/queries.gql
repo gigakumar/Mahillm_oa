@@ -1,0 +1,20 @@
+query ListUserMistakes($userId: String!) @auth(level: USER) {
+  mistakes(
+    where: { userId: { eq: $userId } },
+    orderBy: [{ lastIncorrectAt: DESC }]
+  ) {
+    userId
+    questionId
+    category
+    topic
+    type
+    mistakeType
+    userOverrideType
+    firstIncorrectAt
+    lastIncorrectAt
+    timesIncorrect
+    isResolved
+    resolvedAt
+    userNote
+  }
+}

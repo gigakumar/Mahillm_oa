@@ -1,0 +1,70 @@
+mutation UpsertMistake(
+  $userId: String!,
+  $questionId: String!,
+  $category: String!,
+  $topic: String!,
+  $type: String!,
+  $mistakeType: String!,
+  $firstIncorrectAt: Timestamp!,
+  $lastIncorrectAt: Timestamp!,
+  $timesIncorrect: Int!,
+  $isResolved: Boolean!
+) @auth(level: USER) {
+  mistake_upsert(
+    data: {
+      userId: $userId,
+      questionId: $questionId,
+      category: $category,
+      topic: $topic,
+      type: $type,
+      mistakeType: $mistakeType,
+      firstIncorrectAt: $firstIncorrectAt,
+      lastIncorrectAt: $lastIncorrectAt,
+      timesIncorrect: $timesIncorrect,
+      isResolved: $isResolved
+    }
+  )
+}
+
+mutation ResolveMistake($userId: String!, $questionId: String!, $resolvedAt: Timestamp!) @auth(level: USER) {
+  mistake_update(
+    first: {
+      where: {
+        userId: { eq: $userId },
+        questionId: { eq: $questionId }
+      }
+    },
+    data: {
+      isResolved: true,
+      resolvedAt: $resolvedAt
+    }
+  )
+}
+
+mutation UpdateMistakeNote($userId: String!, $questionId: String!, $userNote: String!) @auth(level: USER) {
+  mistake_update(
+    first: {
+      where: {
+        userId: { eq: $userId },
+        questionId: { eq: $questionId }
+      }
+    },
+    data: {
+      userNote: $userNote
+    }
+  )
+}
+
+mutation UpdateMistakeType($userId: String!, $questionId: String!, $userOverrideType: String!) @auth(level: USER) {
+  mistake_update(
+    first: {
+      where: {
+        userId: { eq: $userId },
+        questionId: { eq: $questionId }
+      }
+    },
+    data: {
+      userOverrideType: $userOverrideType
+    }
+  )
+}
