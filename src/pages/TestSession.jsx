@@ -568,7 +568,8 @@ export default function TestSession() {
     try {
       if (user) {
         const docRef = doc(db, 'users', user.uid, 'tests', testId);
-        await setDoc(docRef, testResult);
+        const safeTestResult = JSON.parse(JSON.stringify(testResult, (k, v) => v === undefined ? null : v));
+        await setDoc(docRef, safeTestResult);
 
         // Track each question result in the adaptive mastery context
         const promises = questions.map((q) => {

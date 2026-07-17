@@ -473,7 +473,8 @@ export function UserDataProvider({ children }) {
       try {
         validateAttemptTelemetry(attemptDoc);
         const attemptRef = doc(db, 'users', user.uid, 'attempts', attemptId);
-        await setDoc(attemptRef, attemptDoc);
+        const safeAttemptDoc = JSON.parse(JSON.stringify(attemptDoc, (k, v) => v === undefined ? null : v));
+        await setDoc(attemptRef, safeAttemptDoc);
       } catch (validationErr) {
         console.error("Telemetry validation error, aborting attempts write:", validationErr);
       }
