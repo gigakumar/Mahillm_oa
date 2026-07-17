@@ -8,9 +8,15 @@ export const QuestionBankRegistry = [
       return { default: data };
     },
     enabled: true,
-    estimatedCount: 27368,
+    estimatedCount: 23754,
     categoryKey: 'Mechanical Engineering',
-    topics: ["Thermodynamics", "Fluid Mechanics", "SOM", "Manufacturing", "Machine Design"]
+    topics: [
+      "Thermodynamics", "Fluid Mechanics", "Strength of Materials",
+      "Manufacturing Engineering", "Machine Design", "Heat Transfer",
+      "Theory of Machines", "Engineering Mechanics", "Industrial Engineering",
+      "Materials Science", "Refrigeration & AC", "IC Engines",
+      "Power Plant Engineering"
+    ]
   },
   {
     id: "quantitative",
@@ -21,7 +27,7 @@ export const QuestionBankRegistry = [
       return { default: data };
     },
     enabled: true,
-    estimatedCount: 3404,
+    estimatedCount: 348,
     categoryKey: 'Quantitative Aptitude',
     topics: ["Percentages", "Profit & Loss", "Time & Work", "Algebra", "Geometry"]
   },
@@ -34,7 +40,7 @@ export const QuestionBankRegistry = [
       return { default: data };
     },
     enabled: true,
-    estimatedCount: 1500,
+    estimatedCount: 5,
     categoryKey: 'Data Interpretation',
     topics: ["Tables", "Bar Charts", "Pie Charts", "Line Graphs"]
   },
@@ -47,7 +53,7 @@ export const QuestionBankRegistry = [
       return { default: data };
     },
     enabled: true,
-    estimatedCount: 2000,
+    estimatedCount: 14,
     categoryKey: 'DILR',
     topics: ["Seating Arrangements", "Constraint Satisfaction", "Ordering"]
   },
@@ -60,7 +66,7 @@ export const QuestionBankRegistry = [
       return { default: data };
     },
     enabled: true,
-    estimatedCount: 3000,
+    estimatedCount: 59,
     categoryKey: 'Logical Reasoning',
     topics: ["Series", "Coding-Decoding", "Direction Sense", "Syllogisms"]
   }
