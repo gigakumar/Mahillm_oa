@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useUserData } from '../contexts/UserDataContext';
 import { db } from '../firebase';
+import { doc, setDoc } from 'firebase/firestore';
 import { getActiveSessionConfig } from '../utils/sessionConfigHelper';
 import { loadQuestionBanks, QuestionBankStatus } from '../utils/questionBankLoader';
 import { selectAdaptiveQuestions } from '../intelligence/questionIntelligence/adaptive/adaptiveQuestionSelector';
