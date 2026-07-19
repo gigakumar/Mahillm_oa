@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { db } from '../firebase';
+import { collection, getDocs, query, where, doc, getDoc } from 'firebase/firestore';
 import { useUserData } from '../contexts/UserDataContext';
 import { compileLearnerState } from '../intelligence/learnerStateModel';
 import { deriveInsights } from '../intelligence/learnerInsights/cognitiveInsightEngine';
@@ -39,14 +41,77 @@ export default function Dashboard() {
     setLoadingPools(false);
   }, []);
 
+  const [resolvedMetadata, setResolvedMetadata] = useState({});
+
+  useEffect(() => {
+    if (!questionProgress) return;
+    const idsToFetch = Object.keys(questionProgress).filter(id => {
+      const prog = questionProgress[id];
+      // Fetch if topic or category is missing or equals 'General'
+      return !prog.topic || prog.topic === 'General' || !prog.category || prog.category === 'General';
+    });
+
+    if (idsToFetch.length === 0) return;
+
+    async function fetchMetadata() {
+      const metadata = {};
+      try {
+        // Query in chunks of 30 due to Firestore 'in' query limit
+        const chunkSize = 30;
+        for (let i = 0; i < idsToFetch.length; i += chunkSize) {
+          const chunk = idsToFetch.slice(i, i + chunkSize);
+          const qSnap = await getDocs(query(
+            collection(db, 'questions'),
+            where('id', 'in', chunk.map(id => parseInt(id) || id))
+          ));
+          qSnap.forEach(docSnap => {
+            const data = docSnap.data();
+            if (data && data.id) {
+              metadata[data.id.toString()] = {
+                topic: data.topic,
+                category: data.category
+              };
+            }
+          });
+        }
+        
+        // Fallback to individual get if query by field 'id' fails
+        const remaining = idsToFetch.filter(id => !metadata[id]);
+        if (remaining.length > 0) {
+          await Promise.all(remaining.map(async (id) => {
+            try {
+              const docSnap = await getDoc(doc(db, 'questions', id));
+              if (docSnap.exists()) {
+                const data = docSnap.data();
+                metadata[id] = {
+                  topic: data.topic,
+                  category: data.category
+                };
+              }
+            } catch (err) {
+              console.error(`Error fetching individual question ${id}:`, err);
+            }
+          }));
+        }
+
+        setResolvedMetadata(prev => ({ ...prev, ...metadata }));
+      } catch (err) {
+        console.error("Error fetching question metadata:", err);
+      }
+    }
+
+    fetchMetadata();
+  }, [questionProgress]);
+
   // Compile learner telemetry
   const compiledAttempts = [];
   Object.keys(questionProgress || {}).forEach(qId => {
     const prog = questionProgress[qId];
+    const resolved = resolvedMetadata[qId] || {};
     compiledAttempts.push({
       id: qId,
-      topic: prog.topic || 'General',
-      category: prog.category || 'General',
+      topic: resolved.topic || prog.topic || 'General',
+      category: resolved.category || prog.category || 'General',
       correct: prog.status === 'correct',
       solveTime: (prog.solveTimeMs || 60000) / 1000,
       timeRatio: (prog.solveTimeMs || 60000) / 60000,
