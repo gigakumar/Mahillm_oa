@@ -60,5 +60,30 @@ export const MOCK_TESTS = [
       "Logical Reasoning": 20,
       "DILR": 20
     }
+  },
+  {
+    id: "advanced_thermo_mock_01",
+    name: "Advanced Thermodynamics Mock",
+    unlockDate: "2026-08-05T09:00:00Z",
+    duration: 45,
+    count: 25,
+    negativeMarking: true,
+    description: "Deep-dive mock on Thermodynamics and Heat Transfer — the most common weak point for GATE & PSU aspirants.",
+    distribution: { "Mechanical Engineering": 100 }
+  },
+  {
+    id: "full_syllabus_mock_02",
+    name: "Mahi OA Mock 02",
+    unlockDate: "2026-08-15T00:00:00Z",
+    duration: 60,
+    count: 30,
+    negativeMarking: true,
+    description: "Second full-syllabus mock with updated question pool and harder aptitude section.",
+    distribution: {
+      "Mechanical Engineering": 40,
+      "Quantitative Aptitude": 30,
+      "Logical Reasoning": 20,
+      "Data Interpretation": 10
+    }
   }
 ];

@@ -222,3 +222,36 @@ export function getReadinessSummary(heatmapData) {
     totalTopics: strong + unstable + weak + unattempted,
   };
 }
+
+/**
+ * Compute Ability Tier string based on attempts and accuracy
+ */
+export function computeAbilityTier(attempts, learnerState) {
+  if (!attempts || attempts.length < 10) return "CALIBRATING";
+  
+  const correctCount = attempts.filter(a => a.correct).length;
+  const accuracy = correctCount / attempts.length;
+  
+  if (attempts.length < 30) return "EMERGING";
+  
+  let avgElo = 600;
+  if (learnerState?.topicMasteryElo) {
+    const elos = Object.values(learnerState.topicMasteryElo);
+    if (elos.length > 0) {
+      avgElo = elos.reduce((a, b) => a + b, 0) / elos.length;
+    }
+  }
+
+  if (accuracy < 0.4) return "BEGINNER";
+  if (accuracy < 0.6) return "DEVELOPING";
+  
+  if (accuracy < 0.75) {
+    return avgElo < 950 ? "INTERMEDIATE" : "ADVANCED";
+  }
+  
+  if (attempts.length >= 50 && accuracy >= 0.8 && avgElo >= 1100) {
+    return "EXPERT";
+  }
+  
+  return "ADVANCED";
+}

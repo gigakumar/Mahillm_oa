@@ -423,17 +423,16 @@ export default function Profile() {
               <span>day streak</span>
 
               <p>
-                You've practiced consistently for {profile.streak} days. Missing
-                today resets the streak. A charming little threat from software.
+                You've practiced consistently for {profile.streak} days. Keep up the momentum to build long-term retention!
               </p>
 
               <div className="streak-days">
                 {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => (
                   <div
-                    className={`streak-day ${index < 5 ? 'completed' : ''}`}
+                    className={`streak-day ${index < Math.min(7, profile.streak) ? 'completed' : ''}`}
                     key={`${day}-${index}`}
                   >
-                    {index < 5 ? <CheckCircle2 size={15} /> : day}
+                    {index < Math.min(7, profile.streak) ? <CheckCircle2 size={15} /> : day}
                   </div>
                 ))}
               </div>

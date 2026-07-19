@@ -183,7 +183,9 @@ export default function Tests() {
         {activeTab === 'mocks' && (
           <div className="mocks-list" style={{ animation: 'fadeIn 0.3s ease-out' }}>
             <h2>Scheduled Mock Test Series 🏆</h2>
-            <p className="section-desc">Locked tests will unlock automatically on their scheduled release dates.</p>
+            {MOCK_TESTS.some(m => new Date() < new Date(m.unlockDate)) && (
+              <p className="section-desc">Locked tests will unlock automatically on their scheduled release dates.</p>
+            )}
             
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginTop: '1.5rem' }}>
               {MOCK_TESTS.map(mock => {

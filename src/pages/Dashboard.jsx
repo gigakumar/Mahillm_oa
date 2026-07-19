@@ -4,9 +4,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { useUserData } from '../contexts/UserDataContext';
 import { compileLearnerState } from '../intelligence/learnerStateModel';
 import { deriveInsights } from '../intelligence/learnerInsights/cognitiveInsightEngine';
+import { getWeakestTopics } from '../utils/adaptiveEngine';
+import { computeAbilityTier } from '../utils/masteryUtils';
 import { MOCK_TESTS } from '../data/mockSeriesConfig';
 
-import { getWeakestTopics } from '../utils/adaptiveEngine';
 import { 
   Play, 
   TrendingUp, 
@@ -27,7 +28,7 @@ import './Dashboard.css';
 export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { spacedRepetition, masteryScores, mistakes, questionProgress } = useUserData();
+  const { masteryScores, spacedRepetition, mistakes, questionProgress, testHistory } = useUserData();
   const firstName = user?.displayName?.split(' ')[0] || 'Harshit';
 
   const [loadingPools, setLoadingPools] = useState(true);
@@ -93,12 +94,14 @@ export default function Dashboard() {
     { accuracy: 0.72, speedSeconds: 58, coreMechanicalElo: 1210, aptitudeElo: 1180 }
   ];
 
+  const recentMockScores = testHistory ? testHistory.map(t => t.score) : [];
+
   const learnerState = compileLearnerState({
     userId: user?.uid || 'guest',
     attempts: compiledAttempts,
     topicMasteryElo: topicElo,
     srItems,
-    recentMockScores: [75, 82, 88],
+    recentMockScores: recentMockScores,
     peerPool: simulatedPeerPool,
     mistakes,
     questionDb: allQuestions
@@ -189,14 +192,14 @@ export default function Dashboard() {
                 </div>
                 <div className="cc-metric">
                   <span className="label">Ability Estimate</span>
-                  <span className="value">
-                    {isZeroData ? 'Calibrating' : 'ADVANCED'}
+                  <span className="value" style={{ cursor: 'pointer' }} onClick={() => navigate('/intelligence')}>
+                    {isZeroData ? 'Calibrating' : computeAbilityTier(compiledAttempts, learnerState)}
                   </span>
                 </div>
                 <div className="cc-metric">
                   <span className="label">Learning Stability</span>
                   <span className="value font-mono">
-                    87%
+                    {compiledAttempts.length < 5 ? 'Calibrating' : `${Math.round(learnerState.global.consistency * 100)}%`}
                   </span>
                 </div>
               </div>
@@ -241,9 +244,9 @@ export default function Dashboard() {
               {/* TRAJECTORY CARD */}
               <div className="cc-trajectory-section">
                 <h3>READINESS TRAJECTORY</h3>
-                {isZeroData ? (
-                  <div className="cc-zero-trajectory-box">
-                    <p>Complete your first adaptive session to establish a readiness trajectory.</p>
+                {recentMockScores.length === 0 ? (
+                  <div className="cc-zero-trajectory-box" style={{ padding: '2rem', textAlign: 'center', background: 'var(--bg-card)', borderRadius: '8px', border: '1px dashed var(--border)' }}>
+                    <p style={{ color: 'var(--text-secondary)' }}>Take your first Mock Test to generate trajectory.</p>
                   </div>
                 ) : (
                   <div className="cc-chart-placeholder">

@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useUserData } from '../contexts/UserDataContext';
 import { compileLearnerState } from '../intelligence/learnerStateModel';
 import { deriveInsights } from '../intelligence/learnerInsights/cognitiveInsightEngine';
-import { buildHeatmapData } from '../utils/masteryUtils';
+import { buildHeatmapData, computeAbilityTier } from '../utils/masteryUtils';
 import ConceptProfileDrawer from '../components/ConceptProfileDrawer';
 import InsightEvidenceDrawer from '../components/InsightEvidenceDrawer';
 import { 
@@ -215,20 +215,20 @@ export default function Intelligence() {
       {/* TOP SUMMARY BAR */}
       <section className="intel-summary-bar">
         <div className="summary-metric card">
-          <span className="lbl">Readiness Score</span>
+          <span className="lbl" title="Your overall preparedness for technical interviews based on Elo ratings and attempt history.">Readiness Score</span>
           <span className="val">{isZeroData ? 'CALIBRATING' : `${Math.round(learnerState.global.readiness * 100)}/100`}</span>
         </div>
         <div className="summary-metric card">
-          <span className="lbl">Ability Estimate</span>
-          <span className="val">{isZeroData ? 'INSUFFICIENT EVIDENCE' : 'ADVANCED'}</span>
+          <span className="lbl" title="An estimated categorization of your current problem-solving capability (Beginner, Developing, Intermediate, Advanced, Expert).">Ability Estimate</span>
+          <span className="val">{isZeroData ? 'INSUFFICIENT EVIDENCE' : computeAbilityTier(compiledAttempts, learnerState).toUpperCase()}</span>
         </div>
         <div className="summary-metric card">
-          <span className="lbl">Knowledge Stability</span>
-          <span className="val">{isZeroData ? 'CALIBRATING' : `${Math.round(learnerState.global.consistency * 100)}%`}</span>
+          <span className="lbl" title="How consistently you answer questions correctly across different sessions and topics.">Knowledge Stability</span>
+          <span className="val">{isZeroData || compiledAttempts.length < 5 ? 'CALIBRATING' : `${Math.round(learnerState.global.consistency * 100)}%`}</span>
         </div>
         <div className="summary-metric card">
-          <span className="lbl">Calibration Confidence</span>
-          <span className="val">{isZeroData ? 'LOW' : 'HIGH'}</span>
+          <span className="lbl" title="The AI's confidence in these metrics based on sample size and data freshness.">Calibration Confidence</span>
+          <span className="val">{isZeroData ? 'LOW' : (compiledAttempts.length > 50 ? 'HIGH' : 'MEDIUM')}</span>
         </div>
       </section>
 

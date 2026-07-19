@@ -16,7 +16,7 @@ import {
   Activity,
   AlertCircle
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import './Mistakes.css';
 
@@ -210,6 +210,13 @@ export default function Mistakes() {
       <p className="practice-subtitle" style={{ marginBottom: '2rem' }}>
         Review, classify, and resolve your mistakes. Repetition cures error.
       </p>
+
+      {totalActiveMistakes === 0 && (
+        <div className="alert-info" style={{ marginBottom: '1.5rem', padding: '1rem', background: 'var(--bg-card)', borderRadius: '8px', borderLeft: '4px solid var(--accent)' }}>
+          <strong style={{ display: 'block', marginBottom: '0.25rem' }}>No confirmed mistakes yet.</strong>
+          <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Insights based on attempt patterns are visible on the <Link to="/intelligence" style={{ color: 'var(--accent)', textDecoration: 'none' }}>Intelligence</Link> page.</span>
+        </div>
+      )}
 
       {/* Stats Cards Row */}
       <div className="mistakes-stats-row">
