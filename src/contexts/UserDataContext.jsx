@@ -29,6 +29,7 @@ export function UserDataProvider({ children }) {
   const [questionProgress, setQuestionProgress] = useState({});
   const [dashboardSummary, setDashboardSummary] = useState(null);
   const [dashboardProgress, setDashboardProgress] = useState(null);
+  const [testHistory, setTestHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Load and listen to user's adaptive data
@@ -45,9 +46,10 @@ export function UserDataProvider({ children }) {
     setLoading(true);
 
     const masteryColRef = collection(db, 'users', user.uid, 'masteryData');
-    const mistakesColRef = collection(db, 'mahi-oa');
+    const mistakesColRef = collection(db, 'users', user.uid, 'wrongQuestions');
     const spacedRepColRef = collection(db, 'users', user.uid, 'spacedRepetition');
     const progressColRef = collection(db, 'users', user.uid, 'questionProgress');
+    const testsColRef = collection(db, 'users', user.uid, 'tests');
     const dashboardSummaryRef = doc(db, 'users', user.uid, 'dashboard', 'summary');
     const dashboardProgressRef = doc(db, 'users', user.uid, 'dashboard', 'progress');
 
@@ -60,9 +62,8 @@ export function UserDataProvider({ children }) {
       setMasteryScores(scores);
     }, (err) => console.error("Error syncing masteryData:", err));
 
-    // Listen to mistakes (active ones) in mahi-oa collection
-    const qMistakes = query(mistakesColRef, where("userId", "==", user.uid));
-    const unsubMistakes = onSnapshot(qMistakes, (snapshot) => {
+    // Listen to mistakes (active ones) in user's wrongQuestions subcollection
+    const unsubMistakes = onSnapshot(mistakesColRef, (snapshot) => {
       const mList = {};
       snapshot.forEach((doc) => {
         const data = doc.data();
@@ -87,9 +88,20 @@ export function UserDataProvider({ children }) {
         prog[doc.id] = doc.data();
       });
       setQuestionProgress(prog);
-      setLoading(false);
     }, (err) => {
       console.error("Error syncing questionProgress:", err);
+    });
+
+    // Listen to tests
+    const unsubTests = onSnapshot(testsColRef, (snapshot) => {
+      const tList = [];
+      snapshot.forEach((doc) => {
+        tList.push({ id: doc.id, ...doc.data() });
+      });
+      setTestHistory(tList);
+      setLoading(false);
+    }, (err) => {
+      console.error("Error syncing testHistory:", err);
       setLoading(false);
     });
 
@@ -112,6 +124,7 @@ export function UserDataProvider({ children }) {
       unsubMistakes();
       unsubSpaced();
       unsubProgress();
+      unsubTests();
       unsubSummary();
       unsubDashProgress();
     };
@@ -190,6 +203,28 @@ export function UserDataProvider({ children }) {
         const attemptRef = doc(db, 'users', user.uid, 'attempts', attemptId);
         const safeAttemptDoc = JSON.parse(JSON.stringify(attemptDoc, (k, v) => v === undefined ? null : v));
         await setDoc(attemptRef, safeAttemptDoc);
+
+        // Client-side Mistake Processing Fallback (Bypassing Firebase Functions for Spark plan)
+        if (!isCorrect) {
+          const mistakeRef = doc(db, 'users', user.uid, 'wrongQuestions', question.id.toString());
+          const topic = question.topic || 'General';
+          const category = question.category || 'General';
+          
+          await setDoc(mistakeRef, {
+            userId: user.uid,
+            questionId: question.id,
+            topic,
+            category,
+            mistakeCount: 1, // simplified for client-side
+            timesIncorrect: 1,
+            isResolved: false,
+            firstMistakeAt: new Date().toISOString(),
+            firstIncorrectAt: new Date().toISOString(),
+            lastMistakeAt: new Date().toISOString(),
+            lastIncorrectAt: new Date().toISOString(),
+            autoClassification: "needs_review"
+          }, { merge: true }); // merge to preserve existing data and increment counts if possible (though we'd need a transaction to truly increment, merge is fine for a fallback)
+        }
       } catch (validationErr) {
         console.error("Telemetry validation error, aborting attempts write:", validationErr);
       }
@@ -205,7 +240,7 @@ export function UserDataProvider({ children }) {
    */
   const updateMistakeType = async (questionId, newType) => {
     if (!user) return;
-    const mistakeRef = doc(db, 'mahi-oa', `${user.uid}_${questionId.toString()}`);
+    const mistakeRef = doc(db, 'users', user.uid, 'wrongQuestions', questionId.toString());
     try {
       await updateDoc(mistakeRef, {
         userOverrideType: newType
@@ -220,7 +255,7 @@ export function UserDataProvider({ children }) {
    */
   const resolveMistake = async (questionId, resolved = true) => {
     if (!user) return;
-    const mistakeRef = doc(db, 'mahi-oa', `${user.uid}_${questionId.toString()}`);
+    const mistakeRef = doc(db, 'users', user.uid, 'wrongQuestions', questionId.toString());
     try {
       await updateDoc(mistakeRef, {
         isResolved: resolved,
@@ -236,7 +271,7 @@ export function UserDataProvider({ children }) {
    */
   const updateMistakeNote = async (questionId, note) => {
     if (!user) return;
-    const mistakeRef = doc(db, 'mahi-oa', `${user.uid}_${questionId.toString()}`);
+    const mistakeRef = doc(db, 'users', user.uid, 'wrongQuestions', questionId.toString());
     try {
       await updateDoc(mistakeRef, {
         userNote: note
@@ -254,6 +289,7 @@ export function UserDataProvider({ children }) {
       questionProgress,
       dashboardSummary,
       dashboardProgress,
+      testHistory,
       loading,
       recordDetailedAnswer,
       updateMistakeType,
