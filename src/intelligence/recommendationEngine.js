@@ -20,11 +20,11 @@ export function generateDailyRecommendations(masteryScores, spacedRepetition, qu
   const tasks = [];
   
   // Recommendation Score = Weakness * Recency * ObservationReliability
-  let weakestTopic = 'General Thermodynamics';
+  let weakestTopic = 'Thermodynamics';
   let highestScore = -Infinity;
   let topConfidence = 80;
   
-  if (masteryScores) {
+  if (masteryScores && Object.keys(masteryScores).length > 0) {
     Object.keys(masteryScores).forEach(topic => {
       const score = masteryScores[topic]?.score || 0;
       const weakness = Math.max(0.1, (100 - score) / 100); 
@@ -34,8 +34,33 @@ export function generateDailyRecommendations(masteryScores, spacedRepetition, qu
       const recScore = weakness * recency * observationReliability;
       if (recScore > highestScore) {
         highestScore = recScore;
-        weakestTopic = topic;
+        weakestTopic = masteryScores[topic]?.topic || topic;
         topConfidence = Math.round(recScore * 100);
+      }
+    });
+  } else {
+    // Fallback: find weakest topic from actual attempts
+    const topicAttempts = {};
+    if (questionProgress) {
+      Object.values(questionProgress).forEach(prog => {
+        if (prog.topic && prog.topic !== 'General') {
+          if (!topicAttempts[prog.topic]) {
+            topicAttempts[prog.topic] = { correct: 0, total: 0 };
+          }
+          topicAttempts[prog.topic].total++;
+          if (prog.status === 'correct') {
+            topicAttempts[prog.topic].correct++;
+          }
+        }
+      });
+    }
+
+    let lowestAcc = Infinity;
+    Object.keys(topicAttempts).forEach(t => {
+      const acc = topicAttempts[t].correct / topicAttempts[t].total;
+      if (acc < lowestAcc) {
+        lowestAcc = acc;
+        weakestTopic = t;
       }
     });
   }
@@ -71,16 +96,19 @@ export function generateDailyRecommendations(masteryScores, spacedRepetition, qu
 }
 
 export function generateCoachInsight(mistakes, topicElo, questionProgress) {
-  let recentAcc = 65;
-  let olderAcc = 72;
+  let recentAcc = 0;
+  let olderAcc = 0;
   
   if (questionProgress && Object.keys(questionProgress).length > 0) {
     let recentCorrect = 0, recentTotal = 0;
     let olderCorrect = 0, olderTotal = 0;
+    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
     
     Object.values(questionProgress).forEach(prog => {
-      // Mocking time split
-      if (prog.lastAttempt && prog.lastAttempt > Date.now() - 7 * 24 * 60 * 60 * 1000) {
+      const dateStr = prog.updatedAt || prog.date;
+      const attemptTime = dateStr ? new Date(dateStr).getTime() : Date.now();
+      
+      if (attemptTime > sevenDaysAgo) {
         recentTotal++;
         if (prog.status === 'correct') recentCorrect++;
       } else {
@@ -89,15 +117,21 @@ export function generateCoachInsight(mistakes, topicElo, questionProgress) {
       }
     });
     
-    if (recentTotal > 0) recentAcc = Math.round((recentCorrect / recentTotal) * 100);
-    if (olderTotal > 0) olderAcc = Math.round((olderCorrect / olderTotal) * 100);
+    recentAcc = recentTotal > 0 ? Math.round((recentCorrect / recentTotal) * 100) : 0;
+    olderAcc = olderTotal > 0 ? Math.round((olderCorrect / olderTotal) * 100) : 0;
+
+    if (recentTotal > 0 && olderTotal > 0) {
+      const diff = recentAcc - olderAcc;
+      if (diff < 0) {
+        return `Your accuracy fell from ${olderAcc}% to ${recentAcc}% over the last week. Focus on core concepts to regain consistency.`;
+      } else if (diff > 0) {
+        return `Great job! Your accuracy improved from ${olderAcc}% to ${recentAcc}% over the last week. Keep up the momentum!`;
+      }
+      return `Your accuracy is stable at ${recentAcc}%. Let's push for a breakthrough today.`;
+    } else if (recentTotal > 0) {
+      return `You have solved ${recentTotal} questions recently with an accuracy of ${recentAcc}%. Let's keep practicing to build your profile!`;
+    }
   }
 
-  const diff = recentAcc - olderAcc;
-  if (diff < 0) {
-    return `Your accuracy fell from ${olderAcc}% to ${recentAcc}% over the last week. Focus on core concepts to regain consistency.`;
-  } else if (diff > 0) {
-    return `Great job! Your accuracy improved from ${olderAcc}% to ${recentAcc}% over the last week. Keep up the momentum!`;
-  }
-  return `Your accuracy is stable at ${recentAcc}%. Let's push for a breakthrough today.`;
+  return `Welcome to Mahi! Start practicing to let your AI Study Coach analyze your accuracy and performance trends.`;
 }
