@@ -282,7 +282,7 @@ export function classifyMistake(question, userAnswer, solveTimeMs = 0, confidenc
  * Format: "Category__Topic" (double underscore separator)
  */
 export function buildCompositeKey(category, topic) {
-  return `${category || 'Unknown'}__${topic || 'General'}`;
+  return `${category || 'Unknown'}__${topic || 'General'}`.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
 }
 
 /**
@@ -291,8 +291,8 @@ export function buildCompositeKey(category, topic) {
 export function parseCompositeKey(compositeKey) {
   const parts = compositeKey.split('__');
   return {
-    category: parts[0] || 'Unknown',
-    topic: parts[1] || 'General',
+    category: (parts[0] || 'Unknown').replace(/_/g, ' '),
+    topic: (parts[1] || 'General').replace(/_/g, ' '),
   };
 }
 
@@ -306,11 +306,13 @@ export function parseCompositeKey(compositeKey) {
 export function getWeakestTopics(userMastery, n = 5) {
   const entries = Object.entries(userMastery)
     .map(([key, data]) => {
-      const bkt = data.pKnow !== undefined ? data : migrateScoreToBKT(data.score);
+      const bkt = data.pKnow !== undefined ? data : migrateScoreToBKT(data.score || data.probabilityKnown || 0.3);
+      const parsed = parseCompositeKey(key);
       return {
-        ...parseCompositeKey(key),
+        category: data.category || parsed.category,
+        topic: data.topic || parsed.topic,
         score: bkt.pKnow, // use pKnow for sorting weak topics
-        attempts: data.attempts,
+        attempts: data.attempts || data.attemptsCount || 0,
       };
     })
     .filter(e => e.attempts > 0) // exclude unattempted

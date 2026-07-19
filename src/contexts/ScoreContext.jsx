@@ -155,11 +155,16 @@ export function ScoreProvider({ children }) {
       
       await updateDoc(userRef, updates);
 
-      // Set sub-collection document progress
-      await setDoc(progressRef, {
+      // Set sub-collection document progress (store topic/category for hub stats)
+      const progressData = {
         status: isCorrect ? 'correct' : 'incorrect',
         updatedAt: new Date().toISOString()
-      }, { merge: true });
+      };
+      if (questionOrId && typeof questionOrId === 'object') {
+        progressData.topic = questionOrId.topic || 'General';
+        progressData.category = questionOrId.category || 'General';
+      }
+      await setDoc(progressRef, progressData, { merge: true });
 
       return {
         xpEarned,

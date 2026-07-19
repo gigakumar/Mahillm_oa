@@ -7,7 +7,8 @@ import {
   updateDoc,
   onSnapshot,
   query,
-  where
+  where,
+  runTransaction
 } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
 import { useScore } from './ScoreContext';
@@ -224,6 +225,53 @@ export function UserDataProvider({ children }) {
             lastIncorrectAt: new Date().toISOString(),
             autoClassification: "needs_review"
           }, { merge: true }); // merge to preserve existing data and increment counts if possible (though we'd need a transaction to truly increment, merge is fine for a fallback)
+        }
+
+        // Client-side BKT / MasteryData Fallback (Bypassing Firebase Functions for Spark plan)
+        const topic = question.topic || 'General';
+        const category = question.category || 'General';
+        const docKey = `${category}__${topic}`.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+        const masteryRef = doc(db, 'users', user.uid, 'masteryData', docKey);
+        
+        try {
+          await runTransaction(db, async (transaction) => {
+            const mDoc = await transaction.get(masteryRef);
+            let pL = 0.1; // default pL0
+            let attemptsCount = 0;
+            let correctCount = 0;
+            
+            if (mDoc.exists()) {
+              const mData = mDoc.data();
+              pL = mData.probabilityKnown || mData.score || 0.1;
+              attemptsCount = mData.attemptsCount || mData.attempts || 0;
+              correctCount = mData.correctCount || 0;
+            }
+            
+            // BKT Update math:
+            const pGuess = 0.25;
+            const pSlip = 0.2;
+            const pTransit = 0.1;
+            
+            const pLearn = isCorrect
+              ? (pL * (1 - pSlip)) / (pL * (1 - pSlip) + (1 - pL) * pGuess)
+              : (pL * pSlip) / (pL * pSlip + (1 - pL) * (1 - pGuess));
+              
+            const newPL = pLearn + (1 - pLearn) * pTransit;
+            const boundedPL = Math.max(0.01, Math.min(0.99, newPL));
+            
+            transaction.set(masteryRef, {
+              topic,
+              category,
+              probabilityKnown: boundedPL,
+              score: boundedPL,
+              attemptsCount: attemptsCount + 1,
+              attempts: attemptsCount + 1,
+              correctCount: isCorrect ? correctCount + 1 : correctCount,
+              lastUpdated: new Date().toISOString()
+            }, { merge: true });
+          });
+        } catch (masteryErr) {
+          console.error("Error updating client-side BKT mastery:", masteryErr);
         }
       } catch (validationErr) {
         console.error("Telemetry validation error, aborting attempts write:", validationErr);

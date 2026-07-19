@@ -1,18 +1,19 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, BookOpen, Clock, Shuffle, List, Layers, Brain, Award, Sparkles, Flame, Zap, Target, RefreshCw, TrendingUp, AlertTriangle } from 'lucide-react';
+import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, BookOpen, Clock, Shuffle, List, Layers, Brain, Award, Sparkles, Flame, Zap, Target, RefreshCw, TrendingUp, AlertTriangle, ChevronDown } from 'lucide-react';
 
 import QuestionIntelligenceBadge from '../components/QuestionIntelligenceBadge';
 import { useScore } from '../contexts/ScoreContext';
 import { useUserData } from '../contexts/UserDataContext';
 import { selectNextQuestions, getAdaptiveSummary } from '../utils/adaptiveEngine';
-import { QuestionBankRegistry } from '../data/questionBankRegistry';
+import { QuestionBankRegistry, MECH_TOPIC_GROUPS } from '../data/questionBankRegistry';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import './OAPractice.css';
 import './AdaptivePractice.css';
 
-// Cache loaded question banks to avoid re-importing on filter changes
+// Cache is ONLY used for non-Mech categories or when topic='all'
+// For Mech with a specific topic, we always fetch scoped from Firestore/JSON
 const questionBankCache = {};
 
 
@@ -44,8 +45,11 @@ export default function OAPractice() {
   const topicParam = searchParams.get('topic');
 
   const { scoreData, toggleBookmark } = useScore();
-  const { masteryScores, mistakes, spacedRepetition, recordDetailedAnswer } = useUserData();
+  const { masteryScores, mistakes, spacedRepetition, recordDetailedAnswer, questionProgress } = useUserData();
   const [progressMap, setProgressMap] = useState({});
+  
+  // Mech subtopic picker state
+  const [mechSubtopicMode, setMechSubtopicMode] = useState(false);
   const [xpFeedback, setXpFeedback] = useState(null);
   
   const [isSessionActive, setIsSessionActive] = useState(!!catParam);
@@ -94,9 +98,16 @@ export default function OAPractice() {
   const [debugPoolLength, setDebugPoolLength] = useState(-1);
   const [debugFilteredLength, setDebugFilteredLength] = useState(-1);
 
-  // Load a single question bank with caching, then shuffle fresh every time
+  // Load a question bank - for Mech with a specific topic, load ONLY that topic (scoped)
   const loadBank = useCallback(async (bankEntry, filterTopic = null, filterDifficulty = null) => {
-    const cacheKey = `${bankEntry.id}`; // cache raw bank only, not filtered
+    const isMech = bankEntry.id === 'mechanical';
+    // For Mech with a specific topic: always fetch scoped, never cache full 23K bank
+    if (isMech && filterTopic && filterTopic !== 'all') {
+      const mod = await bankEntry.loader(filterTopic, filterDifficulty);
+      return shuffleArray(mod.default);
+    }
+    // For all other cases: use cache to avoid re-fetching full bank
+    const cacheKey = `${bankEntry.id}`;
     if (!questionBankCache[cacheKey]) {
       const mod = await bankEntry.loader(null, null); // load full bank unfiltered
       questionBankCache[cacheKey] = mod.default;
@@ -455,15 +466,46 @@ export default function OAPractice() {
     };
 
     const handleCategoryClick = (catName) => {
-      setSearchParams({ cat: catName });
+      if (catName === 'Mechanical Engineering') {
+        // For Mech, toggle the subtopic picker instead of immediately loading all 23K questions
+        setMechSubtopicMode(prev => !prev);
+      } else {
+        setSearchParams({ cat: catName });
+      }
     };
 
+    const handleMechTopicSelect = (topicName) => {
+      setSearchParams({ cat: 'Mechanical Engineering', topic: topicName });
+    };
+
+    const handleMechAllTopics = () => {
+      // Load all Mech — user explicitly wants this
+      setSearchParams({ cat: 'Mechanical Engineering' });
+    };
+
+    // Dynamic progress derived from questionProgress context
+    const totalAttempted = Object.keys(questionProgress || {}).length;
+    const totalCorrect = Object.values(questionProgress || {}).filter(p => p.status === 'correct').length;
+    const totalQuestionsInBank = QuestionBankRegistry.reduce((sum, b) => sum + (b.estimatedCount || 0), 0);
+
+    // Per-category solved counts
+    const categoryProgress = {};
+    QuestionBankRegistry.forEach(bank => {
+      // We track solved questions — match by checking spacedRepetition or questionProgress for this category
+      // Since questionProgress doesn't store category, we approximate via mastery keys
+      categoryProgress[bank.categoryKey] = 0;
+    });
+    // Count from masteryScores which are keyed by topic within a category
+    // A more accurate pass: count from questionProgress where we cross-ref with bank topics
+    // For simplicity, show total solved across all categories
+    const sessionSolved = Object.values(progressMap).filter(v => v === 'correct').length;
+
     const categoryCards = [
-      { cat: 'Mechanical Engineering', emoji: '🔩', title: 'Mechanical Engg', desc: 'Thermo, Fluids, SOM, Manufacturing, Machine Design & more', count: '9,400+', gradient: 'linear-gradient(135deg, rgba(255,107,0,0.15), rgba(255,107,0,0.03))' },
-      { cat: 'Quantitative Aptitude', emoji: '🧮', title: 'Quantitative Aptitude', desc: 'Percentages, Profit & Loss, Time & Work, Algebra, Geometry', count: '3,400+', gradient: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.03))' },
-      { cat: 'Data Interpretation', emoji: '📊', title: 'Data Interpretation', desc: 'Tables, Bar, Pie, Line charts — read data, spot trends', count: '1,500+', gradient: 'linear-gradient(135deg, rgba(6,182,212,0.15), rgba(6,182,212,0.03))' },
-      { cat: 'DILR', emoji: '🧩', title: 'DILR Puzzles', desc: 'Seating arrangements, constraint satisfaction, ordering', count: '2,000+', gradient: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.03))' },
-      { cat: 'Logical Reasoning', emoji: '🧠', title: 'Logical Reasoning', desc: 'Series, coding-decoding, direction sense, syllogisms', count: '3,000+', gradient: 'linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.03))' },
+      { cat: 'Mechanical Engineering', emoji: '🔩', title: 'Mechanical Engg', desc: 'Thermo, Fluids, SOM, Manufacturing, Machine Design & more', count: '23,400+', gradient: 'linear-gradient(135deg, rgba(255,107,0,0.15), rgba(255,107,0,0.03))', hasPicker: true },
+      { cat: 'Quantitative Aptitude', emoji: '🧮', title: 'Quantitative Aptitude', desc: 'Percentages, Profit & Loss, Time & Work, Algebra, Geometry', count: '1,900+', gradient: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.03))' },
+      { cat: 'Data Interpretation', emoji: '📊', title: 'Data Interpretation', desc: 'Tables, Bar, Pie, Line charts — read data, spot trends', count: '730+', gradient: 'linear-gradient(135deg, rgba(6,182,212,0.15), rgba(6,182,212,0.03))' },
+      { cat: 'DILR', emoji: '🧩', title: 'DILR Puzzles', desc: 'Seating arrangements, constraint satisfaction, ordering', count: '14+', gradient: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.03))' },
+      { cat: 'Logical Reasoning', emoji: '🧠', title: 'Logical Reasoning', desc: 'Series, coding-decoding, direction sense, syllogisms', count: '59+', gradient: 'linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.03))' },
     ];
 
     const intentCards = [
@@ -488,8 +530,16 @@ export default function OAPractice() {
           </div>
           <div className="hub-stats">
             <div className="hub-stat">
-              <span className="hub-stat-value">19,300+</span>
+              <span className="hub-stat-value">{totalQuestionsInBank.toLocaleString()}+</span>
               <span className="hub-stat-label">Questions</span>
+            </div>
+            <div className="hub-stat">
+              <span className="hub-stat-value hub-stat-value--solved">{totalCorrect.toLocaleString()}</span>
+              <span className="hub-stat-label">Solved ✓</span>
+            </div>
+            <div className="hub-stat">
+              <span className="hub-stat-value">{totalAttempted.toLocaleString()}</span>
+              <span className="hub-stat-label">Attempted</span>
             </div>
             <div className="hub-stat">
               <span className="hub-stat-value">5</span>
@@ -497,6 +547,26 @@ export default function OAPractice() {
             </div>
           </div>
         </header>
+
+        {/* Progress bar showing overall completion */}
+        {totalAttempted > 0 && (
+          <div className="hub-overall-progress">
+            <div className="hub-progress-label">
+              <span>Overall Progress</span>
+              <span className="hub-progress-pct">{totalAttempted.toLocaleString()} attempted · {totalCorrect.toLocaleString()} correct ({totalAttempted > 0 ? Math.round((totalCorrect / totalAttempted) * 100) : 0}% accuracy)</span>
+            </div>
+            <div className="hub-progress-track">
+              <div
+                className="hub-progress-fill"
+                style={{ width: `${Math.min(100, (totalAttempted / totalQuestionsInBank) * 100)}%` }}
+              />
+              <div
+                className="hub-progress-fill hub-progress-fill--correct"
+                style={{ width: `${Math.min(100, (totalCorrect / totalQuestionsInBank) * 100)}%` }}
+              />
+            </div>
+          </div>
+        )}
 
         {/* ADAPTIVE PRACTICE SECTION */}
         <section className="hub-section">
@@ -527,25 +597,98 @@ export default function OAPractice() {
             <h2>Browse Question Bank</h2>
           </div>
           <div className="category-grid">
-            {categoryCards.map(({ cat, emoji, title, desc, count, gradient }) => (
-              <div
-                key={cat}
-                className="category-card"
-                onClick={() => handleCategoryClick(cat)}
-                style={{ '--card-gradient': gradient }}
-              >
-                <div className="category-card-top">
-                  <span className="category-emoji">{emoji}</span>
-                  <span className="category-count">{count}</span>
+            {categoryCards.map(({ cat, emoji, title, desc, count, gradient, hasPicker }) => {
+              const catAttempted = Object.values(questionProgress || {}).filter(p => p.category === cat).length;
+              const catCorrect = Object.values(questionProgress || {}).filter(p => p.category === cat && p.status === 'correct').length;
+              const isExpanded = hasPicker && mechSubtopicMode;
+              return (
+                <div key={cat} className={`category-card-wrapper${isExpanded ? ' expanded' : ''}`}>
+                  <div
+                    className={`category-card${isExpanded ? ' category-card--active' : ''}`}
+                    onClick={() => handleCategoryClick(cat)}
+                    style={{ '--card-gradient': gradient }}
+                  >
+                    <div className="category-card-top">
+                      <span className="category-emoji">{emoji}</span>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                        <span className="category-count">{count}</span>
+                        {catAttempted > 0 && (
+                          <span className="category-solved-badge">{catCorrect}/{catAttempted} solved</span>
+                        )}
+                      </div>
+                    </div>
+                    <h3 className="category-title">{title}</h3>
+                    <p className="category-desc">{desc}</p>
+                    {catAttempted > 0 && (
+                      <div className="category-progress-mini">
+                        <div
+                          className="category-progress-mini-fill"
+                          style={{ width: `${Math.min(100, (catCorrect / Math.max(catAttempted, 1)) * 100)}%` }}
+                        />
+                      </div>
+                    )}
+                    <div className="category-card-action">
+                      <span>{hasPicker ? (isExpanded ? 'Choose a subtopic ↓' : 'Pick subtopic') : 'Start practicing'}</span>
+                      {hasPicker ? <ChevronDown size={14} style={{ transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.3s' }} /> : <ChevronRight size={14} />}
+                    </div>
+                  </div>
+
+                  {/* Inline Mech Subtopic Picker */}
+                  {isExpanded && (
+                    <div className="mech-subtopic-picker">
+                      <div className="mech-subtopic-header">
+                        <span>🔩 Select a Mechanical Engineering subtopic to practice</span>
+                        <button className="mech-all-btn" onClick={handleMechAllTopics}>
+                          <Shuffle size={14} /> All Topics (random 50)
+                        </button>
+                      </div>
+                      <div className="mech-topic-groups">
+                        {MECH_TOPIC_GROUPS.map(group => (
+                          <div key={group.group} className="mech-topic-group">
+                            <div
+                              className="mech-group-header"
+                              style={{ borderColor: group.color }}
+                            >
+                              <span className="mech-group-emoji">{group.emoji}</span>
+                              <span className="mech-group-name">{group.group}</span>
+                              <span className="mech-group-total">
+                                {group.topics.reduce((s, t) => s + t.count, 0).toLocaleString()} Qs
+                              </span>
+                            </div>
+                            <div className="mech-topic-pills">
+                              {group.topics.map(t => {
+                                const tAttempted = Object.values(questionProgress || {}).filter(p => p.topic === t.name).length;
+                                const tCorrect = Object.values(questionProgress || {}).filter(p => p.topic === t.name && p.status === 'correct').length;
+                                const accuracy = tAttempted > 0 ? Math.round((tCorrect / tAttempted) * 100) : null;
+                                return (
+                                  <button
+                                    key={t.name}
+                                    className="mech-topic-pill"
+                                    onClick={() => handleMechTopicSelect(t.name)}
+                                    style={{
+                                      '--topic-color': group.color,
+                                      '--accuracy-pct': accuracy !== null ? `${accuracy}%` : '0%'
+                                    }}
+                                  >
+                                    <span className="mech-pill-name">{t.name}</span>
+                                    <span className="mech-pill-count">{t.count.toLocaleString()}</span>
+                                    {tAttempted > 0 && (
+                                      <span className="mech-pill-progress" title={`${tCorrect}/${tAttempted} correct`}>
+                                        {accuracy}%
+                                      </span>
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <h3 className="category-title">{title}</h3>
-                <p className="category-desc">{desc}</p>
-                <div className="category-card-action">
-                  <span>Start practicing</span>
-                  <ChevronRight size={14} />
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       </div>
