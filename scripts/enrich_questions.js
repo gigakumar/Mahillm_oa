@@ -93,79 +93,78 @@ Respond ONLY with a valid JSON array of objects in the same order as the questio
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+const CONCURRENCY = 3;
+
 async function main() {
   console.log(`Loading data from ${DATA_FILE}`);
   const rawData = fs.readFileSync(DATA_FILE, 'utf8');
   const questions = JSON.parse(rawData);
   
-  let processedCount = 0;
   let updatedCount = 0;
 
-  let batchIndices = [];
-  let batchQuestions = [];
+  // Group into batches
+  let allBatches = [];
+  let currentBatch = { indices: [], questions: [] };
 
   for (let i = 0; i < questions.length; i++) {
     if (!questions[i].equation || !questions[i].trick) {
-      batchIndices.push(i);
-      batchQuestions.push(questions[i]);
-
-      if (batchQuestions.length === BATCH_SIZE) {
-        console.log(`Processing batch of ${BATCH_SIZE} questions (ending at index ${i})...`);
-        try {
-          const enrichments = await generateEnrichmentBatch(batchQuestions);
-          
-          if (!Array.isArray(enrichments) || enrichments.length !== batchQuestions.length) {
-            throw new Error(`Expected array of length ${batchQuestions.length}, got ${enrichments?.length}`);
-          }
-
-          for (let j = 0; j < enrichments.length; j++) {
-            questions[batchIndices[j]].equation = enrichments[j].equation;
-            questions[batchIndices[j]].trick = enrichments[j].trick;
-            updatedCount++;
-          }
-          console.log(`  -> Successfully enriched ${enrichments.length} questions.`);
-        } catch (err) {
-          console.error(`  -> Batch Failed: ${err.message}`);
-          if (err.message.includes('429')) {
-             console.error('Quota limit reached. Aborting script to prevent API spam.');
-             break;
-          }
-        }
-
-        processedCount += BATCH_SIZE;
-        batchIndices = [];
-        batchQuestions = [];
-        
-        fs.writeFileSync(DATA_FILE, JSON.stringify(questions, null, 2));
-        console.log(`Intermediate save: ${updatedCount} total questions updated so far.`);
-        
-        await sleep(DELAY_MS);
+      currentBatch.indices.push(i);
+      currentBatch.questions.push(questions[i]);
+      if (currentBatch.questions.length === BATCH_SIZE) {
+        allBatches.push(currentBatch);
+        currentBatch = { indices: [], questions: [] };
       }
     }
   }
+  if (currentBatch.questions.length > 0) {
+    allBatches.push(currentBatch);
+  }
 
-  // Process remaining questions if they form a partial batch
-  if (batchQuestions.length > 0) {
-    console.log(`Processing final batch of ${batchQuestions.length} questions...`);
-    try {
-      const enrichments = await generateEnrichmentBatch(batchQuestions);
-      if (Array.isArray(enrichments) && enrichments.length === batchQuestions.length) {
-        for (let j = 0; j < enrichments.length; j++) {
-          questions[batchIndices[j]].equation = enrichments[j].equation;
-          questions[batchIndices[j]].trick = enrichments[j].trick;
-          updatedCount++;
+  console.log(`Found ${allBatches.length} batches of up to ${BATCH_SIZE} questions to process.`);
+
+  let abort = false;
+
+  for (let i = 0; i < allBatches.length && !abort; i += CONCURRENCY) {
+    const batchGroup = allBatches.slice(i, i + CONCURRENCY);
+    console.log(`Processing concurrent group ${Math.floor(i / CONCURRENCY) + 1} of ${Math.ceil(allBatches.length / CONCURRENCY)} (containing ${batchGroup.length} batches)...`);
+    
+    const promises = batchGroup.map(async (batch, indexInGroup) => {
+      try {
+        const enrichments = await generateEnrichmentBatch(batch.questions);
+        if (!Array.isArray(enrichments) || enrichments.length !== batch.questions.length) {
+            throw new Error(`Expected array of length ${batch.questions.length}, got ${enrichments?.length}`);
         }
-        console.log(`  -> Successfully enriched ${enrichments.length} questions.`);
-      } else {
-        throw new Error(`Expected array of length ${batchQuestions.length}, got ${enrichments?.length}`);
+        for (let j = 0; j < enrichments.length; j++) {
+            questions[batch.indices[j]].equation = enrichments[j].equation;
+            questions[batch.indices[j]].trick = enrichments[j].trick;
+            updatedCount++;
+        }
+        console.log(`  -> Successfully enriched ${enrichments.length} questions in batch ${indexInGroup + 1}.`);
+      } catch (err) {
+        console.error(`  -> Batch ${indexInGroup + 1} Failed: ${err.message}`);
+        if (err.message.includes('429')) {
+           abort = true;
+        }
       }
-    } catch (err) {
-      console.error(`  -> Final Batch Failed: ${err.message}`);
+    });
+
+    await Promise.all(promises);
+
+    fs.writeFileSync(DATA_FILE, JSON.stringify(questions, null, 2));
+    console.log(`Intermediate save: ${updatedCount} total questions updated so far.`);
+
+    if (abort) {
+        console.error('Quota limit reached (429). Aborting script to prevent API spam.');
+        break;
+    }
+    
+    if (i + CONCURRENCY < allBatches.length) {
+      await sleep(DELAY_MS);
     }
   }
 
   if (updatedCount > 0) {
-    console.log(`Saving ${updatedCount} updated questions to file...`);
+    console.log(`Saving final state of ${updatedCount} updated questions...`);
     fs.writeFileSync(DATA_FILE, JSON.stringify(questions, null, 2));
     console.log('Done!');
   } else {
