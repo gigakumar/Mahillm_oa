@@ -593,7 +593,8 @@ export default function TestSession() {
       if (user) {
         const docRef = doc(db, 'users', user.uid, 'tests', testId);
         const safeTestResult = JSON.parse(JSON.stringify(testResult, (k, v) => v === undefined ? null : v));
-        await setDoc(docRef, safeTestResult);
+        
+        const savePromises = [setDoc(docRef, safeTestResult)];
 
         // Track each question result in the adaptive mastery context
         const promises = questions.map((q) => {
@@ -603,7 +604,15 @@ export default function TestSession() {
           const confidence = confidences[q.id] || null;
           return recordDetailedAnswer(q, isCorrect, qTimeMs, confidence);
         });
-        await Promise.all(promises);
+        
+        savePromises.push(Promise.all(promises));
+
+        // Use Promise.race to prevent hanging indefinitely (e.g. if offline or Firestore stalls)
+        const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 3500));
+        await Promise.race([
+          Promise.all(savePromises),
+          timeoutPromise
+        ]);
       } else {
         localStorage.setItem(`guest_test_result_${testId}`, JSON.stringify(testResult));
       }

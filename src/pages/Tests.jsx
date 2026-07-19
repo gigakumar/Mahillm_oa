@@ -19,11 +19,10 @@ const PRESETS = [
 
 export default function Tests() {
   const { user } = useAuth();
+  const { testHistory = [], loading: historyLoading } = useUserData();
   const navigate = useNavigate();
   
   const [activeTab, setActiveTab] = useState('mocks'); // 'mocks' | 'presets' | 'custom' | 'history'
-  const [history, setHistory] = useState([]);
-  const [historyLoading, setHistoryLoading] = useState(false);
 
   // Custom Test Builder state
   const [testName, setTestName] = useState('Custom Placement Test');
@@ -43,31 +42,6 @@ export default function Tests() {
   });
 
   const [weightError, setWeightError] = useState('');
-
-  // Load history from Firestore
-  useEffect(() => {
-    if (activeTab === 'history' && user) {
-      loadTestHistory();
-    }
-  }, [activeTab, user]);
-
-  const loadTestHistory = async () => {
-    setHistoryLoading(true);
-    try {
-      const qRef = collection(db, 'users', user.uid, 'tests');
-      const q = query(qRef, orderBy('submittedAt', 'desc'));
-      const querySnapshot = await getDocs(q);
-      const list = [];
-      querySnapshot.forEach((doc) => {
-        list.push({ id: doc.id, ...doc.data() });
-      });
-      setHistory(list);
-    } catch (e) {
-      console.error("Error loading test history:", e);
-    } finally {
-      setHistoryLoading(false);
-    }
-  };
 
   const handleWeightChange = (key, val) => {
     const numeric = Math.max(0, Math.min(100, parseInt(val) || 0));
@@ -139,12 +113,12 @@ export default function Tests() {
       };
     }
 
-    // Generate random seed
-    const seed = Math.random().toString(36).substring(2, 9);
-    localStorage.setItem('current_test_config', JSON.stringify({ ...finalConfig, seed }));
+    const configWithSeed = { ...finalConfig, seed };
+    localStorage.setItem('current_test_config', JSON.stringify(configWithSeed));
     localStorage.removeItem('current_test_session'); // Clear any old test
+    sessionStorage.removeItem('active_session_config'); // MUST clear to prevent overriding custom config
     
-    navigate('/tests/session');
+    navigate('/tests/session', { state: configWithSeed });
   };
 
   const formatDate = (isoString) => {
@@ -361,14 +335,14 @@ export default function Tests() {
 
             {historyLoading ? (
               <div className="loading" style={{ textAlign: 'center', padding: '2rem' }}>Loading test records...</div>
-            ) : history.length === 0 ? (
+            ) : testHistory.length === 0 ? (
               <div className="empty-state" style={{ textAlign: 'center', padding: '3rem 1rem' }}>
                 <Calendar size={48} style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }} />
                 <p>No test scorecards found. Start practicing to see your assessments recorded here!</p>
               </div>
             ) : (
               <div className="history-grid" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {history.map((record) => (
+                {testHistory.map((record) => (
                   <div key={record.id} className="history-card card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
                     <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
                       <div className="score-badge" style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'var(--accent-glow)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 'bold', fontSize: '1.25rem', color: 'var(--accent)' }}>
