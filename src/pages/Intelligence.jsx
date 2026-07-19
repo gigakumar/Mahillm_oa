@@ -51,11 +51,11 @@ export default function Intelligence() {
       setLoadingPools(true);
       try {
         const [me, qa, di, dilr, lr] = await Promise.all([
-          import('../data/mechEngQuestions.js'),
-          import('../data/quantsQuestions.js'),
-          import('../data/dataInterpretationQuestions.js'),
-          import('../data/dilrQuestions.js'),
-          import('../data/logicalReasoningQuestions.js')
+          fetch('/data/mechEngQuestions.json').then(r => r.json()).then(d => ({ default: d })),
+          fetch('/data/quantsQuestions.json').then(r => r.json()).then(d => ({ default: d })),
+          fetch('/data/dataInterpretationQuestions.json').then(r => r.json()).then(d => ({ default: d })),
+          fetch('/data/dilrQuestions.json').then(r => r.json()).then(d => ({ default: d })),
+          fetch('/data/logicalReasoningQuestions.json').then(r => r.json()).then(d => ({ default: d }))
         ]);
         const combined = [...me.default, ...qa.default, ...di.default, ...dilr.default, ...lr.default];
         setAllQuestions(combined);
@@ -322,7 +322,7 @@ export default function Intelligence() {
                       if (insight.recommendedIntent === 'MISTAKE_REPAIR') navigate('/mistakes');
                       else if (insight.recommendedIntent === 'WEAKNESS_REPAIR') handleIntentLaunch('WEAKNESS_REPAIR');
                       else if (insight.recommendedIntent === 'STRETCH') handleIntentLaunch('STRETCH');
-                      else if (insight.recommendedIntent === 'DECAY_RECOVERY') navigate('/revision');
+                      else if (insight.recommendedIntent === 'DECAY_RECOVERY') handleIntentLaunch('DECAY_RECOVERY');
                       else navigate('/oa-practice');
                     }}
                   >

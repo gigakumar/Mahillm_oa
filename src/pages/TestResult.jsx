@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
-import IntelligenceDrawer from '../components/IntelligenceDrawer';
+
 import QuestionIntelligenceBadge from '../components/QuestionIntelligenceBadge';
 import { useAuth } from '../contexts/AuthContext';
 import { useUserData } from '../contexts/UserDataContext';
@@ -606,9 +606,7 @@ export default function TestResult() {
                     <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5' }} dangerouslySetInnerHTML={{ __html: q.explanation }} />
                   </div>
                 )}
-                
-                {/* Intelligence Drawer (Phase 3B.3) */}
-                <IntelligenceDrawer question={q} />
+
               </div>
             );
           })}

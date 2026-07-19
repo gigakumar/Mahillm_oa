@@ -12,10 +12,8 @@ import {
   X,
   BookOpen,
   BarChart2,
-  RefreshCw,
   Shield,
   Sparkles,
-  FileText,
   Play,
   ChevronDown,
   User,
@@ -102,14 +100,7 @@ export default function Navbar() {
             </span>
           )}
         </Link>
-        <Link to="/revision" className={`nav-link ${isActive('/revision') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-          <RefreshCw size={16} /> Revision
-          {getDueQuestions(spacedRepetition).length > 0 && (
-            <span className="badge badge-warning" style={{ padding: '0.1rem 0.35rem', fontSize: '0.7rem', marginLeft: '0.25rem', borderRadius: '50%', color: '#000' }}>
-              {getDueQuestions(spacedRepetition).length}
-            </span>
-          )}
-        </Link>
+
         <Link to="/intelligence" className={`nav-link ${isActive('/intelligence') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
           <Brain size={16} /> Intelligence
         </Link>
@@ -141,9 +132,7 @@ export default function Navbar() {
             <Link to="/attempt-replay" role="menuitem" className={`dropdown-item ${isActive('/attempt-replay') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
               <Play size={14} /> Replay
             </Link>
-            <Link to="/formulas" role="menuitem" className={`dropdown-item ${isActive('/formulas') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
-              <FileText size={14} /> Formulas
-            </Link>
+
             <Link to="/mock-interview" role="menuitem" className={`dropdown-item ${isActive('/mock-interview') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
               <Mic size={14} /> Interview
             </Link>

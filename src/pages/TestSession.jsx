@@ -197,11 +197,11 @@ export default function TestSession() {
             
             // Dynamic compile of all questions to search against
             const [me, qa, di, dilr, lr] = await Promise.all([
-              import('../data/mechEngQuestions.js'),
-              import('../data/quantsQuestions.js'),
-              import('../data/dataInterpretationQuestions.js'),
-              import('../data/dilrQuestions.js'),
-              import('../data/logicalReasoningQuestions.js')
+              fetch('/data/mechEngQuestions.json').then(r => r.json()).then(d => ({ default: d })),
+              fetch('/data/quantsQuestions.json').then(r => r.json()).then(d => ({ default: d })),
+              fetch('/data/dataInterpretationQuestions.json').then(r => r.json()).then(d => ({ default: d })),
+              fetch('/data/dilrQuestions.json').then(r => r.json()).then(d => ({ default: d })),
+              fetch('/data/logicalReasoningQuestions.json').then(r => r.json()).then(d => ({ default: d }))
             ]);
             const allQs = [...me.default, ...qa.default, ...di.default, ...dilr.default, ...lr.default];
 
@@ -223,7 +223,30 @@ export default function TestSession() {
               });
             });
 
-            const learnerState = compileLearnerState(compiledAttempts, masteryScores, mistakes, spacedRepetition);
+            const topicElo = {};
+            Object.keys(masteryScores || {}).forEach(key => {
+              const docData = masteryScores[key];
+              if (docData.topic) topicElo[docData.topic] = Math.round(600 + (docData.score || docData.probabilityKnown || 0) * 900);
+            });
+
+            const srItems = Object.values(spacedRepetition || {}).map((item: any) => ({
+              questionId: item.questionId,
+              topic: item.topic || 'General',
+              lastReviewed: item.lastReviewDate,
+              intervalDays: item.interval || 1
+            }));
+
+            const learnerState = compileLearnerState({
+              userId: user?.uid || 'guest',
+              attempts: compiledAttempts,
+              topicMasteryElo: topicElo,
+              srItems,
+              recentMockScores: [],
+              peerPool: [],
+              mistakes: mistakes || {},
+              questionDb: allQs
+            });
+
             
             // Select questions with fallback ladder and collapse diagnostics
             const adaptiveResult = selectAdaptiveQuestions(parsedConfig, loadState.pools, learnerState);

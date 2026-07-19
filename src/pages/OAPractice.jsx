@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, BookOpen, Clock, Shuffle, List, Layers, Brain, Award, Sparkles, Flame, Zap, Target, RefreshCw, TrendingUp, AlertTriangle } from 'lucide-react';
-import IntelligenceDrawer from '../components/IntelligenceDrawer';
+
 import QuestionIntelligenceBadge from '../components/QuestionIntelligenceBadge';
 import { useScore } from '../contexts/ScoreContext';
 import { useUserData } from '../contexts/UserDataContext';
@@ -95,12 +95,13 @@ export default function OAPractice() {
   const [debugFilteredLength, setDebugFilteredLength] = useState(-1);
 
   // Load a single question bank with caching
-  const loadBank = useCallback(async (bankEntry) => {
-    if (questionBankCache[bankEntry.id]) {
-      return questionBankCache[bankEntry.id];
+  const loadBank = useCallback(async (bankEntry, filterTopic = null, filterDifficulty = null) => {
+    const cacheKey = `${bankEntry.id}_${filterTopic || 'all'}_${filterDifficulty || 'all'}`;
+    if (questionBankCache[cacheKey]) {
+      return questionBankCache[cacheKey];
     }
-    const mod = await bankEntry.loader();
-    questionBankCache[bankEntry.id] = mod.default;
+    const mod = await bankEntry.loader(filterTopic, filterDifficulty);
+    questionBankCache[cacheKey] = mod.default;
     return mod.default;
   }, []);
 
@@ -118,13 +119,13 @@ export default function OAPractice() {
         const randomBank = enabledBanks[Math.floor(Math.random() * enabledBanks.length)];
         
         // Load first bank fast
-        const firstPool = await loadBank(randomBank);
+        const firstPool = await loadBank(randomBank, topic, difficulty);
         pool = [...firstPool];
         
         // Load remaining banks in parallel
         const remainingBanks = enabledBanks.filter(b => b.id !== randomBank.id);
         const remainingPools = await Promise.all(
-          remainingBanks.map(b => loadBank(b))
+          remainingBanks.map(b => loadBank(b, topic, difficulty))
         );
         remainingPools.forEach(p => { pool = pool.concat(p); });
       } else {
@@ -133,7 +134,7 @@ export default function OAPractice() {
           b => b.categoryKey === category || b.label === category
         );
         if (bankEntry) {
-          pool = await loadBank(bankEntry);
+          pool = await loadBank(bankEntry, topic, difficulty);
         }
       }
 
@@ -1020,9 +1021,7 @@ export default function OAPractice() {
                     </div>
                   </div>
                 </div>
-                
-                {/* Intelligence Drawer (Phase 3B.3) */}
-                <IntelligenceDrawer question={question} />
+
               </div>
             )}
 

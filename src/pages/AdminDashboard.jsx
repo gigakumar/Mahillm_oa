@@ -112,19 +112,19 @@ export default function AdminDashboard() {
       const needsAll = representedCategories.size === 0;
 
       if ((representedCategories.has('Mechanical Engineering') || needsAll) && !pools['Mechanical Engineering']) {
-        categoryPromises.push(import('../data/mechEngQuestions.js').then(m => { pools['Mechanical Engineering'] = m.default; }));
+        categoryPromises.push(fetch('/data/mechEngQuestions.json').then(r => r.json()).then(data => { pools['Mechanical Engineering'] = data; }));
       }
       if ((representedCategories.has('Quantitative Aptitude') || needsAll) && !pools['Quantitative Aptitude']) {
-        categoryPromises.push(import('../data/quantsQuestions.js').then(m => { pools['Quantitative Aptitude'] = m.default; }));
+        categoryPromises.push(fetch('/data/quantsQuestions.json').then(r => r.json()).then(data => { pools['Quantitative Aptitude'] = data; }));
       }
       if ((representedCategories.has('Data Interpretation') || needsAll) && !pools['Data Interpretation']) {
-        categoryPromises.push(import('../data/dataInterpretationQuestions.js').then(m => { pools['Data Interpretation'] = m.default; }));
+        categoryPromises.push(fetch('/data/dataInterpretationQuestions.json').then(r => r.json()).then(data => { pools['Data Interpretation'] = data; }));
       }
       if ((representedCategories.has('DILR') || needsAll) && !pools['DILR']) {
-        categoryPromises.push(import('../data/dilrQuestions.js').then(m => { pools['DILR'] = m.default; }));
+        categoryPromises.push(fetch('/data/dilrQuestions.json').then(r => r.json()).then(data => { pools['DILR'] = data; }));
       }
       if ((representedCategories.has('Logical Reasoning') || needsAll) && !pools['Logical Reasoning']) {
-        categoryPromises.push(import('../data/logicalReasoningQuestions.js').then(m => { pools['Logical Reasoning'] = m.default; }));
+        categoryPromises.push(fetch('/data/logicalReasoningQuestions.json').then(r => r.json()).then(data => { pools['Logical Reasoning'] = data; }));
       }
 
       try {

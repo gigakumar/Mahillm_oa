@@ -1,11 +1,54 @@
+import { collection, getDocs, query, where, limit } from "firebase/firestore";
+import { db } from "../firebase";
+
+// Helper function to query questions from Firestore on-demand
+async function fetchQuestionsFromFirestore(categoryKey, filterTopic = null, filterDifficulty = null, fallbackPath = null) {
+  try {
+    const qRef = collection(db, "questions");
+    const constraints = [where("category", "==", categoryKey)];
+    
+    if (filterTopic && filterTopic !== 'all') {
+      constraints.push(where("topic", "==", filterTopic));
+    }
+    
+    if (filterDifficulty && filterDifficulty !== 'all') {
+      constraints.push(where("difficulty.prior", "==", filterDifficulty));
+    }
+    
+    const q = query(qRef, ...constraints, limit(600));
+    const snap = await getDocs(q);
+    const data = [];
+    snap.forEach((doc) => {
+      data.push(doc.data());
+    });
+    
+    if (data.length > 0) {
+      console.log(`[Firestore Loader] Successfully loaded ${data.length} questions for category: ${categoryKey}`);
+      return { default: data };
+    }
+    
+    console.warn(`[Firestore Loader] No questions found in Firestore for ${categoryKey}, using fallback.`);
+  } catch (err) {
+    console.error(`[Firestore Loader] Error fetching questions for ${categoryKey}:`, err);
+  }
+
+  // Fallback to local public JSON files
+  if (fallbackPath) {
+    console.log(`[Firestore Loader] Fetching fallback from: ${fallbackPath}`);
+    const res = await fetch(fallbackPath);
+    const localData = await res.json();
+    return { default: localData };
+  }
+  
+  return { default: [] };
+}
+
 export const QuestionBankRegistry = [
   {
     id: "mechanical",
     label: "Mechanical Engineering",
-    loader: async () => {
-      const res = await fetch('/data/mechEngQuestions.json');
-      const data = await res.json();
-      return { default: data };
+    loader: async (filterTopic = null, filterDifficulty = null) => {
+      return fetchQuestionsFromFirestore("Mechanical Engineering", filterTopic, filterDifficulty, "/data/mechEngQuestions.json");
     },
     enabled: true,
     estimatedCount: 23754,
@@ -21,10 +64,8 @@ export const QuestionBankRegistry = [
   {
     id: "quantitative",
     label: "Quantitative Aptitude",
-    loader: async () => {
-      const res = await fetch('/data/quantsQuestions.json');
-      const data = await res.json();
-      return { default: data };
+    loader: async (filterTopic = null, filterDifficulty = null) => {
+      return fetchQuestionsFromFirestore("Quantitative Aptitude", filterTopic, filterDifficulty, "/data/quantsQuestions.json");
     },
     enabled: true,
     estimatedCount: 348,
@@ -34,10 +75,8 @@ export const QuestionBankRegistry = [
   {
     id: "data-interpretation",
     label: "Data Interpretation",
-    loader: async () => {
-      const res = await fetch('/data/dataInterpretationQuestions.json');
-      const data = await res.json();
-      return { default: data };
+    loader: async (filterTopic = null, filterDifficulty = null) => {
+      return fetchQuestionsFromFirestore("Data Interpretation", filterTopic, filterDifficulty, "/data/dataInterpretationQuestions.json");
     },
     enabled: true,
     estimatedCount: 5,
@@ -47,10 +86,8 @@ export const QuestionBankRegistry = [
   {
     id: "dilr",
     label: "DILR Puzzles",
-    loader: async () => {
-      const res = await fetch('/data/dilrQuestions.json');
-      const data = await res.json();
-      return { default: data };
+    loader: async (filterTopic = null, filterDifficulty = null) => {
+      return fetchQuestionsFromFirestore("DILR", filterTopic, filterDifficulty, "/data/dilrQuestions.json");
     },
     enabled: true,
     estimatedCount: 14,
@@ -60,10 +97,8 @@ export const QuestionBankRegistry = [
   {
     id: "logical-reasoning",
     label: "Logical Reasoning",
-    loader: async () => {
-      const res = await fetch('/data/logicalReasoningQuestions.json');
-      const data = await res.json();
-      return { default: data };
+    loader: async (filterTopic = null, filterDifficulty = null) => {
+      return fetchQuestionsFromFirestore("Logical Reasoning", filterTopic, filterDifficulty, "/data/logicalReasoningQuestions.json");
     },
     enabled: true,
     estimatedCount: 59,
@@ -79,3 +114,4 @@ export function getBankByCategory(categoryName) {
 export function getBankById(id) {
   return QuestionBankRegistry.find(b => b.id === id);
 }
+

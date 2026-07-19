@@ -16,14 +16,14 @@ import SessionBriefing from './pages/tests/SessionBriefing';
 import TestSession from './pages/TestSession';
 import TestResult from './pages/TestResult';
 import Mistakes from './pages/Mistakes';
-import RevisionSession from './pages/RevisionSession';
+
 import Intelligence from './pages/Intelligence';
 import AttemptReplay from './pages/AttemptReplay';
 import Timeline from './pages/Timeline';
 import HowAIThinks from './pages/HowAIThinks';
 import AdminDashboard from './pages/AdminDashboard';
 import DailyChallenge from './pages/DailyChallenge';
-import Formulas from './pages/Formulas';
+
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Stats from './pages/Stats';
@@ -131,13 +131,7 @@ function App() {
                   </ProtectedRoute>
                 } />
 
-                <Route path="/revision" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <RevisionSession />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+
 
                 <Route path="/readiness" element={
                   <Navigate to="/intelligence" replace />
@@ -191,13 +185,7 @@ function App() {
                   </ProtectedRoute>
                 } />
 
-                <Route path="/formulas" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Formulas />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+
 
                 <Route path="/profile" element={
                   <ProtectedRoute>

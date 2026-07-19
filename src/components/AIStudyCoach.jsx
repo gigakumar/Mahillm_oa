@@ -30,25 +30,25 @@ export default function AIStudyCoach({ masteryScores, spacedRepetition, question
         <div className="ai-tasks-list">
           {recommendations.map((task, idx) => (
             <div key={idx} className={`ai-task-item task-${task.type}`}>
-              <div className="ai-task-content" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span className="ai-task-title" style={{ fontWeight: '600' }}>{task.title}</span>
-                  <span className="ai-task-meta" style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.85em', color: '#666' }}>
-                    <Clock size={14} /> {task.estimatedMinutes} min
+              <div className="ai-task-content">
+                <div className="ai-task-row">
+                  <span className="ai-task-title">{task.title}</span>
+                  <span className="ai-task-meta">
+                    <Clock size={13} /> {task.estimatedMinutes} min
                   </span>
                 </div>
                 {task.confidence && (
-                  <div className="ai-task-confidence" style={{ fontSize: '0.8em', color: '#0056b3', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <div className="ai-task-confidence">
                     <Activity size={12} /> <strong>{task.confidence}</strong>
                   </div>
                 )}
                 {task.reason && (
-                  <div className="ai-task-reason" style={{ fontSize: '0.8em', color: '#444', display: 'flex', alignItems: 'flex-start', gap: '4px' }}>
-                    <Target size={12} style={{ marginTop: '2px' }} /> <span><em>Why?</em> {task.reason}</span>
+                  <div className="ai-task-reason">
+                    <Target size={12} className="ai-task-reason-icon" /> <span><em>Why?</em> {task.reason}</span>
                   </div>
                 )}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '8px' }}>
+              <div className="ai-task-chevron">
                 <ChevronRight size={16} className="ai-task-arrow" />
               </div>
             </div>

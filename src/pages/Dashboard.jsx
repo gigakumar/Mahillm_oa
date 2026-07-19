@@ -5,15 +5,13 @@ import { useUserData } from '../contexts/UserDataContext';
 import { compileLearnerState } from '../intelligence/learnerStateModel';
 import { deriveInsights } from '../intelligence/learnerInsights/cognitiveInsightEngine';
 import { MOCK_TESTS } from '../data/mockSeriesConfig';
-import { companyProfiles } from '../config/companyProfiles';
+
 import { getWeakestTopics } from '../utils/adaptiveEngine';
 import { 
   Play, 
   TrendingUp, 
   Target, 
   Activity, 
-  Lock, 
-  Unlock, 
   ArrowRight,
   Brain,
   Clock,
@@ -21,6 +19,7 @@ import {
   AlertTriangle,
   BookOpen
 } from 'lucide-react';
+
 import { QuestionBankRegistry } from '../data/questionBankRegistry';
 import AIStudyCoach from '../components/AIStudyCoach';
 import './Dashboard.css';
@@ -40,11 +39,11 @@ export default function Dashboard() {
       setLoadingPools(true);
       try {
         const [me, qa, di, dilr, lr] = await Promise.all([
-          import('../data/mechEngQuestions.js'),
-          import('../data/quantsQuestions.js'),
-          import('../data/dataInterpretationQuestions.js'),
-          import('../data/dilrQuestions.js'),
-          import('../data/logicalReasoningQuestions.js')
+          fetch('/data/mechEngQuestions.json').then(r => r.json()).then(d => ({ default: d })),
+          fetch('/data/quantsQuestions.json').then(r => r.json()).then(d => ({ default: d })),
+          fetch('/data/dataInterpretationQuestions.json').then(r => r.json()).then(d => ({ default: d })),
+          fetch('/data/dilrQuestions.json').then(r => r.json()).then(d => ({ default: d })),
+          fetch('/data/logicalReasoningQuestions.json').then(r => r.json()).then(d => ({ default: d }))
         ]);
         const combined = [...me.default, ...qa.default, ...di.default, ...dilr.default, ...lr.default];
         setAllQuestions(combined);
@@ -258,57 +257,8 @@ export default function Dashboard() {
             </div>
           </section>
 
-          {/* COMPANY PLACEMENT READINESS */}
-          <section className="dashboard-section company-readiness-section" style={{ marginTop: '2.5rem' }}>
-            <h2 className="section-title"><Lock size={18} /> Company Placement Readiness</h2>
-            
-            {isZeroData ? (
-              <div className="card company-placeholder-card">
-                <div className="placeholder-content">
-                  <Unlock size={32} style={{ opacity: 0.5, marginBottom: '1rem' }} />
-                  <h4>Complete calibration to see your placement readiness</h4>
-                  <p>Mahi needs more data to predict your clearing probability for top companies.</p>
-                </div>
-              </div>
-            ) : (
-              <div className="company-cards-grid">
-                {companyProfiles.map(company => {
-                  const userReadinessPct = Math.round(learnerState.global.readiness * 100);
-                  const passProb = Math.round(Math.max(0, Math.min(100, 90 * (userReadinessPct / company.minPassReadiness))));
-                  
-                  let barColor = 'var(--danger)';
-                  if (passProb >= 80) barColor = 'var(--success)';
-                  else if (passProb >= 50) barColor = 'var(--warning)';
 
-                  return (
-                    <div key={company.companyId} className="card company-card">
-                      <div className="company-card-header">
-                        <div className="company-info">
-                          <h3>{company.name}</h3>
-                          <span className="company-role">{company.role}</span>
-                        </div>
-                        <div className="company-prob" style={{ color: barColor }}>
-                          {passProb}%
-                        </div>
-                      </div>
-                      
-                      <div className="company-progress-container">
-                        <div className="company-card-bar" style={{ 
-                          width: `${passProb}%`, 
-                          background: barColor,
-                          boxShadow: `0 0 10px ${barColor}40` 
-                        }}></div>
-                      </div>
-                      
-                      <div className="company-card-footer">
-                        <span>Need {company.minPassReadiness}/100 to clear</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </section>
+
 
           {/* ACTIVE INTELLIGENCE INSIGHTS */}
           <section className="dashboard-section" style={{ marginTop: '2.5rem' }}>
@@ -342,27 +292,27 @@ export default function Dashboard() {
             <div className="intents-grid">
               <button className="intent-card card" onClick={() => handleStartAdaptiveSession('OPTIMAL')}>
                 <strong>Continue my path</strong>
-                <span>Let Mahi guide your optimal syllabus route</span>
+                <span>Mahi's optimal syllabus route</span>
               </button>
               <button className="intent-card card" onClick={() => handleStartAdaptiveSession('WEAKNESS_REPAIR')}>
                 <strong>Repair weaknesses</strong>
-                <span>Target and patch concept performance failure loops</span>
+                <span>Target concept failure loops</span>
               </button>
               <button className="intent-card card" onClick={() => handleStartAdaptiveSession('STRETCH')}>
                 <strong>Challenge me</strong>
-                <span>Push Elos above your estimated ability boundary</span>
+                <span>Push beyond ability boundary</span>
               </button>
               <button className="intent-card card" onClick={() => handleStartAdaptiveSession('DECAY_RECOVERY')}>
                 <strong>Recover forgotten concepts</strong>
-                <span>Reinforce items identified with high memory decay</span>
+                <span>Reinforce high-decay items</span>
               </button>
               <button className="intent-card card" onClick={() => handleStartAdaptiveSession('MISTAKE_REPAIR')}>
                 <strong>Fix my mistakes</strong>
-                <span>Train specifically on active mistakes notebook</span>
+                <span>Train on active mistakes notebook</span>
               </button>
               <button className="intent-card card" onClick={() => handleStartAdaptiveSession('ASSESSMENT')}>
                 <strong>Test my readiness</strong>
-                <span>Run diagnostic benchmarks across all categories</span>
+                <span>Diagnostic across all categories</span>
               </button>
             </div>
           </section>
@@ -373,25 +323,22 @@ export default function Dashboard() {
             <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem', marginTop: '-0.75rem', marginBottom: '1.5rem' }}>
               Practice directly from any category question bank.
             </p>
-            <div className="links-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem' }}>
+            <div className="links-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem' }}>
               {QuestionBankRegistry.map(bank => (
-                <div key={bank.id} className="link-card card card-interactive" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', padding: '1.5rem' }}>
-                  <span style={{ fontSize: '1.5rem' }}>
+                <div key={bank.id} className="link-card card card-interactive" style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', padding: '1rem' }}>
+                  <span style={{ fontSize: '1.25rem' }}>
                     {bank.id === 'mechanical' ? '🔩' :
                      bank.id === 'quantitative' ? '🧮' :
                      bank.id === 'data-interpretation' ? '📊' :
                      bank.id === 'dilr' ? '🧩' : '🧠'}
                   </span>
-                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700 }}>{bank.label}</h3>
-                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)', minHeight: '32px', lineHeight: 1.4 }}>
-                    {bank.topics.join(', ')}
-                  </p>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--accent)', fontWeight: 600, display: 'block', marginTop: '0.25rem' }}>
+                  <h3 style={{ margin: 0, fontSize: '0.95rem', fontWeight: 700 }}>{bank.label}</h3>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--accent)', fontWeight: 600 }}>
                     {bank.estimatedCount.toLocaleString()} questions
                   </span>
                   <button 
                     className="btn btn-secondary btn-sm" 
-                    style={{ marginTop: '1rem', width: '100%', padding: '0.4rem', fontWeight: 600 }}
+                    style={{ marginTop: '0.5rem', width: '100%', padding: '0.3rem', fontWeight: 600, fontSize: '0.8rem' }}
                     onClick={() => navigate(`/oa-practice?cat=${encodeURIComponent(bank.categoryKey)}`)}
                   >
                     Open Bank

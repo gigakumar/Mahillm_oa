@@ -19,11 +19,11 @@ export default function AttemptReplay() {
       setLoading(true);
       try {
         const [me, qa, di, dilr, lr] = await Promise.all([
-          import('../data/mechEngQuestions.js'),
-          import('../data/quantsQuestions.js'),
-          import('../data/dataInterpretationQuestions.js'),
-          import('../data/dilrQuestions.js'),
-          import('../data/logicalReasoningQuestions.js')
+          fetch('/data/mechEngQuestions.json').then(r => r.json()).then(d => ({ default: d })),
+          fetch('/data/quantsQuestions.json').then(r => r.json()).then(d => ({ default: d })),
+          fetch('/data/dataInterpretationQuestions.json').then(r => r.json()).then(d => ({ default: d })),
+          fetch('/data/dilrQuestions.json').then(r => r.json()).then(d => ({ default: d })),
+          fetch('/data/logicalReasoningQuestions.json').then(r => r.json()).then(d => ({ default: d }))
         ]);
         const combined = [...me.default, ...qa.default, ...di.default, ...dilr.default, ...lr.default];
         setAllQuestions(combined);

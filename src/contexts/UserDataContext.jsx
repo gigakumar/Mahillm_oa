@@ -1,23 +1,17 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { db } from '../firebase';
 import {
   doc,
   collection,
   setDoc,
   updateDoc,
-  increment,
   onSnapshot,
-  getDocs,
-  getDoc,
   query,
   where
 } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
 import { useScore } from './ScoreContext';
-import { updateMasteryScore, classifyMistake, buildCompositeKey } from '../utils/adaptiveEngine';
-import { scheduleReview } from '../utils/spacedRepetition';
 import { validateAttemptTelemetry } from '../intelligence/telemetry/telemetrySchema';
-import { applyDecay, migrateScoreToBKT } from '../intelligence/engines/bktEngine';
 
 const UserDataContext = createContext();
 
@@ -33,18 +27,9 @@ export function UserDataProvider({ children }) {
   const [mistakes, setMistakes] = useState({});
   const [spacedRepetition, setSpacedRepetition] = useState({});
   const [questionProgress, setQuestionProgress] = useState({});
+  const [dashboardSummary, setDashboardSummary] = useState(null);
+  const [dashboardProgress, setDashboardProgress] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // Refs to always have fresh state inside callbacks without needing them as deps
-  const mistakesRef = useRef({});
-  const spacedRepRef = useRef({});
-  const masteryRef = useRef({});
-  const progressRefObj = useRef({});
-
-  useEffect(() => { mistakesRef.current = mistakes; }, [mistakes]);
-  useEffect(() => { spacedRepRef.current = spacedRepetition; }, [spacedRepetition]);
-  useEffect(() => { masteryRef.current = masteryScores; }, [masteryScores]);
-  useEffect(() => { progressRefObj.current = questionProgress; }, [questionProgress]);
 
   // Load and listen to user's adaptive data
   useEffect(() => {
@@ -57,205 +42,20 @@ export function UserDataProvider({ children }) {
       return;
     }
 
-    // Auto-backfill attempts from completed tests or legacy arrays if questionProgress is empty
-    const checkAndBackfill = async () => {
-      try {
-        const progressColRef = collection(db, 'users', user.uid, 'questionProgress');
-        const progressSnap = await getDocs(progressColRef);
-        
-        const userRef = doc(db, 'users', user.uid);
-        const userSnap = await getDoc(userRef);
-        const userData = userSnap.exists() ? userSnap.data() : {};
-        const correctQs = userData.correctQuestions || [];
-        const incorrectQs = userData.incorrectQuestions || [];
-        
-        // If they have less than 10 progress entries but might have completed tests or legacy arrays, backfill!
-        if (progressSnap.size < 10 && (correctQs.length > 0 || incorrectQs.length > 0 || userData.totalAttempted > 0)) {
-          console.log(`[Backfill] Starting telemetry reconstruction for user.`);
-          
-          // Load question data files dynamically to get details (topics/categories)
-          const [me, qa, di, dilr, lr] = await Promise.all([
-            import('../data/mechEngQuestions.js'),
-            import('../data/quantsQuestions.js'),
-            import('../data/dataInterpretationQuestions.js'),
-            import('../data/dilrQuestions.js'),
-            import('../data/logicalReasoningQuestions.js')
-          ]);
-          const allQs = [...me.default, ...qa.default, ...di.default, ...dilr.default, ...lr.default];
-          
-          const batchPromises = [];
-          const processedQIds = new Set();
-
-          // Helper to build key matching buildCompositeKey in adaptiveEngine
-          const buildCompositeKey = (category, topic) => {
-            return `${category || 'unknown'}_${topic || 'unknown'}`.replace(/\s+/g, '_');
-          };
-
-          // 1. Backfill from legacy arrays
-          const migrateLegacyArrayItem = (qId, isCorrect) => {
-            const qIdStr = qId.toString();
-            if (processedQIds.has(qIdStr)) return;
-            processedQIds.add(qIdStr);
-
-            const quest = allQs.find(q => q.id.toString() === qIdStr);
-            if (!quest) return;
-
-            const progressRef = doc(db, 'users', user.uid, 'questionProgress', qIdStr);
-            batchPromises.push(setDoc(progressRef, {
-              status: isCorrect ? 'correct' : 'incorrect',
-              attempts: 1,
-              solveTimeMs: 45000,
-              confidence: 'sure',
-              updatedAt: new Date().toISOString()
-            }, { merge: true }));
-
-            const compositeKey = buildCompositeKey(quest.category, quest.topic);
-            const masteryRef = doc(db, 'users', user.uid, 'masteryData', compositeKey);
-            batchPromises.push(setDoc(masteryRef, {
-              category: quest.category,
-              topic: quest.topic,
-              score: isCorrect ? 0.65 : 0.35,
-              attempts: 1,
-              correctCount: isCorrect ? 1 : 0,
-              streak: isCorrect ? 1 : 0,
-              lastAttempted: new Date().toISOString(),
-              avgSolveTimeMs: 45000
-            }, { merge: true }));
-
-            if (!isCorrect) {
-              const mistakeRef = doc(db, 'mahi-oa', `${user.uid}_${qIdStr}`);
-              batchPromises.push(setDoc(mistakeRef, {
-                userId: user.uid,
-                questionId: quest.id,
-                category: quest.category,
-                topic: quest.topic,
-                type: quest.type || 'MCQ',
-                mistakeType: 'conceptual',
-                firstIncorrectAt: new Date().toISOString(),
-                lastIncorrectAt: new Date().toISOString(),
-                timesIncorrect: 1,
-                isResolved: false,
-                resolvedAt: null,
-                userNote: ''
-              }, { merge: true }));
-            }
-          };
-
-          correctQs.forEach(qId => migrateLegacyArrayItem(qId, true));
-          incorrectQs.forEach(qId => migrateLegacyArrayItem(qId, false));
-
-          // 2. Backfill from completed tests
-          const testsColRef = collection(db, 'users', user.uid, 'tests');
-          const testsSnap = await getDocs(testsColRef);
-          
-          testsSnap.forEach((testDoc) => {
-            const testData = testDoc.data();
-            const report = testData.report || [];
-            
-            report.forEach((rep) => {
-              const qIdStr = rep.id.toString();
-              if (processedQIds.has(qIdStr)) return;
-              processedQIds.add(qIdStr);
-
-              const quest = allQs.find(q => q.id.toString() === qIdStr);
-              if (!quest) return;
-
-              const progressRef = doc(db, 'users', user.uid, 'questionProgress', qIdStr);
-              batchPromises.push(setDoc(progressRef, {
-                status: rep.isCorrect ? 'correct' : 'incorrect',
-                attempts: 1,
-                solveTimeMs: rep.timeSpent ? rep.timeSpent * 1000 : 45000,
-                confidence: rep.confidence || 'sure',
-                updatedAt: testData.submittedAt || new Date().toISOString()
-              }, { merge: true }));
-
-              const compositeKey = buildCompositeKey(quest.category, quest.topic);
-              const masteryRef = doc(db, 'users', user.uid, 'masteryData', compositeKey);
-              batchPromises.push(setDoc(masteryRef, {
-                category: quest.category,
-                topic: quest.topic,
-                score: rep.isCorrect ? 0.65 : 0.35,
-                attempts: 1,
-                correctCount: rep.isCorrect ? 1 : 0,
-                streak: rep.isCorrect ? 1 : 0,
-                lastAttempted: testData.submittedAt || new Date().toISOString(),
-                avgSolveTimeMs: rep.timeSpent ? rep.timeSpent * 1000 : 45000
-              }, { merge: true }));
-
-              if (!rep.isCorrect) {
-                const mistakeRef = doc(db, 'mahi-oa', `${user.uid}_${qIdStr}`);
-                batchPromises.push(setDoc(mistakeRef, {
-                  userId: user.uid,
-                  questionId: quest.id,
-                  category: quest.category,
-                  topic: quest.topic,
-                  type: quest.type || 'MCQ',
-                  mistakeType: 'conceptual',
-                  firstIncorrectAt: testData.submittedAt || new Date().toISOString(),
-                  lastIncorrectAt: testData.submittedAt || new Date().toISOString(),
-                  timesIncorrect: 1,
-                  isResolved: false,
-                  resolvedAt: null,
-                  userNote: ''
-                }, { merge: true }));
-              }
-            });
-          });
-
-          if (batchPromises.length > 0) {
-            await Promise.all(batchPromises);
-            console.log(`[Backfill] Successfully backfilled ${processedQIds.size} question attempts.`);
-            
-            // Clean up legacy arrays to prevent repeated migration
-            if (correctQs.length > 0 || incorrectQs.length > 0) {
-              await updateDoc(userRef, {
-                correctQuestions: [],
-                incorrectQuestions: []
-              });
-            }
-          }
-        }
-      } catch (err) {
-        console.error("[Backfill] Error reconstructing history:", err);
-      }
-    };
-
-    checkAndBackfill();
-
     setLoading(true);
 
-    const userDocRef = doc(db, 'users', user.uid);
     const masteryColRef = collection(db, 'users', user.uid, 'masteryData');
     const mistakesColRef = collection(db, 'mahi-oa');
     const spacedRepColRef = collection(db, 'users', user.uid, 'spacedRepetition');
     const progressColRef = collection(db, 'users', user.uid, 'questionProgress');
+    const dashboardSummaryRef = doc(db, 'users', user.uid, 'dashboard', 'summary');
+    const dashboardProgressRef = doc(db, 'users', user.uid, 'dashboard', 'progress');
 
     // Listen to mastery scores
     const unsubMastery = onSnapshot(masteryColRef, (snapshot) => {
       const scores = {};
       snapshot.forEach((doc) => {
-        const data = doc.data();
-        
-        // Decay logic
-        if (data.lastAttempted && data.pKnow !== undefined) {
-          const daysSinceLastReview = (Date.now() - new Date(data.lastAttempted).getTime()) / (1000 * 60 * 60 * 24);
-          if (daysSinceLastReview > 1) {
-            data.pKnow = applyDecay(data.pKnow, daysSinceLastReview);
-          }
-        }
-        
-        // Migrate legacy scores
-        if (data.pKnow === undefined && data.score !== undefined) {
-          const migrated = migrateScoreToBKT(data.score);
-          data.pKnow = migrated.pKnow;
-          data.pLearn = migrated.pLearn;
-          data.pGuess = migrated.pGuess;
-          data.pSlip = migrated.pSlip;
-          data.originalScore = data.score;
-          data.migrated = true;
-        }
-
-        scores[doc.id] = data;
+        scores[doc.id] = doc.data();
       });
       setMasteryScores(scores);
     }, (err) => console.error("Error syncing masteryData:", err));
@@ -293,24 +93,37 @@ export function UserDataProvider({ children }) {
       setLoading(false);
     });
 
+    // Listen to dashboard summary
+    const unsubSummary = onSnapshot(dashboardSummaryRef, (docSnap) => {
+      if (docSnap.exists()) {
+        setDashboardSummary(docSnap.data());
+      }
+    }, (err) => console.error("Error syncing dashboard summary:", err));
+
+    // Listen to dashboard progress
+    const unsubDashProgress = onSnapshot(dashboardProgressRef, (docSnap) => {
+      if (docSnap.exists()) {
+        setDashboardProgress(docSnap.data());
+      }
+    }, (err) => console.error("Error syncing dashboard progress:", err));
+
     return () => {
       unsubMastery();
       unsubMistakes();
       unsubSpaced();
       unsubProgress();
+      unsubSummary();
+      unsubDashProgress();
     };
   }, [user]);
 
   /**
    * Records a detailed answer response for adaptive algorithms.
-   * Wrapped in useCallback to avoid stale closures — reads live data
-   * via refs (mistakesRef, spacedRepRef, masteryRef) instead of state.
    */
   const recordDetailedAnswer = useCallback(async (question, isCorrect, solveTimeMs = 0, confidence = null, timeline = []) => {
     if (!user) return;
 
     const qId = question.id.toString();
-    const compositeKey = buildCompositeKey(question.category, question.topic);
 
     let xpResult = null;
     // 1. Trigger the legacy ScoreContext answer logging (XP rewards, legacy progress)
@@ -321,158 +134,7 @@ export function UserDataProvider({ children }) {
     }
 
     try {
-      // 2. Fetch or initialize topic mastery (use ref for fresh data)
-      const currentMasteryDoc = masteryRef.current[compositeKey] || {
-        category: question.category || 'General',
-        topic: question.topic || 'General',
-        score: 0.5,
-        pKnow: 0.5,
-        pLearn: 0.1,
-        pGuess: 0.2,
-        pSlip: 0.1,
-        attempts: 0,
-        correctCount: 0,
-        streak: 0,
-        lastAttempted: null,
-        avgSolveTimeMs: 0
-      };
-
-      const newStreak = isCorrect ? currentMasteryDoc.streak + 1 : 0;
-      const newBktState = updateMasteryScore(currentMasteryDoc, isCorrect, solveTimeMs, newStreak, confidence);
-      const newAttempts = currentMasteryDoc.attempts + 1;
-      const newCorrectCount = isCorrect ? currentMasteryDoc.correctCount + 1 : currentMasteryDoc.correctCount;
-      const newAvgSolveTime = currentMasteryDoc.avgSolveTimeMs 
-        ? (currentMasteryDoc.avgSolveTimeMs * currentMasteryDoc.attempts + solveTimeMs) / newAttempts
-        : solveTimeMs;
-
-      const masteryRef = doc(db, 'users', user.uid, 'masteryData', compositeKey);
-      await setDoc(masteryRef, {
-        category: question.category || 'General',
-        topic: question.topic || 'General',
-        score: newBktState.pKnow, // legacy fallback mapping
-        pKnow: newBktState.pKnow,
-        pLearn: newBktState.pLearn,
-        pGuess: newBktState.pGuess,
-        pSlip: newBktState.pSlip,
-        attempts: newAttempts,
-        correctCount: newCorrectCount,
-        streak: newStreak,
-        lastAttempted: new Date().toISOString(),
-        avgSolveTimeMs: Math.round(newAvgSolveTime)
-      });
-
-      // 3. Spaced Repetition log — use ref for fresh data
-      const srDocRef = doc(db, 'users', user.uid, 'spacedRepetition', qId);
-      const currentSR = spacedRepRef.current[qId];
-
-      if (!isCorrect) {
-        // Reset or initialize spaced rep queue for this question
-        const nextSchedule = scheduleReview(
-          false,
-          currentSR ? currentSR.interval : 0,
-          currentSR ? currentSR.easeFactor : 2.5,
-          currentSR ? currentSR.repetitionCount : 0
-        );
-
-        await setDoc(srDocRef, {
-          questionId: question.id,
-          interval: nextSchedule.interval,
-          easeFactor: nextSchedule.easeFactor,
-          nextReviewDate: nextSchedule.nextReviewDate,
-          repetitionCount: nextSchedule.repetitionCount,
-          lastReviewDate: Date.now(),
-          lastResult: 'incorrect'
-        });
-      } else if (currentSR) {
-        // Correct answer on a previously tracked question
-        const nextSchedule = scheduleReview(
-          true,
-          currentSR.interval,
-          currentSR.easeFactor,
-          currentSR.repetitionCount
-        );
-
-        await setDoc(srDocRef, {
-          questionId: question.id,
-          interval: nextSchedule.interval,
-          easeFactor: nextSchedule.easeFactor,
-          nextReviewDate: nextSchedule.nextReviewDate,
-          repetitionCount: nextSchedule.repetitionCount,
-          lastReviewDate: Date.now(),
-          lastResult: 'correct'
-        });
-      }
-
-      // 4. Mistake Notebook logging — use ref for fresh, non-stale data
-      const mistakeDocRef = doc(db, 'mahi-oa', `${user.uid}_${qId}`);
-      const existingMistake = mistakesRef.current[qId];
-
-      if (!isCorrect) {
-        const selections = (timeline || []).filter(e => e.action === "select" || e.type === "OPTION_SELECTED");
-        const hasSwitched = selections.length > 1;
-        const autoClass = classifyMistake(question, null, solveTimeMs, confidence, hasSwitched);
-
-        if (existingMistake) {
-          // Document exists — use updateDoc so that increment() works correctly
-          await updateDoc(mistakeDocRef, {
-            lastIncorrectAt: new Date().toISOString(),
-            timesIncorrect: increment(1),
-            isResolved: false,
-            resolvedAt: null,
-            // Preserve user override type; only auto-update if not overridden
-            mistakeType: existingMistake.userOverrideType ? existingMistake.mistakeType : autoClass
-          });
-        } else {
-          // First time wrong — create new document with setDoc (no increment needed)
-          await setDoc(mistakeDocRef, {
-            userId: user.uid,
-            questionId: question.id,
-            category: question.category || 'General',
-            topic: question.topic || 'General',
-            type: question.type || 'MCQ',
-            mistakeType: autoClass,
-            userOverrideType: null,
-            firstIncorrectAt: new Date().toISOString(),
-            lastIncorrectAt: new Date().toISOString(),
-            timesIncorrect: 1,
-            isResolved: false,
-            resolvedAt: null,
-            userNote: ''
-          });
-        }
-      } else if (existingMistake && !existingMistake.isResolved) {
-        // Answered correctly after a mistake — mark as resolved
-        await updateDoc(mistakeDocRef, {
-          isResolved: true,
-          resolvedAt: new Date().toISOString()
-        });
-      }
-
-      // 5. Extended detailed questionProgress log
-      const progressRef = doc(db, 'users', user.uid, 'questionProgress', qId);
-      const existingProgress = progressRefObj.current[qId];
-      
-      if (existingProgress) {
-        await updateDoc(progressRef, {
-          status: isCorrect ? 'correct' : 'incorrect',
-          attempts: increment(1),
-          solveTimeMs,
-          confidence,
-          timeline: timeline || [],
-          updatedAt: new Date().toISOString()
-        });
-      } else {
-        await setDoc(progressRef, {
-          status: isCorrect ? 'correct' : 'incorrect',
-          attempts: 1,
-          solveTimeMs,
-          confidence,
-          timeline: timeline || [],
-          updatedAt: new Date().toISOString()
-        });
-      }
-
-      // 6. Write canonical event-based telemetry document
+      // 2. Write canonical event-based telemetry document
       const attemptId = "ATT_" + Date.now() + "_" + Math.random().toString(36).substr(2, 9);
       const sessionId = sessionStorage.getItem('active_session_id') || 'PRACTICE_' + Date.now();
       
@@ -498,8 +160,13 @@ export function UserDataProvider({ children }) {
         userId: user.uid,
         questionId: question.id,
         questionVersion: 1,
+        // Denormalised for Cloud Function processors (no secondary lookup needed)
+        topic: question.topic || 'General',
+        category: question.category || 'General',
         context: {
           mode: question.category === "Quantitative Aptitude" ? "APTITUDE" : "MECHANICAL_CORE",
+          topic: question.topic || 'General',
+          category: question.category || 'General',
           createdAt: Date.now()
         },
         timing: {
@@ -531,7 +198,6 @@ export function UserDataProvider({ children }) {
       console.error("Error recording detailed answer:", error);
     }
     return xpResult;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, recordAnswer]);
 
   /**
@@ -586,6 +252,8 @@ export function UserDataProvider({ children }) {
       mistakes,
       spacedRepetition,
       questionProgress,
+      dashboardSummary,
+      dashboardProgress,
       loading,
       recordDetailedAnswer,
       updateMistakeType,
