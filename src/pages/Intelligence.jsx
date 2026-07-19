@@ -45,38 +45,19 @@ export default function Intelligence() {
     'DILR': false
   });
 
-  // Load all question pools on mount to compile dynamic taxonomy ELOs
+  // Avoid loading question pools on mount to ensure instant render and prevent browser hang
   useEffect(() => {
-    async function loadAllPools() {
-      setLoadingPools(true);
-      try {
-        const [me, qa, di, dilr, lr] = await Promise.all([
-          fetch('/data/mechEngQuestions.json').then(r => r.json()).then(d => ({ default: d })),
-          fetch('/data/quantsQuestions.json').then(r => r.json()).then(d => ({ default: d })),
-          fetch('/data/dataInterpretationQuestions.json').then(r => r.json()).then(d => ({ default: d })),
-          fetch('/data/dilrQuestions.json').then(r => r.json()).then(d => ({ default: d })),
-          fetch('/data/logicalReasoningQuestions.json').then(r => r.json()).then(d => ({ default: d }))
-        ]);
-        const combined = [...me.default, ...qa.default, ...di.default, ...dilr.default, ...lr.default];
-        setAllQuestions(combined);
-      } catch (e) {
-        console.error("Error loading question sets for intelligence page:", e);
-      } finally {
-        setLoadingPools(false);
-      }
-    }
-    loadAllPools();
+    setLoadingPools(false);
   }, []);
 
   // 1. Gather all learner telemetry and compile canonical learner state
   const compiledAttempts = [];
   Object.keys(questionProgress || {}).forEach(qId => {
     const prog = questionProgress[qId];
-    const quest = allQuestions.find(q => q.id.toString() === qId);
     compiledAttempts.push({
       id: qId,
-      topic: quest ? quest.topic : 'General',
-      category: quest ? quest.category : 'General',
+      topic: prog.topic || 'General',
+      category: prog.category || 'General',
       correct: prog.status === 'correct',
       solveTime: (prog.solveTimeMs || 60000) / 1000,
       timeRatio: (prog.solveTimeMs || 60000) / 60000,
@@ -87,9 +68,30 @@ export default function Intelligence() {
   });
 
   const topicElo = {};
+  
+  // Build baseline Elos from actual attempts
+  const topicAttempts = {};
+  compiledAttempts.forEach(a => {
+    if (!topicAttempts[a.topic]) {
+      topicAttempts[a.topic] = { correct: 0, total: 0 };
+    }
+    topicAttempts[a.topic].total++;
+    if (a.correct) {
+      topicAttempts[a.topic].correct++;
+    }
+  });
+  
+  Object.keys(topicAttempts).forEach(topicName => {
+    const acc = topicAttempts[topicName].correct / topicAttempts[topicName].total;
+    topicElo[topicName] = Math.round(600 + acc * 800);
+  });
+
+  // Override with actual Firestore mastery scores if they exist
   Object.keys(masteryScores || {}).forEach(key => {
     const doc = masteryScores[key];
-    topicElo[doc.topic] = Math.round(600 + doc.score * 900);
+    if (doc.topic) {
+      topicElo[doc.topic] = Math.round(600 + (doc.score || doc.probabilityKnown || 0) * 900);
+    }
   });
 
   const srItems = Object.values(spacedRepetition || {}).map(item => ({
@@ -113,7 +115,7 @@ export default function Intelligence() {
     recentMockScores: [75, 82, 88],
     peerPool: simulatedPeerPool,
     mistakes,
-    questionDb: allQuestions
+    questionDb: []
   });
 
   const isZeroData = compiledAttempts.length < 10;
@@ -121,8 +123,41 @@ export default function Intelligence() {
   // 2. Generate insights via Cognitive Insight Engine
   const activeInsights = deriveInsights(learnerState, compiledAttempts, mistakes);
 
-  // 3. Build Skill Genome hierarchy tree
-  const rawHeatmapData = buildHeatmapData(allQuestions, masteryScores);
+  // 3. Build Skill Genome hierarchy tree using merged mastery (backfilling with on-the-fly accuracy)
+  const mergedMastery = {};
+  
+  // First, backfill with accuracy from attempts
+  const topicAttemptsForHeatmap = {};
+  compiledAttempts.forEach(a => {
+    const key = `${a.category}__${a.topic}`.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '');
+    if (!topicAttemptsForHeatmap[key]) {
+      topicAttemptsForHeatmap[key] = { correct: 0, total: 0, category: a.category, topic: a.topic };
+    }
+    topicAttemptsForHeatmap[key].total++;
+    if (a.correct) {
+      topicAttemptsForHeatmap[key].correct++;
+    }
+  });
+
+  Object.keys(topicAttemptsForHeatmap).forEach(key => {
+    const item = topicAttemptsForHeatmap[key];
+    const acc = item.correct / item.total;
+    mergedMastery[key] = {
+      category: item.category,
+      topic: item.topic,
+      score: acc,
+      probabilityKnown: acc,
+      attempts: item.total,
+      correctCount: item.correct
+    };
+  });
+
+  // Override with actual Firestore mastery scores if they exist
+  Object.keys(masteryScores || {}).forEach(key => {
+    mergedMastery[key] = masteryScores[key];
+  });
+
+  const rawHeatmapData = buildHeatmapData(null, mergedMastery);
 
   const toggleCategory = (cat) => {
     setExpandedCategories(prev => ({ ...prev, [cat]: !prev[cat] }));

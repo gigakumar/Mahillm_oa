@@ -6,6 +6,7 @@
  */
 
 import { buildCompositeKey } from './adaptiveEngine';
+import { QuestionBankRegistry } from '../data/questionBankRegistry';
 
 // Mastery status thresholds
 const THRESHOLDS = {
@@ -46,117 +47,90 @@ export function getStatusColor(status) {
 }
 
 /**
- * Build heatmap data from the full question pool and user mastery.
- *
- * Returns a hierarchical structure:
- * [
- *   {
- *     category: "Mechanical Engineering",
- *     masteryScore: 0.55,
- *     questionsAttempted: 120,
- *     totalQuestions: 500,
- *     status: "unstable",
- *     topics: [
- *       { topic: "Thermodynamics", masteryScore: 0.3, questionsAttempted: 10, totalQuestions: 80, status: "weak" },
- *       ...
- *     ]
- *   },
- *   ...
- * ]
- *
- * @param {Array}  allQuestions Full question pool
- * @param {Object} userMastery  Map of compositeKey → { score, attempts, correctCount, ... }
- * @returns {Array} Hierarchical heatmap data
+ * Build heatmap data from the static QuestionBankRegistry and user mastery.
  */
 export function buildHeatmapData(allQuestions, userMastery = {}) {
-  // Step 1: Count questions by category → topic
-  const taxonomy = {};
-
-  for (const q of allQuestions) {
-    const cat = q.category || 'Uncategorized';
-    const top = q.topic || 'General';
-
-    if (!taxonomy[cat]) {
-      taxonomy[cat] = {};
-    }
-    if (!taxonomy[cat][top]) {
-      taxonomy[cat][top] = 0;
-    }
-    taxonomy[cat][top]++;
-  }
-
-  // Step 2: Merge with mastery data
   const heatmap = [];
 
-  // Category ordering for consistent display
-  const categoryOrder = [
-    'Mechanical Engineering',
-    'Quantitative Aptitude',
-    'Logical Reasoning',
-    'Data Interpretation',
-    'DILR',
-  ];
+  for (const bank of QuestionBankRegistry) {
+    const topicsList = [];
+    
+    // For Mechanical, use topicGroups or flat topics list
+    if (bank.id === 'mechanical' && bank.topicGroups) {
+      bank.topicGroups.forEach(g => {
+        g.topics.forEach(t => {
+          const compositeKey = buildCompositeKey(bank.categoryKey, t.name);
+          const mastery = userMastery[compositeKey];
+          
+          const masteryScore = mastery ? (mastery.score || mastery.probabilityKnown || 0) : 0;
+          const questionsAttempted = mastery ? (mastery.attempts || mastery.attemptsCount || 0) : 0;
+          const correctCount = mastery ? (mastery.correctCount || 0) : 0;
+          const accuracy = questionsAttempted > 0 ? Math.round((correctCount / questionsAttempted) * 100) : 0;
+          const status = getMasteryStatus(masteryScore, questionsAttempted);
 
-  const sortedCategories = Object.keys(taxonomy).sort((a, b) => {
-    const idxA = categoryOrder.indexOf(a);
-    const idxB = categoryOrder.indexOf(b);
-    if (idxA === -1 && idxB === -1) return a.localeCompare(b);
-    if (idxA === -1) return 1;
-    if (idxB === -1) return -1;
-    return idxA - idxB;
-  });
+          topicsList.push({
+            topic: t.name,
+            masteryScore,
+            questionsAttempted,
+            totalQuestions: t.count,
+            correctCount,
+            accuracy,
+            status,
+            compositeKey,
+          });
+        });
+      });
+    } else {
+      // Other categories
+      const topics = bank.topics || [];
+      // Estimate question count per topic equally or use standard defaults
+      const estCountPerTopic = Math.round(bank.estimatedCount / Math.max(1, topics.length));
+      
+      topics.forEach(topicName => {
+        const compositeKey = buildCompositeKey(bank.categoryKey, topicName);
+        const mastery = userMastery[compositeKey];
+        
+        const masteryScore = mastery ? (mastery.score || mastery.probabilityKnown || 0) : 0;
+        const questionsAttempted = mastery ? (mastery.attempts || mastery.attemptsCount || 0) : 0;
+        const correctCount = mastery ? (mastery.correctCount || 0) : 0;
+        const accuracy = questionsAttempted > 0 ? Math.round((correctCount / questionsAttempted) * 100) : 0;
+        const status = getMasteryStatus(masteryScore, questionsAttempted);
 
-  for (const category of sortedCategories) {
-    const topics = taxonomy[category];
-    const topicEntries = [];
+        topicsList.push({
+          topic: topicName,
+          masteryScore,
+          questionsAttempted,
+          totalQuestions: estCountPerTopic,
+          correctCount,
+          accuracy,
+          status,
+          compositeKey,
+        });
+      });
+    }
 
-    let catTotalQuestions = 0;
     let catAttempted = 0;
     let catScoreSum = 0;
     let catScoredTopics = 0;
-
-    const sortedTopics = Object.keys(topics).sort();
-
-    for (const topic of sortedTopics) {
-      const totalQuestions = topics[topic];
-      const compositeKey = buildCompositeKey(category, topic);
-      const mastery = userMastery[compositeKey];
-
-      const masteryScore = mastery ? mastery.score : 0;
-      const questionsAttempted = mastery ? mastery.attempts : 0;
-      const correctCount = mastery ? (mastery.correctCount || 0) : 0;
-      const accuracy = questionsAttempted > 0 ? Math.round((correctCount / questionsAttempted) * 100) : 0;
-      const status = getMasteryStatus(masteryScore, questionsAttempted);
-
-      topicEntries.push({
-        topic,
-        masteryScore,
-        questionsAttempted,
-        totalQuestions,
-        correctCount,
-        accuracy,
-        status,
-        compositeKey,
-      });
-
-      catTotalQuestions += totalQuestions;
-      catAttempted += questionsAttempted;
-      if (questionsAttempted > 0) {
-        catScoreSum += masteryScore;
+    
+    topicsList.forEach(t => {
+      catAttempted += t.questionsAttempted;
+      if (t.questionsAttempted > 0) {
+        catScoreSum += t.masteryScore;
         catScoredTopics++;
       }
-    }
+    });
 
     const catMasteryScore = catScoredTopics > 0 ? catScoreSum / catScoredTopics : 0;
     const catStatus = getMasteryStatus(catMasteryScore, catAttempted);
 
     heatmap.push({
-      category,
+      category: bank.categoryKey,
       masteryScore: catMasteryScore,
       questionsAttempted: catAttempted,
-      totalQuestions: catTotalQuestions,
+      totalQuestions: bank.estimatedCount,
       status: catStatus,
-      topics: topicEntries,
+      topics: topicsList,
     });
   }
 

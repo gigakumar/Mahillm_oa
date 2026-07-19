@@ -34,38 +34,19 @@ export default function Dashboard() {
   const [loadingPools, setLoadingPools] = useState(true);
   const [allQuestions, setAllQuestions] = useState([]);
 
-  // Load all question pools on mount to compile dynamic ELOs
+  // Avoid loading question pools on mount to ensure instant render and prevent browser hang
   useEffect(() => {
-    async function loadAllPools() {
-      setLoadingPools(true);
-      try {
-        const [me, qa, di, dilr, lr] = await Promise.all([
-          fetch('/data/mechEngQuestions.json').then(r => r.json()).then(d => ({ default: d })),
-          fetch('/data/quantsQuestions.json').then(r => r.json()).then(d => ({ default: d })),
-          fetch('/data/dataInterpretationQuestions.json').then(r => r.json()).then(d => ({ default: d })),
-          fetch('/data/dilrQuestions.json').then(r => r.json()).then(d => ({ default: d })),
-          fetch('/data/logicalReasoningQuestions.json').then(r => r.json()).then(d => ({ default: d }))
-        ]);
-        const combined = [...me.default, ...qa.default, ...di.default, ...dilr.default, ...lr.default];
-        setAllQuestions(combined);
-      } catch (e) {
-        console.error("Error loading question sets for dashboard command center:", e);
-      } finally {
-        setLoadingPools(false);
-      }
-    }
-    loadAllPools();
+    setLoadingPools(false);
   }, []);
 
   // Compile learner telemetry
   const compiledAttempts = [];
   Object.keys(questionProgress || {}).forEach(qId => {
     const prog = questionProgress[qId];
-    const quest = allQuestions.find(q => q.id.toString() === qId);
     compiledAttempts.push({
       id: qId,
-      topic: quest ? quest.topic : 'General',
-      category: quest ? quest.category : 'General',
+      topic: prog.topic || 'General',
+      category: prog.category || 'General',
       correct: prog.status === 'correct',
       solveTime: (prog.solveTimeMs || 60000) / 1000,
       timeRatio: (prog.solveTimeMs || 60000) / 60000,
@@ -76,9 +57,30 @@ export default function Dashboard() {
   });
 
   const topicElo = {};
+  
+  // Build baseline Elos from actual attempts
+  const topicAttempts = {};
+  compiledAttempts.forEach(a => {
+    if (!topicAttempts[a.topic]) {
+      topicAttempts[a.topic] = { correct: 0, total: 0 };
+    }
+    topicAttempts[a.topic].total++;
+    if (a.correct) {
+      topicAttempts[a.topic].correct++;
+    }
+  });
+  
+  Object.keys(topicAttempts).forEach(topicName => {
+    const acc = topicAttempts[topicName].correct / topicAttempts[topicName].total;
+    topicElo[topicName] = Math.round(600 + acc * 800);
+  });
+
+  // Override with actual Firestore mastery scores if they exist
   Object.keys(masteryScores || {}).forEach(key => {
     const doc = masteryScores[key];
-    topicElo[doc.topic] = Math.round(600 + doc.score * 900);
+    if (doc.topic) {
+      topicElo[doc.topic] = Math.round(600 + (doc.score || doc.probabilityKnown || 0) * 900);
+    }
   });
 
   const srItems = Object.values(spacedRepetition || {}).map(item => ({
