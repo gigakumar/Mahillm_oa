@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useUserData } from '../contexts/UserDataContext';
 import { db } from '../firebase';
 import { collection, query, getDocs, orderBy } from 'firebase/firestore';
 import { Clipboard, Play, RotateCcw, BarChart2, Plus, RefreshCw, Trash2, Calendar, Award, Lock, Unlock } from 'lucide-react';
