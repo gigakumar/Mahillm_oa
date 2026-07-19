@@ -229,7 +229,7 @@ export default function TestSession() {
               if (docData.topic) topicElo[docData.topic] = Math.round(600 + (docData.score || docData.probabilityKnown || 0) * 900);
             });
 
-            const srItems = Object.values(spacedRepetition || {}).map((item: any) => ({
+            const srItems = Object.values(spacedRepetition || {}).map((item) => ({
               questionId: item.questionId,
               topic: item.topic || 'General',
               lastReviewed: item.lastReviewDate,
