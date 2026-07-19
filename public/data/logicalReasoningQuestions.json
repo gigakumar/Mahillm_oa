@@ -45,7 +45,7 @@
     "correct": 2,
     "explanation": "The moves form a rectangle. He is 12 m to the East of his starting position.",
     "contextHtml": "Logical validation passed",
-    "difficulty": "Medium",
+    "difficulty": "Easy",
     "topic": "Direction Sense",
     "category": "Logical Reasoning",
     "type": "MCQ"
@@ -79,7 +79,7 @@
     "correct": 3,
     "explanation": "The series is in Arithmetic Progression with a common difference of 4. Next term = 21 + 4 = 25.",
     "contextHtml": "Logical validation passed",
-    "difficulty": "Hard",
+    "difficulty": "Easy",
     "topic": "Series",
     "category": "Logical Reasoning",
     "type": "MCQ"
@@ -96,7 +96,7 @@
     "correct": 3,
     "explanation": "The code is obtained by shifting each letter of the word by +1 position. Similarly, shifting letters of 'SHAFT6' by +1 yields 'TIBGU7'.",
     "contextHtml": "Logical validation passed",
-    "difficulty": "Medium",
+    "difficulty": "Easy",
     "topic": "Coding-Decoding",
     "category": "Logical Reasoning",
     "type": "MCQ"
@@ -113,8 +113,8 @@
     "correct": 3,
     "explanation": "The series is in Arithmetic Progression with a common difference of 6. Next term = 29 + 6 = 35.",
     "contextHtml": "Logical validation passed",
-    "difficulty": "Hard",
-    "topic": "Series",
+    "difficulty": "Medium",
+    "topic": "Number Series",
     "category": "Logical Reasoning",
     "type": "MCQ"
   },
@@ -130,8 +130,8 @@
     "correct": 1,
     "explanation": "The series is in Arithmetic Progression with a common difference of 3. Next term = 22 + 3 = 25.",
     "contextHtml": "Logical validation passed",
-    "difficulty": "Hard",
-    "topic": "Series",
+    "difficulty": "Easy",
+    "topic": "Number Series",
     "category": "Logical Reasoning",
     "type": "MCQ"
   },
@@ -147,8 +147,8 @@
     "correct": 3,
     "explanation": "The series is in Arithmetic Progression with a common difference of 8. Next term = 35 + 8 = 43.",
     "contextHtml": "Logical validation passed",
-    "difficulty": "Hard",
-    "topic": "Series",
+    "difficulty": "Medium",
+    "topic": "Number Series",
     "category": "Logical Reasoning",
     "type": "MCQ"
   },
@@ -164,8 +164,8 @@
     "correct": 0,
     "explanation": "The series is in Arithmetic Progression with a common difference of 4. Next term = 19 + 4 = 23.",
     "contextHtml": "Logical validation passed",
-    "difficulty": "Hard",
-    "topic": "Series",
+    "difficulty": "Easy",
+    "topic": "Number Series",
     "category": "Logical Reasoning",
     "type": "MCQ"
   },

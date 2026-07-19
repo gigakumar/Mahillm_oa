@@ -51,14 +51,15 @@ export const QuestionBankRegistry = [
       return fetchQuestionsFromFirestore("Mechanical Engineering", filterTopic, filterDifficulty, "/data/mechEngQuestions.json");
     },
     enabled: true,
-    estimatedCount: 23754,
+    estimatedCount: 23489,
     categoryKey: 'Mechanical Engineering',
     topics: [
       "Thermodynamics", "Fluid Mechanics", "Strength of Materials",
       "Manufacturing Engineering", "Machine Design", "Heat Transfer",
       "Theory of Machines", "Engineering Mechanics", "Industrial Engineering",
       "Materials Science", "Refrigeration & AC", "IC Engines",
-      "Power Plant Engineering"
+      "Power Plant Engineering", "Theory of Machines & Vibrations",
+      "Automation & CIM", "Automotive Engineering", "Production Management"
     ]
   },
   {

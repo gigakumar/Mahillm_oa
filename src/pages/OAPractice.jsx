@@ -26,7 +26,7 @@ const CATEGORIES = [
   { key: 'bookmarked', label: 'Bookmarked', emoji: '⭐' }
 ];
 
-const DIFFICULTIES = ['all', 'Easy', 'Medium', 'Hard'];
+const DIFFICULTIES = ['all', 'LOW', 'MEDIUM', 'HIGH'];
 
 function shuffleArray(arr) {
   const a = [...arr];
@@ -94,15 +94,15 @@ export default function OAPractice() {
   const [debugPoolLength, setDebugPoolLength] = useState(-1);
   const [debugFilteredLength, setDebugFilteredLength] = useState(-1);
 
-  // Load a single question bank with caching
+  // Load a single question bank with caching, then shuffle fresh every time
   const loadBank = useCallback(async (bankEntry, filterTopic = null, filterDifficulty = null) => {
-    const cacheKey = `${bankEntry.id}_${filterTopic || 'all'}_${filterDifficulty || 'all'}`;
-    if (questionBankCache[cacheKey]) {
-      return questionBankCache[cacheKey];
+    const cacheKey = `${bankEntry.id}`; // cache raw bank only, not filtered
+    if (!questionBankCache[cacheKey]) {
+      const mod = await bankEntry.loader(null, null); // load full bank unfiltered
+      questionBankCache[cacheKey] = mod.default;
     }
-    const mod = await bankEntry.loader(filterTopic, filterDifficulty);
-    questionBankCache[cacheKey] = mod.default;
-    return mod.default;
+    // Always return a fresh shuffle of the full bank — filtering happens downstream
+    return shuffleArray(questionBankCache[cacheKey]);
   }, []);
 
   const loadActivePool = async () => {
