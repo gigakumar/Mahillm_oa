@@ -178,8 +178,54 @@ export default function Dashboard() {
   const activeInsights = deriveInsights(learnerState, compiledAttempts, mistakes);
 
   // Today's priority details
+  let priorityTopic = { category: 'Mechanical Engineering', topic: 'Engineering Mechanics' };
   const weakTopics = getWeakestTopics(masteryScores, 1);
-  const priorityTopic = weakTopics.length > 0 ? weakTopics[0] : { category: 'Thermodynamics', topic: 'Entropy Generation' };
+  if (weakTopics.length > 0) {
+    priorityTopic = weakTopics[0];
+  } else if (compiledAttempts.length > 0) {
+    // Fallback: find weakest topic from actual attempts
+    const topicAttempts = {};
+    compiledAttempts.forEach(a => {
+      if (a.topic && a.topic !== 'General') {
+        if (!topicAttempts[a.topic]) {
+          topicAttempts[a.topic] = { correct: 0, total: 0, category: a.category };
+        }
+        topicAttempts[a.topic].total++;
+        if (a.correct) {
+          topicAttempts[a.topic].correct++;
+        }
+      }
+    });
+
+    let lowestAcc = Infinity;
+    Object.keys(topicAttempts).forEach(t => {
+      const acc = topicAttempts[t].correct / topicAttempts[t].total;
+      if (acc < lowestAcc) {
+        lowestAcc = acc;
+        priorityTopic = { category: topicAttempts[t].category, topic: t };
+      }
+    });
+  }
+
+  // Calculate dynamic readiness trend
+  const calculateReadinessTrend = () => {
+    if (compiledAttempts.length < 5) return 'Insufficient evidence';
+    
+    // Sort attempts by date ascending
+    const sorted = [...compiledAttempts].sort((a, b) => new Date(a.date) - new Date(b.date));
+    const mid = Math.floor(sorted.length / 2);
+    const firstHalf = sorted.slice(0, mid);
+    const secondHalf = sorted.slice(mid);
+    
+    const firstAcc = firstHalf.filter(a => a.correct).length / firstHalf.length;
+    const secondAcc = secondHalf.filter(a => a.correct).length / secondHalf.length;
+    
+    const diff = (secondAcc - firstAcc) * 100;
+    const sign = diff >= 0 ? '+' : '';
+    return `${sign}${diff.toFixed(1)}% / ${compiledAttempts.length} Qs`;
+  };
+
+  const readinessTrendValue = calculateReadinessTrend();
 
   // Nearest mock test details
   const nearestMock = MOCK_TESTS.find(m => new Date() < new Date(m.unlockDate)) || MOCK_TESTS[0];
@@ -254,7 +300,7 @@ export default function Dashboard() {
                 <div className="cc-metric">
                   <span className="label">Readiness Trend</span>
                   <span className="value">
-                    {isZeroData ? 'Insufficient evidence' : <><TrendingUp size={14}/> +8.4% / 30d</>}
+                    {isZeroData ? 'Insufficient evidence' : <><TrendingUp size={14}/> {readinessTrendValue}</>}
                   </span>
                 </div>
                 <div className="cc-metric">
@@ -295,7 +341,7 @@ export default function Dashboard() {
                     <span className="cc-cat">{priorityTopic.category}</span>
                     <span className="cc-top-name">Stabilise {priorityTopic.topic}</span>
                     <p className="cc-zero-text">
-                      Your recent attempts show inconsistent performance in multi-step irreversible process questions.
+                      Your recent attempts show inconsistent performance in {priorityTopic.topic}.
                     </p>
                     <span className="cc-meta">12 questions · ~18 min</span>
                     <button 
