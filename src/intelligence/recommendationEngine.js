@@ -21,6 +21,7 @@ export function generateDailyRecommendations(masteryScores, spacedRepetition, qu
   
   // Recommendation Score = Weakness * Recency * ObservationReliability
   let weakestTopic = 'Thermodynamics';
+  let weakestCategory = 'Mechanical Engineering';
   let highestScore = -Infinity;
   let topConfidence = 80;
   
@@ -35,6 +36,7 @@ export function generateDailyRecommendations(masteryScores, spacedRepetition, qu
       if (recScore > highestScore) {
         highestScore = recScore;
         weakestTopic = masteryScores[topic]?.topic || topic;
+        weakestCategory = masteryScores[topic]?.category || 'Mechanical Engineering';
         topConfidence = Math.round(recScore * 100);
       }
     });
@@ -61,6 +63,10 @@ export function generateDailyRecommendations(masteryScores, spacedRepetition, qu
       if (acc < lowestAcc) {
         lowestAcc = acc;
         weakestTopic = t;
+        const match = Object.values(questionProgress).find(p => p.topic === t);
+        if (match) {
+          weakestCategory = match.category || 'Mechanical Engineering';
+        }
       }
     });
   }
@@ -71,6 +77,8 @@ export function generateDailyRecommendations(masteryScores, spacedRepetition, qu
   tasks.push({
     title: `Review ${weakestTopic}`,
     type: "review",
+    topic: weakestTopic,
+    category: weakestCategory,
     estimatedMinutes: Math.max(5, Math.round(avgSolveTimeMins * 5)),
     confidence: `High Confidence Recommendation: ${displayConf}%`,
     reason: `Most mistakes in this topic are conceptual.`
@@ -79,6 +87,8 @@ export function generateDailyRecommendations(masteryScores, spacedRepetition, qu
   tasks.push({
     title: `Solve 12 ${weakestTopic} questions`,
     type: "practice",
+    topic: weakestTopic,
+    category: weakestCategory,
     estimatedMinutes: Math.round(avgSolveTimeMins * 12),
     confidence: `Medium Confidence Recommendation: ${Math.max(50, displayConf - 5)}%`,
     reason: `Targeted practice on your weakest area yields the best score improvements.`
