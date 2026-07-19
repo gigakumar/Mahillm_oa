@@ -12,7 +12,7 @@ async function fetchQuestionsFromFirestore(categoryKey, filterTopic = null, filt
     }
     
     if (filterDifficulty && filterDifficulty !== 'all') {
-      constraints.push(where("difficulty.prior", "==", filterDifficulty));
+      constraints.push(where("difficulty", "==", filterDifficulty));
     }
     
     const q = query(qRef, ...constraints, limit(600));
