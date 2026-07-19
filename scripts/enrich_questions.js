@@ -126,6 +126,10 @@ async function main() {
           console.log(`  -> Successfully enriched ${enrichments.length} questions.`);
         } catch (err) {
           console.error(`  -> Batch Failed: ${err.message}`);
+          if (err.message.includes('429')) {
+             console.error('Quota limit reached. Aborting script to prevent API spam.');
+             break;
+          }
         }
 
         processedCount += BATCH_SIZE;
