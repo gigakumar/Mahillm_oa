@@ -190,16 +190,19 @@ export default function Tests() {
                         className="btn btn-primary" 
                         style={{ marginTop: 'auto', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', width: 'fit-content' }}
                         onClick={() => {
-                          localStorage.setItem('current_test_config', JSON.stringify({
+                          const config = {
                             name: mock.name,
                             duration: mock.duration,
                             difficulty: 'all',
                             negativeMarking: mock.negativeMarking,
                             distribution: mock.distribution,
-                            count: mock.count
-                          }));
+                            count: mock.count,
+                            seed: Math.random().toString(36).substring(2, 9)
+                          };
+                          localStorage.setItem('current_test_config', JSON.stringify(config));
                           localStorage.removeItem('current_test_session');
-                          navigate('/tests/session');
+                          sessionStorage.removeItem('active_session_config');
+                          navigate('/tests/session', { state: config });
                         }}
                       >
                         <Play size={12} fill="currentColor" /> Start Mock
