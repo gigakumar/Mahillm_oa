@@ -6,8 +6,14 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const API_KEY = 'AIzaSyDw-nrkg4UALyHnnwR8cswQPdod_lRwHa8';
+const API_KEY = process.env.GEMINI_API_KEY;
 const DATA_FILE = path.join(__dirname, '../public/data/mechEngQuestions.json');
+
+if (!API_KEY) {
+  console.error('Error: GEMINI_API_KEY environment variable is not set.');
+  console.error('Please run the script as: GEMINI_API_KEY=your_key node scripts/enrich_questions.js');
+  process.exit(1);
+}
 
 // Number of questions to process per run (for testing/batching)
 const BATCH_SIZE = 50;
