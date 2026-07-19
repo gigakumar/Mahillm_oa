@@ -10,7 +10,7 @@ const API_KEY = 'AIzaSyDw-nrkg4UALyHnnwR8cswQPdod_lRwHa8';
 const DATA_FILE = path.join(__dirname, '../public/data/mechEngQuestions.json');
 
 // Number of questions to process per run (for testing/batching)
-const BATCH_SIZE = 100;
+const BATCH_SIZE = 50;
 const DELAY_MS = 2000; // Delay between requests to avoid rate limits
 
 async function generateEnrichmentBatch(questionsBatch) {
