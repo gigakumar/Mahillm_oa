@@ -98,6 +98,112 @@ export default function OAPractice() {
   const [debugPoolLength, setDebugPoolLength] = useState(-1);
   const [debugFilteredLength, setDebugFilteredLength] = useState(-1);
 
+  // Per-question shuffled options: { [qId]: { shuffledOpts: string[], shuffledCorrect: number, indexMap: number[] } }
+  // indexMap[shuffledIndex] = originalIndex  so we can still compare with question.correct
+  const [shuffledOptionsMap, setShuffledOptionsMap] = useState({});
+
+  // Model Selection & Gemini AI state
+  const AVAILABLE_MODELS = [
+    { id: 'gemini-3.1-flash-lite', label: 'Gemini 3.1 Flash Lite' },
+    { id: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash' },
+    { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
+    { id: 'gemini-3-flash', label: 'Gemini 3 Flash' },
+    { id: 'gemma-4-31b-it', label: 'Gemma 4 31B' },
+  ];
+  const [selectedModel, setSelectedModel] = useState('gemini-3.1-flash-lite');
+  const [aiAnalysis, setAiAnalysis] = useState({});
+
+  // ─── Gemini Live Fetcher ──────────────────────────────────────────────────
+  const fetchGeminiAnalysis = useCallback(async (q, selectedOriginalIdx, modelToUse = null) => {
+    const qId = q.id;
+    const model = modelToUse || selectedModel;
+    setAiAnalysis(prev => ({ ...prev, [qId]: { loading: true, error: null } }));
+
+    const correctOpt = q.options[q.correct];
+    const selectedOpt = selectedOriginalIdx !== null && selectedOriginalIdx !== undefined
+      ? q.options[selectedOriginalIdx]
+      : null;
+    const correctLetter = String.fromCharCode(65 + q.correct);
+    const selectedLetter = selectedOriginalIdx !== null && selectedOriginalIdx !== undefined
+      ? String.fromCharCode(65 + selectedOriginalIdx)
+      : null;
+    const isCorrect = selectedOriginalIdx === q.correct;
+
+    const prompt = `You are an expert exam tutor for competitive engineering exams (GATE, PSU, UPSC-ESE).
+
+Question: ${q.question.replace(/<[^>]*>/g, '')}
+
+Options:
+${q.options.map((o, i) => `${String.fromCharCode(65 + i)}) ${o.replace(/<[^>]*>/g, '')}`).join('\n')}
+
+Correct Answer: Option ${correctLetter}) ${correctOpt.replace(/<[^>]*>/g, '')}
+${selectedOpt && !isCorrect ? `Student Selected (INCORRECT): Option ${selectedLetter}) ${selectedOpt.replace(/<[^>]*>/g, '')}` : ''}
+
+Provide a detailed JSON object with EXACTLY these 4 fields:
+{
+  "whyCorrect": "Comprehensive, step-by-step explanation of WHY option ${correctLetter} is the correct answer, showing all relevant derivations, formulas, or fundamental principles clearly.",
+  "whySelected": "${!isCorrect && selectedOpt ? `Detailed explanation of the specific misconception or mathematical error that leads students to pick option ${selectedLetter}. Point out exactly where the student went wrong.` : 'null'}",
+  "formula": "Primary formula(s) or equation(s) used to solve this question (e.g. 'Δx = y − x, W = ∫ P dV'). Include step-by-step substitution if applicable.",
+  "trick": "Detailed exam shortcut, rule of thumb, or memory tip specific to this question type."
+}
+
+Respond ONLY with the JSON object, no markdown fences.`;
+
+    const tryFetch = async (m) => {
+      const GEMINI_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-goog-api-key': GEMINI_KEY,
+          },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 0.2, maxOutputTokens: 8192 },
+          }),
+        }
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const parts = data?.candidates?.[0]?.content?.parts || [];
+      let raw = parts.map(p => p.text || '').join('');
+      raw = raw.replace(/```json\n?|```/g, '').trim();
+      return JSON.parse(raw);
+    };
+
+    try {
+      let parsed;
+      try {
+        parsed = await tryFetch(model);
+      } catch (err) {
+        // Fallback to gemini-3.1-flash-lite if requested model is busy/unsupported
+        console.warn(`Model ${model} failed, falling back to gemini-3.1-flash-lite...`);
+        parsed = await tryFetch('gemini-3.1-flash-lite');
+      }
+
+      setAiAnalysis(prev => ({
+        ...prev,
+        [qId]: {
+          loading: false,
+          whyCorrect: parsed.whyCorrect || '',
+          whySelected: parsed.whySelected && parsed.whySelected !== 'null' ? parsed.whySelected : null,
+          formula: parsed.formula || '',
+          trick: parsed.trick || '',
+          modelUsed: model,
+        },
+      }));
+    } catch (err) {
+      console.error('Gemini fetch error:', err);
+      setAiAnalysis(prev => ({
+        ...prev,
+        [qId]: { loading: false, error: 'Could not fetch AI explanation. Check network/API key.' },
+      }));
+    }
+  }, [selectedModel]);
+
+
   // Load a question bank - for Mech with a specific topic, load ONLY that topic (scoped)
   const loadBank = useCallback(async (bankEntry, filterTopic = null, filterDifficulty = null) => {
     const isMech = bankEntry.id === 'mechanical';
@@ -219,6 +325,7 @@ export default function OAPractice() {
       setCurrentIdx(0);
       setSelectedOptions({});
       setSubmittedQuestions({});
+      setShuffledOptionsMap({});
       setTimeLeft(60);
       setIsTimerRunning(true);
     } catch (e) {
@@ -265,8 +372,31 @@ export default function OAPractice() {
   const question = quizQuestions[currentIdx];
   const isBookmarked = question && scoreData?.bookmarked?.includes(question.id);
   
+  // selected / submitted track the SHUFFLED option index in this question's display
   const selected = question ? (selectedOptions[question.id] ?? null) : null;
   const submitted = question ? (!!submittedQuestions[question.id]) : false;
+
+  // Compute stable shuffled options for current question on first access
+  useEffect(() => {
+    if (!question) return;
+    if (shuffledOptionsMap[question.id]) return; // already computed
+    // Build shuffled mapping: indexMap[newIdx] = originalIdx
+    const n = question.options.length;
+    const indexMap = shuffleArray([...Array(n).keys()]);
+    const shuffledOpts = indexMap.map(i => question.options[i]);
+    const shuffledCorrect = indexMap.indexOf(question.correct);
+    setShuffledOptionsMap(prev => ({
+      ...prev,
+      [question.id]: { shuffledOpts, shuffledCorrect, indexMap },
+    }));
+  }, [question, shuffledOptionsMap]);
+
+  // Current question's shuffled view (fallback to original while computing)
+  const qShuffle = question ? (shuffledOptionsMap[question.id] || null) : null;
+  const displayOptions = qShuffle ? qShuffle.shuffledOpts : (question ? question.options : []);
+  const displayCorrect = qShuffle ? qShuffle.shuffledCorrect : (question ? question.correct : 0);
+  // Map selected shuffled index back to original for recordDetailedAnswer / isCorrect checks
+  const selectedOriginalIdx = (selected !== null && qShuffle) ? qShuffle.indexMap[selected] : selected;
 
   useEffect(() => {
     if (question) {
@@ -329,11 +459,13 @@ export default function OAPractice() {
 
   const handleSubmit = async () => {
     if (!question) return;
-    const sel = selectedOptions[question.id];
+    const sel = selectedOptions[question.id]; // shuffled index
     if (sel === undefined || sel === null) return;
     setSubmittedQuestions(prev => ({ ...prev, [question.id]: true }));
     setIsTimerRunning(false);
-    const isCorrect = sel === question.correct;
+    // Use original index for correctness check
+    const selOriginal = qShuffle ? qShuffle.indexMap[sel] : sel;
+    const isCorrect = selOriginal === question.correct;
     const solveTimeMs = (60 - timeLeft) * 1000;
     const confidence = confidences[question.id] || null;
     const finalTimeline = [
@@ -361,6 +493,9 @@ export default function OAPractice() {
       setTimeout(() => setXpFeedback(null), 3500);
     }
     setProgressMap(prev => ({ ...prev, [question.id]: isCorrect ? 'correct' : 'incorrect' }));
+
+    // Trigger live Gemini fetch for this question
+    fetchGeminiAnalysis(question, selOriginal);
   };
 
   const handleNext = () => {
@@ -1058,10 +1193,10 @@ export default function OAPractice() {
             <h2 className="question-text" dangerouslySetInnerHTML={{ __html: question.question }} />
 
             <div className="options">
-              {question.options.map((opt, index) => {
+              {displayOptions.map((opt, index) => {
                 let cls = '';
                 if (submitted) {
-                  if (index === question.correct) cls = 'correct';
+                  if (index === displayCorrect) cls = 'correct';
                   else if (index === selected) cls = 'incorrect';
                 } else if (index === selected) {
                   cls = 'selected';
@@ -1076,18 +1211,18 @@ export default function OAPractice() {
                   >
                     <span className="option-key">{String.fromCharCode(65 + index)}</span>
                     <span className="option-value" dangerouslySetInnerHTML={{ __html: opt }} />
-                    {submitted && index === question.correct && <CheckCircle size={18} className="option-icon success-icon" />}
-                    {submitted && index === selected && index !== question.correct && <XCircle size={18} className="option-icon danger-icon" />}
+                    {submitted && index === displayCorrect && <CheckCircle size={18} className="option-icon success-icon" />}
+                    {submitted && index === selected && index !== displayCorrect && <XCircle size={18} className="option-icon danger-icon" />}
                   </button>
                 );
               })}
             </div>
 
             {submitted && (
-              <div className={`result-box ${selected === question.correct ? 'correct' : 'incorrect'}`}>
+              <div className={`result-box ${selectedOriginalIdx === question.correct ? 'correct' : 'incorrect'}`}>
                 <div className="result-header">
-                  <h3>{selected === question.correct ? 'Correct! 🎉' : 'Incorrect'}</h3>
-                  {selected === question.correct ? <span className="xp-gain">+10 XP</span> : null}
+                  <h3>{selectedOriginalIdx === question.correct ? 'Correct! 🎉' : 'Incorrect'}</h3>
+                  {selectedOriginalIdx === question.correct ? <span className="xp-gain">+10 XP</span> : null}
                 </div>
 
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
@@ -1099,12 +1234,12 @@ export default function OAPractice() {
                     return <span className="badge" style={{ background: '#d63031', color: '#fff' }}>⏰ Time Pressure</span>;
                   })()}
 
-                  {confidences[question.id] === 'Sure' && selected !== question.correct && (
+                  {confidences[question.id] === 'Sure' && selectedOriginalIdx !== question.correct && (
                     <span className="badge" style={{ background: 'var(--warning)', color: '#000' }}>
                       ⚠️ Misconception signal — you were confident but incorrect
                     </span>
                   )}
-                  {(confidences[question.id] === 'Guess' || confidences[question.id] === 'Unsure') && selected === question.correct && (
+                  {(confidences[question.id] === 'Guess' || confidences[question.id] === 'Unsure') && selectedOriginalIdx === question.correct && (
                     <span className="badge" style={{ background: 'var(--secondary)', color: '#fff' }}>
                       💡 Lucky guess — queued for spaced repetition review
                     </span>
@@ -1118,60 +1253,120 @@ export default function OAPractice() {
                   </div>
                 )}
                 
-                {/* AI Tutor Card (Phase 2) */}
-                <div className="ai-tutor-card" style={{
-                  background: 'linear-gradient(180deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '12px',
-                  padding: '1.5rem',
-                  marginTop: '1.5rem',
-                  textAlign: 'left'
-                }}>
-                  <div className="tutor-header" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem', color: 'var(--primary)' }}>
-                    <Brain size={20} />
-                    <h4 style={{ margin: 0, fontSize: '1.1rem' }}>AI Tutor Analysis</h4>
-                  </div>
-                  
-                  <div className="insight-grid" style={{ display: 'grid', gridTemplateColumns: selected === question.correct ? '1fr' : '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-                    {selected !== question.correct && (
-                      <div className="insight-box danger" style={{ background: 'rgba(239, 68, 68, 0.05)', borderLeft: '3px solid var(--danger)', padding: '1rem', borderRadius: '0 8px 8px 0' }}>
-                        <strong style={{ display: 'block', color: 'var(--danger)', marginBottom: '0.5rem', fontSize: '0.85rem', textTransform: 'uppercase' }}>Why your choice is incorrect</strong>
-                        <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                          {question.ai_wrong || `Option ${String.fromCharCode(65 + selected)} is a common misconception. You likely calculated the intermediate step but missed the final conversion.`}
-                        </p>
+                {/* AI Tutor Card — Live Gemini AI with Model Selector */}
+                {(() => {
+                  const ai = aiAnalysis[question.id];
+                  const isWrong = selectedOriginalIdx !== question.correct;
+                  const correctDisplayLetter = String.fromCharCode(65 + displayCorrect);
+                  const selectedDisplayLetter = selected !== null ? String.fromCharCode(65 + selected) : null;
+
+                  return (
+                    <div className="ai-tutor-card" style={{
+                      background: 'linear-gradient(180deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%)',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '12px',
+                      padding: '1.5rem',
+                      marginTop: '1.5rem',
+                      textAlign: 'left'
+                    }}>
+                      <div className="tutor-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'var(--primary)' }}>
+                          <Brain size={20} />
+                          <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>AI Tutor Analysis</h4>
+                          {ai?.loading && (
+                            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.4rem', marginLeft: '0.5rem' }}>
+                              <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', border: '2px solid var(--primary)', borderTopColor: 'transparent', animation: 'spin 0.7s linear infinite' }} />
+                              Generating…
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Model Selector */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>Model:</label>
+                          <select
+                            value={selectedModel}
+                            onChange={(e) => {
+                              const newModel = e.target.value;
+                              setSelectedModel(newModel);
+                              fetchGeminiAnalysis(question, selectedOriginalIdx, newModel);
+                            }}
+                            style={{
+                              background: 'var(--bg-body)',
+                              color: 'var(--text-primary)',
+                              border: '1px solid var(--border)',
+                              borderRadius: '6px',
+                              padding: '0.3rem 0.6rem',
+                              fontSize: '0.8rem',
+                              cursor: 'pointer',
+                              outline: 'none',
+                            }}
+                          >
+                            {AVAILABLE_MODELS.map(m => (
+                              <option key={m.id} value={m.id}>{m.label}</option>
+                            ))}
+                          </select>
+                        </div>
                       </div>
-                    )}
-                    <div className="insight-box success" style={{ background: 'rgba(16, 185, 129, 0.05)', borderLeft: '3px solid var(--success)', padding: '1rem', borderRadius: '0 8px 8px 0' }}>
-                      <strong style={{ display: 'block', color: 'var(--success)', marginBottom: '0.5rem', fontSize: '0.85rem', textTransform: 'uppercase' }}>Why Option {String.fromCharCode(65 + question.correct)} is correct</strong>
-                      <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
-                        {question.ai_correct || (question.explanation !== 'Coming soon' ? question.explanation : `The correct application of the principle yields this result by balancing the fundamental equations.`)}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="insight-row" style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
-                    <div className="insight-item" style={{ flex: '1', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                      <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Formula Used</strong>
-                      <code style={{ display: 'block', background: 'var(--bg-body)', padding: '0.25rem 0.5rem', borderRadius: '4px', color: 'var(--accent)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-                        {question.formula || "Q = \u0394U + W"}
-                      </code>
-                      {question.equation && (
-                        <>
-                          <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Equation</strong>
-                          <code style={{ display: 'block', background: 'var(--bg-body)', padding: '0.25rem 0.5rem', borderRadius: '4px', color: 'var(--success)', fontSize: '0.9rem' }}>
-                            {question.equation}
+
+                      <div className="insight-grid" style={{ display: 'grid', gridTemplateColumns: isWrong ? '1fr 1fr' : '1fr', gap: '1rem', marginBottom: '1rem' }}>
+                        {isWrong && (
+                          <div className="insight-box danger" style={{ background: 'rgba(239, 68, 68, 0.05)', borderLeft: '3px solid var(--danger)', padding: '1rem', borderRadius: '0 8px 8px 0' }}>
+                            <strong style={{ display: 'block', color: 'var(--danger)', marginBottom: '0.5rem', fontSize: '0.85rem', textTransform: 'uppercase' }}>
+                              Why Option {selectedDisplayLetter} is Incorrect
+                            </strong>
+                            <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                              {ai?.loading
+                                ? <span style={{ opacity: 0.5 }}>Analyzing your specific mistake…</span>
+                                : (ai?.whySelected || question.ai_wrong || `Option ${selectedDisplayLetter} is a common trap — double check your calculation steps.`)}
+                            </p>
+                          </div>
+                        )}
+                        <div className="insight-box success" style={{ background: 'rgba(16, 185, 129, 0.05)', borderLeft: '3px solid var(--success)', padding: '1rem', borderRadius: '0 8px 8px 0' }}>
+                          <strong style={{ display: 'block', color: 'var(--success)', marginBottom: '0.5rem', fontSize: '0.85rem', textTransform: 'uppercase' }}>
+                            Why Option {correctDisplayLetter} is Correct
+                          </strong>
+                          <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                            {ai?.loading
+                              ? <span style={{ opacity: 0.5 }}>Generating detailed explanation…</span>
+                              : (ai?.whyCorrect || question.ai_correct || (question.explanation && question.explanation !== 'Coming soon'
+                                ? question.explanation
+                                : `Option ${correctDisplayLetter} follows directly from the correct application of the relevant formula.`))}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="insight-row" style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+                        <div className="insight-item" style={{ flex: '1', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                          <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Formula Used</strong>
+                          <code style={{ display: 'block', background: 'var(--bg-body)', padding: '0.25rem 0.5rem', borderRadius: '4px', color: 'var(--accent)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
+                            {ai?.loading ? '…' : (ai?.formula || question.formula || 'See explanation above')}
                           </code>
-                        </>
+                          {question.equation && (
+                            <>
+                              <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Equation</strong>
+                              <code style={{ display: 'block', background: 'var(--bg-body)', padding: '0.25rem 0.5rem', borderRadius: '4px', color: 'var(--success)', fontSize: '0.9rem' }}>
+                                {question.equation}
+                              </code>
+                            </>
+                          )}
+                        </div>
+                        <div className="insight-item" style={{ flex: '1', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                          <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Exam Trick</strong>
+                          <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--warning)' }}>
+                            {ai?.loading ? '…' : (ai?.trick || question.trick || 'Read all options carefully before selecting — common traps use similar numbers.')}
+                          </p>
+                        </div>
+                      </div>
+
+                      {ai?.error && (
+                        <p style={{ margin: '0.75rem 0 0', fontSize: '0.8rem', color: 'var(--danger)', opacity: 0.8 }}>
+                          ⚠️ {ai.error}
+                        </p>
                       )}
                     </div>
-                    <div className="insight-item" style={{ flex: '1', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                      <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Exam Trick</strong>
-                      <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--warning)' }}>
-                        {question.trick || "Watch out for units of pressure. Always convert bar to MPa before computing."}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                  );
+                })()}
 
               </div>
             )}

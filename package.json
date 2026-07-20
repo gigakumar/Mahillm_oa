@@ -7,7 +7,16 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "enrich": "node scripts/gemini_batch_enrich.js",
+    "enrich:mech": "node scripts/gemini_batch_enrich.js --file public/data/mechEngQuestions.json",
+    "enrich:quants": "node scripts/gemini_batch_enrich.js --file public/data/quantsQuestions.json",
+    "enrich:logical": "node scripts/gemini_batch_enrich.js --file public/data/logicalReasoningQuestions.json",
+    "enrich:flash35": "node scripts/gemini_batch_enrich.js --model gemini-3.5-flash",
+    "enrich:flash25": "node scripts/gemini_batch_enrich.js --model gemini-2.5-flash",
+    "enrich:flash3": "node scripts/gemini_batch_enrich.js --model gemini-3-flash",
+    "enrich:flashlite": "node scripts/gemini_batch_enrich.js --model gemini-3.1-flash-lite",
+    "enrich:gemma": "node scripts/gemini_batch_enrich.js --model gemma-4-31b-it"
   },
   "dependencies": {
     "cheerio": "^1.2.0",
