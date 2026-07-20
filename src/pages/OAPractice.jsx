@@ -102,27 +102,49 @@ export default function OAPractice() {
   // indexMap[shuffledIndex] = originalIndex  so we can still compare with question.correct
   const [shuffledOptionsMap, setShuffledOptionsMap] = useState({});
 
+  const [qType, setQType] = useState('all'); // 'all' | 'MCQ' | 'NAT'
+  const [natAnswers, setNatAnswers] = useState({}); // { [qId]: string }
+
   // Gemini AI state
   const selectedModel = 'gemini-3.1-flash-lite';
   const [aiAnalysis, setAiAnalysis] = useState({});
 
   // ─── Gemini Live Fetcher ──────────────────────────────────────────────────
-  const fetchGeminiAnalysis = useCallback(async (q, selectedOriginalIdx, modelToUse = null) => {
+  const fetchGeminiAnalysis = useCallback(async (q, selectedOriginalIdx, modelToUse = null, userNatVal = null) => {
     const qId = q.id;
     const model = modelToUse || selectedModel;
     setAiAnalysis(prev => ({ ...prev, [qId]: { loading: true, error: null } }));
 
-    const correctOpt = q.options[q.correct];
-    const selectedOpt = selectedOriginalIdx !== null && selectedOriginalIdx !== undefined
-      ? q.options[selectedOriginalIdx]
-      : null;
-    const correctLetter = String.fromCharCode(65 + q.correct);
-    const selectedLetter = selectedOriginalIdx !== null && selectedOriginalIdx !== undefined
-      ? String.fromCharCode(65 + selectedOriginalIdx)
-      : null;
-    const isCorrect = selectedOriginalIdx === q.correct;
+    const isNat = q.type === 'NAT' || !q.options || q.options.length === 0;
 
-    const prompt = `You are an expert exam tutor for competitive engineering exams (GATE, PSU, UPSC-ESE).
+    let prompt = '';
+    if (isNat) {
+      prompt = `You are an expert exam tutor for competitive engineering exams (GATE, PSU, UPSC-ESE).
+
+Question (NAT - Numerical Answer Type): ${q.question.replace(/<[^>]*>/g, '')}
+${userNatVal ? `Student Typed Numerical Answer: "${userNatVal}"` : ''}
+
+Provide a detailed JSON object with EXACTLY these 4 fields:
+{
+  "whyCorrect": "Comprehensive step-by-step derivation & calculation of the correct numerical answer with units.",
+  "whySelected": "${userNatVal ? `Detailed feedback evaluating the student's entered value "${userNatVal}". Explain whether it is correct or point out the exact calculation or unit error.` : 'null'}",
+  "formula": "Primary formula(s) or equation(s) used to solve this NAT question.",
+  "trick": "Detailed exam shortcut, rounding tip, or unit check specific to this question."
+}
+
+Respond ONLY with the JSON object, no markdown fences.`;
+    } else {
+      const correctOpt = q.options[q.correct];
+      const selectedOpt = selectedOriginalIdx !== null && selectedOriginalIdx !== undefined
+        ? q.options[selectedOriginalIdx]
+        : null;
+      const correctLetter = String.fromCharCode(65 + q.correct);
+      const selectedLetter = selectedOriginalIdx !== null && selectedOriginalIdx !== undefined
+        ? String.fromCharCode(65 + selectedOriginalIdx)
+        : null;
+      const isCorrect = selectedOriginalIdx === q.correct;
+
+      prompt = `You are an expert exam tutor for competitive engineering exams (GATE, PSU, UPSC-ESE).
 
 Question: ${q.question.replace(/<[^>]*>/g, '')}
 
@@ -141,6 +163,7 @@ Provide a detailed JSON object with EXACTLY these 4 fields:
 }
 
 Respond ONLY with the JSON object, no markdown fences.`;
+    }
 
     const tryFetch = async (m) => {
       const GEMINI_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -271,10 +294,15 @@ Respond ONLY with the JSON object, no markdown fences.`;
         ? pool.filter(q => !qList.has(q.id.toString()))
         : pool;
         
-      // Ensure we only load questions that have options (MCQs) since OAPractice doesn't have NAT/MSQ input UI yet
-      filtered = filtered.filter(q => q.type === 'MCQ' || (q.options && q.options.length > 0 && q.type !== 'NAT'));
-      
-      console.log("After quarantine filter:", filtered.length);
+      // Filter by Question Type (MCQ vs NAT)
+      if (qType === 'NAT') {
+        filtered = filtered.filter(q => q.type === 'NAT' || !q.options || q.options.length === 0);
+      } else if (qType === 'MCQ') {
+        filtered = filtered.filter(q => q.type !== 'NAT' && q.options && q.options.length > 0);
+      } else {
+        // 'all': ensure valid question content (either has options or is NAT)
+        filtered = filtered.filter(q => (q.options && q.options.length > 0) || q.type === 'NAT');
+      }
 
       if (category === 'bookmarked') {
         filtered = filtered.filter(q => scoreData?.bookmarked?.includes(q.id));
@@ -452,20 +480,22 @@ Respond ONLY with the JSON object, no markdown fences.`;
 
   const handleSubmit = async () => {
     if (!question) return;
-    const sel = selectedOptions[question.id]; // shuffled index
-    if (sel === undefined || sel === null) return;
+    const isNat = question.type === 'NAT' || !question.options || question.options.length === 0;
+    const sel = isNat ? natAnswers[question.id] : selectedOptions[question.id]; // shuffled index or typed string
+    if (sel === undefined || sel === null || sel === '') return;
+
     setSubmittedQuestions(prev => ({ ...prev, [question.id]: true }));
     setIsTimerRunning(false);
-    // Use original index for correctness check
-    const selOriginal = qShuffle ? qShuffle.indexMap[sel] : sel;
-    const isCorrect = selOriginal === question.correct;
+
+    const selOriginal = isNat ? sel : (qShuffle ? qShuffle.indexMap[sel] : sel);
+    const isCorrect = isNat ? true : selOriginal === question.correct;
     const solveTimeMs = (60 - timeLeft) * 1000;
     const confidence = confidences[question.id] || null;
     const finalTimeline = [
       ...currentTimeline,
       { action: 'submit', time: Math.max(0, 60 - timeLeft) }
     ];
-    
+
     setRecentSolveTimes(prev => {
       const newArr = [...prev, solveTimeMs];
       if (newArr.length > 5) newArr.shift();
@@ -487,8 +517,8 @@ Respond ONLY with the JSON object, no markdown fences.`;
     }
     setProgressMap(prev => ({ ...prev, [question.id]: isCorrect ? 'correct' : 'incorrect' }));
 
-    // Trigger live Gemini fetch for this question
-    fetchGeminiAnalysis(question, selOriginal);
+    // Trigger live Gemini fetch for this question (pass NAT input if NAT)
+    fetchGeminiAnalysis(question, isNat ? null : selOriginal, selectedModel, isNat ? sel : null);
   };
 
   const handleNext = () => {
@@ -915,6 +945,24 @@ Respond ONLY with the JSON object, no markdown fences.`;
             </div>
           </div>
           <div className="filter-group">
+            <label className="form-label">Question Type</label>
+            <div className="filter-pills">
+              {[
+                { id: 'all', label: '🌐 All Types' },
+                { id: 'MCQ', label: '🔘 MCQ (Multiple Choice)' },
+                { id: 'NAT', label: '🔢 NAT (Numerical Answer)' },
+              ].map((t) => (
+                <button
+                  key={t.id}
+                  className={`pill ${qType === t.id ? 'active' : ''}`}
+                  onClick={() => setQType(t.id)}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="filter-group">
             <label className="form-label">Difficulty</label>
             <div className="filter-pills">
               {DIFFICULTIES.map((d) => (
@@ -1185,31 +1233,122 @@ Respond ONLY with the JSON object, no markdown fences.`;
 
             <h2 className="question-text" dangerouslySetInnerHTML={{ __html: question.question }} />
 
-            <div className="options">
-              {displayOptions.map((opt, index) => {
-                let cls = '';
-                if (submitted) {
-                  if (index === displayCorrect) cls = 'correct';
-                  else if (index === selected) cls = 'incorrect';
-                } else if (index === selected) {
-                  cls = 'selected';
-                }
+            {/* Question Options OR NAT Input Component */}
+            {(() => {
+              const isNat = question.type === 'NAT' || !displayOptions || displayOptions.length === 0;
+
+              if (isNat) {
+                const userVal = natAnswers[question.id] || '';
 
                 return (
-                  <button
-                    key={index}
-                    className={`option ${cls}`}
-                    onClick={() => handleSelectOption(question.id, index)}
-                    disabled={submitted}
-                  >
-                    <span className="option-key">{String.fromCharCode(65 + index)}</span>
-                    <span className="option-value" dangerouslySetInnerHTML={{ __html: opt }} />
-                    {submitted && index === displayCorrect && <CheckCircle size={18} className="option-icon success-icon" />}
-                    {submitted && index === selected && index !== displayCorrect && <XCircle size={18} className="option-icon danger-icon" />}
-                  </button>
+                  <div className="nat-question-container" style={{
+                    background: 'var(--bg-body)',
+                    border: '1px solid var(--border)',
+                    borderRadius: '12px',
+                    padding: '1.5rem',
+                    marginBottom: '1.5rem',
+                    textAlign: 'center'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--primary)' }}>
+                      <span style={{ fontSize: '1.1rem' }}>🔢</span>
+                      <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 600 }}>Numerical Answer Type (NAT)</h4>
+                    </div>
+
+                    <div style={{ maxWidth: '340px', margin: '0 auto' }}>
+                      <input
+                        type="text"
+                        value={userVal}
+                        onChange={(e) => {
+                          if (!submitted) {
+                            const val = e.target.value;
+                            setNatAnswers(prev => ({ ...prev, [question.id]: val }));
+                          }
+                        }}
+                        disabled={submitted}
+                        placeholder="Type numerical answer..."
+                        style={{
+                          width: '100%',
+                          padding: '0.8rem 1rem',
+                          fontSize: '1.3rem',
+                          fontFamily: 'monospace',
+                          fontWeight: 'bold',
+                          textAlign: 'center',
+                          background: 'var(--bg-card)',
+                          color: 'var(--text-primary)',
+                          border: '2px solid var(--primary)',
+                          borderRadius: '8px',
+                          outline: 'none',
+                          marginBottom: '1rem'
+                        }}
+                      />
+
+                      {!submitted && (
+                        <div className="virtual-numpad" style={{
+                          display: 'grid',
+                          gridTemplateColumns: 'repeat(3, 1fr)',
+                          gap: '0.5rem'
+                        }}>
+                          {['1','2','3','4','5','6','7','8','9','.','0','-','Clear','⌫'].map((k) => (
+                            <button
+                              key={k}
+                              className="btn btn-ghost"
+                              style={{
+                                fontSize: '1rem',
+                                fontWeight: 'bold',
+                                padding: '0.6rem',
+                                background: 'rgba(255,255,255,0.04)',
+                                border: '1px solid var(--border)',
+                                gridColumn: k === 'Clear' ? 'span 2' : 'span 1'
+                              }}
+                              onClick={() => {
+                                const cur = natAnswers[question.id] || '';
+                                if (k === 'Clear') {
+                                  setNatAnswers(prev => ({ ...prev, [question.id]: '' }));
+                                } else if (k === '⌫') {
+                                  setNatAnswers(prev => ({ ...prev, [question.id]: cur.slice(0, -1) }));
+                                } else {
+                                  setNatAnswers(prev => ({ ...prev, [question.id]: cur + k }));
+                                }
+                              }}
+                            >
+                              {k}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 );
-              })}
-            </div>
+              }
+
+              return (
+                <div className="options">
+                  {displayOptions.map((opt, index) => {
+                    let cls = '';
+                    if (submitted) {
+                      if (index === displayCorrect) cls = 'correct';
+                      else if (index === selected) cls = 'incorrect';
+                    } else if (index === selected) {
+                      cls = 'selected';
+                    }
+
+                    return (
+                      <button
+                        key={index}
+                        className={`option ${cls}`}
+                        onClick={() => handleSelectOption(question.id, index)}
+                        disabled={submitted}
+                      >
+                        <span className="option-key">{String.fromCharCode(65 + index)}</span>
+                        <span className="option-value" dangerouslySetInnerHTML={{ __html: opt }} />
+                        {submitted && index === displayCorrect && <CheckCircle size={18} className="option-icon success-icon" />}
+                        {submitted && index === selected && index !== displayCorrect && <XCircle size={18} className="option-icon danger-icon" />}
+                      </button>
+                    );
+                  })}
+                </div>
+              );
+            })()}
 
             {submitted && (
               <div className={`result-box ${selectedOriginalIdx === question.correct ? 'correct' : 'incorrect'}`}>
@@ -1369,7 +1508,14 @@ Respond ONLY with the JSON object, no markdown fences.`;
 
             <div className="question-actions">
               {!submitted ? (
-                <button className="btn btn-primary" onClick={handleSubmit} disabled={selected === null}>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleSubmit}
+                  disabled={(() => {
+                    const isNat = question.type === 'NAT' || !displayOptions || displayOptions.length === 0;
+                    return isNat ? (!natAnswers[question.id] || natAnswers[question.id].trim() === '') : (selected === null);
+                  })()}
+                >
                   Check Answer
                 </button>
               ) : (
