@@ -102,15 +102,8 @@ export default function OAPractice() {
   // indexMap[shuffledIndex] = originalIndex  so we can still compare with question.correct
   const [shuffledOptionsMap, setShuffledOptionsMap] = useState({});
 
-  // Model Selection & Gemini AI state
-  const AVAILABLE_MODELS = [
-    { id: 'gemini-3.1-flash-lite', label: 'Gemini 3.1 Flash Lite' },
-    { id: 'gemini-3.5-flash', label: 'Gemini 3.5 Flash' },
-    { id: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash' },
-    { id: 'gemini-3-flash', label: 'Gemini 3 Flash' },
-    { id: 'gemma-4-31b-it', label: 'Gemma 4 31B' },
-  ];
-  const [selectedModel, setSelectedModel] = useState('gemini-3.1-flash-lite');
+  // Gemini AI state
+  const selectedModel = 'gemini-3.1-flash-lite';
   const [aiAnalysis, setAiAnalysis] = useState({});
 
   // ─── Gemini Live Fetcher ──────────────────────────────────────────────────
@@ -1269,44 +1262,15 @@ Respond ONLY with the JSON object, no markdown fences.`;
                       marginTop: '1.5rem',
                       textAlign: 'left'
                     }}>
-                      <div className="tutor-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: 'var(--primary)' }}>
-                          <Brain size={20} />
-                          <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>AI Tutor Analysis</h4>
-                          {ai?.loading && (
-                            <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.4rem', marginLeft: '0.5rem' }}>
-                              <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', border: '2px solid var(--primary)', borderTopColor: 'transparent', animation: 'spin 0.7s linear infinite' }} />
-                              Generating…
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Model Selector */}
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                          <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: 500 }}>Model:</label>
-                          <select
-                            value={selectedModel}
-                            onChange={(e) => {
-                              const newModel = e.target.value;
-                              setSelectedModel(newModel);
-                              fetchGeminiAnalysis(question, selectedOriginalIdx, newModel);
-                            }}
-                            style={{
-                              background: 'var(--bg-body)',
-                              color: 'var(--text-primary)',
-                              border: '1px solid var(--border)',
-                              borderRadius: '6px',
-                              padding: '0.3rem 0.6rem',
-                              fontSize: '0.8rem',
-                              cursor: 'pointer',
-                              outline: 'none',
-                            }}
-                          >
-                            {AVAILABLE_MODELS.map(m => (
-                              <option key={m.id} value={m.id}>{m.label}</option>
-                            ))}
-                          </select>
-                        </div>
+                      <div className="tutor-header" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.25rem', color: 'var(--primary)' }}>
+                        <Brain size={20} />
+                        <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 600 }}>AI Tutor Analysis</h4>
+                        {ai?.loading && (
+                          <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '0.4rem', marginLeft: '0.5rem' }}>
+                            <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '50%', border: '2px solid var(--primary)', borderTopColor: 'transparent', animation: 'spin 0.7s linear infinite' }} />
+                            Generating…
+                          </span>
+                        )}
                       </div>
 
                       <div className="insight-grid" style={{ display: 'grid', gridTemplateColumns: isWrong ? '1fr 1fr' : '1fr', gap: '1rem', marginBottom: '1rem' }}>
