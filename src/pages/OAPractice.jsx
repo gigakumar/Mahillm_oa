@@ -54,19 +54,18 @@ export default function OAPractice() {
   const [mechSubtopicMode, setMechSubtopicMode] = useState(false);
   const [xpFeedback, setXpFeedback] = useState(null);
   
-  const [isSessionActive, setIsSessionActive] = useState(!!catParam);
+  const [isSessionActive, setIsSessionActive] = useState(true);
   const [category, setCategory] = useState(catParam || 'all');
   
   useEffect(() => {
     if (catParam) {
       setCategory(catParam);
       if (topicParam) setTopic(topicParam);
-      setIsSessionActive(true);
     } else {
-      setIsSessionActive(false);
       setCategory('all');
       setTopic('all');
     }
+    setIsSessionActive(true);
   }, [catParam, topicParam]);
 
   const [difficulty, setDifficulty] = useState('all');
