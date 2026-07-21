@@ -10,6 +10,7 @@ import { QuestionBankRegistry, MECH_TOPIC_GROUPS } from '../data/questionBankReg
 import { formatMathHtml, shuffleQuestionOptions } from '../utils/mathUtils';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
+import AITutorWidget from '../components/AITutorWidget';
 import './OAPractice.css';
 import './AdaptivePractice.css';
 
@@ -1349,6 +1350,13 @@ Respond ONLY with the JSON object, no markdown fences.`;
                 </div>
               );
             })()}
+
+            {/* Interactive AI Tutor & Hint Assistant */}
+            <AITutorWidget 
+              question={question} 
+              userAnswer={selectedOriginalIdx !== undefined && displayOptions ? displayOptions[selectedOriginalIdx] : null} 
+              questionId={question.id} 
+            />
 
             {submitted && (
               <div className={`result-box ${selectedOriginalIdx === question.correct ? 'correct' : 'incorrect'}`}>

@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
 import { formatMathHtml } from '../utils/mathUtils';
+import AITutorWidget from '../components/AITutorWidget';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import './Mistakes.css';
 
@@ -454,6 +455,13 @@ export default function Mistakes() {
                         <div style={{ marginTop: '0.5rem' }} dangerouslySetInnerHTML={{ __html: formatMathHtml(qObj.explanation) }} />
                       </div>
                     )}
+
+                    {/* AI Tutor Assistant Widget */}
+                    <AITutorWidget 
+                      question={qObj} 
+                      userAnswer="Selected incorrect option" 
+                      questionId={m.questionId} 
+                    />
                   </>
                 ) : (
                   <div className="empty-state" style={{ padding: '1rem', background: 'var(--bg-body)', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)' }}>
