@@ -1,0 +1,31 @@
+{
+  "thermodynamics": {
+    "airGamma": {
+      "value": 1.4,
+      "unit": "dimensionless",
+      "source": "Standard Air Properties at 300K (Moran & Shapiro)"
+    },
+    "universalGasConstant": {
+      "value": 8.314,
+      "unit": "J/(mol·K)",
+      "source": "CODATA Recommended Values"
+    }
+  },
+  "fluidMechanics": {
+    "waterDensity": {
+      "value": 1000,
+      "unit": "kg/m^3",
+      "source": "Standard Water Density at 4°C"
+    },
+    "gravity": {
+      "value": 9.81,
+      "unit": "m/s^2",
+      "source": "Standard Gravity Constant"
+    },
+    "peltonOptimalRatio": {
+      "value": 0.46,
+      "unit": "dimensionless",
+      "source": "Hydraulic Machines Textbook (R.K. Bansal)"
+    }
+  }
+}

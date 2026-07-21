@@ -1,0 +1,98 @@
+{
+  "cycleYear": "2025-2026",
+  "activeExam": "GATE Mechanical Engineering (ME)",
+  "totalCandidatesEst": 75000,
+  "defaultQualifyingCutoff": 28.5,
+  "psuCutoffs": [
+    {
+      "id": "iocl",
+      "name": "IOCL (Indian Oil)",
+      "category": "Maharatna",
+      "minGateScore": 780,
+      "minAir": 150,
+      "avgPackage": "18.0 LPA",
+      "source": "IOCL ME Recruitment Call Lists (2024)",
+      "sourceUrl": "https://iocl.com/careers"
+    },
+    {
+      "id": "ntpc",
+      "name": "NTPC Limited",
+      "category": "Maharatna",
+      "minGateScore": 760,
+      "minAir": 220,
+      "avgPackage": "16.5 LPA",
+      "source": "NTPC Executive Trainee ME Cutoff (2024)",
+      "sourceUrl": "https://careers.ntpc.co.in"
+    },
+    {
+      "id": "ongc",
+      "name": "ONGC",
+      "category": "Maharatna",
+      "minGateScore": 750,
+      "minAir": 250,
+      "avgPackage": "20.0 LPA",
+      "source": "ONGC Graduate Trainee ME Lists (2024)",
+      "sourceUrl": "https://ongcindia.com"
+    },
+    {
+      "id": "barc",
+      "name": "BARC (Scientific Officer)",
+      "category": "Govt Research",
+      "minGateScore": 740,
+      "minAir": 300,
+      "avgPackage": "15.0 LPA",
+      "source": "BARC OCES/DGFS Shortlist Matrix (2024)",
+      "sourceUrl": "https://barconlineexam.in"
+    },
+    {
+      "id": "hpcl_bpcl",
+      "name": "HPCL / BPCL",
+      "category": "Maharatna",
+      "minGateScore": 720,
+      "minAir": 450,
+      "avgPackage": "16.0 LPA",
+      "source": "HPCL Officer Trainee Cutoff (2024)",
+      "sourceUrl": "https://hindustanpetroleum.com"
+    },
+    {
+      "id": "bhel",
+      "name": "BHEL",
+      "category": "Maharatna",
+      "minGateScore": 700,
+      "minAir": 600,
+      "avgPackage": "14.5 LPA",
+      "source": "BHEL Engineer Trainee ME Notice (2024)",
+      "sourceUrl": "https://careers.bhel.in"
+    },
+    {
+      "id": "bel_hal",
+      "name": "BEL / HAL",
+      "category": "PSU Defence",
+      "minGateScore": 650,
+      "minAir": 950,
+      "avgPackage": "12.0 LPA",
+      "source": "HAL Management Trainee GATE Notice (2024)",
+      "sourceUrl": "https://hal-india.co.in"
+    },
+    {
+      "id": "isro",
+      "name": "ISRO (SC)",
+      "category": "Space Research",
+      "minGateScore": 680,
+      "minAir": 750,
+      "avgPackage": "13.5 LPA",
+      "source": "ISRO Scientist/Engineer ME Cutoff (2024)",
+      "sourceUrl": "https://isro.gov.in"
+    },
+    {
+      "id": "state_psu",
+      "name": "State Electricity Boards / AE",
+      "category": "State PSU",
+      "minGateScore": 550,
+      "minAir": 2500,
+      "avgPackage": "9.5 LPA",
+      "source": "State AE/JE Recruitment Notifications (2024)",
+      "sourceUrl": "https://gate2025.iitr.ac.in"
+    }
+  ]
+}

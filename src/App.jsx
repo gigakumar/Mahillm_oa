@@ -28,6 +28,10 @@ import DailyChallenge from './pages/DailyChallenge';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
 import Stats from './pages/Stats';
+import StudyPlanner from './pages/StudyPlanner';
+import GatePredictor from './pages/GatePredictor';
+import PeerDuel from './pages/PeerDuel';
+import ComponentInspector from './pages/ComponentInspector';
 
 
 function ProtectedRoute({ children }) {
@@ -128,6 +132,38 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <Mistakes />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/planner" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <StudyPlanner />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/gate-predictor" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <GatePredictor />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/duel" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <PeerDuel />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/inspector" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <ComponentInspector />
                     </Layout>
                   </ProtectedRoute>
                 } />

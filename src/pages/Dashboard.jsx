@@ -405,7 +405,23 @@ export default function Dashboard() {
           {/* QUICK ADAPTIVE INTENTS */}
           <section className="dashboard-section" style={{ marginTop: '2.5rem' }}>
             <h2 className="section-title"><Target size={18} /> Quick Adaptive Intents</h2>
-            <div className="intents-grid">
+            {/* INTELLIGENT STUDY PLANNER QUICK CARD */}
+          <div className="card mb-6" style={{ background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(30, 41, 59, 0.8) 100%)', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '1.25rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <div style={{ background: 'rgba(99, 102, 241, 0.2)', padding: '0.75rem', borderRadius: '0.75rem', color: '#818cf8' }}>
+                <Calendar size={24} />
+              </div>
+              <div>
+                <h4 style={{ margin: 0, color: '#f8fafc', fontSize: '1.05rem', fontWeight: '600' }}>AI Spaced Repetition Planner</h4>
+                <p style={{ margin: '0.2rem 0 0 0', color: '#94a3b8', fontSize: '0.85rem' }}>Automated daily revision queue based on Ebbinghaus forgetting curve.</p>
+              </div>
+            </div>
+            <button className="btn btn-primary" onClick={() => navigate('/planner')} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', whiteSpace: 'nowrap' }}>
+              View Schedule <ArrowRight size={16} />
+            </button>
+          </div>
+
+          <div className="dashboard-grid">
               <button className="intent-card card" onClick={() => handleStartAdaptiveSession('OPTIMAL')}>
                 <strong>Continue my path</strong>
                 <span>Mahi's optimal syllabus route</span>

@@ -18,7 +18,11 @@ import {
   ChevronDown,
   User,
   Brain,
-  Activity
+  Activity,
+  Calendar,
+  Award,
+  Swords,
+  Layers
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -127,6 +131,18 @@ export default function Navbar() {
             minWidth={170}
             align="left"
           >
+            <Link to="/planner" role="menuitem" className={`dropdown-item ${isActive('/planner') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
+              <Calendar size={14} /> Study Planner
+            </Link>
+            <Link to="/gate-predictor" role="menuitem" className={`dropdown-item ${isActive('/gate-predictor') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
+              <Award size={14} /> GATE & PSU Predictor
+            </Link>
+            <Link to="/duel" role="menuitem" className={`dropdown-item ${isActive('/duel') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
+              <Swords size={14} /> 1v1 Speed Duel
+            </Link>
+            <Link to="/inspector" role="menuitem" className={`dropdown-item ${isActive('/inspector') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
+              <Layers size={14} /> 3D Inspector & Notes
+            </Link>
             <Link to="/readiness" role="menuitem" className={`dropdown-item ${isActive('/readiness') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
               <Activity size={14} /> Topic Heatmap
             </Link>

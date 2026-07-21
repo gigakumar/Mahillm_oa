@@ -50,7 +50,7 @@ export function UserDataProvider({ children }) {
     const mistakesColRef = collection(db, 'users', user.uid, 'wrongQuestions');
     const spacedRepColRef = collection(db, 'users', user.uid, 'spacedRepetition');
     const progressColRef = collection(db, 'users', user.uid, 'questionProgress');
-    const testsColRef = collection(db, 'users', user.uid, 'tests');
+    const testsColRef = query(collection(db, 'users', user.uid, 'tests'), limit(30));
     const dashboardSummaryRef = doc(db, 'users', user.uid, 'dashboard', 'summary');
     const dashboardProgressRef = doc(db, 'users', user.uid, 'dashboard', 'progress');
 
@@ -270,6 +270,19 @@ export function UserDataProvider({ children }) {
               lastUpdated: new Date().toISOString()
             }, { merge: true });
           });
+
+          // Sync isolated public_profiles doc with safe non-private fields for Leaderboard
+          const publicProfileRef = doc(db, 'public_profiles', user.uid);
+          const safeDisplayName = user.displayName || (user.email ? user.email.split('@')[0] : 'Anonymous Engineer');
+          await setDoc(publicProfileRef, {
+            displayName: safeDisplayName,
+            xp: xpResult?.xp || 0,
+            totalAttempted: xpResult?.totalAttempted || 0,
+            totalCorrect: xpResult?.totalCorrect || 0,
+            streak: xpResult?.streak || 0,
+            lastUpdated: new Date().toISOString()
+          }, { merge: true });
+
         } catch (masteryErr) {
           console.error("Error updating client-side BKT mastery:", masteryErr);
         }

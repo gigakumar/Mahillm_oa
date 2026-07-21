@@ -28,15 +28,43 @@ export default function Leaderboard() {
     const fetchLeaderboard = async () => {
       setLoading(true);
       try {
-        const usersRef = collection(db, 'users');
-        const querySnapshot = await getDocs(usersRef);
+        // Query isolated public_profiles collection to avoid exposing private user documents/emails
+        const publicProfilesRef = collection(db, 'public_profiles');
+        
+        let sortField = activeTab; // 'xp', 'streak', 'questions'
+        if (timeframe === 'weekly') {
+          if (sortField === 'xp') sortField = 'xp_weekly';
+          else if (sortField === 'streak') sortField = 'streak_weekly';
+          else if (sortField === 'questions') sortField = 'totalAttempted_weekly';
+        } else if (timeframe === 'monthly') {
+          if (sortField === 'xp') sortField = 'xp_monthly';
+          else if (sortField === 'streak') sortField = 'streak_monthly';
+          else if (sortField === 'questions') sortField = 'totalAttempted_monthly';
+        } else { // all-time
+          if (sortField === 'questions') sortField = 'totalAttempted';
+        }
+
+        let q;
+        try {
+          q = query(publicProfilesRef, orderBy(sortField, 'desc'), limit(20));
+        } catch (e) {
+          q = query(publicProfilesRef, limit(20));
+        }
+
+        let querySnapshot;
+        try {
+          querySnapshot = await getDocs(q);
+        } catch (err) {
+          // Fallback to query without orderBy if index is building or missing
+          querySnapshot = await getDocs(query(publicProfilesRef, limit(20)));
+        }
         
         let leaderboardData = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data();
           leaderboardData.push({
             id: doc.id,
-            email: data.email || 'Anonymous Engineer',
+            displayName: data.displayName || 'Anonymous Engineer',
             xp: data.xp || 0,
             totalAttempted: data.totalAttempted || 0,
             totalCorrect: data.totalCorrect || 0,
@@ -85,7 +113,7 @@ export default function Leaderboard() {
         });
 
         // Sort data
-        let sortField = activeTab; // 'xp', 'streak', 'questions', 'accuracy'
+        sortField = activeTab; // 'xp', 'streak', 'questions', 'accuracy'
         if (timeframe === 'weekly') {
           if (sortField === 'xp') sortField = 'xp_weekly';
           else if (sortField === 'streak') sortField = 'streak_weekly';

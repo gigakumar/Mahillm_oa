@@ -17,11 +17,18 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = initializeFirestore(app, {
-  localCache: persistentLocalCache({
-    tabManager: persistentMultipleTabManager(),
-  }),
-});
+
+let db;
+try {
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+      tabManager: persistentMultipleTabManager(),
+    }),
+  });
+} catch (err) {
+  console.warn("Firestore persistent local cache initialization failed (e.g. private/incognito mode). Falling back to memory cache:", err);
+  db = initializeFirestore(app, {});
+}
 
 export { app, auth, db };
 
