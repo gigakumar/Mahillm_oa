@@ -69,17 +69,68 @@ export async function executePromptTemplateStream(templateId = 'question-generat
 }
 
 /**
+ * Starts a stateful multi-turn clarification chat session with the AI tutor template.
+ * 
+ * @param {Array<{role: string, parts: Array<{text: string}>}>} initialHistory - Conversation history
+ * @returns {object} Chat session instance
+ */
+export function startTutorChatSession(initialHistory = []) {
+  if (!templateModel) {
+    throw new Error("Firebase AI Logic model is not initialized.");
+  }
+  
+  return templateModel.startChat({
+    history: initialHistory
+  });
+}
+
+/**
+ * Sends a follow-up clarification message to an active tutor chat session with real-time streaming.
+ * Includes loading handshake callback (onFirstChunk) to transition UI state seamlessly.
+ * 
+ * @param {object} chatSession - Active chat session from startTutorChatSession
+ * @param {string} userMessage - Follow-up message ("I don't understand step 2")
+ * @param {function} onChunk - Streaming token callback (chunkText, compiledFullText)
+ * @param {function} onFirstChunk - Handshake callback triggered when first token arrives (isThinking = false)
+ * @returns {Promise<string>} Compiled response text
+ */
+export async function sendTutorChatMessageStream(chatSession, userMessage, onChunk = null, onFirstChunk = null) {
+  if (!chatSession || typeof chatSession.sendMessageStream !== 'function') {
+    throw new Error("Invalid active chat session provided.");
+  }
+
+  try {
+    const result = await chatSession.sendMessageStream(userMessage);
+
+    let fullResponse = '';
+    let isFirst = true;
+
+    for await (const chunk of result.stream) {
+      if (isFirst && typeof onFirstChunk === 'function') {
+        isFirst = false;
+        onFirstChunk();
+      }
+
+      const chunkText = chunk.text();
+      fullResponse += chunkText;
+      if (typeof onChunk === 'function') {
+        onChunk(chunkText, fullResponse);
+      }
+    }
+
+    return fullResponse;
+  } catch (error) {
+    console.error("Multi-Turn Chat Streaming Error:", error);
+    throw error;
+  }
+}
+
+/**
  * Firestore Caching Tutor Strategy:
  * 1. Checks Firestore cache: /questions/{questionId}/cachedHints/hint_{hintNumber}
  * 2. If cached, streams cached hint immediately (Zero AI quota cost & ultra-fast).
  * 3. If cache miss, streams via AI Logic 'tutor-hint' template.
  * 4. Saves completed hint to Firestore cache for future zero-cost instant reads.
- * 
- * @param {string} questionId - Firestore question document ID
- * @param {object} questionData - Object containing { text/question, correctAnswer, options }
- * @param {number} hintNumber - Hint level (1, 2, etc.)
- * @param {function} onChunk - Streaming callback (chunkText, compiledFullText)
- * @returns {Promise<string>} Full hint text
  */
 export async function streamCachedTutorHint(questionId, questionData, hintNumber = 1, onChunk = null) {
   const cacheDocId = `hint_${hintNumber}`;

@@ -5,6 +5,7 @@ import {
   persistentLocalCache, 
   persistentMultipleTabManager 
 } from "firebase/firestore";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -18,6 +19,19 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+// Initialize Firebase App Check if reCAPTCHA Enterprise Key is configured
+let appCheck;
+if (import.meta.env.VITE_RECAPTCHA_ENTERPRISE_KEY && typeof window !== 'undefined') {
+  try {
+    appCheck = initializeAppCheck(app, {
+      provider: new ReCaptchaEnterpriseProvider(import.meta.env.VITE_RECAPTCHA_ENTERPRISE_KEY),
+      isTokenAutoRefreshEnabled: true
+    });
+  } catch (err) {
+    console.warn("App Check initialization skipped/failed:", err);
+  }
+}
+
 let db;
 try {
   db = initializeFirestore(app, {
@@ -30,5 +44,4 @@ try {
   db = initializeFirestore(app, {});
 }
 
-export { app, auth, db };
-
+export { app, auth, db, appCheck };
