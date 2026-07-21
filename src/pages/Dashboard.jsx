@@ -20,7 +20,12 @@ import {
   Clock,
   Calendar,
   AlertTriangle,
-  BookOpen
+  BookOpen,
+  Sparkles,
+  Award,
+  Swords,
+  Layers,
+  Mic
 } from 'lucide-react';
 
 import { QuestionBankRegistry } from '../data/questionBankRegistry';
