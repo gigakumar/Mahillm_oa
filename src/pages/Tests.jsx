@@ -4,7 +4,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { useUserData } from '../contexts/UserDataContext';
 import { db } from '../firebase';
 import { collection, query, getDocs, orderBy } from 'firebase/firestore';
-import { Clipboard, Play, RotateCcw, BarChart2, Plus, RefreshCw, Trash2, Calendar, Award, Lock, Unlock } from 'lucide-react';
+import { Clipboard, Play, RotateCcw, BarChart2, Plus, RefreshCw, Trash2, Calendar, Award, Lock, Unlock, FileText } from 'lucide-react';
+import { generateTestReportPDF } from '../utils/pdfReportGenerator';
 import { MOCK_TESTS } from '../data/mockSeriesConfig';
 import './Tests.css';
 
@@ -361,9 +362,18 @@ export default function Tests() {
                         </div>
                       </div>
                     </div>
-                    <button className="btn btn-secondary" onClick={() => navigate(`/tests/result/${record.id}`)}>
-                      <Award size={14} /> View Scorecard
-                    </button>
+                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                      <button 
+                        className="btn btn-primary" 
+                        style={{ background: '#238636', borderColor: '#2ea043', fontSize: '0.85rem', padding: '0.4rem 0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}
+                        onClick={() => generateTestReportPDF(record, user?.email || 'Candidate')}
+                      >
+                        <FileText size={14} /> PDF Report
+                      </button>
+                      <button className="btn btn-secondary" style={{ fontSize: '0.85rem', padding: '0.4rem 0.85rem' }} onClick={() => navigate(`/tests/result/${record.id}`)}>
+                        <Award size={14} /> View Scorecard
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

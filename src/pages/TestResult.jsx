@@ -178,7 +178,7 @@ export default function TestResult() {
 
     return (
       <div className="page-content result-page session-intel-report">
-        <header className="result-header card" style={{ background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(108, 92, 231, 0.05) 100%)', border: '1px solid rgba(139, 92, 246, 0.3)', padding: '1.5rem' }}>
+        <header className="result-header card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem', background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(108, 92, 231, 0.05) 100%)', border: '1px solid rgba(139, 92, 246, 0.3)', padding: '1.5rem' }}>
           <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
             <div className="trophy-container" style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'rgba(139, 92, 246, 0.15)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <Brain size={40} style={{ color: '#a78bfa' }} />
@@ -189,6 +189,14 @@ export default function TestResult() {
               <span className="text-secondary" style={{ fontSize: '0.85rem' }}>Submitted on {new Date(result.submittedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
             </div>
           </div>
+
+          <button 
+            className="btn btn-primary"
+            style={{ background: '#238636', borderColor: '#2ea043', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', fontSize: '0.95rem', fontWeight: 700 }}
+            onClick={() => generateTestReportPDF(result, user?.email || 'Candidate')}
+          >
+            <FileText size={18} /> Download Official PDF Report
+          </button>
         </header>
 
         <div className="report-sections-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginTop: '2rem' }}>
@@ -265,7 +273,14 @@ export default function TestResult() {
           </div>
         </div>
 
-        <div className="report-actions" style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '3rem' }}>
+        <div className="report-actions" style={{ display: 'flex', justifyContent: 'center', gap: '1rem', marginTop: '3rem', flexWrap: 'wrap' }}>
+          <button 
+            className="btn btn-primary btn-lg" 
+            style={{ background: '#238636', borderColor: '#2ea043', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 2rem' }}
+            onClick={() => generateTestReportPDF(result, user?.email || 'Candidate')}
+          >
+            <FileText size={20} /> DOWNLOAD OFFICIAL PDF REPORT
+          </button>
           <button className="btn btn-primary btn-lg" onClick={handleContinueAdaptive} style={{ padding: '0.75rem 2rem' }}>
             CONTINUE ADAPTIVE PATH
           </button>
