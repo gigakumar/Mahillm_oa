@@ -1,5 +1,3 @@
-import { jsPDF } from 'jspdf';
-
 /**
  * PDF Test Report Generator
  *
@@ -7,8 +5,10 @@ import { jsPDF } from 'jspdf';
  * detailing total marks obtained, accuracy, ELO rating, strong topics,
  * weak topics, negative marking breakdown, and question answer matrix.
  */
-export function generateTestReportPDF(result, userEmail = 'Candidate') {
+export async function generateTestReportPDF(result, userEmail = 'Candidate') {
   if (!result) return;
+
+  const { jsPDF } = await import('jspdf');
 
   const doc = new jsPDF({
     orientation: 'portrait',
