@@ -34,6 +34,8 @@ import PeerDuel from './pages/PeerDuel';
 import ComponentInspector from './pages/ComponentInspector';
 
 
+import ErrorBoundary from './components/ErrorBoundary';
+
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
   
@@ -50,8 +52,9 @@ function ProtectedRoute({ children }) {
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
         <ScoreProvider>
           <UserDataProvider>
             <Router>
@@ -251,6 +254,7 @@ function App() {
         </ScoreProvider>
       </AuthProvider>
     </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 

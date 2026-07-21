@@ -59,6 +59,7 @@ export default function Navbar() {
     }
     async function checkAdmin() {
       try {
+        if (!db || !user?.uid) return;
         const userDocRef = doc(db, 'users', user.uid);
         const snap = await getDoc(userDocRef);
         if (snap.exists() && snap.data().isAdmin) {
