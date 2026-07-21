@@ -20,6 +20,8 @@ import {
 import MathRenderer from './MathRenderer';
 
 export default function AITutorWidget({ question, userAnswer = null, questionId = null }) {
+  if (!question) return null;
+
   const [activeTab, setActiveTab] = useState(null); // 'hint' | 'explanation' | 'chat' | 'remedial'
   const [isThinking, setIsThinking] = useState(false);
   const [streamedText, setStreamedText] = useState('');
