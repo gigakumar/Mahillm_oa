@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getWeakestTopics } from '../utils/adaptiveEngine';
+import QuestionIntelligenceBadge from '../components/QuestionIntelligenceBadge';
+import { formatMathHtml, shuffleQuestionOptions } from '../utils/mathUtils';
 import { getDueQuestions } from '../utils/spacedRepetition';
 import './DailyChallenge.css';
 
@@ -225,7 +227,7 @@ export default function DailyChallenge() {
       }
 
       setMixBreakdown(breakdown);
-      setQuestions(challengeQs);
+      setQuestions(challengeQs.map(shuffleQuestionOptions));
       setActiveSession(true);
       setTestTimeRemaining(600); // 10 minutes
       setTestTimeSpent(0);
@@ -437,10 +439,10 @@ export default function DailyChallenge() {
             </div>
 
             {question.contextHtml && (
-              <div className="question-context card" style={{ marginBottom: '1.5rem', background: 'var(--bg-body)', padding: '1rem' }} dangerouslySetInnerHTML={{ __html: question.contextHtml }} />
+              <div className="question-context card" style={{ marginBottom: '1.5rem', background: 'var(--bg-body)', padding: '1rem' }} dangerouslySetInnerHTML={{ __html: formatMathHtml(question.contextHtml) }} />
             )}
 
-            <h2 className="question-text" style={{ fontSize: '1.2rem', marginBottom: '1.5rem' }} dangerouslySetInnerHTML={{ __html: question.question }} />
+            <h2 className="question-text" style={{ fontSize: '1.2rem', marginBottom: '1.5rem' }} dangerouslySetInnerHTML={{ __html: formatMathHtml(question.question) }} />
 
             <div className="options">
               {question.options.map((opt, optIdx) => {
@@ -452,7 +454,7 @@ export default function DailyChallenge() {
                     onClick={() => setSelectedOptions(prev => ({ ...prev, [question.id]: optIdx }))}
                   >
                     <span className="option-key">{String.fromCharCode(65 + optIdx)}</span>
-                    <span className="option-value" dangerouslySetInnerHTML={{ __html: opt }} />
+                    <span className="option-value" dangerouslySetInnerHTML={{ __html: formatMathHtml(opt) }} />
                   </button>
                 );
               })}

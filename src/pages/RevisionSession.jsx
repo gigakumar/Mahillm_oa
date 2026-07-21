@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useUserData } from '../contexts/UserDataContext';
 import { useScore } from '../contexts/ScoreContext';
 import { getDueQuestions, getRevisionSummary, formatInterval } from '../utils/spacedRepetition';
@@ -16,6 +16,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { formatMathHtml, shuffleQuestionOptions } from '../utils/mathUtils';
 import './RevisionSession.css';
 
 export default function RevisionSession() {
@@ -111,7 +112,8 @@ export default function RevisionSession() {
   }, [currentIdx, dueList]);
 
   const activeDueEntry = dueList[currentIdx];
-  const question = activeDueEntry ? loadedQuestions[activeDueEntry.questionId.toString()] : null;
+  const rawQuestion = activeDueEntry ? loadedQuestions[activeDueEntry.questionId.toString()] : null;
+  const question = useMemo(() => rawQuestion ? shuffleQuestionOptions(rawQuestion) : null, [rawQuestion]);
   const isBookmarked = question && scoreData?.bookmarked?.includes(question.id);
 
   const handleSubmit = async () => {
@@ -292,10 +294,10 @@ export default function RevisionSession() {
           </div>
 
           {question.contextHtml && (
-            <div className="question-context card" style={{ marginBottom: '1.5rem', background: 'var(--bg-body)', padding: '1rem' }} dangerouslySetInnerHTML={{ __html: question.contextHtml }} />
+            <div className="question-context card" style={{ marginBottom: '1.5rem', background: 'var(--bg-body)', padding: '1rem' }} dangerouslySetInnerHTML={{ __html: formatMathHtml(question.contextHtml) }} />
           )}
 
-          <h2 className="question-text" dangerouslySetInnerHTML={{ __html: question.question }} />
+          <h2 className="question-text" dangerouslySetInnerHTML={{ __html: formatMathHtml(question.question) }} />
 
           <div className="options">
             {question.options.map((opt, index) => {
@@ -315,7 +317,7 @@ export default function RevisionSession() {
                   disabled={submitted}
                 >
                   <span className="option-key">{String.fromCharCode(65 + index)}</span>
-                  <span className="option-value" dangerouslySetInnerHTML={{ __html: opt }} />
+                  <span className="option-value" dangerouslySetInnerHTML={{ __html: formatMathHtml(opt) }} />
                   {submitted && index === question.correct && <CheckCircle size={18} className="option-icon success-icon" />}
                   {submitted && index === selectedOption && index !== question.correct && <XCircle size={18} className="option-icon danger-icon" />}
                 </button>
@@ -339,7 +341,7 @@ export default function RevisionSession() {
               {question.explanation && (
                 <div className="explanation" style={{ marginTop: '1rem' }}>
                   <strong>Explanation:</strong>
-                  <div dangerouslySetInnerHTML={{ __html: question.explanation }} />
+                  <div dangerouslySetInnerHTML={{ __html: formatMathHtml(question.explanation) }} />
                 </div>
               )}
             </div>

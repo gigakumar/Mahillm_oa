@@ -10,6 +10,7 @@ import { selectAdaptiveQuestions } from '../intelligence/questionIntelligence/ad
 import { compileLearnerState } from '../intelligence/learnerStateCompiler';
 import { HelpCircle, ChevronLeft, ChevronRight, CheckCircle2, Bookmark, Trash2, AlertTriangle } from 'lucide-react';
 import QuestionIntelligenceBadge from '../components/QuestionIntelligenceBadge';
+import { formatMathHtml } from '../utils/mathUtils';
 import './TestSession.css';
 
 // Dynamic imports metadata
@@ -27,70 +28,81 @@ function sampleQuestions(config, pool) {
         }
       });
     });
-    // Maintain the order specified in overrideQuestionIds
     return config.overrideQuestionIds
       .map(id => list.find(q => q.id.toString() === id.toString()))
-      .filter(Boolean);
+      .filter(Boolean)
+      .map(q => {
+        const diff = q.difficulty || 'MEDIUM';
+        const marks = diff === 'HIGH' ? 3.0 : diff === 'LOW' ? 1.0 : 2.0;
+        const negMarks = q.type === 'NAT' ? 0.0 : (diff === 'HIGH' ? -1.00 : diff === 'LOW' ? -0.33 : -0.66);
+        const elo = diff === 'HIGH' ? 1500 : diff === 'LOW' ? 900 : 1200;
+        return shuffleQuestionOptions({ ...q, marks, negativeMarks: negMarks, questionElo: elo });
+      });
   }
 
-  const { count, distribution, difficulty } = config;
-  const selected = [];
+  const count = config.count || 20;
 
-  // Determine number of questions per category
-  Object.keys(distribution).forEach((category) => {
-    const weight = distribution[category];
-    let catCount = Math.round((count * weight) / 100);
-    if (catCount === 0) return;
+  // Mechanical Engineering Pool Only
+  let mechPool = pool['Mechanical Engineering'] || pool['mechanical'] || [];
+  if (mechPool.length === 0) {
+    mechPool = Object.values(pool).flat().filter(q => !q.category || q.category === 'Mechanical Engineering');
+  }
 
-    let catPool = pool[category] || [];
-    if (difficulty !== 'all') {
-      catPool = catPool.filter(q => q.difficulty === difficulty);
+  // Balanced Difficulty Mixture: LOW (~25%), MEDIUM (~50%), HIGH (~25%)
+  const lowPool = mechPool.filter(q => q.difficulty === 'LOW');
+  const medPool = mechPool.filter(q => !q.difficulty || q.difficulty === 'MEDIUM');
+  const highPool = mechPool.filter(q => q.difficulty === 'HIGH');
+
+  const lowTarget = Math.max(1, Math.round(count * 0.25));
+  const highTarget = Math.max(1, Math.round(count * 0.25));
+  const medTarget = Math.max(1, count - lowTarget - highTarget);
+
+  const shuffle = (arr) => [...arr].sort(() => 0.5 - Math.random());
+
+  const selectedLow = shuffle(lowPool.length > 0 ? lowPool : mechPool).slice(0, lowTarget);
+  const selectedMed = shuffle(medPool.length > 0 ? medPool : mechPool).slice(0, medTarget);
+  const selectedHigh = shuffle(highPool.length > 0 ? highPool : mechPool).slice(0, highTarget);
+
+  let selection = [...selectedLow, ...selectedMed, ...selectedHigh];
+
+  if (selection.length < count) {
+    const usedIds = new Set(selection.map(q => q.id));
+    const leftovers = shuffle(mechPool.filter(q => !usedIds.has(q.id)));
+    selection.push(...leftovers.slice(0, count - selection.length));
+  }
+
+  const finalSelection = selection.slice(0, count);
+
+  // Assign Marks & ELO Ratings
+  const enriched = finalSelection.map(q => {
+    const diff = q.difficulty || 'MEDIUM';
+    let marks = 2.0;
+    let negMarks = -0.66;
+    let elo = 1200;
+
+    if (diff === 'LOW') {
+      marks = 1.0;
+      negMarks = -0.33;
+      elo = 900;
+    } else if (diff === 'HIGH') {
+      marks = 3.0;
+      negMarks = -1.00;
+      elo = 1500;
     }
-    if (catPool.length === 0) {
-      catPool = pool[category] || []; // fallback
+
+    if (q.type === 'NAT') {
+      negMarks = 0.0;
     }
 
-    // Set-based coherence for Data Interpretation and DILR
-    if (category === 'Data Interpretation' || category === 'DILR') {
-      const setsMap = new Map();
-      catPool.forEach((q) => {
-        const key = q.contextHtml || q.question;
-        if (!setsMap.has(key)) {
-          setsMap.set(key, []);
-        }
-        setsMap.get(key).push(q);
-      });
-
-      const sets = Array.from(setsMap.values());
-      const shuffledSets = [...sets].sort(() => 0.5 - Math.random());
-      
-      let added = 0;
-      for (const setQs of shuffledSets) {
-        if (added >= catCount) break;
-        const toTake = setQs.slice(0, catCount - added);
-        selected.push(...toTake);
-        added += toTake.length;
-      }
-    } else {
-      const shuffled = [...catPool].sort(() => 0.5 - Math.random());
-      selected.push(...shuffled.slice(0, catCount));
-    }
+    return shuffleQuestionOptions({
+      ...q,
+      marks,
+      negativeMarks: negMarks,
+      questionElo: elo,
+    });
   });
 
-  let finalSelection = selected.slice(0, count);
-  if (finalSelection.length < count) {
-    // Pad with leftover questions if needed from first available category pool
-    const firstCat = Object.keys(pool)[0];
-    const fallbackPool = pool[firstCat] || [];
-    for (const q of fallbackPool) {
-      if (finalSelection.length >= count) break;
-      if (!finalSelection.some(fq => fq.id === q.id)) {
-        finalSelection.push(q);
-      }
-    }
-  }
-
-  return finalSelection.sort(() => 0.5 - Math.random());
+  return enriched.sort(() => 0.5 - Math.random());
 }
 
 export default function TestSession() {
@@ -511,7 +523,9 @@ export default function TestSession() {
     // Calculation logic
     let correctCount = 0;
     let incorrectCount = 0;
-    let totalScore = 0;
+    let totalMarksEarned = 0;
+    let maxTestMarks = 0;
+    let totalQuestionEloSum = 0;
     const detailedReport = [];
 
     questions.forEach((q) => {
@@ -519,6 +533,13 @@ export default function TestSession() {
       const ans = selectedOptions[qId];
       let isCorrect = false;
       let isAttempted = ans !== undefined && ans !== '';
+
+      const qMarks = q.marks !== undefined ? q.marks : (q.difficulty === 'HIGH' ? 3.0 : q.difficulty === 'LOW' ? 1.0 : 2.0);
+      const qNegMarks = q.type === 'NAT' ? 0.0 : (q.negativeMarks !== undefined ? q.negativeMarks : -(qMarks * 0.33));
+      const qElo = q.questionElo !== undefined ? q.questionElo : (q.difficulty === 'HIGH' ? 1500 : q.difficulty === 'LOW' ? 900 : 1200);
+
+      maxTestMarks += qMarks;
+      totalQuestionEloSum += qElo;
 
       if (isAttempted) {
         if (q.type === 'MSQ') {
@@ -536,11 +557,11 @@ export default function TestSession() {
 
         if (isCorrect) {
           correctCount++;
-          totalScore += 1;
+          totalMarksEarned += qMarks;
         } else {
           incorrectCount++;
-          if (config.negativeMarking) {
-            totalScore -= (1/3);
+          if (config.negativeMarking !== false) {
+            totalMarksEarned += qNegMarks; // qNegMarks is negative e.g. -0.66
           }
         }
       }
@@ -554,9 +575,13 @@ export default function TestSession() {
         isCorrect,
         isAttempted,
         explanation: q.explanation || '',
-        category: q.category || 'General',
+        category: q.category || 'Mechanical Engineering',
         topic: q.topic || 'General',
         type: q.type || 'MCQ',
+        difficulty: q.difficulty || 'MEDIUM',
+        marks: qMarks,
+        negativeMarks: qNegMarks,
+        questionElo: qElo,
         confidence: confidences[q.id] || null,
         timeSpentSeconds: timeSpentMap[q.id] || 0,
         answerHistory: answerHistory[q.id] || []
@@ -568,17 +593,31 @@ export default function TestSession() {
       : 0;
 
     const timeSpent = config.duration * 60 - timerSeconds;
-    
+    const finalMarks = parseFloat(Math.max(0, totalMarksEarned).toFixed(2));
+    const maxMarksVal = parseFloat(maxTestMarks.toFixed(2));
+    const marksPercentage = maxMarksVal > 0 ? Math.round((finalMarks / maxMarksVal) * 100) : 0;
+
+    // Performance ELO Calculation
+    const avgQuestionElo = questions.length > 0 ? Math.round(totalQuestionEloSum / questions.length) : 1200;
+    const scoreRatio = maxMarksVal > 0 ? (finalMarks / maxMarksVal) : 0;
+    const eloAdjustment = Math.round((scoreRatio - 0.5) * 250);
+    const performanceElo = Math.min(1800, Math.max(600, avgQuestionElo + eloAdjustment));
+
     const testResult = {
-      testName: config.name || 'Practice Session',
+      testName: config.name || 'Mechanical Engineering GET Assessment Mock',
       mode: config.mode || 'preset',
       intent: config.intent || 'OPTIMAL',
       total: questions.length,
       attempted: correctCount + incorrectCount,
       correct: correctCount,
       incorrect: incorrectCount,
-      score: parseFloat(totalScore.toFixed(2)),
+      score: finalMarks,
+      totalMarks: finalMarks,
+      maxMarks: maxMarksVal,
+      marksPercentage,
       accuracy,
+      performanceElo,
+      avgQuestionElo,
       timeSpentSeconds: timeSpent,
       submittedAt: new Date().toISOString(),
       report: detailedReport,
@@ -764,12 +803,12 @@ export default function TestSession() {
           <div className={`question-render-area ${hasContext ? 'split-pane' : ''}`}>
             
             {hasContext && (
-              <div className="scenario-panel" dangerouslySetInnerHTML={{ __html: currentQuestion.contextHtml }} />
+              <div className="scenario-panel" dangerouslySetInnerHTML={{ __html: formatMathHtml(currentQuestion.contextHtml) }} />
             )}
 
             <div className="question-body-panel">
               <div className="question-text-block">
-                <h3>{currentQuestion.question}</h3>
+                <h3 dangerouslySetInnerHTML={{ __html: formatMathHtml(currentQuestion.question) }} />
               </div>
 
               <div className="options-selector-block">
@@ -799,7 +838,7 @@ export default function TestSession() {
                           onClick={() => handleOptionSelect(optIdx)}
                         >
                           <div className="option-marker">{chr(65 + optIdx)}</div>
-                          <div className="option-text">{opt}</div>
+                          <div className="option-text" dangerouslySetInnerHTML={{ __html: formatMathHtml(opt) }} />
                         </div>
                       );
                     })}

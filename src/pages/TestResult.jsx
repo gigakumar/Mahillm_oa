@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 
 import QuestionIntelligenceBadge from '../components/QuestionIntelligenceBadge';
+import { formatMathHtml } from '../utils/mathUtils';
+import { generateTestReportPDF } from '../utils/pdfReportGenerator';
 import { useAuth } from '../contexts/AuthContext';
 import { useUserData } from '../contexts/UserDataContext';
 import { db } from '../firebase';
 import { doc, getDoc, setDoc, addDoc, collection } from 'firebase/firestore';
-import { Check, X, Award, Clock, Target, AlertTriangle, AlertCircle, Bookmark, Share2, CornerDownRight, Flag, Brain } from 'lucide-react';
+import { Check, X, Award, Clock, Target, AlertTriangle, AlertCircle, Bookmark, Share2, CornerDownRight, Flag, Brain, FileText, Zap, Activity } from 'lucide-react';
 import './TestResult.css';
  
 export default function TestResult() {
@@ -277,33 +279,53 @@ export default function TestResult() {
 
   return (
     <div className="page-content result-page">
-      <header className="result-header card">
+      <header className="result-header card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
           <div className="trophy-container" style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--accent-glow)', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <Award size={40} style={{ color: 'var(--accent)' }} />
           </div>
           <div>
             <h1>Assessment Scorecard</h1>
-            <p className="portal-sub">{result.testName}</p>
+            <p className="portal-sub">{result.testName || 'Mechanical Engineering GET Full Mock'}</p>
             <span className="text-secondary" style={{ fontSize: '0.9rem' }}>Submitted on {new Date(result.submittedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
           </div>
         </div>
+
+        <button 
+          className="btn btn-primary"
+          style={{ background: '#238636', borderColor: '#2ea043', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.75rem 1.25rem', fontSize: '0.95rem', fontWeight: 700 }}
+          onClick={() => generateTestReportPDF(result, user?.email || 'Candidate')}
+        >
+          <FileText size={18} /> Download Official PDF Report
+        </button>
       </header>
 
       {/* Overview Cards */}
       <div className="overview-cards">
         <div className="stat-card card">
-          <Target size={24} className="stat-icon" style={{ color: 'var(--accent)' }} />
+          <Target size={24} className="stat-icon" style={{ color: '#2ea043' }} />
           <div>
-            <span className="stat-label">TOTAL SCORE</span>
-            <span className="stat-value">{result.score} <span style={{ fontSize: '1rem', color: 'var(--text-secondary)' }}>/ {result.total}</span></span>
+            <span className="stat-label">TOTAL MARKS OBTAINED</span>
+            <span className="stat-value" style={{ color: '#2ea043' }}>
+              {result.totalMarks !== undefined ? Number(result.totalMarks).toFixed(2) : Number(result.score || 0).toFixed(2)} 
+              <span style={{ fontSize: '1rem', color: 'var(--text-secondary)' }}> / {result.maxMarks !== undefined ? Number(result.maxMarks).toFixed(2) : Number(result.total || 0).toFixed(2)}</span>
+            </span>
           </div>
         </div>
         <div className="stat-card card">
           <Check className="stat-icon" style={{ color: 'var(--success)' }} />
           <div>
-            <span className="stat-label">ACCURACY</span>
-            <span className="stat-value" style={{ color: 'var(--success)' }}>{result.accuracy}%</span>
+            <span className="stat-label">MARKS PERCENTAGE</span>
+            <span className="stat-value" style={{ color: 'var(--success)' }}>
+              {result.marksPercentage !== undefined ? result.marksPercentage : result.accuracy}%
+            </span>
+          </div>
+        </div>
+        <div className="stat-card card">
+          <Zap size={24} className="stat-icon" style={{ color: '#6c5ce7' }} />
+          <div>
+            <span className="stat-label">PERFORMANCE ELO</span>
+            <span className="stat-value" style={{ color: '#6c5ce7' }}>{result.performanceElo || 1200} ELO</span>
           </div>
         </div>
         <div className="stat-card card">
@@ -551,11 +573,11 @@ export default function TestResult() {
                 {/* Split layout or normal */}
                 <div className={`question-content ${hasContext ? 'split-review' : ''}`} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {hasContext && (
-                    <div className="scenario-panel-review" style={{ background: 'var(--bg-body)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border)' }} dangerouslySetInnerHTML={{ __html: q.contextHtml }} />
+                    <div className="scenario-panel-review" style={{ background: 'var(--bg-body)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border)' }} dangerouslySetInnerHTML={{ __html: formatMathHtml(q.contextHtml) }} />
                   )}
 
                   <div>
-                    <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.15rem' }}>Q{idx + 1}. {q.question}</h3>
+                    <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.15rem' }} dangerouslySetInnerHTML={{ __html: `Q${idx + 1}. ` + formatMathHtml(q.question) }} />
                     
                     {q.type === 'NAT' ? (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', background: 'var(--bg-body)', padding: '1rem', borderRadius: '8px' }}>
@@ -588,7 +610,7 @@ export default function TestResult() {
                                 background: isCorrectOpt ? 'var(--success)' : isUserSelected ? 'var(--danger)' : 'var(--bg-body)',
                                 color: isCorrectOpt || isUserSelected ? 'white' : 'var(--text-primary)'
                               }}>{letters[optIdx]}</span>
-                              <span>{opt}</span>
+                              <span dangerouslySetInnerHTML={{ __html: formatMathHtml(opt) }} />
                             </div>
                           );
                         })}
@@ -603,7 +625,7 @@ export default function TestResult() {
                     <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', fontWeight: 'bold', fontSize: '0.9rem', marginBottom: '0.5rem', color: 'var(--accent)' }}>
                       <CornerDownRight size={16} /> Step-by-Step Explanation:
                     </div>
-                    <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5' }} dangerouslySetInnerHTML={{ __html: q.explanation }} />
+                    <p style={{ margin: 0, fontSize: '0.95rem', lineHeight: '1.5' }} dangerouslySetInnerHTML={{ __html: formatMathHtml(q.explanation) }} />
                   </div>
                 )}
 

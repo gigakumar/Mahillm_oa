@@ -21,7 +21,10 @@
   "dependencies": {
     "cheerio": "^1.2.0",
     "firebase": "^12.15.0",
+    "html2canvas": "^1.4.1",
     "idb": "^8.0.3",
+    "jspdf": "^4.2.1",
+    "katex": "^0.18.1",
     "lucide-react": "^1.23.0",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

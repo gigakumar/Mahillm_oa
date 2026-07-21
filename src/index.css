@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+@import 'katex/dist/katex.min.css';
 
 /* ========================================
    PREMIUM DESIGN TOKENS
@@ -388,4 +389,44 @@ a:hover {
 ::selection {
   background: var(--accent);
   color: white;
+}
+
+/* ========================================
+   MATH & LATEX EQUATION RENDERING STYLES
+   ======================================== */
+.math-rendered {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.math-rendered.math-block {
+  display: block;
+  text-align: center;
+  margin: 0.75rem 0;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border);
+  overflow-x: auto;
+}
+
+.math-rendered.math-inline {
+  display: inline-block;
+  padding: 0 0.15rem;
+  font-size: 1.02em;
+}
+
+.katex-display {
+  margin: 0.5em 0 !important;
+}
+
+.katex {
+  font-size: 1.08em;
+  color: inherit;
+}
+
+.math-latex-container {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
 }

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useUserData } from '../contexts/UserDataContext';
 import { useScore } from '../contexts/ScoreContext';
 import { buildHeatmapData, getReadinessSummary } from '../utils/masteryUtils';
+import { buildTestHashMap } from '../utils/testHashMapUtils';
+import GitHubHeatmap from '../components/GitHubHeatmap';
 import { useNavigate } from 'react-router-dom';
 import { compileLearnerState } from '../intelligence/learnerStateModel';
 import { companyProfiles } from '../config/companyProfiles';
@@ -26,7 +28,7 @@ import './ReadinessHeatmap.css';
 
 export default function ReadinessHeatmap() {
   const navigate = useNavigate();
-  const { masteryScores, questionProgress, spacedRepetition, mistakes } = useUserData();
+  const { masteryScores, questionProgress, spacedRepetition, mistakes, testHistory } = useUserData();
   const { scoreData } = useScore();
 
   const [activeTab, setActiveTab] = useState('analytics'); // 'analytics' | 'heatmap'
@@ -120,6 +122,8 @@ export default function ReadinessHeatmap() {
   // Build heatmap layout models
   const rawHeatmapData = buildHeatmapData(allQuestions, masteryScores);
   const summary = getReadinessSummary(rawHeatmapData);
+  const testHashData = buildTestHashMap(testHistory || [], questionProgress || {}, mistakes || {}, allQuestions || []);
+  const { testList, rankedWrongTopics, mostWrongedTopic } = testHashData;
 
   // Compile derived analytics state
   const compiledAttempts = getCompiledAttempts();
@@ -188,6 +192,76 @@ export default function ReadinessHeatmap() {
       ) : activeTab === 'analytics' ? (
         <div className="analytics-tab-content" style={{ animation: 'fadeIn 0.3s ease-out' }}>
           
+          {/* Most Wronged Topic Card (Generated from Test Hashmap & HashSet Analysis) */}
+          <div className="card" style={{ padding: '1.75rem', marginBottom: '1.5rem', border: '1px solid rgba(214, 48, 49, 0.3)', background: 'linear-gradient(135deg, rgba(214, 48, 49, 0.08) 0%, rgba(253, 121, 168, 0.03) 100%)', borderRadius: '16px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
+              <div>
+                <span className="badge badge-danger" style={{ textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem', fontSize: '0.75rem', padding: '0.25rem 0.6rem' }}>
+                  🔥 Test Hashmap & Wrong HashSet Analysis
+                </span>
+                <h3 style={{ margin: '0.35rem 0 0 0', fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-h)' }}>
+                  Most Wronged Topic: {mostWrongedTopic ? mostWrongedTopic.topic : 'No Test Mistakes Recorded Yet! 🎉'}
+                </h3>
+                <p style={{ margin: '0.25rem 0 0 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+                  Derived by aggregating user wrong question HashSets across all test attempts and diagnostic sessions.
+                </p>
+              </div>
+
+              {mostWrongedTopic && (
+                <button 
+                  className="btn btn-primary"
+                  style={{ background: '#d63031', borderColor: '#ff7675', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                  onClick={() => handleTopicClick(mostWrongedTopic.category, mostWrongedTopic.topic)}
+                >
+                  <Zap size={16} /> Drill Most Wronged Topic ({mostWrongedTopic.topic})
+                </button>
+              )}
+            </div>
+
+            {mostWrongedTopic && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginTop: '1rem' }}>
+                <div className="card" style={{ padding: '1rem', background: 'var(--bg-primary)', border: '1px solid var(--border)' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Total Mistakes in Tests</span>
+                  <strong style={{ fontSize: '1.5rem', fontWeight: 800, color: '#d63031', display: 'block', marginTop: '0.25rem' }}>
+                    {mostWrongedTopic.totalWrong} Wrong Answers
+                  </strong>
+                </div>
+                <div className="card" style={{ padding: '1rem', background: 'var(--bg-primary)', border: '1px solid var(--border)' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Unique Wrong Question HashSet</span>
+                  <strong style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-h)', display: 'block', marginTop: '0.25rem' }}>
+                    {mostWrongedTopic.uniqueWrongQuestionsCount} Question IDs
+                  </strong>
+                </div>
+                <div className="card" style={{ padding: '1rem', background: 'var(--bg-primary)', border: '1px solid var(--border)' }}>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Affected Tests Count</span>
+                  <strong style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-h)', display: 'block', marginTop: '0.25rem' }}>
+                    {mostWrongedTopic.affectedTestsCount} Test Hashmaps
+                  </strong>
+                </div>
+              </div>
+            )}
+
+            {rankedWrongTopics.length > 1 && (
+              <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+                <strong style={{ fontSize: '0.85rem', color: 'var(--text-h)', display: 'block', marginBottom: '0.75rem' }}>
+                  Ranked Wronged Topics (Generated from Test Hashmaps):
+                </strong>
+                <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+                  {rankedWrongTopics.slice(0, 5).map((t, idx) => (
+                    <button 
+                      key={t.topic} 
+                      className="btn btn-secondary"
+                      style={{ fontSize: '0.8rem', padding: '0.4rem 0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+                      onClick={() => handleTopicClick(t.category, t.topic)}
+                    >
+                      <span style={{ color: '#d63031', fontWeight: 800 }}>#{idx + 1}</span> {t.topic} ({t.totalWrong} mistakes)
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           {learnerState.integrity?.conflicts > 0 && (
             <div className="card" style={{ padding: '1.25rem', border: '1px solid rgba(253, 203, 110, 0.3)', background: 'linear-gradient(135deg, rgba(253, 203, 110, 0.08) 0%, rgba(253, 203, 110, 0.02) 100%)', borderRadius: '16px', display: 'flex', alignItems: 'flex-start', gap: '1rem', marginBottom: '1.5rem' }}>
               <span style={{ fontSize: '1.5rem', marginTop: '0.2rem' }}>⚠️</span>
@@ -498,6 +572,12 @@ export default function ReadinessHeatmap() {
       ) : (
         <div className="heatmap-tab-content" style={{ animation: 'fadeIn 0.3s ease-out' }}>
           
+          {/* GitHub Style Contribution Graph Visualizer */}
+          <GitHubHeatmap 
+            questionProgress={questionProgress} 
+            testHistory={testHistory} 
+            scoreData={scoreData} 
+          />
           {/* Header overall readiness scores */}
           <div className="heatmap-header-summary">
             <div className="card heatmap-stat-card" style={{ background: 'linear-gradient(135deg, rgba(0, 184, 148, 0.15) 0%, rgba(108, 92, 231, 0.05) 100%)', border: '1px solid rgba(0, 184, 148, 0.3)' }}>

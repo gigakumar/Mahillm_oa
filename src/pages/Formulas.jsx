@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FORMULA_SHEETS } from '../data/formulaSheets';
 import { Search, Brain, HelpCircle, Play, AlertTriangle, ArrowRight, Calculator } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import MathRenderer from '../components/MathRenderer';
 import './Formulas.css';
 
 const SUBJECTS = ['All', 'Thermodynamics', 'Strength of Materials', 'Quantitative Aptitude'];
@@ -253,7 +254,12 @@ export default function Formulas() {
 
                 {/* Math layout display */}
                 <div className="formula-math-display">
-                  {item.formula}
+                  <MathRenderer formula={item.formula} />
+                  {item.readable && (
+                    <div className="formula-readable-subtitle">
+                      {item.readable}
+                    </div>
+                  )}
                 </div>
 
                 <div className="formula-details-list">
@@ -261,7 +267,9 @@ export default function Formulas() {
                     <span className="formula-details-heading">Variables</span>
                     <div className="formula-variables-grid">
                       {item.variables.map((v, idx) => (
-                        <div key={idx} style={{ color: 'var(--text-secondary)' }}>• {v}</div>
+                        <div key={idx} style={{ color: 'var(--text-secondary)' }}>
+                          • <MathRenderer text={v} inline />
+                        </div>
                       ))}
                     </div>
                   </div>

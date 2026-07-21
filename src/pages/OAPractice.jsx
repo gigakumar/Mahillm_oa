@@ -7,6 +7,7 @@ import { useScore } from '../contexts/ScoreContext';
 import { useUserData } from '../contexts/UserDataContext';
 import { selectNextQuestions, getAdaptiveSummary } from '../utils/adaptiveEngine';
 import { QuestionBankRegistry, MECH_TOPIC_GROUPS } from '../data/questionBankRegistry';
+import { formatMathHtml, shuffleQuestionOptions } from '../utils/mathUtils';
 import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import './OAPractice.css';
@@ -335,10 +336,10 @@ Respond ONLY with the JSON object, no markdown fences.`;
           mistakes,
           20
         );
-        setQuizQuestions(adaptiveResult.questions);
+        setQuizQuestions(adaptiveResult.questions.map(shuffleQuestionOptions));
         setSelectionReasons(adaptiveResult.reasons);
       } else {
-        const shuffled = shuffleArray(filtered).slice(0, 50);
+        const shuffled = shuffleArray(filtered).slice(0, 50).map(shuffleQuestionOptions);
         setQuizQuestions(shuffled);
         setSelectionReasons({});
       }
@@ -413,11 +414,10 @@ Respond ONLY with the JSON object, no markdown fences.`;
   }, [question, shuffledOptionsMap]);
 
   // Current question's shuffled view (fallback to original while computing)
-  const qShuffle = question ? (shuffledOptionsMap[question.id] || null) : null;
-  const displayOptions = qShuffle ? qShuffle.shuffledOpts : (question ? question.options : []);
-  const displayCorrect = qShuffle ? qShuffle.shuffledCorrect : (question ? question.correct : 0);
-  // Map selected shuffled index back to original for recordDetailedAnswer / isCorrect checks
-  const selectedOriginalIdx = (selected !== null && qShuffle) ? qShuffle.indexMap[selected] : selected;
+  // Pre-shuffled display options and correct index are 100% aligned on question object
+  const displayOptions = question ? question.options : [];
+  const displayCorrect = question ? question.correct : 0;
+  const selectedOriginalIdx = selected;
 
   useEffect(() => {
     if (question) {
@@ -487,8 +487,8 @@ Respond ONLY with the JSON object, no markdown fences.`;
     setSubmittedQuestions(prev => ({ ...prev, [question.id]: true }));
     setIsTimerRunning(false);
 
-    const selOriginal = isNat ? sel : (qShuffle ? qShuffle.indexMap[sel] : sel);
-    const isCorrect = isNat ? true : selOriginal === question.correct;
+    const selOriginal = sel;
+    const isCorrect = isNat ? true : sel === question.correct;
     const solveTimeMs = (60 - timeLeft) * 1000;
     const confidence = confidences[question.id] || null;
     const finalTimeline = [
@@ -1056,10 +1056,10 @@ Respond ONLY with the JSON object, no markdown fences.`;
                 </div>
 
                 {q.contextHtml && (
-                  <div className="question-context card" style={{ marginBottom: '1.5rem', background: 'var(--bg-body)', padding: '1rem' }} dangerouslySetInnerHTML={{ __html: q.contextHtml }} />
+                  <div className="question-context card" style={{ marginBottom: '1.5rem', background: 'var(--bg-body)', padding: '1rem' }} dangerouslySetInnerHTML={{ __html: formatMathHtml(q.contextHtml) }} />
                 )}
 
-                <h2 className="question-text" dangerouslySetInnerHTML={{ __html: q.question }} />
+                <h2 className="question-text" dangerouslySetInnerHTML={{ __html: formatMathHtml(q.question) }} />
 
                 <div className="options">
                   {q.options.map((opt, optIdx) => {
@@ -1079,7 +1079,7 @@ Respond ONLY with the JSON object, no markdown fences.`;
                         disabled={submitted}
                       >
                         <span className="option-key">{String.fromCharCode(65 + optIdx)}</span>
-                        <span className="option-value" dangerouslySetInnerHTML={{ __html: opt }} />
+                        <span className="option-value" dangerouslySetInnerHTML={{ __html: formatMathHtml(opt) }} />
                         {submitted && optIdx === q.correct && <CheckCircle size={18} className="option-icon success-icon" />}
                         {submitted && optIdx === selected && optIdx !== q.correct && <XCircle size={18} className="option-icon danger-icon" />}
                       </button>
@@ -1096,7 +1096,7 @@ Respond ONLY with the JSON object, no markdown fences.`;
                     {q.explanation && (
                       <div className="explanation">
                         <strong>Explanation:</strong>
-                        <div dangerouslySetInnerHTML={{ __html: q.explanation }} />
+                        <div dangerouslySetInnerHTML={{ __html: formatMathHtml(q.explanation) }} />
                       </div>
                     )}
                   </div>
@@ -1228,10 +1228,10 @@ Respond ONLY with the JSON object, no markdown fences.`;
             )}
 
             {question.contextHtml && (
-              <div className="question-context card" style={{ marginBottom: '1.5rem', background: 'var(--bg-body)', padding: '1rem' }} dangerouslySetInnerHTML={{ __html: question.contextHtml }} />
+              <div className="question-context card" style={{ marginBottom: '1.5rem', background: 'var(--bg-body)', padding: '1rem' }} dangerouslySetInnerHTML={{ __html: formatMathHtml(question.contextHtml) }} />
             )}
 
-            <h2 className="question-text" dangerouslySetInnerHTML={{ __html: question.question }} />
+            <h2 className="question-text" dangerouslySetInnerHTML={{ __html: formatMathHtml(question.question) }} />
 
             {/* Question Options OR NAT Input Component */}
             {(() => {
@@ -1340,7 +1340,7 @@ Respond ONLY with the JSON object, no markdown fences.`;
                         disabled={submitted}
                       >
                         <span className="option-key">{String.fromCharCode(65 + index)}</span>
-                        <span className="option-value" dangerouslySetInnerHTML={{ __html: opt }} />
+                        <span className="option-value" dangerouslySetInnerHTML={{ __html: formatMathHtml(opt) }} />
                         {submitted && index === displayCorrect && <CheckCircle size={18} className="option-icon success-icon" />}
                         {submitted && index === selected && index !== displayCorrect && <XCircle size={18} className="option-icon danger-icon" />}
                       </button>
@@ -1381,7 +1381,7 @@ Respond ONLY with the JSON object, no markdown fences.`;
                 {question.explanation && (
                   <div className="explanation" style={{ display: 'none' }}>
                     <strong>Explanation:</strong>
-                    <div dangerouslySetInnerHTML={{ __html: question.explanation }} />
+                    <div dangerouslySetInnerHTML={{ __html: formatMathHtml(question.explanation) }} />
                   </div>
                 )}
                 

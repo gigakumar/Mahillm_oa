@@ -18,6 +18,7 @@ import TestResult from './pages/TestResult';
 import Mistakes from './pages/Mistakes';
 
 import Intelligence from './pages/Intelligence';
+import ReadinessHeatmap from './pages/ReadinessHeatmap';
 import AttemptReplay from './pages/AttemptReplay';
 import Timeline from './pages/Timeline';
 import HowAIThinks from './pages/HowAIThinks';
@@ -134,7 +135,11 @@ function App() {
 
 
                 <Route path="/readiness" element={
-                  <Navigate to="/intelligence" replace />
+                  <ProtectedRoute>
+                    <Layout>
+                      <ReadinessHeatmap />
+                    </Layout>
+                  </ProtectedRoute>
                 } />
 
                 <Route path="/intelligence" element={

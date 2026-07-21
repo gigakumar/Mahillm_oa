@@ -126,6 +126,9 @@ export default function Navbar() {
             minWidth={170}
             align="left"
           >
+            <Link to="/readiness" role="menuitem" className={`dropdown-item ${isActive('/readiness') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
+              <Activity size={14} /> Topic Heatmap
+            </Link>
             <Link to="/daily-challenge" role="menuitem" className={`dropdown-item ${isActive('/daily-challenge') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
               <Sparkles size={14} /> Challenge
             </Link>

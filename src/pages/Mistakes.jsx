@@ -17,6 +17,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useNavigate, Link } from 'react-router-dom';
+import { formatMathHtml } from '../utils/mathUtils';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import './Mistakes.css';
 
@@ -433,7 +434,7 @@ export default function Mistakes() {
                 {/* Render the question preview */}
                 {qObj ? (
                   <>
-                    <div className="mistake-question-preview" dangerouslySetInnerHTML={{ __html: qObj.question }} />
+                    <div className="mistake-question-preview" dangerouslySetInnerHTML={{ __html: formatMathHtml(qObj.question) }} />
                     
                     <div className="mistake-options-preview">
                       {qObj.options.map((opt, optIdx) => {
@@ -441,7 +442,7 @@ export default function Mistakes() {
                         return (
                           <div key={optIdx} className={`opt-preview-item ${isCorrectOpt ? 'correct' : ''}`}>
                             <strong>{String.fromCharCode(65 + optIdx)}.</strong>
-                            <span dangerouslySetInnerHTML={{ __html: opt }} />
+                            <span dangerouslySetInnerHTML={{ __html: formatMathHtml(opt) }} />
                           </div>
                         );
                       })}
@@ -450,7 +451,7 @@ export default function Mistakes() {
                     {qObj.explanation && qObj.explanation !== 'Coming soon' && (
                       <div className="explanation" style={{ background: 'var(--bg-body)', padding: '1rem', borderRadius: '8px', fontSize: '0.9rem', color: 'var(--text-secondary)', borderLeft: '2px solid var(--border)' }}>
                         <strong>Solution explanation:</strong>
-                        <div style={{ marginTop: '0.5rem' }} dangerouslySetInnerHTML={{ __html: qObj.explanation }} />
+                        <div style={{ marginTop: '0.5rem' }} dangerouslySetInnerHTML={{ __html: formatMathHtml(qObj.explanation) }} />
                       </div>
                     )}
                   </>
