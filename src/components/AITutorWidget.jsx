@@ -78,25 +78,28 @@ export default function AITutorWidget({ question, userAnswer = null, questionId 
 
   const handleStartChat = () => {
     setActiveTab('chat');
+    if (!chatHistory || chatHistory.length === 0) {
+      setChatHistory([
+        { role: 'model', text: "Hello! I am your AI Technical Tutor. Ask me any follow-up question or clarification about this problem!" }
+      ]);
+    }
     if (!chatSession) {
       try {
         const session = startTutorChatSession([
           { role: 'user', parts: [{ text: `Question: ${question?.question || question?.text}` }] },
           { role: 'model', parts: [{ text: "Hello! I am your AI Technical Tutor. Ask me any follow-up question or clarification about this problem!" }] }
         ]);
-        setChatSession(session);
-        setChatHistory([
-          { role: 'model', text: "Hello! I am your AI Technical Tutor. Ask me any follow-up question or clarification about this problem!" }
-        ]);
+        setChatSession(session || { isFallback: true });
       } catch (err) {
         console.warn("Chat session setup:", err);
+        setChatSession({ isFallback: true });
       }
     }
   };
 
   const handleSendChatMessage = async (e) => {
     e?.preventDefault();
-    if (!chatInput.trim() || !chatSession) return;
+    if (!chatInput.trim()) return;
 
     const userText = chatInput;
     setChatInput('');
@@ -104,7 +107,7 @@ export default function AITutorWidget({ question, userAnswer = null, questionId 
     setIsThinking(true);
 
     try {
-      await sendTutorChatMessageStream(
+      const fullText = await sendTutorChatMessageStream(
         chatSession,
         userText,
         (chunkText, fullResponse) => {
@@ -120,6 +123,17 @@ export default function AITutorWidget({ question, userAnswer = null, questionId 
         },
         () => setIsThinking(false)
       );
+
+      // Ensure final state is updated
+      setIsThinking(false);
+      setChatHistory(prev => {
+        const next = [...prev];
+        const lastIdx = next.length - 1;
+        if (lastIdx >= 0 && next[lastIdx].text === 'Thinking...') {
+          next[lastIdx] = { role: 'model', text: fullText, isStreaming: false };
+        }
+        return next;
+      });
     } catch (err) {
       setIsThinking(false);
     }

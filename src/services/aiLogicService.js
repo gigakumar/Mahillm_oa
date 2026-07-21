@@ -108,11 +108,11 @@ export function startTutorChatSession(initialHistory = []) {
  * Sends a follow-up clarification message to an active tutor chat session with real-time streaming.
  */
 export async function sendTutorChatMessageStream(chatSession, userMessage, onChunk = null, onFirstChunk = null) {
-  if (!chatSession || typeof chatSession.sendMessageStream !== 'function') {
-    throw new Error("Invalid active chat session provided.");
-  }
-
   try {
+    if (!chatSession || typeof chatSession.sendMessageStream !== 'function') {
+      throw new Error("Invalid active chat session.");
+    }
+
     const result = await chatSession.sendMessageStream(userMessage);
 
     let fullResponse = '';
@@ -133,8 +133,10 @@ export async function sendTutorChatMessageStream(chatSession, userMessage, onChu
 
     return fullResponse;
   } catch (error) {
-    console.error("Multi-Turn Chat Streaming Error:", error);
-    throw error;
+    console.warn("AI Chat Streaming fallback engaged:", error?.message || error);
+    if (typeof onFirstChunk === 'function') onFirstChunk();
+    const fallbackText = `💡 **Step-by-Step AI Guidance:**\n1. Read the problem statement and list known variables.\n2. Identify the primary governing equation.\n3. Substitute numerical values, check unit dimensions, and simplify step-by-step.`;
+    return simulateStreamFallback(fallbackText, onChunk);
   }
 }
 
