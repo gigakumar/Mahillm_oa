@@ -1,4 +1,4 @@
-import { getAI, getTemplateGenerativeModel, GoogleAIBackend } from 'firebase/ai';
+import { getAI, getGenerativeModel, getTemplateGenerativeModel, GoogleAIBackend } from 'firebase/ai';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { app, db } from '../firebase';
 
@@ -13,6 +13,29 @@ try {
   templateModel = getTemplateGenerativeModel(ai);
 } catch (err) {
   console.warn("Firebase AI Logic initialization notice:", err);
+}
+
+/**
+ * Generates text output for a raw text prompt using getGenerativeModel and gemini-3.5-flash.
+ * 
+ * @param {string} prompt - Raw prompt text
+ * @param {string} modelName - Model name (default: 'gemini-3.5-flash')
+ * @returns {Promise<string>} Generated text output
+ */
+export async function generateRawTextPrompt(prompt, modelName = 'gemini-3.5-flash') {
+  if (!ai) {
+    throw new Error("Firebase AI Logic service is not initialized.");
+  }
+
+  try {
+    const generativeModel = getGenerativeModel(ai, { model: modelName });
+    const result = await generativeModel.generateContent(prompt);
+    const response = await result.response;
+    return response.text();
+  } catch (error) {
+    console.error("AI Logic Raw Prompt Execution Error:", error);
+    throw error;
+  }
 }
 
 /**
@@ -70,9 +93,6 @@ export async function executePromptTemplateStream(templateId = 'question-generat
 
 /**
  * Starts a stateful multi-turn clarification chat session with the AI tutor template.
- * 
- * @param {Array<{role: string, parts: Array<{text: string}>}>} initialHistory - Conversation history
- * @returns {object} Chat session instance
  */
 export function startTutorChatSession(initialHistory = []) {
   if (!templateModel) {
@@ -86,13 +106,6 @@ export function startTutorChatSession(initialHistory = []) {
 
 /**
  * Sends a follow-up clarification message to an active tutor chat session with real-time streaming.
- * Includes loading handshake callback (onFirstChunk) to transition UI state seamlessly.
- * 
- * @param {object} chatSession - Active chat session from startTutorChatSession
- * @param {string} userMessage - Follow-up message ("I don't understand step 2")
- * @param {function} onChunk - Streaming token callback (chunkText, compiledFullText)
- * @param {function} onFirstChunk - Handshake callback triggered when first token arrives (isThinking = false)
- * @returns {Promise<string>} Compiled response text
  */
 export async function sendTutorChatMessageStream(chatSession, userMessage, onChunk = null, onFirstChunk = null) {
   if (!chatSession || typeof chatSession.sendMessageStream !== 'function') {
@@ -126,16 +139,11 @@ export async function sendTutorChatMessageStream(chatSession, userMessage, onChu
 }
 
 /**
- * Firestore Caching Tutor Strategy:
- * 1. Checks Firestore cache: /questions/{questionId}/cachedHints/hint_{hintNumber}
- * 2. If cached, streams cached hint immediately (Zero AI quota cost & ultra-fast).
- * 3. If cache miss, streams via AI Logic 'tutor-hint' template.
- * 4. Saves completed hint to Firestore cache for future zero-cost instant reads.
+ * Firestore Caching Tutor Strategy
  */
 export async function streamCachedTutorHint(questionId, questionData, hintNumber = 1, onChunk = null) {
   const cacheDocId = `hint_${hintNumber}`;
   
-  // 1. Check Firestore Cache First
   if (db && questionId) {
     try {
       const cacheRef = doc(db, 'questions', String(questionId), 'cachedHints', cacheDocId);
@@ -149,7 +157,6 @@ export async function streamCachedTutorHint(questionId, questionData, hintNumber
     }
   }
 
-  // 2. AI Logic Fallback Execution via 'tutor-hint' template
   const templateParams = {
     question: questionData.text || questionData.question || '',
     correctAnswer: String(questionData.correctAnswer ?? questionData.correct ?? ''),
@@ -164,7 +171,6 @@ export async function streamCachedTutorHint(questionId, questionData, hintNumber
     generatedHint = await simulateStreamFallback(fallbackText, onChunk);
   }
 
-  // 3. Save to Firestore Cache for Future Zero-Cost Reads
   if (db && questionId && generatedHint) {
     try {
       const cacheRef = doc(db, 'questions', String(questionId), 'cachedHints', cacheDocId);
