@@ -402,6 +402,69 @@ export default function Dashboard() {
             </div>
           </section>
 
+          {/* FEATURE HUB SHOWCASE */}
+          <section className="dashboard-section" style={{ marginTop: '2.5rem' }}>
+            <h2 className="section-title"><Sparkles size={18} className="text-amber-400" /> New MechPrep Learning Modules</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem' }}>
+              
+              <div className="card" style={{ background: 'rgba(30, 41, 59, 0.8)', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <Calendar className="text-amber-400" size={22} />
+                  <h4 style={{ margin: 0, color: '#f8fafc', fontSize: '1rem', fontWeight: '600' }}>AI Study Planner</h4>
+                </div>
+                <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem', lineHeight: '1.4' }}>Automated daily revision queue based on Ebbinghaus forgetting curve.</p>
+                <button className="btn btn-primary btn-sm" onClick={() => navigate('/planner')} style={{ marginTop: 'auto', alignSelf: 'flex-start' }}>
+                  Open Planner →
+                </button>
+              </div>
+
+              <div className="card" style={{ background: 'rgba(30, 41, 59, 0.8)', border: '1px solid rgba(16, 185, 129, 0.3)', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <Award className="text-emerald-400" size={22} />
+                  <h4 style={{ margin: 0, color: '#f8fafc', fontSize: '1rem', fontWeight: '600' }}>GATE & PSU Predictor</h4>
+                </div>
+                <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem', lineHeight: '1.4' }}>Projected All India Rank (AIR) and PSU call shortlist bands.</p>
+                <button className="btn btn-primary btn-sm" onClick={() => navigate('/gate-predictor')} style={{ marginTop: 'auto', alignSelf: 'flex-start' }}>
+                  Predict Rank →
+                </button>
+              </div>
+
+              <div className="card" style={{ background: 'rgba(30, 41, 59, 0.8)', border: '1px solid rgba(244, 63, 94, 0.3)', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <Swords className="text-rose-400" size={22} />
+                  <h4 style={{ margin: 0, color: '#f8fafc', fontSize: '1rem', fontWeight: '600' }}>1v1 Speed Duel</h4>
+                </div>
+                <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem', lineHeight: '1.4' }}>Real-time multiplayer technical quiz showdown with speed bonuses.</p>
+                <button className="btn btn-primary btn-sm" onClick={() => navigate('/duel')} style={{ marginTop: 'auto', alignSelf: 'flex-start' }}>
+                  Start Duel →
+                </button>
+              </div>
+
+              <div className="card" style={{ background: 'rgba(30, 41, 59, 0.8)', border: '1px solid rgba(56, 189, 248, 0.3)', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <Layers className="text-sky-400" size={22} />
+                  <h4 style={{ margin: 0, color: '#f8fafc', fontSize: '1rem', fontWeight: '600' }}>3D Inspector & PDF Notes</h4>
+                </div>
+                <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem', lineHeight: '1.4' }}>Interactive 3D mechanisms, parameter sliders, and PDF exports.</p>
+                <button className="btn btn-primary btn-sm" onClick={() => navigate('/inspector')} style={{ marginTop: 'auto', alignSelf: 'flex-start' }}>
+                  Open Inspector →
+                </button>
+              </div>
+
+              <div className="card" style={{ background: 'rgba(30, 41, 59, 0.8)', border: '1px solid rgba(168, 85, 247, 0.3)', padding: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                  <Mic className="text-purple-400" size={22} />
+                  <h4 style={{ margin: 0, color: '#f8fafc', fontSize: '1rem', fontWeight: '600' }}>AI Voice Viva Coach</h4>
+                </div>
+                <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.85rem', lineHeight: '1.4' }}>Speech-recognition technical viva coach with audio feedback.</p>
+                <button className="btn btn-primary btn-sm" onClick={() => navigate('/mock-interview')} style={{ marginTop: 'auto', alignSelf: 'flex-start' }}>
+                  Start Viva →
+                </button>
+              </div>
+
+            </div>
+          </section>
+
           {/* QUICK ADAPTIVE INTENTS */}
           <section className="dashboard-section" style={{ marginTop: '2.5rem' }}>
             <h2 className="section-title"><Target size={18} /> Quick Adaptive Intents</h2>

@@ -41,6 +41,24 @@ export function calculateRetentionProbability({ lastReviewedTime, stabilityHours
   return recallProbability(elapsedDays, stabilityDays);
 }
 
+export function predictForgettingRisks(srItems = [], currentTime = Date.now()) {
+  return srItems.map(item => {
+    const pRecall = calculateRetentionProbability({
+      lastReviewedTime: item.lastReviewed || item.lastReviewDate,
+      stabilityHours: (item.intervalDays || item.interval || 1) * 24,
+      currentTime
+    });
+
+    return {
+      id: item.questionId || item.id,
+      questionId: item.questionId || item.id,
+      topic: item.topic || 'General',
+      pRecall,
+      risk: parseFloat((1 - pRecall).toFixed(3))
+    };
+  }).sort((a, b) => b.risk - a.risk);
+}
+
 /**
  * Updates a topic's stability after an attempt. Adaptive S learns the user's retention rate per topic.
  */

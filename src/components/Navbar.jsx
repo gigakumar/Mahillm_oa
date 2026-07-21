@@ -106,11 +106,20 @@ export default function Navbar() {
           )}
         </Link>
 
-        <Link to="/intelligence" className={`nav-link ${isActive('/intelligence') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-          <Brain size={16} /> Intelligence
+        <Link to="/planner" className={`nav-link ${isActive('/planner') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+          <Calendar size={16} /> Planner
         </Link>
-        <Link to="/stats" className={`nav-link ${isActive('/stats') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-          <BarChart2 size={16} /> Stats
+        <Link to="/gate-predictor" className={`nav-link ${isActive('/gate-predictor') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+          <Award size={16} /> GATE & PSU
+        </Link>
+        <Link to="/duel" className={`nav-link ${isActive('/duel') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+          <Swords size={16} /> 1v1 Duel
+        </Link>
+        <Link to="/inspector" className={`nav-link ${isActive('/inspector') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+          <Layers size={16} /> 3D Inspector
+        </Link>
+        <Link to="/mock-interview" className={`nav-link ${isActive('/mock-interview') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+          <Mic size={16} /> Voice Viva
         </Link>
 
         {/* More dropdown */}
