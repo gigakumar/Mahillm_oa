@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { 
   FileText, 
   Download, 
@@ -8,10 +8,19 @@ import {
   CheckCircle, 
   BookOpen, 
   Sliders,
-  Maximize2
+  Maximize2,
+  Activity,
+  Zap
 } from 'lucide-react';
 import { FORMULA_SHEETS } from '../data/formulaSheets';
 import MathRenderer from '../components/MathRenderer';
+import { 
+  pumpHeadFromRPM, 
+  pumpPowerFromRPM, 
+  ottoCycleEfficiency, 
+  peltonOptimalBucketSpeed, 
+  peltonPowerOutput 
+} from '../utils/inspectorPhysics';
 import './ComponentInspector.css';
 
 const COMPONENTS_3D = [
@@ -28,7 +37,7 @@ const COMPONENTS_3D = [
     ],
     keyFormulas: [
       'P_{water} = \\rho \\cdot g \\cdot Q \\cdot H',
-      '\\eta_{mano} = \\frac{g \\cdot H_m}{V_{w2} \\cdot u_2}'
+      'H_{new} = H_{ref} \\cdot \\left(\\frac{N_{new}}{N_{ref}}\\right)^2'
     ]
   },
   {
@@ -55,12 +64,12 @@ const COMPONENTS_3D = [
     svgType: 'turbine',
     parameters: [
       { name: 'Jet Velocity (V1)', defaultVal: 65, min: 30, max: 120, unit: 'm/s' },
-      { name: 'Bucket Velocity Ratio (u/V1)', defaultVal: 0.46, min: 0.3, max: 0.5, unit: '' },
+      { name: 'Mass Flow Rate (m)', defaultVal: 15, min: 2, max: 50, unit: 'kg/s' },
       { name: 'Jet Diameter (d)', defaultVal: 40, min: 10, max: 80, unit: 'mm' }
     ],
     keyFormulas: [
-      'P_{max} = \\frac{1}{2} \\cdot \\rho \\cdot Q \\cdot V_1^2',
-      'u = 0.46 \\cdot \\sqrt{2 \\cdot g \\cdot H}'
+      'u_{opt} = 0.46 \\cdot V_1',
+      'P_{mech} = m \\cdot u \\cdot (V_1 - u) \\cdot (1 + \\cos \\beta)'
     ]
   }
 ];
@@ -89,7 +98,35 @@ export default function ComponentInspector() {
     });
   };
 
-  // Generate PDF / Printable Study Notes
+  // Dynamic Live Calculation Engine outputs
+  const calculatedOutputs = useMemo(() => {
+    if (selectedComponent.id === 'centrifugal_pump') {
+      const scaledHead = pumpHeadFromRPM(25, 1450, params.p1);
+      const scaledPowerKW = pumpPowerFromRPM(15, 1450, params.p1);
+      return [
+        { label: 'Dynamic Manometric Head (H)', val: `${scaledHead.toFixed(1)} m` },
+        { label: 'Est. Shaft Power', val: `${scaledPowerKW.toFixed(1)} kW` }
+      ];
+    } else if (selectedComponent.id === 'four_stroke_ic_engine') {
+      const eff = ottoCycleEfficiency(params.p1);
+      const strokeM = params.p3 / 1000;
+      const boreM = params.p2 / 1000;
+      const sweptVolCc = (Math.PI / 4) * Math.pow(boreM * 100, 2) * (strokeM * 100);
+      return [
+        { label: 'Ideal Air-Standard Efficiency (η)', val: `${(eff * 100).toFixed(2)} %` },
+        { label: 'Swept Volume (Vs)', val: `${sweptVolCc.toFixed(1)} cc` }
+      ];
+    } else if (selectedComponent.id === 'pelton_wheel') {
+      const uOpt = peltonOptimalBucketSpeed(params.p1);
+      const pKw = peltonPowerOutput(params.p1, params.p2, uOpt) / 1000;
+      return [
+        { label: 'Optimal Bucket Speed (u)', val: `${uOpt.toFixed(1)} m/s` },
+        { label: 'Theoretical Mechanical Power', val: `${pKw.toFixed(1)} kW` }
+      ];
+    }
+    return [];
+  }, [selectedComponent.id, params]);
+
   const handlePrintPDF = () => {
     window.print();
   };
@@ -170,7 +207,7 @@ export default function ComponentInspector() {
           <p className="comp-desc">{selectedComponent.description}</p>
         </div>
 
-        {/* Live Controls & Key Formulas */}
+        {/* Live Controls & Calculated Outputs */}
         <div className="controls-card">
           <h3><Sliders className="w-5 h-5 text-indigo-400" /> Parameter Dynamics</h3>
 
@@ -193,7 +230,22 @@ export default function ComponentInspector() {
             ))}
           </div>
 
-          <div className="key-formulas-box">
+          {/* Live Physics Calculations Box */}
+          <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.3)', borderRadius: '8px', padding: '1rem', marginTop: '1rem' }}>
+            <h4 style={{ margin: '0 0 0.5rem 0', color: '#818cf8', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <Zap size={16} /> Live Theoretical Engine Outputs:
+            </h4>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+              {calculatedOutputs.map((calc, i) => (
+                <div key={i} style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '0.6rem 0.75rem', borderRadius: '6px' }}>
+                  <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{calc.label}</div>
+                  <div style={{ fontSize: '1.05rem', fontWeight: '700', color: '#34d399', marginTop: '0.1rem' }}>{calc.val}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="key-formulas-box" style={{ marginTop: '1rem' }}>
             <h4><BookOpen className="w-4 h-4 text-indigo-400 inline mr-1" /> Core Governing Equations:</h4>
             {selectedComponent.keyFormulas.map((eq, i) => (
               <div key={i} className="formula-math-row">

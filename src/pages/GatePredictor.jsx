@@ -24,14 +24,21 @@ export default function GatePredictor() {
   const { testHistory, masteryScores } = useUserData();
   const { scoreData } = useScore();
 
+  const [isSimulating, setIsSimulating] = useState(false);
+  const [targetMarks, setTargetMarks] = useState(70);
+
   const totalAttempted = scoreData?.totalAttempted || 0;
   const totalCorrect = scoreData?.totalCorrect || 0;
   const overallAccuracy = totalAttempted > 0 ? totalCorrect / totalAttempted : 0.72;
 
   // Compute prediction metrics
   const prediction = useMemo(() => {
+    if (isSimulating) {
+      const simulatedAccuracy = targetMarks / 100;
+      return predictGatePerformance([{ score: targetMarks }], {}, simulatedAccuracy);
+    }
     return predictGatePerformance(testHistory || [], masteryScores || {}, overallAccuracy);
-  }, [testHistory, masteryScores, overallAccuracy]);
+  }, [testHistory, masteryScores, overallAccuracy, isSimulating, targetMarks]);
 
   return (
     <div className="gate-predictor-container">
@@ -39,7 +46,7 @@ export default function GatePredictor() {
       <div className="disclaimer-banner">
         <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
         <div>
-          <strong>Important Guidance Notice:</strong> Predictions are estimates based on published historical GATE score distributions ({REFERENCE_YEAR}) and your practice performance. They are intended as preparation guidance and do not guarantee official GATE marks or PSU shortlists.
+          <strong>Important Guidance Notice:</strong> Cutoffs based on {REFERENCE_YEAR} cycle, subject to change. Sourced from official PSU recruitment notifications. Intended as guidance only.
         </div>
       </div>
 
@@ -56,8 +63,41 @@ export default function GatePredictor() {
 
         <div className="confidence-pill">
           <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <span>{prediction.confidenceLevel}</span>
+          <span>{isSimulating ? 'What-If Simulation Mode' : prediction.confidenceLevel}</span>
         </div>
+      </div>
+
+      {/* What-If Target Marks Simulator Box */}
+      <div className="card" style={{ background: 'rgba(30, 41, 59, 0.8)', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '1.25rem 1.5rem', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#f8fafc', fontWeight: '600', fontSize: '1rem' }}>
+            <Zap size={18} className="text-amber-400" />
+            <span>Target Marks Simulator ("What-If" Analysis)</span>
+          </div>
+          <button 
+            className={`btn ${isSimulating ? 'btn-primary' : 'btn-outline'} btn-sm`}
+            onClick={() => setIsSimulating(!isSimulating)}
+          >
+            {isSimulating ? 'Reset to Real Practice Stats' : 'Enable What-If Slider'}
+          </button>
+        </div>
+
+        {isSimulating && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
+              <span style={{ color: '#94a3b8' }}>Simulated GATE Marks out of 100:</span>
+              <strong style={{ color: '#38bdf8', fontSize: '1.1rem' }}>{targetMarks} / 100 Marks</strong>
+            </div>
+            <input 
+              type="range" 
+              min="20" 
+              max="95" 
+              value={targetMarks} 
+              onChange={(e) => setTargetMarks(parseInt(e.target.value))}
+              style={{ accentColor: '#6366f1', cursor: 'pointer', height: '6px' }}
+            />
+          </div>
+        )}
       </div>
 
       {/* Main Score Prediction Cards */}

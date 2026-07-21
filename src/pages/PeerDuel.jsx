@@ -17,6 +17,12 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import MathRenderer from '../components/MathRenderer';
+import { 
+  computeRoundScore, 
+  canRevealOpponentChoice, 
+  awardVictoryXP, 
+  getOpponentLabel 
+} from '../utils/duelEngine';
 import './PeerDuel.css';
 
 const DUEL_QUESTIONS = [
@@ -59,6 +65,22 @@ const DUEL_QUESTIONS = [
     options: ["Ductile material is cut at low speed", "Brittle material is cut at high speed", "Ductile material is cut at high speed with lubricant", "Brittle material is cut at low speed"],
     correct: 0,
     explanation: "Low cutting speeds with high friction in ductile metals cause material adherence to the tool tip, forming a Built-Up Edge."
+  },
+  {
+    id: 6,
+    subject: "Heat Transfer",
+    question: "Prandtl number ($Pr$) represents the ratio of:",
+    options: ["Momentum diffusivity to thermal diffusivity", "Conduction resistance to convection resistance", "Inertia force to viscous force", "Buoyancy force to viscous force"],
+    correct: 0,
+    explanation: "Prandtl number $Pr = \\frac{\\nu}{\\alpha} = \\frac{\\mu \\cdot c_p}{k}$, comparing momentum to thermal boundary layer growth."
+  },
+  {
+    id: 7,
+    subject: "Industrial Engineering",
+    question: "In EOQ model with uniform demand, if order quantity doubles, annual ordering cost will:",
+    options: ["Halve", "Double", "Remain same", "Quadruple"],
+    correct: 0,
+    explanation: "Annual ordering cost is $\\frac{D}{Q} \\cdot S$. Doubling $Q$ halves the annual ordering cost."
   }
 ];
 
@@ -87,13 +109,15 @@ export default function PeerDuel() {
     if (gameState === 'matchmaking') {
       const timer = setTimeout(() => {
         const randomBot = BOT_NAMES[Math.floor(Math.random() * BOT_NAMES.length)];
+        const label = getOpponentLabel(true);
         setOpponent({
           name: randomBot,
           avatar: randomBot.charAt(0),
-          rating: 1200 + Math.floor(Math.random() * 250)
+          rating: 1200 + Math.floor(Math.random() * 250),
+          labelBadge: label.badge
         });
         setGameState('countdown');
-      }, 2200);
+      }, 2000);
       return () => clearTimeout(timer);
     }
   }, [gameState]);
@@ -117,7 +141,6 @@ export default function PeerDuel() {
         const timer = setTimeout(() => setTimeLeft(t => t - 1), 1000);
         return () => clearTimeout(timer);
       } else {
-        // Time expired for round
         handleOptionSelect(-1);
       }
     }
@@ -136,15 +159,12 @@ export default function PeerDuel() {
     const botChoice = botIsCorrect ? currentQ.correct : (currentQ.correct + 1) % 4;
     setBotSelected(botChoice);
 
-    // Calculate speed bonus
-    const speedBonus = Math.max(10, timeLeft * 10);
-    if (isPlayerCorrect) {
-      setPlayerScore(prev => prev + 100 + speedBonus);
-    }
-    if (botIsCorrect) {
-      const botTime = Math.floor(Math.random() * 4) + 2;
-      setBotScore(prev => prev + 100 + (12 - botTime) * 10);
-    }
+    // Compute hardened scores using duelEngine
+    const pPoints = computeRoundScore({ isCorrect: isPlayerCorrect, secondsRemainingWhenAnswered: timeLeft });
+    const bPoints = computeRoundScore({ isCorrect: botIsCorrect, secondsRemainingWhenAnswered: Math.max(1, timeLeft - 2) });
+
+    if (isPlayerCorrect) setPlayerScore(prev => prev + pPoints);
+    if (botIsCorrect) setBotScore(prev => prev + bPoints);
 
     // Advance round after delay
     setTimeout(() => {
@@ -157,7 +177,10 @@ export default function PeerDuel() {
       } else {
         setGameState('result');
         if (playerScore >= botScore) {
-          addXp(50); // Award XP for victory
+          const xpRes = awardVictoryXP({ isSimulatedOpponent: true, victoriesTodayCount: 1 });
+          if (xpRes.xpAwarded > 0) {
+            addXp(xpRes.xpAwarded);
+          }
         }
       }
     }, 2400);

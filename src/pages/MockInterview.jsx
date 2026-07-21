@@ -1,27 +1,22 @@
 import { useState, useEffect, useRef } from 'react';
-import { Mic, Square, ChevronLeft, ChevronRight, Lightbulb, MessageSquare, Sparkles, Volume2, CheckCircle, RefreshCw } from 'lucide-react';
+import { Mic, Square, ChevronLeft, ChevronRight, Lightbulb, MessageSquare, Sparkles, Volume2, CheckCircle, RefreshCw, AlertTriangle } from 'lucide-react';
+import { getSpeechSupportTier, evaluateVivaAnswer } from '../utils/voiceCoachEngine';
 import './MockInterview.css';
 
 const QUESTIONS = {
   Technical: [
-    { q: "Explain the difference between a two-stroke and a four-stroke engine.", tips: ["Compare power strokes per revolution", "Discuss efficiency and emissions", "Mention lubrication differences"] },
-    { q: "What is the significance of the Mohr's Circle in stress analysis?", tips: ["Explain principal stresses", "Describe graphical representation", "Mention applications in design"] },
-    { q: "Describe the working principle of a centrifugal pump.", tips: ["Explain impeller action", "Discuss conversion of kinetic to pressure energy", "Mention priming"] },
-    { q: "What are the differences between a Carnot cycle and a Rankine cycle?", tips: ["Compare ideal vs practical", "Discuss working fluids", "Mention efficiency factors"] },
-    { q: "Explain the concept of factor of safety in machine design.", tips: ["Define FoS mathematically", "Discuss why we use it", "Mention typical values for different materials"] },
-    { q: "What is the difference between hot working and cold working of metals?", tips: ["Compare recrystallization temperature", "Discuss mechanical properties", "Mention surface finish differences"] },
-    { q: "Describe the different types of fits used in engineering assemblies.", tips: ["Clearance, transition, interference", "Give practical examples", "Discuss tolerance grades"] },
-    { q: "Explain the concept of entropy and its importance in thermodynamics.", tips: ["Define entropy mathematically", "Discuss reversible vs irreversible processes", "Relate to the second law"] }
+    { q: "Explain the difference between a two-stroke and a four-stroke engine.", tips: ["stroke", "revolution", "efficiency", "emissions", "power"] },
+    { q: "What is the significance of Mohr's Circle in stress analysis?", tips: ["principal", "shear", "stress", "graphical", "plane"] },
+    { q: "Describe the working principle of a centrifugal pump.", tips: ["impeller", "head", "kinetic", "pressure", "priming"] },
+    { q: "What are the differences between a Carnot cycle and a Rankine cycle?", tips: ["carnot", "rankine", "steam", "ideal", "efficiency"] },
+    { q: "Explain the concept of factor of safety in machine design.", tips: ["yield", "ultimate", "safety", "stress", "load"] }
   ],
   Behavioral: [
-    { q: "Tell me about a time you worked under a tight deadline to complete a project.", tips: ["Use STAR method", "Quantify your results", "Show your time management skills"] },
-    { q: "Describe a situation where you had to resolve a conflict within your team.", tips: ["Don't blame anyone", "Focus on communication", "Highlight the resolution and what you learned"] },
-    { q: "What's your biggest weakness and how are you working on it?", tips: ["Be genuine, not cliché", "Show self-awareness", "Demonstrate growth mindset"] }
+    { q: "Tell me about a time you worked under a tight deadline to complete a project.", tips: ["deadline", "project", "time", "result", "priority"] },
+    { q: "Describe a situation where you had to resolve a conflict within your team.", tips: ["team", "communication", "resolution", "conflict", "listen"] }
   ],
   HR: [
-    { q: "Tell me about yourself.", tips: ["Keep it under 2 minutes", "Focus on relevant background", "End with why you're here"] },
-    { q: "What are your salary expectations?", tips: ["Research market rates first", "Give a range, not a fixed number", "Mention flexibility based on role and benefits"] },
-    { q: "Why should we hire you over other candidates?", tips: ["Highlight unique skills/experiences", "Reference the job description", "Be confident but not arrogant"] }
+    { q: "Tell me about yourself and your career goals in mechanical engineering.", tips: ["background", "projects", "engineering", "goals", "skills"] }
   ]
 };
 
@@ -38,6 +33,8 @@ export default function MockInterview() {
   const list = QUESTIONS[tab];
   const item = list[idx];
   const tabs = Object.keys(QUESTIONS);
+
+  const supportTier = getSpeechSupportTier();
 
   // Initialize SpeechRecognition API
   useEffect(() => {
@@ -87,25 +84,16 @@ export default function MockInterview() {
       }
     }
 
-    // Trigger AI evaluation feedback
     setAnalyzing(true);
     setTimeout(() => {
       setAnalyzing(false);
-      const wordCount = transcript.trim().split(/\s+/).filter(Boolean).length;
-      
-      let clarityScore = Math.min(95, Math.max(60, 60 + wordCount * 2));
-      let keyConceptsCovered = Math.min(item.tips.length, Math.max(1, Math.floor(wordCount / 8)));
-
-      setFeedback({
-        score: clarityScore,
-        wordCount,
-        conceptsMatched: keyConceptsCovered,
-        totalConcepts: item.tips.length,
-        advice: wordCount < 10 
-          ? "Answer was very brief. Try elaborating on technical definitions and practical examples." 
-          : "Good speech structure! Make sure to explicitly state unit conventions and boundary conditions."
+      const evalRes = evaluateVivaAnswer({
+        transcript,
+        targetKeywords: item.tips,
+        expectedMinWords: 20
       });
-    }, 1500);
+      setFeedback(evalRes);
+    }, 1200);
   };
 
   const goTo = (i) => {
@@ -215,20 +203,32 @@ export default function MockInterview() {
             
             <div className="feedback-stats">
               <div className="fb-stat">
-                <span className="label">Clarity & Depth</span>
-                <strong className="val text-emerald-400">{feedback.score} / 100</strong>
+                <span className="label">Evaluation Band</span>
+                <strong className={`val ${feedback.band === 'strong' ? 'text-emerald-400' : feedback.band === 'developing' ? 'text-amber-400' : 'text-rose-400'}`}>
+                  {feedback.band === 'strong' ? 'STRONG ANSWER ✅' : feedback.band === 'developing' ? 'DEVELOPING ⚠️' : 'NEEDS WORK 🔴'}
+                </strong>
               </div>
               <div className="fb-stat">
                 <span className="label">Word Count</span>
                 <strong className="val">{feedback.wordCount} words</strong>
               </div>
               <div className="fb-stat">
-                <span className="label">Key Concepts Covered</span>
-                <strong className="val text-indigo-400">{feedback.conceptsMatched} / {feedback.totalConcepts}</strong>
+                <span className="label">Matched Keywords</span>
+                <strong className="val text-indigo-400">{feedback.keywordsFound.length} / {item.tips.length}</strong>
               </div>
             </div>
 
-            <p className="feedback-advice">💡 <strong>Coach Advice:</strong> {feedback.advice}</p>
+            <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>Keywords Detected in Transcript:</div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                {feedback.keywordsFound.map((kw, i) => (
+                  <span key={i} className="badge badge-success" style={{ fontSize: '0.75rem' }}>✓ {kw}</span>
+                ))}
+                {feedback.keywordsMissing.map((kw, i) => (
+                  <span key={i} className="badge badge-secondary" style={{ fontSize: '0.75rem', opacity: 0.6 }}>missing: {kw}</span>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 

@@ -150,16 +150,16 @@ describe('Navbar FloatingMenu Integration', () => {
       </BrowserRouter>
     );
 
-    const moreBtn = screen.getAllByText('More')[0].closest('button');
+    const moreBtn = screen.getAllByText('Modules')[0].closest('button');
     const profileBtn = screen.getAllByAltText('Profile')[0].closest('button');
 
     // Open More
     fireEvent.click(moreBtn);
-    expect(screen.getByText('Challenge')).toBeInTheDocument();
+    expect(screen.getByText('Daily Challenge')).toBeInTheDocument();
     
     // Open Profile
     fireEvent.click(profileBtn);
-    expect(screen.queryByText('Challenge')).not.toBeInTheDocument();
+    expect(screen.queryByText('Daily Challenge')).not.toBeInTheDocument();
     expect(document.querySelector('.logout-btn')).toBeInTheDocument();
   });
 

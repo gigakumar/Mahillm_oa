@@ -106,72 +106,65 @@ export default function Navbar() {
             </span>
           )}
         </Link>
-
-        <Link to="/planner" className={`nav-link ${isActive('/planner') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-          <Calendar size={16} /> Planner
-        </Link>
-        <Link to="/gate-predictor" className={`nav-link ${isActive('/gate-predictor') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-          <Award size={16} /> GATE & PSU
-        </Link>
-        <Link to="/duel" className={`nav-link ${isActive('/duel') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-          <Swords size={16} /> 1v1 Duel
-        </Link>
-        <Link to="/inspector" className={`nav-link ${isActive('/inspector') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-          <Layers size={16} /> 3D Inspector
-        </Link>
-        <Link to="/mock-interview" className={`nav-link ${isActive('/mock-interview') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
-          <Mic size={16} /> Voice Viva
+        <Link to="/intelligence" className={`nav-link ${isActive('/intelligence') ? 'active' : ''}`} onClick={() => setMenuOpen(false)}>
+          <Brain size={16} /> Intelligence
         </Link>
 
-        {/* More dropdown */}
+        {/* Specialized Learning Modules Dropdown */}
         <div className="nav-dropdown-wrapper">
           <button 
             ref={moreTriggerRef}
-            className="nav-dropdown-trigger" 
+            className={`nav-dropdown-trigger ${['/planner', '/gate-predictor', '/duel', '/inspector', '/mock-interview', '/readiness', '/daily-challenge', '/attempt-replay', '/leaderboard', '/stats'].some(p => isActive(p)) ? 'active' : ''}`}
             onClick={() => toggleMenu('more')}
             style={{ background: 'none', border: 'none', fontFamily: 'inherit' }}
           >
-            <span>More</span>
+            <Sparkles size={16} className="text-amber-400" />
+            <span>Modules</span>
             <ChevronDown size={14} />
           </button>
           <FloatingMenu 
             isOpen={activeMenu === 'more'} 
             onClose={() => setActiveMenu(null)} 
             triggerRef={moreTriggerRef}
-            minWidth={170}
+            minWidth={210}
             align="left"
           >
             <Link to="/planner" role="menuitem" className={`dropdown-item ${isActive('/planner') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
-              <Calendar size={14} /> Study Planner
+              <Calendar size={15} style={{ color: '#818cf8' }} /> Study Planner
             </Link>
             <Link to="/gate-predictor" role="menuitem" className={`dropdown-item ${isActive('/gate-predictor') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
-              <Award size={14} /> GATE & PSU Predictor
+              <Award size={15} style={{ color: '#34d399' }} /> GATE & PSU Predictor
             </Link>
             <Link to="/duel" role="menuitem" className={`dropdown-item ${isActive('/duel') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
-              <Swords size={14} /> 1v1 Speed Duel
+              <Swords size={15} style={{ color: '#fb7185' }} /> 1v1 Speed Duel
             </Link>
             <Link to="/inspector" role="menuitem" className={`dropdown-item ${isActive('/inspector') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
-              <Layers size={14} /> 3D Inspector & Notes
+              <Layers size={15} style={{ color: '#38bdf8' }} /> 3D Inspector & Notes
             </Link>
-            <Link to="/readiness" role="menuitem" className={`dropdown-item ${isActive('/readiness') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
-              <Activity size={14} /> Topic Heatmap
-            </Link>
-            <Link to="/daily-challenge" role="menuitem" className={`dropdown-item ${isActive('/daily-challenge') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
-              <Sparkles size={14} /> Challenge
-            </Link>
-            <Link to="/attempt-replay" role="menuitem" className={`dropdown-item ${isActive('/attempt-replay') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
-              <Play size={14} /> Replay
+            <Link to="/mock-interview" role="menuitem" className={`dropdown-item ${isActive('/mock-interview') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
+              <Mic size={15} style={{ color: '#c084fc' }} /> Voice Viva Coach
             </Link>
 
-            <Link to="/mock-interview" role="menuitem" className={`dropdown-item ${isActive('/mock-interview') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
-              <Mic size={14} /> Interview
+            <div style={{ height: '1px', background: 'var(--border)', margin: '0.35rem 0' }} />
+
+            <Link to="/readiness" role="menuitem" className={`dropdown-item ${isActive('/readiness') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
+              <Activity size={15} /> Topic Heatmap
+            </Link>
+            <Link to="/daily-challenge" role="menuitem" className={`dropdown-item ${isActive('/daily-challenge') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
+              <Sparkles size={15} /> Daily Challenge
+            </Link>
+            <Link to="/attempt-replay" role="menuitem" className={`dropdown-item ${isActive('/attempt-replay') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
+              <Play size={15} /> Attempt Replay
             </Link>
             <Link to="/leaderboard" role="menuitem" className={`dropdown-item ${isActive('/leaderboard') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
-              <Trophy size={14} /> Leaderboard
+              <Trophy size={15} /> Leaderboard
+            </Link>
+            <Link to="/stats" role="menuitem" className={`dropdown-item ${isActive('/stats') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
+              <BarChart2 size={15} /> Statistics
             </Link>
             {isAdmin && (
               <Link to="/admin/questions" role="menuitem" className={`dropdown-item ${isActive('/admin/questions') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
-                <Shield size={14} style={{ color: 'var(--accent)' }} /> Admin
+                <Shield size={15} style={{ color: 'var(--accent)' }} /> Admin Panel
               </Link>
             )}
           </FloatingMenu>
