@@ -37,8 +37,7 @@ export default function GitHubHeatmap({ questionProgress = {}, testHistory = [],
 
     // Also include test history completions
     (testHistory || []).forEach(t => {
-      if (!t) return;
-      const dateStr = t.completedAt ? t.completedAt.split('T')[0] : (t.submittedAt ? t.submittedAt.split('T')[0] : today.toISOString().split('T')[0]);
+      const dateStr = t.completedAt ? t.completedAt.split('T')[0] : today.toISOString().split('T')[0];
       if (!activityMap[dateStr]) {
         activityMap[dateStr] = { count: 0, correct: 0, xp: 0, topics: new Set() };
       }

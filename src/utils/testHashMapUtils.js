@@ -29,7 +29,6 @@ export function buildTestHashMap(testHistory = [], questionProgress = {}, mistak
   // 1. Process explicit test attempts from testHistory
   if (Array.isArray(testHistory) && testHistory.length > 0) {
     testHistory.forEach((t, idx) => {
-      if (!t) return;
       const testId = t.id || `test_attempt_${idx + 1}`;
       const testTitle = t.title || t.testCategory || `Test Attempt #${idx + 1}`;
       const timestamp = t.completedAt || t.createdAt || new Date().toISOString();
