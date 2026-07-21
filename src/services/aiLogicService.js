@@ -1,5 +1,6 @@
 import { getAI, getTemplateGenerativeModel, GoogleAIBackend } from 'firebase/ai';
-import { app } from '../firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { app, db } from '../firebase';
 
 // Initialize Firebase AI Logic with the Gemini Developer API backend (GoogleAIBackend)
 let ai;
@@ -68,8 +69,69 @@ export async function executePromptTemplateStream(templateId = 'question-generat
 }
 
 /**
+ * Firestore Caching Tutor Strategy:
+ * 1. Checks Firestore cache: /questions/{questionId}/cachedHints/hint_{hintNumber}
+ * 2. If cached, streams cached hint immediately (Zero AI quota cost & ultra-fast).
+ * 3. If cache miss, streams via AI Logic 'tutor-hint' template.
+ * 4. Saves completed hint to Firestore cache for future zero-cost instant reads.
+ * 
+ * @param {string} questionId - Firestore question document ID
+ * @param {object} questionData - Object containing { text/question, correctAnswer, options }
+ * @param {number} hintNumber - Hint level (1, 2, etc.)
+ * @param {function} onChunk - Streaming callback (chunkText, compiledFullText)
+ * @returns {Promise<string>} Full hint text
+ */
+export async function streamCachedTutorHint(questionId, questionData, hintNumber = 1, onChunk = null) {
+  const cacheDocId = `hint_${hintNumber}`;
+  
+  // 1. Check Firestore Cache First
+  if (db && questionId) {
+    try {
+      const cacheRef = doc(db, 'questions', String(questionId), 'cachedHints', cacheDocId);
+      const cacheSnap = await getDoc(cacheRef);
+      if (cacheSnap.exists() && cacheSnap.data()?.hintText) {
+        const cachedText = cacheSnap.data().hintText;
+        return await simulateStreamFallback(cachedText, onChunk);
+      }
+    } catch (cacheErr) {
+      console.warn("Firestore hint cache read skipped/failed:", cacheErr);
+    }
+  }
+
+  // 2. AI Logic Fallback Execution via 'tutor-hint' template
+  const templateParams = {
+    question: questionData.text || questionData.question || '',
+    correctAnswer: String(questionData.correctAnswer ?? questionData.correct ?? ''),
+    hintNumber: hintNumber
+  };
+
+  let generatedHint = '';
+  try {
+    generatedHint = await executePromptTemplateStream('tutor-hint', templateParams, onChunk);
+  } catch (err) {
+    const fallbackText = `💡 **Tutor Hint #${hintNumber}:** Re-read the question carefully: "${templateParams.question}". Focus on the fundamental definitions and key assumptions before picking an option.`;
+    generatedHint = await simulateStreamFallback(fallbackText, onChunk);
+  }
+
+  // 3. Save to Firestore Cache for Future Zero-Cost Reads
+  if (db && questionId && generatedHint) {
+    try {
+      const cacheRef = doc(db, 'questions', String(questionId), 'cachedHints', cacheDocId);
+      await setDoc(cacheRef, {
+        hintText: generatedHint,
+        hintNumber: hintNumber,
+        cachedAt: Date.now()
+      }, { merge: true });
+    } catch (saveErr) {
+      console.warn("Failed to cache generated hint to Firestore:", saveErr);
+    }
+  }
+
+  return generatedHint;
+}
+
+/**
  * 1. Instant Explanations for Mistakes
- * Streams a personalized error breakdown explaining why the selected option was wrong.
  */
 export async function streamAnswerExplanation(question, userAnswer, onChunk = null) {
   const params = {
@@ -83,7 +145,6 @@ export async function streamAnswerExplanation(question, userAnswer, onChunk = nu
   try {
     return await executePromptTemplateStream('explain-mistake-template', params, onChunk);
   } catch (err) {
-    // Client-side fallback streamer if template is not deployed yet in console
     const fallbackText = `**Analysis of Selected Option:** You chose option (${userAnswer}). In ${params.subject}, this commonly occurs when confusing boundary conditions or sign conventions. **Key Correction:** Review the governing formula and verify unit dimensions before calculating the final value.`;
     return simulateStreamFallback(fallbackText, onChunk);
   }
@@ -91,7 +152,6 @@ export async function streamAnswerExplanation(question, userAnswer, onChunk = nu
 
 /**
  * 2. Contextual Hint Generation
- * Streams a step-by-step hint without revealing the direct answer.
  */
 export async function streamQuestionHint(question, onChunk = null) {
   const params = {
@@ -109,7 +169,6 @@ export async function streamQuestionHint(question, onChunk = null) {
 
 /**
  * 3. Smart "Spaced Repetition" Practice
- * Generates a fresh, structurally identical remedial question for previously failed items.
  */
 export async function streamRemedialQuestion(failedQuestion, onChunk = null) {
   const params = {
@@ -137,7 +196,7 @@ async function simulateStreamFallback(fullText, onChunk) {
     if (typeof onChunk === 'function') {
       onChunk(token, compiled);
     }
-    await new Promise(r => setTimeout(r, 25));
+    await new Promise(r => setTimeout(r, 20));
   }
   return compiled;
 }
