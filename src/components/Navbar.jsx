@@ -17,7 +17,8 @@ import {
   Play,
   ChevronDown,
   User,
-  Brain
+  Brain,
+  Activity
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
