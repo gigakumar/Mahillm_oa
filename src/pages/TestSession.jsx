@@ -10,7 +10,7 @@ import { selectAdaptiveQuestions } from '../intelligence/questionIntelligence/ad
 import { compileLearnerState } from '../intelligence/learnerStateCompiler';
 import { HelpCircle, ChevronLeft, ChevronRight, CheckCircle2, Bookmark, Trash2, AlertTriangle } from 'lucide-react';
 import QuestionIntelligenceBadge from '../components/QuestionIntelligenceBadge';
-import { formatMathHtml } from '../utils/mathUtils';
+import { formatMathHtml, shuffleQuestionOptions } from '../utils/mathUtils';
 import './TestSession.css';
 
 // Dynamic imports metadata
