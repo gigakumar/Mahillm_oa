@@ -8,6 +8,7 @@ import {
   onSnapshot,
   query,
   where,
+  limit,
   runTransaction
 } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
