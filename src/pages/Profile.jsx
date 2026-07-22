@@ -79,15 +79,39 @@ export default function Profile() {
 
   // 2. Compute dynamic stats from contexts & Firestore
   const profile = useMemo(() => {
-    // Determine Strongest and Weakest topics
-    let strongestTopic = 'Thermodynamics';
-    let weakestTopic = 'Industrial Engineering';
+    // Determine Strongest and Weakest topics from questionProgress or masteryScores
+    let strongestTopic = 'Pending Evaluation';
+    let weakestTopic = 'Pending Evaluation';
 
-    const masteryList = Object.values(masteryScores || {});
-    if (masteryList.length > 0) {
-      const sorted = [...masteryList].sort((a, b) => b.score - a.score);
-      strongestTopic = sorted[0]?.topic || strongestTopic;
-      weakestTopic = sorted[sorted.length - 1]?.topic || weakestTopic;
+    const topicMap = {};
+    Object.values(questionProgress || {}).forEach(item => {
+      const topicName = item.topic || 'General';
+      if (topicName === 'General') return;
+      if (!topicMap[topicName]) {
+        topicMap[topicName] = { correct: 0, total: 0 };
+      }
+      topicMap[topicName].total += 1;
+      if (item.status === 'correct' || item.correct) {
+        topicMap[topicName].correct += 1;
+      }
+    });
+
+    const topicStats = Object.keys(topicMap).map(name => ({
+      name,
+      acc: Math.round((topicMap[name].correct / topicMap[name].total) * 100),
+      total: topicMap[name].total
+    })).sort((a, b) => b.acc - a.acc);
+
+    if (topicStats.length > 0) {
+      strongestTopic = topicStats[0].name;
+      weakestTopic = topicStats[topicStats.length - 1].name;
+    } else {
+      const masteryList = Object.values(masteryScores || {});
+      if (masteryList.length > 0) {
+        const sorted = [...masteryList].sort((a, b) => (b.score || 0) - (a.score || 0));
+        strongestTopic = sorted[0]?.topic || 'Thermodynamics';
+        weakestTopic = sorted[sorted.length - 1]?.topic || 'Fluid Mechanics';
+      }
     }
 
     // Solve time calculation
@@ -95,23 +119,29 @@ export default function Profile() {
       (acc, curr) => acc + (curr.solveTimeMs || 0),
       0
     );
-    const studyHours = Math.max(1, Math.round(totalSolveTimeMs / 3600000)) || Math.round((scoreData?.totalAttempted || 0) * 1.5 / 60) || 1;
+    const questionsSolved = scoreData?.totalAttempted || Object.keys(questionProgress || {}).length || 0;
+    const studyHours = Math.max(1, Math.round(totalSolveTimeMs / 3600000)) || Math.round((questionsSolved * 1.5) / 60) || 1;
+
+    // Accuracy calculation
+    const accuracy = scoreData?.accuracy || (questionsSolved > 0 
+      ? Math.round((Object.values(questionProgress || {}).filter(p => p.status === 'correct').length / questionsSolved) * 100) 
+      : 0);
 
     // Level calculations
-    const xp = scoreData?.xp || 0;
-    const level = Math.floor(xp / 500) + 1;
+    const xp = scoreData?.xp || scoreData?.totalXp || 0;
+    const level = Math.max(1, Math.floor(xp / 500) + 1);
     const nextLevelXp = level * 500;
 
     // Percentile & Rank dynamic mapping
-    const accuracy = scoreData?.accuracy || 0;
-    const percentile = Math.min(99.9, Math.max(50, parseFloat((50 + (accuracy * 0.5)).toFixed(1))));
-    const rank = Math.max(1, 250 - Math.round(xp / 20));
+    const percentile = accuracy > 0 ? Math.min(99.5, Math.max(15, parseFloat((50 + (accuracy * 0.49)).toFixed(1)))) : 50;
+    const rank = questionsSolved > 0 ? Math.max(1, 1250 - Math.round(xp / 3)) : 175;
 
-    // Format Joined Date
-    let joinedDate = 'January 2026';
-    if (dbProfile?.createdAt) {
+    // Format Joined Date dynamically from Auth metadata or Firestore
+    let joinedDate = 'July 2026';
+    const creationTime = dbProfile?.createdAt || user?.metadata?.creationTime;
+    if (creationTime) {
       try {
-        joinedDate = new Date(dbProfile.createdAt).toLocaleDateString(undefined, {
+        joinedDate = new Date(creationTime).toLocaleDateString('en-US', {
           month: 'long',
           year: 'numeric',
         });
@@ -120,13 +150,18 @@ export default function Profile() {
       }
     }
 
+    const emailDomain = user?.email?.split('@')[1];
+    const defaultCollege = emailDomain && !emailDomain.includes('gmail') && !emailDomain.includes('yahoo')
+      ? emailDomain.split('.')[0].toUpperCase() + ' Institute of Technology'
+      : 'Birla Institute of Technology, Mesra';
+
     return {
-      name: dbProfile?.name || user?.displayName || 'Mechanical Aspirant',
-      email: user?.email || 'student@mechprep.in',
+      name: dbProfile?.name || user?.displayName || 'Harshit',
+      email: user?.email || 'harshitsir18@gmail.com',
       photoURL: user?.photoURL || null,
 
       branch: dbProfile?.branch || 'Mechanical Engineering',
-      college: dbProfile?.college || 'Birla Institute of Technology, Mesra',
+      college: dbProfile?.college || defaultCollege,
       graduationYear: dbProfile?.graduationYear || '2027',
       targetRole: dbProfile?.targetRole || 'Graduate Engineer Trainee',
 
@@ -134,10 +169,10 @@ export default function Profile() {
       xp,
       nextLevelXp,
 
-      streak: dbProfile?.streak || 14,
-      questionsSolved: scoreData?.totalAttempted || 0,
+      streak: scoreData?.streak || dbProfile?.streak || 14,
+      questionsSolved,
       accuracy,
-      testsCompleted: testsCompleted || scoreData?.testsCompleted || 0,
+      testsCompleted: testsCompleted || (testHistory ? testHistory.length : 0) || scoreData?.testsCompleted || 0,
       studyHours,
 
       joinedDate,
@@ -148,7 +183,7 @@ export default function Profile() {
       rank,
       percentile,
     };
-  }, [user, dbProfile, scoreData, masteryScores, questionProgress, testsCompleted]);
+  }, [user, dbProfile, scoreData, masteryScores, questionProgress, testsCompleted, testHistory]);
 
   const xpProgress = Math.min(
     Math.round((profile.xp / profile.nextLevelXp) * 100),
@@ -390,23 +425,23 @@ export default function Profile() {
               <div className="achievement-list">
                 <Achievement
                   icon={<Flame size={20} />}
-                  title="14 Day Momentum"
-                  description="Maintained a continuous 14-day practice streak."
-                  xp="+250 XP"
+                  title={`${profile.streak} Day Momentum`}
+                  description={`Maintained a continuous ${profile.streak}-day practice streak.`}
+                  xp={`+${Math.min(500, Math.max(100, profile.streak * 20))} XP`}
                 />
 
                 <Achievement
                   icon={<BookOpen size={20} />}
-                  title="Question Machine"
-                  description="Solved more than 1,000 placement questions."
-                  xp="+500 XP"
+                  title={`${profile.questionsSolved.toLocaleString()} Questions Mastered`}
+                  description={`Solved ${profile.questionsSolved.toLocaleString()} practice questions across core engineering topics.`}
+                  xp={`+${Math.min(1000, Math.max(150, profile.questionsSolved * 5))} XP`}
                 />
 
                 <Achievement
                   icon={<Target size={20} />}
-                  title="Precision Matters"
-                  description="Achieved over 75% overall question accuracy."
-                  xp="+300 XP"
+                  title={`${profile.accuracy}% Accuracy Benchmark`}
+                  description={`Achieved ${profile.accuracy}% overall accuracy across attempted sets.`}
+                  xp={`+${Math.min(400, Math.max(100, profile.accuracy * 4))} XP`}
                 />
               </div>
             </section>
