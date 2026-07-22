@@ -319,11 +319,13 @@ export default function PeerDuel() {
         }
       }
 
-      // Transition to countdown only when status is countdown and player 2 is present
-      if (data.status === 'countdown' && (isHost ? !!data.player2 : true)) {
-        setMode('countdown');
+      // Handle status transitions without kicking user out of result screen
+      if (data.status === 'finished') {
+        setMode('result');
+      } else if (data.status === 'countdown' && (isHost ? !!data.player2 : true)) {
+        setMode(prev => (prev === 'playing' || prev === 'result' ? prev : 'countdown'));
       } else if (data.status === 'playing') {
-        setMode('playing');
+        setMode(prev => (prev === 'result' ? 'result' : 'playing'));
       }
     });
   };
@@ -419,6 +421,10 @@ export default function PeerDuel() {
         setTimeLeft(12);
       } else {
         setMode('result');
+        if (isMultiplayer && db && roomId) {
+          const docRef = doc(db, 'duels', roomId);
+          updateDoc(docRef, { status: 'finished' }).catch(console.warn);
+        }
         if (newPlayerScore >= opponentScore) {
           const xpRes = awardVictoryXP({ isSimulatedOpponent: !isMultiplayer, victoriesTodayCount: 1 });
           if (xpRes.xpAwarded > 0) addXp(xpRes.xpAwarded);
