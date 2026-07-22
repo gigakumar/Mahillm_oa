@@ -1,31 +1,43 @@
-.layout {
+/* MARKS Layout Structure CSS */
+.marks-app-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #090d16;
+  color: #f8fafc;
+  font-family: var(--font-body);
+}
+
+.marks-main-wrapper {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  min-width: 0;
+  height: 100vh;
+  overflow: hidden;
 }
 
-.layout-header {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  padding-bottom: 0.5rem;
-}
-
-.layout-main {
+.marks-workspace-container {
   flex: 1;
+  overflow-y: auto;
+  padding: 0 1.25rem 1.25rem 1.25rem;
 }
 
-.layout-footer {
-  margin-top: 5rem;
-  padding: 2rem 0;
-  text-align: center;
-  border-top: 1px solid var(--border);
+/* Rounded main container background like MARKS app */
+.marks-workspace-container > * {
+  background: #121824;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 1.75rem;
+  min-height: calc(100vh - 5.5rem);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
 }
-.layout-footer p {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-}
-.layout-footer a {
-  color: var(--accent);
-  font-weight: 500;
+
+@media (max-width: 900px) {
+  .marks-workspace-container {
+    padding: 0 0.5rem 0.5rem 0.5rem;
+  }
+  .marks-workspace-container > * {
+    border-radius: 14px;
+    padding: 1.25rem 0.85rem;
+  }
 }

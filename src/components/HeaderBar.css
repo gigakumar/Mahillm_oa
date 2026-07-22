@@ -1,0 +1,116 @@
+/* MARKS Layout HeaderBar Styling */
+.header-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  width: 100%;
+  user-select: none;
+}
+
+/* User Greeting Pill */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mobile-toggle-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #f1f5f9;
+  cursor: pointer;
+}
+
+.user-greeting-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0.85rem 0.35rem 0.35rem;
+  background: transparent;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.user-greeting-pill:hover {
+  opacity: 0.9;
+}
+
+.user-avatar-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.greeting-text {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.greeting-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.branch-dropdown-tag {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.82rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.dropdown-arrow {
+  opacity: 0.7;
+}
+
+/* Header Right Pills */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.header-stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #171e2e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.4rem 0.75rem;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.header-stat-pill:hover {
+  background: #20293d;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.xp-pill .pill-val {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+.pill-arrow {
+  color: #64748b;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-left: 2px;
+}
+
+@media (max-width: 900px) {
+  .mobile-toggle-btn {
+    display: flex;
+  }
+}
