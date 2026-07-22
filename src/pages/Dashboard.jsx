@@ -152,6 +152,10 @@ export default function Dashboard() {
     fetchMetadata();
   }, [questionProgress]);
 
+  // Dynamic Daily Goal target from localStorage or scaled based on actual progress
+  const [userTargetGoal, setUserTargetGoal] = useState(() => parseInt(localStorage.getItem('mahi_daily_target') || '15'));
+  const [showGoalModal, setShowGoalModal] = useState(false);
+
   // Daily goal questions count solved today
   const questionsSolvedToday = Object.values(questionProgress || {}).filter(prog => {
     if (!prog.updatedAt) return false;
@@ -160,8 +164,25 @@ export default function Dashboard() {
     return date.toDateString() === today.toDateString();
   }).length;
 
-  const targetDailyGoal = 6;
+  // Dynamically scale target goal if user surpasses initial target
+  let targetDailyGoal = userTargetGoal;
+  if (questionsSolvedToday > targetDailyGoal) {
+    if (questionsSolvedToday <= 30) targetDailyGoal = 30;
+    else if (questionsSolvedToday <= 50) targetDailyGoal = 50;
+    else targetDailyGoal = Math.ceil(questionsSolvedToday / 25) * 25;
+  }
+
   const goalPercent = Math.min(100, Math.round((questionsSolvedToday / targetDailyGoal) * 100));
+
+  const step1Threshold = Math.max(1, Math.round(targetDailyGoal * 0.25));
+  const step2Threshold = Math.max(2, Math.round(targetDailyGoal * 0.50));
+  const step3Threshold = Math.max(3, Math.round(targetDailyGoal * 0.75));
+
+  const setCustomGoal = (newGoal) => {
+    setUserTargetGoal(newGoal);
+    localStorage.setItem('mahi_daily_target', newGoal.toString());
+    setShowGoalModal(false);
+  };
 
   const handlePrevBanner = () => {
     setCarouselIdx(prev => (prev === 0 ? 1 : 0));
@@ -174,37 +195,79 @@ export default function Dashboard() {
     <div className="dashboard-container">
 
       {/* TOP ROW: DAILY GOAL STEPPER CARD */}
-      <div className="dashboard-daily-goal-card" onClick={() => navigate('/oa-practice')}>
+      <div className="dashboard-daily-goal-card">
         <div className="goal-header-row">
-          <div className="goal-title">
+          <div className="goal-title" onClick={() => navigate('/oa-practice')}>
             <span>Your Daily Goal</span>
             <strong className="goal-nums">({questionsSolvedToday}/{targetDailyGoal} Qs)</strong>
             <span className="goal-arrow">›</span>
           </div>
+
+          <button 
+            className="btn-edit-goal"
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowGoalModal(true);
+            }}
+          >
+            ⚙️ Edit Target Goal
+          </button>
         </div>
 
         {/* Milestone Stepper Track */}
-        <div className="goal-stepper-track">
+        <div className="goal-stepper-track" onClick={() => navigate('/oa-practice')}>
           <div className="stepper-line">
             <div className="stepper-progress-fill" style={{ width: `${goalPercent}%` }} />
           </div>
-          <div className={`stepper-node node-start ${questionsSolvedToday >= 0 ? 'reached' : ''}`}>
+          <div className={`stepper-node node-start ${questionsSolvedToday >= 0 ? 'reached' : ''}`} title="Start">
             <span className="node-icon">📈</span>
           </div>
-          <div className={`stepper-node node-1 ${questionsSolvedToday >= 2 ? 'reached' : ''}`}>
+          <div className={`stepper-node node-1 ${questionsSolvedToday >= step1Threshold ? 'reached' : ''}`} title={`${step1Threshold} Qs`}>
             <span className="node-icon">🚶</span>
           </div>
-          <div className={`stepper-node node-2 ${questionsSolvedToday >= 4 ? 'reached' : ''}`}>
+          <div className={`stepper-node node-2 ${questionsSolvedToday >= step2Threshold ? 'reached' : ''}`} title={`${step2Threshold} Qs`}>
             <span className="node-icon">🏃</span>
           </div>
-          <div className={`stepper-node node-3 ${questionsSolvedToday >= 6 ? 'reached' : ''}`}>
+          <div className={`stepper-node node-3 ${questionsSolvedToday >= step3Threshold ? 'reached' : ''}`} title={`${step3Threshold} Qs`}>
             <span className="node-icon">🏃‍♂️</span>
           </div>
-          <div className={`stepper-node node-finish ${questionsSolvedToday >= targetDailyGoal ? 'reached' : ''}`}>
+          <div className={`stepper-node node-finish ${questionsSolvedToday >= targetDailyGoal ? 'reached' : ''}`} title={`${targetDailyGoal} Qs Goal`}>
             <span className="node-icon">🏁</span>
           </div>
         </div>
       </div>
+
+      {/* DAILY GOAL MODAL */}
+      {showGoalModal && (
+        <div className="goal-modal-backdrop" onClick={() => setShowGoalModal(false)}>
+          <div className="goal-modal-card" onClick={(e) => e.stopPropagation()}>
+            <h3>Set Your Target Daily Practice Goal</h3>
+            <p>Pick a daily target questions goal to build long-term retention & speed:</p>
+
+            <div className="goal-options-grid">
+              {[
+                { val: 5, label: '🎯 5 Qs / Day', sub: 'Light Warmup' },
+                { val: 15, label: '🏃 15 Qs / Day', sub: 'Standard GATE Practice' },
+                { val: 30, label: '⚡ 30 Qs / Day', sub: 'Intensive Practice' },
+                { val: 50, label: '🔥 50 Qs / Day', sub: 'AIR < 100 Rank Mode' }
+              ].map(opt => (
+                <button
+                  key={opt.val}
+                  className={`goal-opt-btn ${userTargetGoal === opt.val ? 'active' : ''}`}
+                  onClick={() => setCustomGoal(opt.val)}
+                >
+                  <strong>{opt.label}</strong>
+                  <span>{opt.sub}</span>
+                </button>
+              ))}
+            </div>
+
+            <button className="btn-close-modal" onClick={() => setShowGoalModal(false)}>
+              Close & Apply
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* HERO PROMO CAROUSEL BANNER */}
       <div className="hero-banner-container">
