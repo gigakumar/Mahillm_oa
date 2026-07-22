@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, BookOpen, Clock, Shuffle, List, Layers, Brain, Award, Sparkles, Flame, Zap, Target, RefreshCw, TrendingUp, AlertTriangle, ChevronDown } from 'lucide-react';
+import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, BookOpen, Clock, Shuffle, List, Layers, Brain, Award, Sparkles, Flame, Zap, Target, RefreshCw, TrendingUp, AlertTriangle, ChevronDown, ChevronUp, Search, X } from 'lucide-react';
 
 import QuestionIntelligenceBadge from '../components/QuestionIntelligenceBadge';
 import { useScore } from '../contexts/ScoreContext';
@@ -105,10 +105,22 @@ export default function OAPractice() {
 
   const [qType, setQType] = useState('all'); // 'all' | 'MCQ' | 'NAT'
   const [natAnswers, setNatAnswers] = useState({}); // { [qId]: string }
+  const [topicSearchQuery, setTopicSearchQuery] = useState('');
+  const [showAllTopicsExpanded, setShowAllTopicsExpanded] = useState(false);
 
   // Gemini AI state
   const selectedModel = 'gemini-3.1-flash-lite';
   const [aiAnalysis, setAiAnalysis] = useState({});
+
+  const filteredAvailableTopics = useMemo(() => {
+    if (!availableTopics) return ['all'];
+    if (topicSearchQuery.trim()) {
+      return availableTopics.filter(t => 
+        t === 'all' || t.toLowerCase().includes(topicSearchQuery.toLowerCase())
+      );
+    }
+    return showAllTopicsExpanded ? availableTopics : availableTopics.slice(0, 12);
+  }, [availableTopics, topicSearchQuery, showAllTopicsExpanded]);
 
   // ─── Gemini Live Fetcher ──────────────────────────────────────────────────
   const fetchGeminiAnalysis = useCallback(async (q, selectedOriginalIdx, modelToUse = null, userNatVal = null) => {
@@ -929,67 +941,121 @@ Respond ONLY with the JSON object, no markdown fences.`;
       )}
 
       {showFilters && (
-        <div className="filters-panel card">
-          <div className="filter-group">
-            <label className="form-label">Category</label>
-            <div className="filter-pills">
-              {CATEGORIES.map((c) => (
-                <button
-                  key={c.key}
-                  className={`pill ${category === c.key ? 'active' : ''}`}
-                  onClick={() => setCategory(c.key)}
-                >
-                  {c.emoji} {c.label}
-                </button>
-              ))}
+        <div className="filters-panel">
+          <div className="filter-panel-header">
+            <div className="filter-title">
+              <Filter size={18} />
+              <span>Filter Questions</span>
+            </div>
+            <button className="btn-reset-filters" onClick={handleReset}>
+              <RotateCcw size={14} /> Reset All
+            </button>
+          </div>
+
+          <div className="filter-options-grid">
+            <div className="filter-group">
+              <label className="form-label">Category</label>
+              <div className="filter-pills">
+                {CATEGORIES.map((c) => (
+                  <button
+                    key={c.key}
+                    className={`pill ${category === c.key ? 'active' : ''}`}
+                    onClick={() => setCategory(c.key)}
+                  >
+                    {c.emoji} {c.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="filter-group">
+              <label className="form-label">Question Type</label>
+              <div className="filter-pills">
+                {[
+                  { id: 'all', label: '🌐 All Types' },
+                  { id: 'MCQ', label: '🔘 MCQ' },
+                  { id: 'NAT', label: '🔢 NAT' },
+                ].map((t) => (
+                  <button
+                    key={t.id}
+                    className={`pill ${qType === t.id ? 'active' : ''}`}
+                    onClick={() => setQType(t.id)}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="filter-group">
+              <label className="form-label">Difficulty</label>
+              <div className="filter-pills">
+                {DIFFICULTIES.map((d) => (
+                  <button
+                    key={d}
+                    className={`pill ${difficulty === d ? 'active' : ''}`}
+                    onClick={() => setDifficulty(d)}
+                  >
+                    {d === 'all' ? '🌐 All' : d}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-          <div className="filter-group">
-            <label className="form-label">Question Type</label>
-            <div className="filter-pills">
-              {[
-                { id: 'all', label: '🌐 All Types' },
-                { id: 'MCQ', label: '🔘 MCQ (Multiple Choice)' },
-                { id: 'NAT', label: '🔢 NAT (Numerical Answer)' },
-              ].map((t) => (
-                <button
-                  key={t.id}
-                  className={`pill ${qType === t.id ? 'active' : ''}`}
-                  onClick={() => setQType(t.id)}
-                >
-                  {t.label}
-                </button>
-              ))}
+
+          {/* TOPIC / SECTION SELECTION WITH SEARCH */}
+          <div className="filter-group topic-filter-group">
+            <div className="topic-group-header">
+              <label className="form-label">📁 Topic / Section ({availableTopics.length})</label>
+              
+              <div className="topic-search-box">
+                <Search size={15} className="search-icon" />
+                <input
+                  type="text"
+                  placeholder="Search topics (e.g. Thermodynamics, SOM...)"
+                  value={topicSearchQuery}
+                  onChange={(e) => setTopicSearchQuery(e.target.value)}
+                  className="topic-search-input"
+                />
+                {topicSearchQuery && (
+                  <button className="btn-clear-search" onClick={() => setTopicSearchQuery('')}>
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-          <div className="filter-group">
-            <label className="form-label">Difficulty</label>
-            <div className="filter-pills">
-              {DIFFICULTIES.map((d) => (
-                <button
-                  key={d}
-                  className={`pill ${difficulty === d ? 'active' : ''}`}
-                  onClick={() => setDifficulty(d)}
-                >
-                  {d === 'all' ? '🌐 All' : d}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="filter-group" style={{ gridColumn: '1 / -1' }}>
-            <label className="form-label">📁 Topic / Section</label>
-            <div className="filter-pills" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-              {availableTopics.map((t) => (
+
+            <div className="topic-pills-wrapper">
+              <button
+                className={`pill topic-pill ${topic === 'all' ? 'active' : ''}`}
+                onClick={() => setTopic('all')}
+              >
+                🌐 All Topics
+              </button>
+
+              {filteredAvailableTopics.filter(t => t !== 'all').map((t) => (
                 <button
                   key={t}
-                  className={`pill ${topic === t ? 'active' : ''}`}
+                  className={`pill topic-pill ${topic === t ? 'active' : ''}`}
                   onClick={() => setTopic(t)}
-                  style={{ fontSize: '0.85rem', padding: '0.4rem 0.8rem' }}
                 >
-                  {t === 'all' ? '🌐 All Topics' : t}
+                  {t}
                 </button>
               ))}
             </div>
+
+            {!topicSearchQuery && availableTopics.length > 12 && (
+              <button
+                className="btn-toggle-topics"
+                onClick={() => setShowAllTopicsExpanded(!showAllTopicsExpanded)}
+              >
+                {showAllTopicsExpanded ? (
+                  <>Show Fewer Topics <ChevronUp size={15} /></>
+                ) : (
+                  <>Show All {availableTopics.length} Topics <ChevronDown size={15} /></>
+                )}
+              </button>
+            )}
           </div>
         </div>
       )}
