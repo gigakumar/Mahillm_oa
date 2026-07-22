@@ -179,7 +179,15 @@ export default function Tests() {
                     <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.8rem', flexWrap: 'wrap', marginTop: '0.25rem' }}>
                       <span className="badge" style={{ background: 'var(--bg-card)' }}>{mock.duration} Mins</span>
                       <span className="badge" style={{ background: 'var(--bg-card)' }}>{mock.count} Qs</span>
-                      {mock.negativeMarking && <span className="badge badge-danger-soft">-1/3 Mark</span>}
+                      {mock.negativeMarking && (
+                        <span 
+                          className="badge badge-danger-soft" 
+                          title="1 mark deducted for every 3 wrong answers (-0.33 per incorrect MCQ)"
+                          style={{ cursor: 'help' }}
+                        >
+                          ℹ️ -1/3 Mark
+                        </span>
+                      )}
                     </div>
                     
                     {isLocked ? (

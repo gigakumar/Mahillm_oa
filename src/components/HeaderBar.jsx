@@ -43,15 +43,16 @@ export default function HeaderBar({ mobileOpen, setMobileOpen }) {
       {/* Right Action Counters */}
       <div className="header-right">
         {/* XP / Sparkle Pill */}
-        <div className="header-stat-pill xp-pill" onClick={() => navigate('/stats')}>
+        <div className="header-stat-pill xp-pill" onClick={() => navigate('/stats')} title="Experience Points (XP) earned from practice">
           <Sparkles size={16} className="pill-icon text-amber-400" />
-          <span className="pill-val">{scoreData?.totalXp || 1476}</span>
+          <span className="pill-val">{scoreData?.totalXp || 1476} XP</span>
           <span className="pill-arrow">›</span>
         </div>
 
         {/* Trophy / Leaderboard Pill */}
-        <div className="header-stat-pill trophy-pill" onClick={() => navigate('/leaderboard')}>
+        <div className="header-stat-pill trophy-pill" onClick={() => navigate('/leaderboard')} title="Leaderboard & Rank Standings">
           <Trophy size={16} className="pill-icon text-indigo-400" />
+          <span className="pill-val" style={{ fontSize: '0.8rem', fontWeight: 600 }}>Rank</span>
           <span className="pill-arrow">›</span>
         </div>
       </div>

@@ -185,10 +185,10 @@ export default function StudyPlanner() {
         {highRiskItems.length === 0 ? (
           <div className="empty-queue-state">
             <CheckCircle className="w-12 h-12 text-emerald-400" />
-            <h4>All clear for this selection!</h4>
-            <p>No concepts are at high risk of forgetting. You can launch a custom practice set to build fresh mastery.</p>
+            <h4>All clear & memory engine active!</h4>
+            <p>No concepts currently require urgent spaced-repetition review. Complete practice sets in Practice & PYQs to feed new concepts into your daily memory decay tracker.</p>
             <button className="practice-more-btn" onClick={() => navigate('/oa-practice')}>
-              <Target className="w-4 h-4" /> Go to Practice Modules
+              <Target className="w-4 h-4" /> Start Practice Modules
             </button>
           </div>
         ) : (
