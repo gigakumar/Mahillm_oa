@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useUserData } from '../contexts/UserDataContext';
 import { useScore } from '../contexts/ScoreContext';
 import { predictGatePerformance, REFERENCE_YEAR } from '../utils/gatePredictorEngine';
