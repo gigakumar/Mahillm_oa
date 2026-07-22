@@ -359,6 +359,10 @@ export default function PeerDuel() {
       } else {
         setMode('playing');
         setTimeLeft(12);
+        if (isMultiplayer && isPlayer1.current && roomId && db) {
+          const docRef = doc(db, 'duels', roomId);
+          updateDoc(docRef, { status: 'playing' }).catch(console.warn);
+        }
       }
     }
   }, [mode, countdown]);
