@@ -178,11 +178,11 @@ export default function PeerDuel() {
     setOpponent(null);
     setPlayerScore(0);
     setOpponentScore(0);
-    setSearchParams({ room: code });
+    // Removed setSearchParams to prevent host auto-join bug
     setMode('lobby');
 
     const myUid = getMyUid();
-    const playerName = user?.displayName || 'Engineer ' + myUid.slice(-4).toUpperCase();
+    const playerName = user?.displayName || 'Guest Host ' + myUid.slice(-4).toUpperCase();
 
     const loadedQuestions = await fetchDuelQuestions(difficulty, 5);
     setQuestions(loadedQuestions);
@@ -263,7 +263,7 @@ export default function PeerDuel() {
           isPlayer1.current = false;
           if (data.questions) setQuestions(data.questions);
 
-          const playerName = user?.displayName || 'Challenger ' + myUid.slice(-4).toUpperCase();
+          const playerName = user?.displayName || 'Guest Challenger ' + myUid.slice(-4).toUpperCase();
 
           if (data.status === 'waiting' || !data.player2) {
             await updateDoc(docRef, {
