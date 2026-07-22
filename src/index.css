@@ -430,3 +430,123 @@ a:hover {
   max-width: 100%;
   overflow-x: auto;
 }
+
+/* ========================================
+   LIGHT MODE OVERRIDES
+   ======================================== */
+[data-theme="light"], body.light-mode {
+  --bg-base: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f1f5f9;
+  --bg-elevated: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --border: rgba(0, 0, 0, 0.1);
+  --border-hover: rgba(0, 0, 0, 0.2);
+
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .marks-app-layout,
+body.light-mode .marks-app-layout {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .sidebar-container,
+body.light-mode .sidebar-container {
+  background: #ffffff !important;
+  border-right: 1px solid #e2e8f0 !important;
+}
+
+[data-theme="light"] .sidebar-brand .brand-name,
+body.light-mode .sidebar-brand .brand-name {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .sidebar-link,
+body.light-mode .sidebar-link {
+  color: #475569 !important;
+}
+
+[data-theme="light"] .sidebar-link:hover,
+body.light-mode .sidebar-link:hover {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .sidebar-link.active,
+body.light-mode .sidebar-link.active {
+  background: #0f172a !important;
+  color: #ffffff !important;
+}
+
+[data-theme="light"] .marks-workspace-container > *,
+body.light-mode .marks-workspace-container > * {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  color: #0f172a !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+}
+
+[data-theme="light"] .greeting-text,
+body.light-mode .greeting-text {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .dashboard-daily-goal-card,
+body.light-mode .dashboard-daily-goal-card {
+  background: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+}
+
+[data-theme="light"] .goal-title span,
+body.light-mode .goal-title span {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .digital-book-card,
+body.light-mode .digital-book-card {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] .book-title,
+body.light-mode .book-title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .pyq-bank-card,
+body.light-mode .pyq-bank-card {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+[data-theme="light"] .card-title,
+body.light-mode .card-title {
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .profile-hero,
+body.light-mode .profile-hero,
+[data-theme="light"] .profile-xp-card,
+body.light-mode .profile-xp-card,
+[data-theme="light"] .profile-stat-card,
+body.light-mode .profile-stat-card,
+[data-theme="light"] .profile-side-card,
+body.light-mode .profile-side-card {
+  background: #ffffff !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+
+[data-theme="light"] .profile-name-row h1,
+body.light-mode .profile-name-row h1,
+[data-theme="light"] .stat-content strong,
+body.light-mode .stat-content strong,
+[data-theme="light"] .profile-section-header h2,
+body.light-mode .profile-section-header h2 {
+  color: #0f172a !important;
+}
