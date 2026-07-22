@@ -221,11 +221,11 @@ export default function Dashboard() {
           </div>
 
           <h2 className="banner-main-title">
-            India's <span className="highlight-no1">No 1</span> Practice Kit For <span className="highlight-exam">GATE & Engineering</span>
+            MahiLLM <span className="highlight-no1">AI-Powered</span> GATE & Mechanical <span className="highlight-exam">Practice Suite</span>
           </h2>
 
           <button className="btn-unlock-premium" onClick={() => navigate('/oa-practice')}>
-            Unlock Now with MahiLLM Premium ›
+            Explore MahiLLM Pro Suite ›
           </button>
 
           {/* Carousel dots */}

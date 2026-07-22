@@ -56,9 +56,9 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
         {/* Brand Logo */}
         <div className="sidebar-brand" onClick={() => navigate('/')}>
           <div className="brand-icon-box">
-            <Bookmark className="brand-bookmark-icon" size={22} fill="currentColor" />
+            <img src="/logo.png" alt="MahiLLM Logo" style={{ width: '22px', height: '22px', objectFit: 'contain' }} />
           </div>
-          <span className="brand-name">MARKS <span className="brand-sub">by Mahi</span></span>
+          <span className="brand-name">MahiLLM <span className="brand-sub">OA</span></span>
         </div>
 
         {/* Navigation Items */}

@@ -33,7 +33,7 @@ export default function HeaderBar({ mobileOpen, setMobileOpen }) {
           <div className="greeting-text">
             <span className="greeting-name">Hey, {firstName}!</span>
             <div className="branch-dropdown-tag">
-              <span>Engineering</span>
+              <span>GATE Mechanical</span>
               <ChevronDown size={14} className="dropdown-arrow" />
             </div>
           </div>
