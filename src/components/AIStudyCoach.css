@@ -1,20 +1,21 @@
 .ai-coach-card {
-  background: rgba(25, 30, 45, 0.6);
+  background: var(--bg-card);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(100, 150, 255, 0.2);
+  border: 1px solid var(--border);
   border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 .ai-coach-card::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; height: 2px;
-  background: linear-gradient(90deg, transparent, var(--accent, #3b82f6), transparent);
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
   animation: scanning 3s linear infinite;
 }
 
@@ -31,11 +32,11 @@
 }
 
 .ai-icon-container {
-  background: rgba(59, 130, 246, 0.15);
+  background: var(--accent-soft);
   padding: 0.75rem;
   border-radius: 12px;
-  color: var(--accent, #3b82f6);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  color: var(--accent);
+  border: 1px solid var(--border);
 }
 
 .ai-title {
@@ -46,8 +47,8 @@
 }
 
 .ai-insight-box {
-  background: rgba(0, 0, 0, 0.2);
-  border-left: 3px solid var(--accent, #3b82f6);
+  background: var(--bg-input);
+  border-left: 3px solid var(--accent);
   padding: 1rem 1.25rem;
   border-radius: 0 8px 8px 0;
   margin-bottom: 1.5rem;
@@ -74,8 +75,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-input);
+  border: 1px solid var(--border);
   padding: 0.85rem 1rem;
   border-radius: 10px;
   cursor: pointer;
@@ -83,13 +84,13 @@
 }
 
 .ai-task-item:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--bg-card-hover);
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: var(--border-hover);
 }
 
 .task-review  { border-left: 4px solid #f59e0b; }
-.task-practice { border-left: 4px solid #3b82f6; }
+.task-practice { border-left: 4px solid #2563eb; }
 .task-revise  { border-left: 4px solid #10b981; }
 
 .ai-task-content {
@@ -127,7 +128,8 @@
 
 .ai-task-confidence {
   font-size: 0.78rem;
-  color: var(--primary, #6366f1);
+  color: var(--accent);
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 0.3rem;
@@ -154,7 +156,7 @@
 }
 
 .ai-task-arrow {
-  color: rgba(255, 255, 255, 0.3);
+  color: var(--text-muted);
   transition: transform 0.2s;
 }
 

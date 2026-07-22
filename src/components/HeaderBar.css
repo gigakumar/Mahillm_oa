@@ -20,7 +20,7 @@
   display: none;
   background: transparent;
   border: none;
-  color: #f1f5f9;
+  color: var(--text-primary);
   cursor: pointer;
 }
 
@@ -44,7 +44,7 @@
   height: 38px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid rgba(255, 255, 255, 0.15);
+  border: 2px solid var(--border);
 }
 
 .greeting-text {
@@ -56,7 +56,7 @@
 .greeting-name {
   font-size: 0.95rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .branch-dropdown-tag {
@@ -64,7 +64,7 @@
   align-items: center;
   gap: 0.25rem;
   font-size: 0.82rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -83,8 +83,8 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  background: #171e2e;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
   padding: 0.4rem 0.75rem;
   border-radius: 2rem;
   cursor: pointer;
@@ -92,18 +92,18 @@
 }
 
 .header-stat-pill:hover {
-  background: #20293d;
-  border-color: rgba(255, 255, 255, 0.18);
+  background: var(--bg-card-hover);
+  border-color: var(--border-hover);
 }
 
 .xp-pill .pill-val {
   font-size: 0.88rem;
   font-weight: 700;
-  color: #f59e0b;
+  color: var(--text-primary);
 }
 
 .pill-arrow {
-  color: #64748b;
+  color: var(--text-muted);
   font-size: 0.95rem;
   font-weight: 700;
   margin-left: 2px;
