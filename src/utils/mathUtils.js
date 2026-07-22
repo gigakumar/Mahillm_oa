@@ -27,10 +27,12 @@ export function isMathSnippet(inner) {
  */
 export function formatMathHtml(text) {
   if (!text) return '';
-  const str = String(text);
+  let str = String(text);
 
-  // If text has no math delimiters and looks like a raw LaTeX formula string
-  if (!str.includes('$') && !str.includes('\\[') && !str.includes('\\(') && (str.includes('\\frac') || str.includes('\\sqrt') || str.includes('\\partial') || str.includes('\\sigma') || str.includes('\\delta'))) {
+  const isEnglishSentence = /[a-zA-Z]{2,}\s+[a-zA-Z]{2,}\s+[a-zA-Z]{2,}/.test(str);
+
+  // If text has no math delimiters and looks like a raw LaTeX formula string (and not an English sentence)
+  if (!isEnglishSentence && !str.includes('$') && !str.includes('\\[') && !str.includes('\\(') && (str.includes('\\frac') || str.includes('\\sqrt') || str.includes('\\partial') || str.includes('\\sigma') || str.includes('\\delta'))) {
     try {
       const rendered = katex.renderToString(str, {
         displayMode: true,
@@ -41,6 +43,12 @@ export function formatMathHtml(text) {
       return str;
     }
   }
+
+  // Auto-wrap un-delimited LaTeX commands in English sentences
+  if (isEnglishSentence && !str.includes('$') && str.includes('\\')) {
+    str = str.replace(/(\\([a-zA-Z]+)(?:\s+[a-zA-Z0-9]+)?)/g, '$$$1$$');
+  }
+
 
   // Regex to match $$, \[\], \(\), or single $
   const regex = /(\$\$[\s\S]*?\$\$|\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|(?:\$(?!\s)[^$\n]+(?<!\s)\$))/g;

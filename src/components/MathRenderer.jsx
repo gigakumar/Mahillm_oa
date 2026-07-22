@@ -27,11 +27,14 @@ function isMathSnippet(inner) {
  */
 export default function MathRenderer({ text, formula, inline = false, className = '' }) {
   const renderedContent = useMemo(() => {
-    const raw = formula || text || '';
+    let raw = formula || text || '';
     if (!raw) return null;
 
+    // Check if raw contains regular English words with spaces
+    const isEnglishSentence = /[a-zA-Z]{2,}\s+[a-zA-Z]{2,}\s+[a-zA-Z]{2,}/.test(raw);
+
     // Direct formula string (e.g. formulaSheets.js item.formula)
-    if (formula || (!raw.includes('$') && !raw.includes('\\[') && !raw.includes('\\(') && (raw.includes('\\') || raw.includes('^') || raw.includes('_') || raw.includes('=')))) {
+    if (formula || (!isEnglishSentence && !raw.includes('$') && !raw.includes('\\[') && !raw.includes('\\(') && (raw.includes('\\') || raw.includes('^') || raw.includes('_') || raw.includes('=')))) {
       try {
         const html = katex.renderToString(raw, {
           displayMode: !inline,
@@ -41,6 +44,11 @@ export default function MathRenderer({ text, formula, inline = false, className 
       } catch (e) {
         return <span className="math-fallback">{raw}</span>;
       }
+    }
+
+    // Auto-wrap loose un-delimited LaTeX commands like \Delta U or \sigma in sentences
+    if (isEnglishSentence && !raw.includes('$') && raw.includes('\\')) {
+      raw = raw.replace(/(\\([a-zA-Z]+)(?:\s+[a-zA-Z0-9]+)?)/g, '$$$1$$');
     }
 
     // Split text containing math delimiters: $$, \[\], \(\), or single $
@@ -101,3 +109,4 @@ export default function MathRenderer({ text, formula, inline = false, className 
 
   return <span className={`math-renderer ${className}`}>{renderedContent}</span>;
 }
+

@@ -6,9 +6,9 @@
 
 .duel-card {
   background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.25);
   border-radius: 1.25rem;
-  padding: 3rem 2rem;
+  padding: 2.5rem 2rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -17,14 +17,220 @@
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
 }
 
-.matchmaking-spinner {
+/* Mode Menu & Difficulty Picker */
+.menu-header h1 {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #fff;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.menu-header p {
+  color: #94a3b8;
+  font-size: 0.95rem;
+}
+
+.difficulty-picker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem 0;
+}
+
+.diff-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #818cf8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.diff-options {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.diff-btn {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  padding: 0.45rem 0.85rem;
+  border-radius: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.diff-btn:hover {
+  border-color: #6366f1;
+  color: #fff;
+}
+
+.diff-btn.active {
+  background: #2563eb;
+  border-color: #3b82f6;
+  color: #fff;
+}
+
+/* Modes Grid */
+.duel-modes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.mode-box {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.mode-box.highlight-box {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.mode-icon {
   width: 48px;
   height: 48px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mode-box h3 {
+  font-size: 1.1rem;
+  color: #fff;
+  margin: 0;
+}
+
+.mode-box p {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.4;
+  flex: 1;
+}
+
+/* Join Room Section */
+.join-room-section {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0.85rem;
+  padding: 1rem 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.join-room-section h4 {
+  font-size: 0.9rem;
+  color: #cbd5e1;
+  margin-bottom: 0.5rem;
+}
+
+.join-input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.join-input-group input {
+  flex: 1;
+  background: rgba(10, 15, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.85rem;
+  color: #fff;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.join-input-group input:focus {
+  border-color: #6366f1;
+}
+
+/* Lobby Card & Invite Link */
+.room-badge {
+  background: rgba(99, 102, 241, 0.2);
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  color: #a5b4fc;
+  padding: 0.4rem 1rem;
+  border-radius: 2rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+}
+
+.invite-link-container {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 540px;
+  margin: 0.5rem 0;
+}
+
+.invite-link-container input {
+  flex: 1;
+  background: rgba(10, 15, 30, 0.95);
+  border: 1px solid #3b82f6;
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  color: #93c5fd;
+  font-size: 0.85rem;
+  font-family: monospace;
+}
+
+.lobby-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-whatsapp {
+  background: #25d366 !important;
+  color: #fff !important;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-emerald {
+  background: #10b981 !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+
+.waiting-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  color: #fbbf24;
+  font-size: 0.88rem;
+}
+
+.matchmaking-spinner {
+  width: 44px;
+  height: 44px;
   border: 4px solid rgba(99, 102, 241, 0.2);
   border-top-color: #6366f1;
   border-radius: 50%;
   animation: spin 1s infinite linear;
-  margin-top: 1rem;
 }
 
 @keyframes spin {
@@ -262,7 +468,14 @@
 }
 
 @media (max-width: 640px) {
+  .duel-modes-grid {
+    grid-template-columns: 1fr;
+  }
   .options-grid {
     grid-template-columns: 1fr;
   }
+  .invite-link-container {
+    flex-direction: column;
+  }
 }
+
