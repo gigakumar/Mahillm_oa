@@ -36,7 +36,7 @@ export default function Profile() {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { scoreData } = useScore();
-  const { masteryScores, questionProgress } = useUserData();
+  const { masteryScores, questionProgress, testHistory } = useUserData();
   const navigate = useNavigate();
 
   const [dbProfile, setDbProfile] = useState(null);
