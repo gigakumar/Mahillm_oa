@@ -1,8 +1,8 @@
 /* MARKS Layout Sidebar Styling */
 .sidebar-container {
   width: 240px;
-  background: #090d16;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -12,6 +12,7 @@
   padding: 1.25rem 1rem;
   user-select: none;
   flex-shrink: 0;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
 }
 
 /* Brand Header */
@@ -39,7 +40,7 @@
   font-size: 1.35rem;
   font-weight: 800;
   letter-spacing: 0.02em;
-  color: #ffffff;
+  color: var(--text-primary);
   font-family: var(--font-display);
 }
 
@@ -65,7 +66,7 @@
   gap: 0.85rem;
   padding: 0.7rem 1rem;
   border-radius: 12px;
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-size: 0.92rem;
   font-weight: 500;
   text-decoration: none;
@@ -73,20 +74,20 @@
 }
 
 .sidebar-link:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #f1f5f9;
+  background: var(--bg-card);
+  color: var(--text-primary);
 }
 
-/* Active Link - Crisp White Pill with Dark Text */
+/* Active Link - High Contrast Active Pill */
 .sidebar-link.active {
-  background: #ffffff !important;
-  color: #090d16 !important;
+  background: var(--text-primary) !important;
+  color: var(--bg-base) !important;
   font-weight: 700;
-  box-shadow: 0 4px 14px rgba(255, 255, 255, 0.15);
+  box-shadow: var(--shadow-sm);
 }
 
 .sidebar-link.active .sidebar-link-icon {
-  color: #090d16 !important;
+  color: var(--bg-base) !important;
 }
 
 .sidebar-link-icon {
@@ -110,7 +111,7 @@
 
 .sidebar-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--border);
   margin: 0.75rem 0;
 }
 
@@ -142,7 +143,7 @@
 /* Footer Theme Toggle */
 .sidebar-footer {
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--border);
 }
 
 .theme-toggle-btn {
@@ -152,18 +153,19 @@
   gap: 0.75rem;
   padding: 0.65rem 0.85rem;
   background: transparent;
-  border: none;
-  color: #94a3b8;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
   font-size: 0.82rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 10px;
   transition: all 0.15s ease;
 }
 
 .theme-toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #f1f5f9;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border-color: var(--border-hover);
 }
 
 /* Mobile Responsive */

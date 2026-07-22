@@ -2,9 +2,10 @@
 .marks-app-layout {
   display: flex;
   min-height: 100vh;
-  background: #090d16;
-  color: #f8fafc;
+  background: var(--bg-base);
+  color: var(--text-primary);
   font-family: var(--font-body);
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 .marks-main-wrapper {
@@ -24,12 +25,14 @@
 
 /* Rounded main container background like MARKS app */
 .marks-workspace-container > * {
-  background: #121824;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-workspace);
+  border: 1px solid var(--border);
   border-radius: 20px;
   padding: 1.75rem;
   min-height: calc(100vh - 5.5rem);
-  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+  box-shadow: var(--shadow-md);
+  color: var(--text-primary);
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 
 @media (max-width: 900px) {
