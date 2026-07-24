@@ -31,6 +31,7 @@ import { QuestionBankRegistry } from '../data/questionBankRegistry';
 import { shuffleQuestionOptions } from '../utils/mathUtils';
 import { db } from '../firebase';
 import { doc, setDoc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
+import SpeedDuelLobby from '../components/duel/SpeedDuelLobby';
 import './PeerDuel.css';
 
 const FALLBACK_QUESTIONS = [
@@ -467,69 +468,13 @@ export default function PeerDuel() {
     <div className="peer-duel-container">
       {/* MODE MENU */}
       {mode === 'menu' && (
-        <div className="duel-card mode-menu-card">
-          <div className="menu-header">
-            <Swords className="w-12 h-12 text-indigo-400 animate-pulse" />
-            <h1>1vs1 Speed Duel Arena</h1>
-            <p>Challenge peers worldwide or test your speed against AI in real-time technical battles!</p>
-          </div>
-
-          <div className="difficulty-picker">
-            <span className="diff-label">Question Bank Filter:</span>
-            <div className="diff-options">
-              <button 
-                className={`diff-btn ${difficulty === 'LOW' ? 'active' : ''}`} 
-                onClick={() => setDifficulty('LOW')}
-              >
-                ⚡ LOW Difficulty (Fast Speed Challenge)
-              </button>
-              <button 
-                className={`diff-btn ${difficulty === 'all' ? 'active' : ''}`} 
-                onClick={() => setDifficulty('all')}
-              >
-                🔥 ALL Difficulties
-              </button>
-            </div>
-          </div>
-
-          <div className="duel-modes-grid">
-            {/* Create Multiplayer Room */}
-            <div className="mode-box highlight-box">
-              <div className="mode-icon"><Users size={28} className="text-emerald-400" /></div>
-              <h3>Create Private Duel Room</h3>
-              <p>Generate a shareable invite link & play 1vs1 with any friend!</p>
-              <button className="btn btn-emerald w-full" onClick={handleCreateRoom}>
-                🎮 Create Room & Get Link
-              </button>
-            </div>
-
-            {/* Quick Match / AI Opponent */}
-            <div className="mode-box">
-              <div className="mode-icon"><Zap size={28} className="text-amber-400" /></div>
-              <h3>Quick Match (AI / Bot)</h3>
-              <p>Instant battle with an AI engineer match in your skill band.</p>
-              <button className="btn btn-primary w-full" onClick={handleStartAIMatch}>
-                ⚡ Start Instant Duel
-              </button>
-            </div>
-          </div>
-
-          {/* Enter Room Code */}
-          <div className="join-room-section">
-            <h4>Have an Invite Room Code?</h4>
-            <div className="join-input-group">
-              <input 
-                type="text" 
-                placeholder="Enter Room Code (e.g. DUEL-9K2F)"
-                value={inputRoomCode}
-                onChange={(e) => setInputRoomCode(e.target.value)}
-              />
-              <button className="btn btn-secondary" onClick={() => joinExistingRoom(inputRoomCode)}>
-                Join Match <ArrowRight size={16} />
-              </button>
-            </div>
-          </div>
-        </div>
+        <SpeedDuelLobby 
+          onQuickMatch={handleStartAIMatch}
+          onCreateRoom={handleCreateRoom}
+          onJoinRoom={joinExistingRoom}
+          inputRoomCode={inputRoomCode}
+          setInputRoomCode={setInputRoomCode}
+        />
       )}
 
       {/* LOBBY / WAITING FOR LINK OPPONENT */}
