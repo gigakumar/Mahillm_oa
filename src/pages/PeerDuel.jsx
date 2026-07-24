@@ -31,6 +31,7 @@ import { QuestionBankRegistry } from '../data/questionBankRegistry';
 import { shuffleQuestionOptions } from '../utils/mathUtils';
 import { db } from '../firebase';
 import { doc, setDoc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
+import PremiumGate from '../components/PremiumGate';
 import './PeerDuel.css';
 
 const FALLBACK_QUESTIONS = [
@@ -465,6 +466,12 @@ export default function PeerDuel() {
 
   return (
     <div className="peer-duel-container">
+      <PremiumGate 
+        featureId="peer_duel" 
+        requiredTier="pro"
+        title="Unlock 1v1 Speed Duel Arena"
+        subtitle="Real-time PvP competitive speed solving, ELO ranks, and streak multipliers."
+      >
       {/* MODE MENU */}
       {mode === 'menu' && (
         <div className="duel-card mode-menu-card">
@@ -689,6 +696,7 @@ export default function PeerDuel() {
           </div>
         </div>
       )}
+      </PremiumGate>
     </div>
   );
 }

@@ -4,6 +4,8 @@ import { classifyStrategy } from '../intelligence/strategyClassifier';
 import { Play, Pause, RotateCcw, Clock, ShieldAlert, Award, ArrowRight } from 'lucide-react';
 import './AttemptReplay.css';
 
+import PremiumGate from '../components/PremiumGate';
+
 export default function AttemptReplay() {
   const { questionProgress } = useUserData();
 
@@ -124,6 +126,13 @@ export default function AttemptReplay() {
       <p className="practice-subtitle" style={{ marginBottom: '2rem' }}>
         Visualize step-by-step solve timelines, answer swaps, and commitment delays to debug calculation stalls.
       </p>
+
+      <PremiumGate 
+        featureId="attempt_replay" 
+        requiredTier="pro"
+        title="Unlock Step-by-Step Attempt Replay & Diagnostic"
+        subtitle="Playback exact timeline of student solving steps, hesitation delays, and option switching."
+      >
 
       {loading ? (
         <div style={{ textAlign: 'center', padding: '5rem 0' }}>Loading attempts database...</div>
@@ -322,6 +331,7 @@ export default function AttemptReplay() {
 
         </div>
       )}
+      </PremiumGate>
     </div>
   );
 }

@@ -20,6 +20,8 @@ const QUESTIONS = {
   ]
 };
 
+import PremiumGate from '../components/PremiumGate';
+
 export default function MockInterview() {
   const [tab, setTab] = useState('Technical');
   const [idx, setIdx] = useState(0);
@@ -112,6 +114,13 @@ export default function MockInterview() {
           <p className="practice-subtitle">Practice answering out loud. Speech recognition analyzes your clarity, depth, and technical keyword coverage.</p>
         </div>
       </header>
+
+      <PremiumGate 
+        featureId="mock_interview" 
+        requiredTier="pro"
+        title="Unlock AI Voice Viva & Technical Interviewer"
+        subtitle="Real-time speech evaluation, keyword coverage diagnostics, and PSU viva simulation."
+      >
 
       {/* Tabs */}
       <div className="mi-tabs">
@@ -242,6 +251,7 @@ export default function MockInterview() {
           </button>
         </div>
       </div>
+      </PremiumGate>
     </div>
   );
 }

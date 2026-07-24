@@ -90,12 +90,12 @@ const DIGITAL_BOOKS = [
 const PYQ_BANKS = [
   { id: 'gate_main', name: 'GATE ME (Core)', badge: '2026 QS ADDED', category: 'Mechanical Engineering', icon: '⚙️' },
   { id: 'nta_abhyas', name: 'GATE NTA Abhyas', badge: 'VERIFIED', isCheck: true, category: 'Mechanical Engineering', icon: '✅' },
-  { id: 'isro', name: 'ISRO & BARC', badge: 'SPACE EXAMS', category: 'General Aptitude', icon: '🚀' },
+  { id: 'isro', name: 'ISRO & BARC GA', badge: 'SPACE EXAMS', category: 'General Aptitude', route: '/aptitude', icon: '🚀' },
   { id: 'psu_state', name: 'State PSUs / ESE', badge: '2026 QS ADDED', category: 'Mechanical Engineering', icon: '🏛️' },
   { id: 'ese_prelims', name: 'ESE Prelims', badge: 'OBJECTIVE', category: 'Mechanical Engineering', icon: '📜' },
   { id: 'drdo', name: 'DRDO RAC', badge: 'DEFENCE', category: 'Mechanical Engineering', icon: '🛡️' },
   { id: 'gate_adv', name: 'GATE AIR 1-100', badge: '2026 QS ADDED', category: 'Mechanical Engineering', icon: '🔥' },
-  { id: 'aptitude', name: 'Engineering Aptitude', badge: 'ALL EXAMS', category: 'General Aptitude', icon: '📊' }
+  { id: 'aptitude', name: 'General Aptitude Suite', badge: '400+ QS', category: 'General Aptitude', route: '/aptitude', icon: '🧮' }
 ];
 
 export default function Dashboard() {
@@ -343,7 +343,7 @@ export default function Dashboard() {
 
         <div className="pyq-banks-grid">
           {PYQ_BANKS.map((bank) => (
-            <div key={bank.id} className="pyq-bank-card" onClick={() => navigate(`/oa-practice?cat=${encodeURIComponent(bank.category)}`)}>
+            <div key={bank.id} className="pyq-bank-card" onClick={() => navigate(bank.route || `/oa-practice?cat=${encodeURIComponent(bank.category)}`)}>
               <div className="bank-card-content">
                 <span className="bank-emoji">{bank.icon}</span>
                 <span className="bank-name">{bank.name}</span>

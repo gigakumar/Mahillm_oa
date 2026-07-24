@@ -19,6 +19,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import './GatePredictor.css';
 
+import PremiumGate from '../components/PremiumGate';
+
 export default function GatePredictor() {
   const navigate = useNavigate();
   const { testHistory, masteryScores } = useUserData();
@@ -42,6 +44,12 @@ export default function GatePredictor() {
 
   return (
     <div className="gate-predictor-container">
+      <PremiumGate 
+        featureId="gate_predictor" 
+        requiredTier="pro"
+        title="Unlock GATE Rank & PSU Call Predictor"
+        subtitle="Monte-Carlo rank simulation, percentile breakdown, and PSU recruitment cutoff matching."
+      >
       {/* Disclaimer Notice Banner */}
       <div className="disclaimer-banner">
         <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
@@ -202,6 +210,7 @@ export default function GatePredictor() {
           </table>
         </div>
       </div>
+      </PremiumGate>
     </div>
   );
 }

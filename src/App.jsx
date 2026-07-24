@@ -4,8 +4,12 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { ScoreProvider } from './contexts/ScoreContext';
 import { UserDataProvider } from './contexts/UserDataContext';
 
+import { SubscriptionProvider } from './contexts/SubscriptionContext';
+import PricingModal from './components/PricingModal';
+
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
+import Aptitude from './pages/Aptitude';
 import OAPractice from './pages/OAPractice';
 import MockInterview from './pages/MockInterview';
 import Leaderboard from './pages/Leaderboard';
@@ -33,6 +37,12 @@ import GatePredictor from './pages/GatePredictor';
 import PeerDuel from './pages/PeerDuel';
 import ComponentInspector from './pages/ComponentInspector';
 
+// New Premium Feature Pages
+import Pricing from './pages/Pricing';
+import AISolver from './pages/AISolver';
+import PDFPracticeGenerator from './pages/PDFPracticeGenerator';
+import AICoach from './pages/AICoach';
+import MockBuilder from './pages/MockBuilder';
 
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -55,205 +65,252 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider>
         <AuthProvider>
-        <ScoreProvider>
-          <UserDataProvider>
-            <Router>
-              <Routes>
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                
-                <Route path="/" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Dashboard />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/oa-practice" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <OAPractice />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/mock-interview" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <MockInterview />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+          <SubscriptionProvider>
+            <ScoreProvider>
+              <UserDataProvider>
+                <Router>
+                  <PricingModal />
+                  <Routes>
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                    
+                    <Route path="/" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <Dashboard />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
+                    
+                    <Route path="/aptitude" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <Aptitude />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
+                    
+                    <Route path="/oa-practice" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <OAPractice />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
+                    
+                    <Route path="/mock-interview" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <MockInterview />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/leaderboard" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Leaderboard />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/leaderboard" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <Leaderboard />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/stats" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Stats />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/stats" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <Stats />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/tests" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Tests />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-                <Route path="/tests/session-briefing" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <SessionBriefing />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/pricing" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <Pricing />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/tests/session" element={
-                  <ProtectedRoute>
-                    <TestSession />
-                  </ProtectedRoute>
-                } />
+                    <Route path="/ai-solver" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <AISolver />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/tests/result/:testId" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <TestResult />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/pdf-generator" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PDFPracticeGenerator />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/mistakes" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Mistakes />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/ai-coach" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <AICoach />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/planner" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <StudyPlanner />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/mock-builder" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <MockBuilder />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/gate-predictor" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <GatePredictor />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/tests" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <Tests />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/tests/session-briefing" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <SessionBriefing />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/duel" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <PeerDuel />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/tests/session" element={
+                      <ProtectedRoute>
+                        <TestSession />
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/inspector" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <ComponentInspector />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/tests/result/:testId" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <TestResult />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
+                    <Route path="/mistakes" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <Mistakes />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
+                    <Route path="/planner" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <StudyPlanner />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/readiness" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <ReadinessHeatmap />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/gate-predictor" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <GatePredictor />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/intelligence" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Intelligence />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/duel" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <PeerDuel />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/timeline" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Timeline />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/inspector" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <ComponentInspector />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/how-ai-thinks" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <HowAIThinks />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/readiness" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <ReadinessHeatmap />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/attempt-replay" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <AttemptReplay />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/intelligence" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <Intelligence />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/admin/questions" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <AdminDashboard />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/timeline" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <Timeline />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/daily-challenge" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <DailyChallenge />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/how-ai-thinks" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <HowAIThinks />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
+                    <Route path="/attempt-replay" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <AttemptReplay />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
+                    <Route path="/admin/questions" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <AdminDashboard />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/profile" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Profile />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+                    <Route path="/daily-challenge" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <DailyChallenge />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
 
-                <Route path="/settings" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Settings />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Router>
-          </UserDataProvider>
-        </ScoreProvider>
-      </AuthProvider>
-    </ThemeProvider>
+                    <Route path="/profile" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <Profile />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
+
+                    <Route path="/settings" element={
+                      <ProtectedRoute>
+                        <Layout>
+                          <Settings />
+                        </Layout>
+                      </ProtectedRoute>
+                    } />
+                    
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </Router>
+              </UserDataProvider>
+            </ScoreProvider>
+          </SubscriptionProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }

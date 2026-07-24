@@ -14,6 +14,7 @@ import {
   sendTutorChatMessageStream 
 } from '../services/aiLogicService';
 import MathRenderer from './MathRenderer';
+import PremiumGate from './PremiumGate';
 
 export default function AITutorWidget({ question, userAnswer = null, questionId = null }) {
   if (!question) return null;
@@ -143,7 +144,13 @@ export default function AITutorWidget({ question, userAnswer = null, questionId 
   };
 
   return (
-    <div className="card" style={{ background: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(99, 102, 241, 0.35)', borderRadius: '12px', padding: '1.25rem', marginTop: '1.25rem', color: '#fff' }}>
+    <PremiumGate 
+      featureId="ai_tutor" 
+      requiredTier="pro"
+      title="Unlock Real-Time AI Tutor & Hint Assistant"
+      subtitle="Interactive AI step hints, option explanations, and 24/7 clarification chat for any question."
+    >
+      <div className="card" style={{ background: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(99, 102, 241, 0.35)', borderRadius: '12px', padding: '1.25rem', marginTop: '1.25rem', color: '#fff' }}>
       {/* Widget Header Controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '700', color: '#818cf8', fontSize: '1rem' }}>
@@ -298,6 +305,7 @@ export default function AITutorWidget({ question, userAnswer = null, questionId 
         </div>
       )}
     </div>
+    </PremiumGate>
   );
 }
 

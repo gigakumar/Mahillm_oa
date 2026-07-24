@@ -1,0 +1,31 @@
+.mock-builder-page {
+  padding: 2rem 1.5rem;
+  max-width: 1050px;
+  margin: 0 auto;
+}
+
+.builder-card {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 2rem;
+}
+
+.weightage-slider-group {
+  margin-bottom: 1.5rem;
+}
+
+.slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #cbd5e1;
+  margin-bottom: 0.5rem;
+}
+
+.range-slider {
+  width: 100%;
+  accent-color: #6366f1;
+}
