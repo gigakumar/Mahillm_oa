@@ -1,42 +1,25 @@
-import { useState, useEffect, useRef } from 'react';
-import { Mic, Square, ChevronLeft, ChevronRight, Lightbulb, MessageSquare, Sparkles, Volume2, CheckCircle, RefreshCw, AlertTriangle } from 'lucide-react';
-import { getSpeechSupportTier, evaluateVivaAnswer } from '../utils/voiceCoachEngine';
+import React, { useState, useEffect, useRef } from 'react';
+import { Mic, Square, Sparkles, Volume2, VolumeX, MessageSquare, RefreshCw, Send, CheckCircle, AlertTriangle } from 'lucide-react';
+import { AIInterviewerService } from '../utils/aiInterviewerService';
 import './MockInterview.css';
 
-const QUESTIONS = {
-  Technical: [
-    { q: "Explain the difference between a two-stroke and a four-stroke engine.", tips: ["stroke", "revolution", "efficiency", "emissions", "power"] },
-    { q: "What is the significance of Mohr's Circle in stress analysis?", tips: ["principal", "shear", "stress", "graphical", "plane"] },
-    { q: "Describe the working principle of a centrifugal pump.", tips: ["impeller", "head", "kinetic", "pressure", "priming"] },
-    { q: "What are the differences between a Carnot cycle and a Rankine cycle?", tips: ["carnot", "rankine", "steam", "ideal", "efficiency"] },
-    { q: "Explain the concept of factor of safety in machine design.", tips: ["yield", "ultimate", "safety", "stress", "load"] }
-  ],
-  Behavioral: [
-    { q: "Tell me about a time you worked under a tight deadline to complete a project.", tips: ["deadline", "project", "time", "result", "priority"] },
-    { q: "Describe a situation where you had to resolve a conflict within your team.", tips: ["team", "communication", "resolution", "conflict", "listen"] }
-  ],
-  HR: [
-    { q: "Tell me about yourself and your career goals in mechanical engineering.", tips: ["background", "projects", "engineering", "goals", "skills"] }
-  ]
-};
+const INTERVIEW_TOPICS = ['Thermodynamics', 'Fluid Mechanics', 'Strength of Materials', 'Behavioral & HR'];
 
 export default function MockInterview() {
-  const [tab, setTab] = useState('Technical');
-  const [idx, setIdx] = useState(0);
-  const [showTips, setShowTips] = useState(false);
+  const [topic, setTopic] = useState('');
+  const [isSessionActive, setIsSessionActive] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState('');
-  const [feedback, setFeedback] = useState(null);
-  const [analyzing, setAnalyzing] = useState(false);
+  const [conversation, setConversation] = useState([]);
+  const [isAiThinking, setIsAiThinking] = useState(false);
+  const [isTtsEnabled, setIsTtsEnabled] = useState(true);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const recognitionRef = useRef(null);
-  const list = QUESTIONS[tab];
-  const item = list[idx];
-  const tabs = Object.keys(QUESTIONS);
+  const aiServiceRef = useRef(null);
+  const scrollRef = useRef(null);
 
-  const supportTier = getSpeechSupportTier();
-
-  // Initialize SpeechRecognition API
+  // Initialize SpeechRecognition
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
@@ -55,194 +38,260 @@ export default function MockInterview() {
 
       recognition.onerror = (err) => {
         console.error("Speech recognition error:", err);
+        setIsRecording(false);
       };
-
+      
       recognitionRef.current = recognition;
     }
   }, []);
 
-  const startRecording = () => {
-    setTranscript('');
-    setFeedback(null);
-    setIsRecording(true);
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.start();
-      } catch (e) {
-        console.error("Error starting speech recognition:", e);
-      }
+  // Auto-scroll chat
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [conversation, transcript]);
+
+  const speak = (text) => {
+    if (!isTtsEnabled || !window.speechSynthesis) return;
+    
+    // Stop any ongoing speech
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const stopSpeaking = () => {
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
     }
   };
 
-  const stopRecording = () => {
-    setIsRecording(false);
-    if (recognitionRef.current) {
-      try {
+  const startInterview = async (selectedTopic) => {
+    setTopic(selectedTopic);
+    setIsSessionActive(true);
+    setConversation([]);
+    setErrorMsg('');
+    setIsAiThinking(true);
+    
+    try {
+      aiServiceRef.current = new AIInterviewerService(selectedTopic);
+      const initialResponse = await aiServiceRef.current.startInterview();
+      
+      handleAiResponse(initialResponse);
+    } catch (err) {
+      console.error(err);
+      setErrorMsg("Failed to start AI session. Ensure Firebase Vertex AI is configured.");
+      setIsSessionActive(false);
+    } finally {
+      setIsAiThinking(false);
+    }
+  };
+
+  const handleAiResponse = (aiData) => {
+    const aiMessage = {
+      role: 'ai',
+      text: aiData.nextQuestion,
+      feedback: aiData.feedback,
+      score: aiData.score
+    };
+    
+    setConversation(prev => [...prev, aiMessage]);
+    
+    // Speak both feedback (if exists) and the next question
+    let textToSpeak = "";
+    if (aiData.feedback && aiData.feedback !== "N/A" && aiData.feedback.trim() !== "") {
+      textToSpeak += aiData.feedback + ". ";
+    }
+    textToSpeak += aiData.nextQuestion;
+    
+    speak(textToSpeak);
+  };
+
+  const toggleRecording = () => {
+    if (isRecording) {
+      // Stop recording
+      setIsRecording(false);
+      if (recognitionRef.current) {
         recognitionRef.current.stop();
-      } catch (e) {
-        console.error("Error stopping speech recognition:", e);
+      }
+    } else {
+      // Start recording
+      stopSpeaking();
+      setTranscript('');
+      setIsRecording(true);
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.start();
+        } catch (e) {
+          console.error(e);
+        }
       }
     }
-
-    setAnalyzing(true);
-    setTimeout(() => {
-      setAnalyzing(false);
-      const evalRes = evaluateVivaAnswer({
-        transcript,
-        targetKeywords: item.tips,
-        expectedMinWords: 20
-      });
-      setFeedback(evalRes);
-    }, 1200);
   };
 
-  const goTo = (i) => {
-    setIdx(i);
-    setShowTips(false);
-    setIsRecording(false);
+  const submitAnswer = async () => {
+    if (!transcript.trim()) return;
+    
+    // Stop recording if active
+    if (isRecording) {
+      toggleRecording();
+    }
+    
+    const userMessage = { role: 'user', text: transcript };
+    setConversation(prev => [...prev, userMessage]);
+    const answerText = transcript;
     setTranscript('');
-    setFeedback(null);
+    setIsAiThinking(true);
+    
+    try {
+      const aiResponse = await aiServiceRef.current.sendAnswer(answerText);
+      handleAiResponse(aiResponse);
+    } catch (err) {
+      console.error(err);
+      setErrorMsg("Failed to process answer with AI.");
+    } finally {
+      setIsAiThinking(false);
+    }
   };
+
+  const endInterview = () => {
+    setIsSessionActive(false);
+    stopSpeaking();
+  };
+
+  if (!isSessionActive) {
+    return (
+      <div className="page-content mock-interview setup-mode">
+        <header className="mi-header">
+          <h1>AI Voice Interviewer 🎙️</h1>
+          <p className="practice-subtitle">Experience a real-time, adaptive technical interview powered by Gemini AI.</p>
+        </header>
+
+        {errorMsg && (
+          <div className="error-banner">
+            <AlertTriangle size={20} />
+            {errorMsg}
+          </div>
+        )}
+
+        <div className="setup-card card">
+          <h2>Select Interview Topic</h2>
+          <div className="topics-grid">
+            {INTERVIEW_TOPICS.map(t => (
+              <button 
+                key={t} 
+                className="topic-btn"
+                onClick={() => startInterview(t)}
+                disabled={isAiThinking}
+              >
+                {isAiThinking && topic === t ? <RefreshCw className="animate-spin inline" size={18}/> : <Sparkles size={18} className="text-indigo-400" />}
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="page-content mock-interview">
-      <header className="mi-header">
-        <div>
-          <h1>AI Voice Viva & Technical Interview Coach 🎙️</h1>
-          <p className="practice-subtitle">Practice answering out loud. Speech recognition analyzes your clarity, depth, and technical keyword coverage.</p>
+    <div className="page-content mock-interview active-mode">
+      <header className="mi-header-active">
+        <div className="header-info">
+          <h2>Live Interview: <span className="text-indigo-400">{topic}</span></h2>
+          <div className="status-badge pulse-active">Session Active</div>
+        </div>
+        <div className="header-actions">
+          <button className="btn btn-ghost toggle-tts" onClick={() => setIsTtsEnabled(!isTtsEnabled)}>
+            {isTtsEnabled ? <Volume2 size={20} /> : <VolumeX size={20} className="text-rose-400" />}
+          </button>
+          <button className="btn btn-outline-danger" onClick={endInterview}>End Interview</button>
         </div>
       </header>
 
-      {/* Tabs */}
-      <div className="mi-tabs">
-        {tabs.map((t) => (
-          <button
-            key={t}
-            className={`mi-tab ${tab === t ? 'active' : ''}`}
-            onClick={() => { setTab(t); goTo(0); }}
-          >
-            {t === 'Technical' ? '⚙️' : t === 'Behavioral' ? '🧠' : '🤝'} {t}
-          </button>
+      <div className="chat-arena" ref={scrollRef}>
+        {conversation.map((msg, idx) => (
+          <div key={idx} className={`chat-message ${msg.role}`}>
+            <div className="message-avatar">
+              {msg.role === 'ai' ? <Sparkles size={18} /> : 'U'}
+            </div>
+            <div className="message-content">
+              {msg.role === 'ai' && msg.feedback && (
+                <div className="ai-feedback-box">
+                  <div className="feedback-score">Score: {msg.score}/10</div>
+                  <p>{msg.feedback}</p>
+                </div>
+              )}
+              <div className="text-bubble">
+                {msg.text}
+              </div>
+            </div>
+          </div>
         ))}
+        
+        {/* Live Transcript Bubble */}
+        {(isRecording || transcript) && (
+          <div className="chat-message user live-typing">
+            <div className="message-avatar">U</div>
+            <div className="message-content">
+              <div className="text-bubble live-bubble">
+                {transcript}
+                {isRecording && <span className="typing-cursor"></span>}
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {/* AI Thinking Indicator */}
+        {isAiThinking && (
+          <div className="chat-message ai thinking">
+            <div className="message-avatar"><Sparkles size={18} /></div>
+            <div className="message-content">
+              <div className="thinking-dots">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Question Card */}
-      <div className="mi-card card">
-        <div className="mi-counter">
-          Question {idx + 1} of {list.length}
-        </div>
-        <h2 className="mi-question">{item.q}</h2>
-
-        {/* Tips toggle */}
-        <button className="btn btn-ghost tips-toggle" onClick={() => setShowTips(!showTips)}>
-          <Lightbulb size={16} />
-          {showTips ? 'Hide Target Keywords' : 'Show Target Keywords'}
-        </button>
-
-        {showTips && (
-          <div className="tips-box">
-            <h4>💡 Target Key Concepts to Cover:</h4>
-            <ul>
-              {item.tips.map((tip, i) => <li key={i}>{tip}</li>)}
-            </ul>
-          </div>
-        )}
-
-        {/* Recorder */}
-        <div className="recorder">
-          <div className={`recorder-status ${isRecording ? 'active' : ''}`}>
-            <div className="rec-dot"></div>
-            {isRecording ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <span>Live Audio Viva active… Speak out loud</span>
-                <div className="wave">
-                  <div className="wave-bar"></div>
-                  <div className="wave-bar"></div>
-                  <div className="wave-bar"></div>
-                  <div className="wave-bar"></div>
-                  <div className="wave-bar"></div>
-                </div>
-              </div>
-            ) : 'Tap start to answer via voice microphone'}
-          </div>
-
-          {!isRecording ? (
-            <button className="rec-btn start" onClick={startRecording}>
-              <Mic size={22} /> Start Voice Practice
-            </button>
-          ) : (
-            <button className="rec-btn stop" onClick={stopRecording}>
-              <Square size={22} /> Stop & Evaluate
-            </button>
-          )}
-        </div>
-
-        {/* Live Speech Transcript Box */}
-        {transcript && (
-          <div className="transcript-live-box">
-            <h4><Volume2 size={16} className="text-indigo-400 inline mr-1" /> Speech Transcript:</h4>
-            <p className="transcript-text">"{transcript}"</p>
-          </div>
-        )}
-
-        {/* Analyzing Spinner */}
-        {analyzing && (
-          <div className="ai-evaluating-box">
-            <RefreshCw size={20} className="animate-spin text-amber-400" />
-            <span>AI analyzing technical vocabulary & concept coverage...</span>
-          </div>
-        )}
-
-        {/* Feedback Display */}
-        {feedback && !analyzing && (
-          <div className="viva-feedback-card">
-            <div className="feedback-header">
-              <Sparkles size={18} className="text-amber-400" />
-              <h3>AI Voice Viva Analysis</h3>
-            </div>
-            
-            <div className="feedback-stats">
-              <div className="fb-stat">
-                <span className="label">Evaluation Band</span>
-                <strong className={`val ${feedback.band === 'strong' ? 'text-emerald-400' : feedback.band === 'developing' ? 'text-amber-400' : 'text-rose-400'}`}>
-                  {feedback.band === 'strong' ? 'STRONG ANSWER ✅' : feedback.band === 'developing' ? 'DEVELOPING ⚠️' : 'NEEDS WORK 🔴'}
-                </strong>
-              </div>
-              <div className="fb-stat">
-                <span className="label">Word Count</span>
-                <strong className="val">{feedback.wordCount} words</strong>
-              </div>
-              <div className="fb-stat">
-                <span className="label">Matched Keywords</span>
-                <strong className="val text-indigo-400">{feedback.keywordsFound.length} / {item.tips.length}</strong>
-              </div>
-            </div>
-
-            <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>Keywords Detected in Transcript:</div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-                {feedback.keywordsFound.map((kw, i) => (
-                  <span key={i} className="badge badge-success" style={{ fontSize: '0.75rem' }}>✓ {kw}</span>
-                ))}
-                {feedback.keywordsMissing.map((kw, i) => (
-                  <span key={i} className="badge badge-secondary" style={{ fontSize: '0.75rem', opacity: 0.6 }}>missing: {kw}</span>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Navigation */}
-        <div className="mi-nav">
-          <button className="btn btn-ghost" onClick={() => goTo(Math.max(0, idx - 1))} disabled={idx === 0}>
-            <ChevronLeft size={16} /> Previous
+      <div className="interview-controls card">
+        <div className="control-bar">
+          <button 
+            className={`btn-mic ${isRecording ? 'recording' : ''}`}
+            onClick={toggleRecording}
+            disabled={isAiThinking}
+          >
+            {isRecording ? <Square size={24} /> : <Mic size={24} />}
+            {isRecording ? 'Stop Recording' : 'Hold to Speak'}
           </button>
-          <button className="btn btn-primary" onClick={() => goTo(Math.min(list.length - 1, idx + 1))} disabled={idx === list.length - 1}>
-            Next <ChevronRight size={16} />
+          
+          <button 
+            className="btn btn-primary submit-ans-btn"
+            onClick={submitAnswer}
+            disabled={!transcript.trim() || isAiThinking}
+          >
+            <Send size={18} /> Submit Answer
           </button>
         </div>
+        
+        {isRecording && (
+          <div className="recording-indicator">
+            <div className="wave">
+              <div className="wave-bar"></div>
+              <div className="wave-bar"></div>
+              <div className="wave-bar"></div>
+              <div className="wave-bar"></div>
+              <div className="wave-bar"></div>
+            </div>
+            <span>Listening to your answer...</span>
+          </div>
+        )}
       </div>
     </div>
   );
 }
-
