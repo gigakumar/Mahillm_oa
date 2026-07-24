@@ -1,0 +1,201 @@
+.hero-section {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  padding: 2.5rem;
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.8), rgba(30, 41, 59, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+  margin-bottom: 1.5rem;
+}
+
+/* Aurora Gradient Effects */
+.aurora {
+  position: absolute;
+  filter: blur(80px);
+  opacity: 0.4;
+  border-radius: 50%;
+  animation: aurora-float 10s ease-in-out infinite alternate;
+  z-index: 0;
+}
+
+.aurora-1 {
+  top: -50px;
+  left: -50px;
+  width: 300px;
+  height: 300px;
+  background: rgba(99, 102, 241, 0.6); /* Indigo */
+}
+
+.aurora-2 {
+  bottom: -100px;
+  right: -50px;
+  width: 400px;
+  height: 400px;
+  background: rgba(236, 72, 153, 0.5); /* Pink */
+  animation-delay: -5s;
+}
+
+@keyframes aurora-float {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(30px, 20px) scale(1.1); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 2rem;
+}
+
+.hero-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(99, 102, 241, 0.15);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #818cf8;
+  margin-bottom: 1rem;
+}
+
+.hero-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 1.5rem 0;
+  line-height: 1.2;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 1.25rem;
+}
+
+.ai-coach-message {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  max-width: 500px;
+}
+
+.ai-coach-message p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  line-height: 1.6;
+}
+
+.ai-coach-message strong {
+  color: #e2e8f0;
+}
+
+.hero-right {
+  display: flex;
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.goal-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 180px;
+}
+
+.goal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.goal-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.goal-subtext {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin: 0 0 1.25rem 0;
+}
+
+.progress-ring-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.retention-card {
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+}
+
+.retention-card h4 {
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.chart-container {
+  flex: 1;
+  width: 100%;
+  min-height: 100px;
+}
+
+@media (max-width: 1024px) {
+  .hero-content {
+    flex-direction: column;
+  }
+  .hero-right {
+    width: 100%;
+  }
+  .retention-card {
+    flex: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-right {
+    flex-direction: column;
+  }
+}

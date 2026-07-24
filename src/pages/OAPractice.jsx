@@ -20,7 +20,6 @@ const questionBankCache = {};
 
 
 const CATEGORIES = [
-  { key: 'all', label: 'All', emoji: '📚' },
   { key: 'Mechanical Engineering', label: 'Mech Engg', emoji: '🔩' },
   { key: 'bookmarked', label: 'Bookmarked', emoji: '⭐' }
 ];
@@ -51,14 +50,14 @@ export default function OAPractice() {
   const [xpFeedback, setXpFeedback] = useState(null);
   
   const [isSessionActive, setIsSessionActive] = useState(true);
-  const [category, setCategory] = useState(catParam || 'all');
+  const [category, setCategory] = useState(catParam || 'Mechanical Engineering');
   
   useEffect(() => {
     if (catParam) {
       setCategory(catParam);
       if (topicParam) setTopic(topicParam);
     } else {
-      setCategory('all');
+      setCategory('Mechanical Engineering');
       setTopic('all');
     }
     setIsSessionActive(true);
@@ -668,10 +667,6 @@ Respond ONLY with the JSON object, no markdown fences.`;
 
     const categoryCards = [
       { cat: 'Mechanical Engineering', emoji: '🔩', title: 'Mechanical Engg', desc: 'Thermo, Fluids, SOM, Manufacturing, Machine Design & more', count: '23,400+', gradient: 'linear-gradient(135deg, rgba(255,107,0,0.15), rgba(255,107,0,0.03))', hasPicker: true },
-      { cat: 'Quantitative Aptitude', emoji: '🧮', title: 'Quantitative Aptitude', desc: 'Percentages, Profit & Loss, Time & Work, Algebra, Geometry', count: '1,900+', gradient: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(139,92,246,0.03))' },
-      { cat: 'Data Interpretation', emoji: '📊', title: 'Data Interpretation', desc: 'Tables, Bar, Pie, Line charts — read data, spot trends', count: '730+', gradient: 'linear-gradient(135deg, rgba(6,182,212,0.15), rgba(6,182,212,0.03))' },
-      { cat: 'DILR', emoji: '🧩', title: 'DILR Puzzles', desc: 'Seating arrangements, constraint satisfaction, ordering', count: '14+', gradient: 'linear-gradient(135deg, rgba(245,158,11,0.15), rgba(245,158,11,0.03))' },
-      { cat: 'Logical Reasoning', emoji: '🧠', title: 'Logical Reasoning', desc: 'Series, coding-decoding, direction sense, syllogisms', count: '59+', gradient: 'linear-gradient(135deg, rgba(16,185,129,0.15), rgba(16,185,129,0.03))' },
     ];
 
     const intentCards = [
@@ -1062,126 +1057,6 @@ Respond ONLY with the JSON object, no markdown fences.`;
               <div className="skeleton-pulse skeleton-option"></div>
             </div>
           </div>
-        </div>
-      ) : viewMode === 'list' ? (
-        <div className="questions-list" style={{ display: 'flex', flexDirection: 'column', gap: '2rem', marginTop: '1rem' }}>
-          {quizQuestions.map((q, idx) => {
-            const isBookmarked = scoreData?.bookmarked?.includes(q.id);
-            const selected = selectedOptions[q.id] ?? null;
-            const submitted = !!submittedQuestions[q.id];
-
-            return (
-              <div key={q.id} className="question-card card">
-                <div className="question-header-row">
-                  <div className="question-meta" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-                    <span className="badge" style={{ background: 'var(--bg-body)', color: 'var(--text-secondary)', fontWeight: 600 }}>Q {idx + 1}</span>
-                    <span className="badge badge-accent">{q.topic}</span>
-                    <span className={`badge badge-${q.difficulty === 'Easy' ? 'success' : q.difficulty === 'Medium' ? 'warning' : 'danger'}`}>
-                      {q.difficulty}
-                    </span>
-                    {isAdaptive && selectionReasons[q.id] && (
-                      <span className="reason-badge">
-                        <Brain size={12} /> {selectionReasons[q.id]}
-                      </span>
-                    )}
-                    {progressMap[q.id] === 'correct' && (
-                      <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-                        Solved ✓
-                      </span>
-                    )}
-                    {progressMap[q.id] === 'incorrect' && (
-                      <span className="badge badge-danger" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
-                        Incorrect previously ✗
-                      </span>
-                    )}
-                  </div>
-                  
-                  <div className="question-tools">
-                    <button 
-                      className={`bookmark-btn ${isBookmarked ? 'bookmarked' : ''}`} 
-                      onClick={() => toggleBookmark(q.id)}
-                      title="Bookmark Question"
-                    >
-                      <Bookmark size={20} fill={isBookmarked ? 'currentColor' : 'none'} />
-                    </button>
-                  </div>
-                </div>
-
-                {q.contextHtml && (
-                  <div className="question-context card" style={{ marginBottom: '1.5rem', background: 'var(--bg-body)', padding: '1rem' }} dangerouslySetInnerHTML={{ __html: formatMathHtml(q.contextHtml) }} />
-                )}
-
-                <h2 className="question-text" dangerouslySetInnerHTML={{ __html: formatMathHtml(q.question) }} />
-
-                <div className="options">
-                  {q.options.map((opt, optIdx) => {
-                    let cls = '';
-                    if (submitted) {
-                      if (optIdx === q.correct) cls = 'correct';
-                      else if (optIdx === selected) cls = 'incorrect';
-                    } else if (optIdx === selected) {
-                      cls = 'selected';
-                    }
-
-                    return (
-                      <button
-                        key={optIdx}
-                        className={`option ${cls}`}
-                        onClick={() => handleSelectOption(q.id, optIdx)}
-                        disabled={submitted}
-                      >
-                        <span className="option-key">{String.fromCharCode(65 + optIdx)}</span>
-                        <span className="option-value" dangerouslySetInnerHTML={{ __html: formatMathHtml(opt) }} />
-                        {submitted && optIdx === q.correct && <CheckCircle size={18} className="option-icon success-icon" />}
-                        {submitted && optIdx === selected && optIdx !== q.correct && <XCircle size={18} className="option-icon danger-icon" />}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {submitted && (
-                  <div className={`result-box ${selected === q.correct ? 'correct' : 'incorrect'}`}>
-                    <div className="result-header">
-                      <h3>{selected === q.correct ? 'Correct! 🎉' : 'Incorrect'}</h3>
-                      {selected === q.correct ? <span className="xp-gain">+10 XP</span> : null}
-                    </div>
-                    {q.explanation && (
-                      <div className="explanation">
-                        <strong>Explanation:</strong>
-                        <div dangerouslySetInnerHTML={{ __html: formatMathHtml(q.explanation) }} />
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div className="question-actions">
-                  {!submitted ? (
-                    <button 
-                      className="btn btn-primary" 
-                      onClick={async () => {
-                        if (selected === null) return;
-                        setSubmittedQuestions(prev => ({ ...prev, [q.id]: true }));
-                        const res = await recordDetailedAnswer(q, selected === q.correct, 0, null);
-                        if (res) {
-                          setXpFeedback({
-                            xp: res.xpEarned,
-                            streak: res.newStreak,
-                            isCorrect: res.isCorrect
-                          });
-                          setTimeout(() => setXpFeedback(null), 3500);
-                        }
-                      }} 
-                      disabled={selected === null}
-                    >
-                      Check Answer
-                    </button>
-                  ) : (
-                    <span className="badge badge-success" style={{ padding: '0.5rem 1rem' }}>Completed</span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
         </div>
       ) : (
         <>
