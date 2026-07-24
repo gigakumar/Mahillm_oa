@@ -48,11 +48,11 @@ export default function SpeedDuelLobby({
   const [copiedCode, setCopiedCode] = useState(false);
   const [difficulty, setDifficulty] = useState('Mixed');
 
-  const userXp = scoreData?.xp || 1476;
-  const userAccuracy = scoreData?.accuracy || 82;
-  const userStreak = scoreData?.streak || scoreData?.longestStreak || 8;
-  const totalAttempted = scoreData?.totalAttempted || 12;
-  const totalCorrect = scoreData?.totalCorrect || 10;
+  const userXp = scoreData?.xp || 0;
+  const userAccuracy = scoreData?.accuracy || 0;
+  const userStreak = scoreData?.streak || scoreData?.longestStreak || 0;
+  const totalAttempted = scoreData?.totalAttempted || 0;
+  const totalCorrect = scoreData?.totalCorrect || 0;
   
   // Calculate dynamic rank
   const rankInfo = calculateRank(userXp);
@@ -445,19 +445,19 @@ export default function SpeedDuelLobby({
           <div className="stats-grid">
             <div className="stat-box">
               <span className="stat-lbl">Win Rate</span>
-              <strong>{userAccuracy > 0 ? `${userAccuracy}%` : '74%'} <span className="trend up">▲+3</span></strong>
+              <strong>{userAccuracy > 0 ? `${userAccuracy}%` : '0%'} {userAccuracy > 0 && <span className="trend up">▲+3</span>}</strong>
             </div>
             <div className="stat-box">
               <span className="stat-lbl">Matches Won</span>
-              <strong>{totalCorrect || 8}</strong>
+              <strong>{totalCorrect || 0}</strong>
             </div>
             <div className="stat-box">
               <span className="stat-lbl">Best Streak</span>
-              <strong>{userStreak || 8}</strong>
+              <strong>{userStreak || 0}</strong>
             </div>
             <div className="stat-box">
               <span className="stat-lbl">Accuracy</span>
-              <strong>{userAccuracy || 82}%</strong>
+              <strong>{userAccuracy || 0}%</strong>
             </div>
           </div>
         </div>
