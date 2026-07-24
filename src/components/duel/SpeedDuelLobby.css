@@ -1,28 +1,25 @@
 .speed-duel-lobby {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 1fr 340px;
   gap: 1.5rem;
+  width: 100%;
   max-width: 1600px;
   margin: 0 auto;
   color: #f8fafc;
-  flex-wrap: wrap;
 }
 
 .lobby-main-content {
-  flex: 1;
-  min-width: 0; /* Prevents flex child from overflowing */
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-width: 0;
 }
 
 .lobby-sidebar {
-  width: 100%;
-  max-width: 340px;
-  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  min-width: 0;
 }
 
 /* HERO SECTION */
@@ -188,7 +185,7 @@
 /* BATTLE MODES GRID */
 .mode-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
 }
 
@@ -500,7 +497,7 @@
 /* BOTTOM FEEDS */
 .feeds-row {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.25rem;
 }
 
@@ -775,23 +772,36 @@
 }
 
 /* MEDIA QUERIES */
+@media (max-width: 1400px) {
+  .mode-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 1200px) {
+  .speed-duel-lobby {
+    grid-template-columns: 1fr;
+  }
+  .feeds-row {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
   .lobby-sidebar {
-    max-width: 100%;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
+  .mode-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .feeds-row {
+    grid-template-columns: 1fr;
+  }
   .hero-graphic {
     display: none;
   }
   .dropdowns-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
     flex-direction: column;
     align-items: stretch;
   }
