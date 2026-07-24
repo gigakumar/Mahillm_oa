@@ -51,6 +51,19 @@ async function fetchQuestionsFromFirestore(categoryKey, filterTopic = null, filt
   return { default: [] };
 }
 
+// Helper to load multiple JSON files and combine them
+async function loadMultipleJSONs(categoryKey, files, filterTopic, filterDifficulty, customFilterFn = null) {
+  const promises = files.map(f => fetchQuestionsFromFirestore(categoryKey, filterTopic, filterDifficulty, `/data/mech_topics/${f}`));
+  const results = await Promise.all(promises);
+  let combined = results.flatMap(r => r.default);
+  
+  if (customFilterFn) {
+    combined = combined.filter(customFilterFn);
+  }
+  
+  return { default: combined };
+}
+
 // Mech Engineering subtopic groups with real question counts from the data
 export const MECH_TOPIC_GROUPS = [
   {
@@ -262,6 +275,83 @@ export const QuestionBankRegistry = [
     estimatedCount: 20,
     categoryKey: 'DILR',
     topics: ["Seating Arrangements", "Constraint Satisfaction", "Ordering", "Matrix Arrangement", "Multiple Charts"]
+  },
+  
+  // DIGITAL BOOKS CLASSIFICATIONS
+  {
+    id: "book_thermo_heat",
+    label: "Thermodynamics & Heat Transfer",
+    isDigitalBook: true,
+    loader: async (filterTopic = null, filterDifficulty = null) => {
+      return loadMultipleJSONs("Mechanical Engineering", ["thermodynamics.json", "heat_transfer.json"], filterTopic, filterDifficulty);
+    },
+    enabled: true,
+    estimatedCount: 7154,
+    categoryKey: 'book_thermo_heat',
+    topics: ["Thermodynamics", "Heat Transfer"]
+  },
+  {
+    id: "book_fluids",
+    label: "Fluid Mechanics & Hydraulics",
+    isDigitalBook: true,
+    loader: async (filterTopic = null, filterDifficulty = null) => {
+      return loadMultipleJSONs("Mechanical Engineering", ["fluid_mechanics.json", "hydraulic_machines.json", "hydraulic_structures.json"], filterTopic, filterDifficulty);
+    },
+    enabled: true,
+    estimatedCount: 2837,
+    categoryKey: 'book_fluids',
+    topics: ["Fluid Mechanics", "Hydraulics"]
+  },
+  {
+    id: "book_tom_vib",
+    label: "Theory of Machines & Vibrations",
+    isDigitalBook: true,
+    loader: async (filterTopic = null, filterDifficulty = null) => {
+      return loadMultipleJSONs("Mechanical Engineering", ["theory_of_machines.json", "theory_of_machines_vibrations.json"], filterTopic, filterDifficulty);
+    },
+    enabled: true,
+    estimatedCount: 1236,
+    categoryKey: 'book_tom_vib',
+    topics: ["Theory of Machines", "Vibrations"]
+  },
+  {
+    id: "book_high_yield_nat",
+    label: "GATE Top 1000 Numerical PYQs",
+    isDigitalBook: true,
+    loader: async (filterTopic = null, filterDifficulty = null) => {
+      // Load from main mechanical file, filter only NAT questions
+      return loadMultipleJSONs("Mechanical Engineering", ["mechanical_engineering.json"], filterTopic, filterDifficulty, (q) => q.type === 'NAT');
+    },
+    enabled: true,
+    estimatedCount: 1000,
+    categoryKey: 'book_high_yield_nat',
+    topics: ["Numerical Answer Type"]
+  },
+  {
+    id: "book_rank_booster",
+    label: "GATE 2027 RANK BOOSTER",
+    isDigitalBook: true,
+    loader: async (filterTopic = null, filterDifficulty = null) => {
+      // Load HIGH difficulty
+      return loadMultipleJSONs("Mechanical Engineering", ["mechanical_engineering.json"], filterTopic, 'HIGH');
+    },
+    enabled: true,
+    estimatedCount: 1500,
+    categoryKey: 'book_rank_booster',
+    topics: ["Advanced Level"]
+  },
+  {
+    id: "book_99_percentile",
+    label: "99 Percentile Question Bank",
+    isDigitalBook: true,
+    loader: async (filterTopic = null, filterDifficulty = null) => {
+      // Load MEDIUM/HIGH difficulty
+      return loadMultipleJSONs("Mechanical Engineering", ["mechanical_engineering.json"], filterTopic, filterDifficulty, (q) => q.difficulty === 'HIGH' || q.difficulty === 'MEDIUM');
+    },
+    enabled: true,
+    estimatedCount: 3000,
+    categoryKey: 'book_99_percentile',
+    topics: ["Challenging Problems"]
   }
 ];
 

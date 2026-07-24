@@ -38,7 +38,7 @@ import './Dashboard.css';
 
 const DIGITAL_BOOKS = [
   {
-    id: 'book1',
+    id: 'book_thermo_heat',
     title: 'Thermodynamics & Heat Transfer',
     subtitle: 'GATE & ESE MCQs',
     tag: 'CONCEPT BOOK',
@@ -46,7 +46,7 @@ const DIGITAL_BOOKS = [
     badgeText: 'FREE FORMULA SHEET'
   },
   {
-    id: 'book2',
+    id: 'book_fluids',
     title: 'Fluid Mechanics & Hydraulics',
     subtitle: 'MCQ Edition Vol 2',
     tag: 'SOLVED PAPERS',
@@ -54,7 +54,7 @@ const DIGITAL_BOOKS = [
     badgeText: 'BESTSELLER'
   },
   {
-    id: 'book3',
+    id: 'book_tom_vib',
     title: 'Theory of Machines & Vibrations',
     subtitle: 'MCQ Edition Vol 1',
     tag: 'FORMULA BANK',
@@ -62,7 +62,7 @@ const DIGITAL_BOOKS = [
     badgeText: 'MUST PRACTICE'
   },
   {
-    id: 'book4',
+    id: 'book_high_yield_nat',
     title: 'GATE Top 1000 Numerical PYQs',
     subtitle: 'MCQs for GATE ME',
     tag: 'HIGH YIELD',
@@ -70,7 +70,7 @@ const DIGITAL_BOOKS = [
     badgeText: '2026 EDITION'
   },
   {
-    id: 'book5',
+    id: 'book_rank_booster',
     title: 'GATE 2027 RANK BOOSTER',
     subtitle: 'Advanced Numerical Problems',
     tag: 'RANK BOOSTER',
@@ -78,7 +78,7 @@ const DIGITAL_BOOKS = [
     badgeText: 'TARGET AIR < 100'
   },
   {
-    id: 'book6',
+    id: 'book_99_percentile',
     title: '99 Percentile Question Bank',
     subtitle: 'GATE & PSU Specials',
     tag: 'QUESTION BANK',
@@ -317,7 +317,7 @@ export default function Dashboard() {
 
         <div className="books-horizontal-scroll">
           {DIGITAL_BOOKS.map((book) => (
-            <div key={book.id} className="book-card-3d" onClick={() => navigate('/oa-practice')}>
+            <div key={book.id} className="book-card-3d" onClick={() => navigate(`/oa-practice?cat=${book.id}`)}>
               <div className="book-cover" style={{ background: book.colorGradient }}>
                 <span className="book-top-badge">{book.tag}</span>
                 <h4 className="book-title">{book.title}</h4>

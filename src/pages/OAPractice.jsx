@@ -668,6 +668,19 @@ Respond ONLY with the JSON object, no markdown fences.`;
     const categoryCards = [
       { cat: 'Mechanical Engineering', emoji: '🔩', title: 'Mechanical Engg', desc: 'Thermo, Fluids, SOM, Manufacturing, Machine Design & more', count: '23,400+', gradient: 'linear-gradient(135deg, rgba(255,107,0,0.15), rgba(255,107,0,0.03))', hasPicker: true },
     ];
+    
+    // Add digital books to browse list
+    QuestionBankRegistry.filter(b => b.isDigitalBook).forEach(b => {
+      categoryCards.push({
+        cat: b.categoryKey,
+        emoji: '📖',
+        title: b.label,
+        desc: b.topics.join(', '),
+        count: b.estimatedCount.toLocaleString() + '+',
+        gradient: 'linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.03))',
+        hasPicker: false
+      });
+    });
 
     const intentCards = [
       { intent: 'OPTIMAL', icon: <Zap size={20} />, title: 'Continue my path', desc: 'Adaptive traversal through optimal syllabus route', color: 'var(--accent)' },
