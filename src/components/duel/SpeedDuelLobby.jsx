@@ -6,6 +6,7 @@ import {
   Calendar, 
   Swords,
   Copy,
+  Check,
   Share2,
   ArrowRight,
   TrendingUp,
@@ -14,10 +15,24 @@ import {
   Star,
   Gift,
   Clock,
-  Settings
+  Settings,
+  Sparkles
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useScore } from '../../contexts/ScoreContext';
+import { useUserData } from '../../contexts/UserDataContext';
 import './SpeedDuelLobby.css';
+
+// Helper to determine rank based on XP
+function calculateRank(xp = 0) {
+  if (xp < 200) return { name: 'Bronze I', current: xp, next: 200, stars: 1, nextRank: 'Bronze II' };
+  if (xp < 500) return { name: 'Bronze II', current: xp - 200, next: 300, stars: 2, nextRank: 'Silver I' };
+  if (xp < 1000) return { name: 'Silver I', current: xp - 500, next: 500, stars: 2, nextRank: 'Silver II' };
+  if (xp < 1500) return { name: 'Silver II', current: xp - 1000, next: 500, stars: 3, nextRank: 'Gold III' };
+  if (xp < 2500) return { name: 'Gold III', current: xp - 1500, next: 1000, stars: 3, nextRank: 'Gold I' };
+  if (xp < 4000) return { name: 'Gold I', current: xp - 2500, next: 1500, stars: 3, nextRank: 'Platinum I' };
+  return { name: 'Platinum I', current: xp - 4000, next: 3000, stars: 3, nextRank: 'Diamond I' };
+}
 
 export default function SpeedDuelLobby({ 
   onQuickMatch, 
@@ -27,33 +42,71 @@ export default function SpeedDuelLobby({
   setInputRoomCode 
 }) {
   const { user } = useAuth();
+  const { scoreData } = useScore();
+  const { testHistory } = useUserData();
+
   const [copiedCode, setCopiedCode] = useState(false);
   const [difficulty, setDifficulty] = useState('Mixed');
 
-  // Simulated Data for Premium Esports Feel
-  const LIVE_PLAYERS = "1,284";
-  const AVG_WAIT = "6 sec";
-  const MATCHES_TODAY = "14,820";
-  const CURRENT_SEASON = "Season 3";
-  const WEEKLY_LEADERBOARD = [
+  const userXp = scoreData?.xp || 1476;
+  const userAccuracy = scoreData?.accuracy || 82;
+  const userStreak = scoreData?.streak || scoreData?.longestStreak || 8;
+  const totalAttempted = scoreData?.totalAttempted || 12;
+  const totalCorrect = scoreData?.totalCorrect || 10;
+  
+  // Calculate dynamic rank
+  const rankInfo = calculateRank(userXp);
+  const rankProgressPercent = Math.min(100, Math.round((rankInfo.current / rankInfo.next) * 100));
+
+  // Dynamic Room Code generated or standard
+  const roomCode = inputRoomCode || "DUEL-" + (user?.uid?.substring(0, 4)?.toUpperCase() || "9K2F");
+
+  const handleCopyCode = () => {
+    navigator.clipboard.writeText(roomCode);
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
+
+  // Dynamic Recent Matches derived from user's testHistory if present
+  const recentMatches = (testHistory && testHistory.length > 0)
+    ? testHistory.slice(0, 3).map((t, idx) => {
+        const scorePct = t.scorePct || (t.total ? Math.round((t.score / t.total) * 100) : 75);
+        const isWin = scorePct >= 60;
+        return {
+          id: t.id || idx,
+          result: isWin ? 'Victory' : 'Defeat',
+          opponent: t.title || `GATE ME Mock 0${idx + 1}`,
+          topic: t.category || 'Mechanical Core',
+          score: `${t.score || Math.round(scorePct / 10)} - ${t.total ? Math.round((100 - scorePct) / 10) : 4}`,
+          timeAgo: t.timestamp ? new Date(t.timestamp).toLocaleDateString() : `${(idx + 1) * 2} hrs ago`,
+          xp: isWin ? `+${scorePct} XP` : `+20 XP`,
+          isWin
+        };
+      })
+    : [
+        { id: 1, result: 'Victory', opponent: 'Aryan Sharma', topic: 'Thermodynamics', score: '12 - 8', timeAgo: '5 min ago', xp: '+48 XP', isWin: true },
+        { id: 2, result: 'Defeat', opponent: 'Rohit Verma', topic: 'Fluid Mechanics', score: '9 - 10', timeAgo: '25 min ago', xp: '+28 XP', isWin: false },
+        { id: 3, result: 'Victory', opponent: 'Aditya Singh', topic: 'Strength of Materials', score: '14 - 6', timeAgo: '1 hr ago', xp: '+52 XP', isWin: true }
+      ];
+
+  // Dynamic Leaderboard combining top users + active user
+  const userName = user?.displayName || "Harshit Kumar";
+  const leaderboardData = [
     { rank: 1, name: "Karthik N.", xp: 2450, avatar: "K" },
     { rank: 2, name: "Priya Sharma", xp: 2140, avatar: "P" },
     { rank: 3, name: "Anmol Verma", xp: 1980, avatar: "A" },
-    { rank: 27, name: user?.displayName || "You", xp: 820, avatar: user?.displayName?.charAt(0) || "Y", isUser: true }
-  ];
-  const RECENT_MATCHES = [
-    { result: 'Victory', opponent: 'Aryan Sharma', topic: 'Thermodynamics', score: '12 - 8', timeAgo: '5 min ago', xp: '+48 XP', isWin: true },
-    { result: 'Defeat', opponent: 'Rohit Verma', topic: 'Fluid Mechanics', score: '9 - 10', timeAgo: '25 min ago', xp: '+28 XP', isWin: false },
-    { result: 'Victory', opponent: 'Aditya Singh', topic: 'Strength of Materials', score: '14 - 6', timeAgo: '1 hr ago', xp: '+52 XP', isWin: true }
-  ];
+    { rank: 4, name: userName, xp: userXp, avatar: userName.charAt(0).toUpperCase(), isUser: true }
+  ].sort((a, b) => b.xp - a.xp).map((item, index) => ({ ...item, rank: index + 1 }));
+
   const FRIENDS_ONLINE = [
-    { name: 'Amit Kumar', status: 'Online', action: 'Challenge', color: 'bg-green-500' },
-    { name: 'Rahul Gupta', status: 'In Match', action: 'Spectate', color: 'bg-blue-500' },
-    { name: 'Shivam Patel', status: 'Online', action: 'Challenge', color: 'bg-green-500' }
+    { name: 'Amit Kumar', status: 'Online', action: 'Challenge', color: 'status-green' },
+    { name: 'Rahul Gupta', status: 'In Match', action: 'Spectate', color: 'status-blue' },
+    { name: 'Shivam Patel', status: 'Online', action: 'Challenge', color: 'status-green' }
   ];
+
   const LIVE_FEED = [
     { text: "Amit Kumar defeated Rahul Gupta", time: "2m ago" },
-    { text: "Shivam Patel reached Gold III", time: "10m ago" },
+    { text: `${userName.split(' ')[0]} reached ${rankInfo.name}`, time: "Just now" },
     { text: "Riya Singh won 8 matches streak 🔥", time: "15m ago" }
   ];
 
@@ -67,47 +120,53 @@ export default function SpeedDuelLobby({
           <div className="hero-background"></div>
           <div className="hero-content">
             <div className="hero-title-area">
-              <Swords size={32} className="hero-icon" />
+              <Swords size={28} className="hero-icon" />
               <h1>Speed Duel Arena</h1>
             </div>
-            <p>Challenge anyone worldwide or test your speed against AI in real-time technical battles!</p>
+            <p className="hero-subtitle">Challenge peers worldwide or test your speed against AI in real-time technical battles!</p>
             
             <div className="hero-stats-row">
               <div className="hero-stat">
-                <Users size={20} className="stat-icon purple" />
+                <Users size={18} className="stat-icon purple" />
                 <div className="stat-info">
-                  <strong>{LIVE_PLAYERS}</strong>
-                  <span><span className="live-dot"></span> Players Online</span>
+                  <strong>1,284</strong>
+                  <span><span className="live-dot"></span> Online</span>
                 </div>
               </div>
               <div className="hero-stat">
-                <Zap size={20} className="stat-icon yellow" />
+                <Zap size={18} className="stat-icon yellow" />
                 <div className="stat-info">
-                  <strong>{AVG_WAIT}</strong>
-                  <span>Average Wait Time</span>
+                  <strong>6 sec</strong>
+                  <span>Avg Wait</span>
                 </div>
               </div>
               <div className="hero-stat">
-                <Trophy size={20} className="stat-icon orange" />
+                <Trophy size={18} className="stat-icon orange" />
                 <div className="stat-info">
-                  <strong>{MATCHES_TODAY}</strong>
+                  <strong>14,820</strong>
                   <span>Matches Today</span>
                 </div>
               </div>
               <div className="hero-stat">
-                <Calendar size={20} className="stat-icon pink" />
+                <Calendar size={18} className="stat-icon pink" />
                 <div className="stat-info">
-                  <strong>{CURRENT_SEASON}</strong>
+                  <strong>Season 3</strong>
                   <span>Current Season</span>
                 </div>
               </div>
             </div>
           </div>
+
           <div className="hero-graphic">
-            {/* VS Graphic representation */}
-            <div className="vs-avatar left"></div>
-            <div className="vs-text">VS</div>
-            <div className="vs-avatar right"></div>
+            <div className="vs-badge">
+              <div className="vs-circle left-circle">
+                <span>YOU</span>
+              </div>
+              <div className="vs-center-text">VS</div>
+              <div className="vs-circle right-circle">
+                <span>OPP</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -116,7 +175,7 @@ export default function SpeedDuelLobby({
           {/* Quick Match */}
           <div className="mode-card mode-quick">
             <div className="mode-card-header">
-              <div className="mode-icon-circle"><Zap size={24} /></div>
+              <div className="mode-icon-circle"><Zap size={22} /></div>
               <span className="badge-hot">HOT</span>
             </div>
             <h3>Quick Match</h3>
@@ -126,7 +185,7 @@ export default function SpeedDuelLobby({
                 <div className="avatar">A</div>
                 <div className="avatar">R</div>
                 <div className="avatar">K</div>
-                <span>+1.2K online</span>
+                <span className="online-count">+1.2K online</span>
               </div>
             </div>
             <button className="btn mode-btn btn-quick" onClick={onQuickMatch}>
@@ -138,16 +197,23 @@ export default function SpeedDuelLobby({
           {/* Private Room */}
           <div className="mode-card mode-private">
             <div className="mode-card-header">
-              <div className="mode-icon-circle"><Users size={24} /></div>
+              <div className="mode-icon-circle"><Users size={22} /></div>
             </div>
             <h3>Private Room</h3>
             <p>Invite friends & duel in your room</p>
-            <div className="room-code-display">
-               ABX-82KF <Copy size={16} />
+            
+            <div className="room-code-display" onClick={handleCopyCode} title="Click to copy">
+              <span>{roomCode}</span>
+              {copiedCode ? <Check size={16} className="text-green-400" /> : <Copy size={16} />}
             </div>
+            
             <div className="private-actions">
-              <button className="btn btn-outline-green" onClick={onCreateRoom}>Copy Code</button>
-              <button className="btn btn-outline-green">Share Invite</button>
+              <button className="btn btn-outline-green" onClick={handleCopyCode}>
+                {copiedCode ? "Copied!" : "Copy Code"}
+              </button>
+              <button className="btn btn-outline-green" onClick={onCreateRoom}>
+                Create Room
+              </button>
             </div>
             <div className="mode-footer">Play with friends</div>
           </div>
@@ -155,7 +221,7 @@ export default function SpeedDuelLobby({
           {/* AI Duel */}
           <div className="mode-card mode-ai">
              <div className="mode-card-header">
-              <div className="mode-icon-circle"><Settings size={24} /></div>
+              <div className="mode-icon-circle"><Settings size={22} /></div>
               <span className="badge-new">NEW</span>
             </div>
             <h3>AI Duel</h3>
@@ -168,10 +234,10 @@ export default function SpeedDuelLobby({
                  <div className="bar"></div>
                  <div className="bar"></div>
                </div>
-               <span>Medium</span>
+               <span className="diff-name">Medium Level</span>
             </div>
             <button className="btn mode-btn btn-ai" onClick={onQuickMatch}>
-              Choose AI Level
+              Start AI Duel
             </button>
             <div className="mode-footer">Improve with AI</div>
           </div>
@@ -179,19 +245,23 @@ export default function SpeedDuelLobby({
           {/* Ranked Duel */}
           <div className="mode-card mode-ranked">
             <div className="mode-card-header">
-              <div className="mode-icon-circle"><Trophy size={24} /></div>
+              <div className="mode-icon-circle"><Trophy size={22} /></div>
             </div>
             <h3>Ranked Duel</h3>
             <p>Compete & climb the leaderboard</p>
             <div className="rank-display">
               <ShieldIcon />
               <div className="rank-info">
-                <strong>Silver II</strong>
-                <div className="stars"><Star size={12} fill="currentColor"/><Star size={12} fill="currentColor"/><Star size={12}/></div>
+                <strong>{rankInfo.name}</strong>
+                <div className="stars">
+                  {Array.from({ length: rankInfo.stars }).map((_, i) => (
+                    <Star key={i} size={12} fill="currentColor" />
+                  ))}
+                </div>
               </div>
             </div>
-            <button className="btn mode-btn btn-ranked">
-              View Rankings
+            <button className="btn mode-btn btn-ranked" onClick={onQuickMatch}>
+              Enter Ranked
             </button>
             <div className="mode-footer text-gold">Earn XP & Rewards</div>
           </div>
@@ -199,14 +269,14 @@ export default function SpeedDuelLobby({
 
         {/* JOIN ROOM BAR */}
         <div className="join-room-bar card">
-          <div className="join-icon"><Users size={20} /> Join Existing Room</div>
+          <div className="join-icon"><Users size={18} /> Join Existing Room</div>
           <input 
             type="text" 
             placeholder="Enter room code (e.g. DUEL-9K2F)" 
             value={inputRoomCode}
             onChange={(e) => setInputRoomCode(e.target.value)}
           />
-          <button className="btn btn-primary" onClick={() => onJoinRoom(inputRoomCode)}>
+          <button className="btn btn-primary join-btn" onClick={() => onJoinRoom(inputRoomCode)}>
             Join Match <ArrowRight size={16} />
           </button>
         </div>
@@ -214,7 +284,7 @@ export default function SpeedDuelLobby({
         {/* CUSTOMIZE DUEL / FILTERS */}
         <div className="customize-duel card">
           <div className="customize-header">
-            <Users size={16} /> Customize Your Duel
+            <Settings size={16} /> Customize Your Duel Parameters
           </div>
           
           <div className="customize-filters">
@@ -231,20 +301,20 @@ export default function SpeedDuelLobby({
               ))}
             </div>
 
-            <div className="dropdowns">
-               <div className="dropdown">
+            <div className="dropdowns-row">
+               <div className="filter-dropdown">
                  <label>Question Source</label>
-                 <select><option>All Topics</option></select>
+                 <select><option>All Core Topics</option><option>Thermodynamics</option><option>Fluid Mechanics</option></select>
                </div>
-               <div className="dropdown">
+               <div className="filter-dropdown">
                  <label>No. of Questions</label>
-                 <select><option>20 Questions</option></select>
+                 <select><option>10 Questions</option><option>20 Questions</option></select>
                </div>
-               <div className="dropdown">
+               <div className="filter-dropdown">
                  <label>Time per Question</label>
-                 <select><option>30 Seconds</option></select>
+                 <select><option>30 Seconds</option><option>45 Seconds</option></select>
                </div>
-               <button className="btn btn-outline btn-more"><Settings size={14}/> More Filters</button>
+               <button className="btn btn-more-filters"><Settings size={14}/> Filters</button>
             </div>
           </div>
         </div>
@@ -257,21 +327,24 @@ export default function SpeedDuelLobby({
               <Swords size={16} /> Recent Matches
             </div>
             <div className="feed-list">
-              {RECENT_MATCHES.map((match, i) => (
-                <div className="feed-item match-item" key={i}>
-                  <div className={`match-result ${match.isWin ? 'win' : 'loss'}`}>
-                    {match.result}
+              {recentMatches.map((match) => (
+                <div className="feed-item match-item" key={match.id}>
+                  <div className="match-left">
+                    <span className={`match-result-tag ${match.isWin ? 'win' : 'loss'}`}>
+                      {match.result}
+                    </span>
+                    <div className="match-details">
+                      <strong>vs {match.opponent}</strong>
+                      <span className="match-topic-lbl">{match.topic}</span>
+                    </div>
                   </div>
-                  <div className="match-opponent">vs {match.opponent}</div>
-                  <div className="match-topic">{match.topic}</div>
-                  <div className="match-score"><strong>{match.score}</strong></div>
-                  <div className="match-meta">
-                    <span className="time">{match.timeAgo}</span>
-                    <span className={`xp ${match.isWin ? 'text-green' : 'text-gray'}`}>{match.xp}</span>
+
+                  <div className="match-right">
+                    <span className="match-score-text">{match.score}</span>
+                    <span className={`match-xp-lbl ${match.isWin ? 'win-xp' : ''}`}>{match.xp}</span>
                   </div>
                 </div>
               ))}
-              <button className="btn-view-all">View All Matches <ArrowRight size={14}/></button>
             </div>
           </div>
 
@@ -283,34 +356,36 @@ export default function SpeedDuelLobby({
             <div className="feed-list">
                {FRIENDS_ONLINE.map((friend, i) => (
                  <div className="feed-item friend-item" key={i}>
-                   <div className="friend-avatar">{friend.name.charAt(0)}</div>
-                   <div className="friend-info">
-                     <strong>{friend.name}</strong>
-                     <span><span className={`status-dot ${friend.color}`}></span> {friend.status}</span>
+                   <div className="friend-left">
+                     <div className="friend-avatar">{friend.name.charAt(0)}</div>
+                     <div className="friend-info">
+                       <strong>{friend.name}</strong>
+                       <span className="status-label">
+                         <span className={`status-dot ${friend.color}`}></span> {friend.status}
+                       </span>
+                     </div>
                    </div>
-                   <button className="btn btn-outline btn-sm">{friend.action}</button>
+                   <button className="btn-friend-action" onClick={onQuickMatch}>{friend.action}</button>
                  </div>
                ))}
-               <button className="btn-view-all">View All Friends <ArrowRight size={14}/></button>
             </div>
           </div>
 
           {/* Live Feed */}
           <div className="feed-card card">
             <div className="feed-header">
-              <Activity size={16} /> Live Feed
+              <Activity size={16} /> Server Activity Feed
             </div>
             <div className="feed-list">
                {LIVE_FEED.map((feed, i) => (
                  <div className="feed-item live-item" key={i}>
-                   <div className="feed-avatar"></div>
+                   <div className="live-icon-box"><Sparkles size={14} className="text-indigo-400"/></div>
                    <div className="feed-content">
                      <p>{feed.text}</p>
                      <span>{feed.time}</span>
                    </div>
                  </div>
                ))}
-               <button className="btn-view-all">View Full Feed <ArrowRight size={14}/></button>
             </div>
           </div>
         </div>
@@ -326,17 +401,21 @@ export default function SpeedDuelLobby({
           <div className="rank-main">
             <ShieldIcon lg />
             <div className="rank-details">
-              <h3>Silver II</h3>
-              <div className="stars"><Star size={14} fill="currentColor"/><Star size={14} fill="currentColor"/><Star size={14}/></div>
-              <div className="xp-text"><strong>120</strong> / 200 XP</div>
+              <h3>{rankInfo.name}</h3>
+              <div className="stars">
+                {Array.from({ length: rankInfo.stars }).map((_, i) => (
+                  <Star key={i} size={14} fill="currentColor" />
+                ))}
+              </div>
+              <div className="xp-text"><strong>{rankInfo.current}</strong> / {rankInfo.next} XP</div>
             </div>
           </div>
           <div className="progress-bar-container">
-            <div className="progress-bar" style={{width: '60%'}}></div>
+            <div className="progress-bar" style={{ width: `${rankProgressPercent}%` }}></div>
           </div>
           <div className="next-rank">
             <span>Next Rank</span>
-            <span>Gold III <ShieldIcon sm /></span>
+            <span className="next-rank-badge">{rankInfo.nextRank} <ShieldIcon sm /></span>
           </div>
         </div>
 
@@ -347,7 +426,7 @@ export default function SpeedDuelLobby({
             <button className="btn-link">View All</button>
           </div>
           <div className="leaderboard-list">
-            {WEEKLY_LEADERBOARD.map(p => (
+            {leaderboardData.map(p => (
               <div className={`lb-item ${p.isUser ? 'user-row' : ''}`} key={p.rank}>
                 <div className="lb-rank">
                   {p.rank === 1 ? '👑' : p.rank}
@@ -366,19 +445,19 @@ export default function SpeedDuelLobby({
           <div className="stats-grid">
             <div className="stat-box">
               <span className="stat-lbl">Win Rate</span>
-              <strong>74% <span className="trend up">▲+3</span></strong>
+              <strong>{userAccuracy > 0 ? `${userAccuracy}%` : '74%'} <span className="trend up">▲+3</span></strong>
             </div>
             <div className="stat-box">
               <span className="stat-lbl">Matches Won</span>
-              <strong>8</strong>
+              <strong>{totalCorrect || 8}</strong>
             </div>
             <div className="stat-box">
               <span className="stat-lbl">Best Streak</span>
-              <strong>8</strong>
+              <strong>{userStreak || 8}</strong>
             </div>
             <div className="stat-box">
               <span className="stat-lbl">Accuracy</span>
-              <strong>82%</strong>
+              <strong>{userAccuracy || 82}%</strong>
             </div>
           </div>
         </div>
@@ -390,10 +469,10 @@ export default function SpeedDuelLobby({
             <button className="btn-link">View All</button>
           </div>
           <div className="achievements-row">
-            <div className="achievement-badge purple"><Award size={20} /></div>
-            <div className="achievement-badge blue"><Award size={20} /></div>
-            <div className="achievement-badge gold"><Award size={20} /></div>
-            <div className="achievement-badge green"><Award size={20} /></div>
+            <div className="achievement-badge purple" title="Speed Demon"><Award size={20} /></div>
+            <div className="achievement-badge blue" title="Win Streak 5"><Award size={20} /></div>
+            <div className="achievement-badge gold" title="Ranked Master"><Award size={20} /></div>
+            <div className="achievement-badge green" title="Accuracy 80%+"><Award size={20} /></div>
             <div className="achievement-more">+12</div>
           </div>
         </div>
@@ -403,8 +482,8 @@ export default function SpeedDuelLobby({
           <div className="card-header"><Gift size={16} /> Daily Reward</div>
           <p>Play 1 more match to claim your daily reward!</p>
           <div className="reward-actions">
-            <button className="btn btn-primary">Claim Reward</button>
-            <div className="reward-amt"><Star size={16} className="text-yellow-400"/> 100 XP</div>
+            <button className="btn btn-primary" onClick={onQuickMatch}>Claim Reward</button>
+            <div className="reward-amt"><Star size={16} className="text-yellow-400"/> +100 XP</div>
           </div>
         </div>
 
