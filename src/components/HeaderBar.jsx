@@ -120,7 +120,7 @@ export default function HeaderBar({ mobileOpen, setMobileOpen }) {
         {/* Subscription Tier Pill */}
         <div 
           className="header-stat-pill tier-pill" 
-          onClick={() => openPricingModal()} 
+          onClick={() => navigate('/pricing')} 
           title="Click to view subscription plan details & upgrade"
           style={{ background: 'rgba(99, 102, 241, 0.15)', border: '1px solid rgba(99, 102, 241, 0.3)', color: tierDetails.color }}
         >
