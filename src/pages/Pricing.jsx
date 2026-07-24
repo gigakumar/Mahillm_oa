@@ -25,14 +25,18 @@ export default function Pricing() {
     { feature: "Full GATE PYQs & Practice MCQs", free: true, pro: true, elite: true },
     { feature: "Daily Challenge & XP Gamification", free: true, pro: true, elite: true },
     { feature: "Public Leaderboard & Rank Standings", free: true, pro: true, elite: true },
+    { feature: "AI Technical Tutor & Real-Time Hint Assistant", free: false, pro: true, elite: true },
     { feature: "AI Voice Technical Viva & Mock Interview Coach", free: false, pro: true, elite: true },
-    { feature: "GATE Rank & PSU Eligibility Predictor", free: false, pro: true, elite: true },
-    { feature: "1v1 Live Speed Duel Arena", free: false, pro: true, elite: true },
+    { feature: "GATE Rank & PSU Eligibility Predictor (IOCL, ONGC, ISRO)", free: false, pro: true, elite: true },
+    { feature: "1v1 Live Speed Duel Arena & Live PvP Battles", free: false, pro: true, elite: true },
     { feature: "Attempt Replay & Hesitation Diagnostics", free: false, pro: true, elite: true },
     { feature: "Smart PDF & LaTeX Practice Paper Exporter", free: false, pro: true, elite: true },
-    { feature: "Interactive 3D/Formula Step-by-Step AI Solver", free: false, pro: false, elite: true },
-    { feature: "24/7 AI Voice Study Coach ('Mahi AI Master')", free: false, pro: false, elite: true },
     { feature: "Custom 65-Question GATE Mock Blueprint Builder", free: false, pro: true, elite: true },
+    { feature: "Advanced BKT Micro-Skill Readiness Heatmap", free: false, pro: true, elite: true },
+    { feature: "Interactive 3D/Formula Step-by-Step AI Physics Solver", free: false, pro: false, elite: true },
+    { feature: "24/7 AI Voice & Strategy Coach ('Mahi AI Master')", free: false, pro: false, elite: true },
+    { feature: "Unlimited AI Question Generation & Tailored Drills", free: false, pro: false, elite: true },
+    { feature: "Priority 1-on-1 Doubt Resolution & Weak Area Remediation", free: false, pro: false, elite: true },
   ];
 
   return (

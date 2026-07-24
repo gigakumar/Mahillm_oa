@@ -287,7 +287,7 @@ export default function Dashboard() {
             MahiLLM <span className="highlight-no1">AI-Powered</span> GATE & Mechanical <span className="highlight-exam">Practice Suite</span>
           </h2>
 
-          <button className="btn-unlock-premium" onClick={() => navigate('/oa-practice')}>
+          <button className="btn-unlock-premium" onClick={() => navigate('/pricing')}>
             Explore MahiLLM Pro Suite ›
           </button>
 
