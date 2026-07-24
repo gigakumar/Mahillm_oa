@@ -22,10 +22,6 @@ const questionBankCache = {};
 const CATEGORIES = [
   { key: 'all', label: 'All', emoji: '📚' },
   { key: 'Mechanical Engineering', label: 'Mech Engg', emoji: '🔩' },
-  { key: 'Quantitative Aptitude', label: 'Quants', emoji: '🧮' },
-  { key: 'Data Interpretation', label: 'Data Interpretation', emoji: '📊' },
-  { key: 'DILR', label: 'DILR', emoji: '🧩' },
-  { key: 'Logical Reasoning', label: 'Logical Reasoning', emoji: '🧠' },
   { key: 'bookmarked', label: 'Bookmarked', emoji: '⭐' }
 ];
 
@@ -287,8 +283,8 @@ Respond ONLY with the JSON object, no markdown fences.`;
       setDebugPoolLength(pool ? pool.length : -1);
       console.log("Pool loaded. Size:", pool.length);
 
-      // Dynamically extract unique topics for selection
-      const uniqueTopics = ['all', ...new Set(pool.map(q => q.topic).filter(Boolean))].sort();
+      // Use only core Mechanical subject groups instead of dynamic subtopics
+      const uniqueTopics = ['all', ...MECH_TOPIC_GROUPS.map(g => g.group)].sort();
       setAvailableTopics(uniqueTopics);
 
       // Fetch quarantined list with a short timeout to not block UI
@@ -901,17 +897,7 @@ Respond ONLY with the JSON object, no markdown fences.`;
           >
             <Brain size={16} /> Adaptive Practice
           </button>
-          <button 
-            className="btn btn-ghost" 
-            onClick={() => setViewMode(viewMode === 'card' ? 'list' : 'card')}
-            title={viewMode === 'card' ? 'Show all questions in a list' : 'Show one question at a time'}
-          >
-            {viewMode === 'card' ? <List size={16} /> : <Layers size={16} />}
-            {viewMode === 'card' ? ' List View' : ' Card View'}
-          </button>
-          <button className="btn btn-ghost" onClick={regenerateQuiz} title="Start a new random quiz">
-            <RotateCcw size={16} /> New Quiz
-          </button>
+
           <button className="btn btn-ghost" onClick={() => setShowFilters(!showFilters)}>
             <Filter size={16} /> Filters
           </button>

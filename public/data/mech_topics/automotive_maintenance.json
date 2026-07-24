@@ -1,0 +1,68 @@
+[
+  {
+    "id": 22922,
+    "question": "As a rule, before the pistons are removed it is necessary to remove the",
+    "options": [
+      "Piston rings",
+      "Circlip",
+      "Camshaft",
+      "Crankshaft"
+    ],
+    "correct": 0,
+    "explanation": "Piston rings must be removed or the cylinder ridge must be reamed to prevent damage to the cylinder wall or ring lands during piston extraction.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Automotive Maintenance",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Automotive Maintenance",
+    "ai_correct": "Piston rings are located in grooves on the piston. To remove the piston from the cylinder, the rings must be removed first to prevent damage to the cylinder walls.",
+    "ai_wrong": "Students often think the crankshaft must be removed first. While the rod must be disconnected, the rings are the primary obstruction to removal.",
+    "formula": "D_ring > D_piston",
+    "trick": "Rings = Obstruction = Remove first."
+  },
+  {
+    "id": 22934,
+    "question": "In case of oil bath type air cleaner, the oil sediments formed by the dust must be removed",
+    "options": [
+      "Monthly",
+      "After about 500 km",
+      "Weekly",
+      "After about 5000 km"
+    ],
+    "correct": 3,
+    "explanation": "Maintenance intervals for air cleaners vary, but 5000 km is a standard recommendation for cleaning the oil bath and replacing the oil.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Automotive Maintenance",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Automotive Maintenance",
+    "ai_correct": "Oil bath air cleaners accumulate dust in the oil. To maintain efficiency and prevent restriction, the oil and sediment must be changed periodically, typically every 5000 km.",
+    "ai_wrong": "Students often think it needs weekly cleaning. 5000 km is the standard service interval.",
+    "formula": "Service Interval = 5000 km",
+    "trick": "Oil bath = 5000 km service."
+  },
+  {
+    "id": 23099,
+    "question": "The device used to measure the clearance between the valve and tappet of an internal combustion engine is",
+    "options": [
+      "Slip gauge",
+      "Thickness gauge",
+      "Feeler gauge",
+      "Snap gauge"
+    ],
+    "correct": 2,
+    "explanation": "A feeler gauge consists of thin metal strips of precise thickness used to measure small gaps like valve lash.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Automotive Maintenance",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Automotive Maintenance",
+    "ai_correct": "A feeler gauge consists of a set of thin metal blades of precise thicknesses, specifically designed to measure small clearances like those between valve stems and tappets.",
+    "ai_wrong": "Students often confuse 'Slip gauge' (Option A) with 'Feeler gauge'; slip gauges are used for high-precision length calibration, not for engine tappet gaps.",
+    "formula": "Clearance = Thickness_of_Blade",
+    "trick": "Feeler = Feeling the gap; Slip = Precision length standards."
+  }
+]

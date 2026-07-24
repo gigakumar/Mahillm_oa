@@ -1,0 +1,46 @@
+[
+  {
+    "id": 897,
+    "question": "The Rankine's formula holds good for",
+    "options": [
+      "short columns",
+      "long columns",
+      "both short and long columns",
+      "weak columns"
+    ],
+    "correct": 3,
+    "explanation": "Rankine's formula is used to calculate the buckling load of columns. It is applicable to both short and long columns, as well as columns with different end conditions.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Column Buckling",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Column Buckling",
+    "ai_correct": "Rankine's formula is an empirical formula that works for both short and long columns by combining the crushing and buckling loads.",
+    "ai_wrong": "Students often think it is only for long columns like Euler's.",
+    "formula": "1/P_r = 1/P_c + 1/P_e",
+    "trick": "Rankine = All columns."
+  },
+  {
+    "id": 900,
+    "question": "The load at which the column just buckles, is known as",
+    "options": [
+      "buckling load",
+      "critical load",
+      "crippling load",
+      "any one of these"
+    ],
+    "correct": 1,
+    "explanation": "The load at which a column just buckles is known as the buckling load. This is the maximum load that a column can withstand before it fails due to buckling.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Column Buckling",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Column Buckling",
+    "ai_correct": "The critical load (or buckling load) is the load at which a column becomes unstable and begins to buckle.",
+    "ai_wrong": "Students might think these are different loads, but they are synonymous in this context.",
+    "formula": "P_cr = π^2EI / Le^2",
+    "trick": "Critical = Buckling = Crippling."
+  }
+]

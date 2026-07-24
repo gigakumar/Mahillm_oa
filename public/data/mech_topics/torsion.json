@@ -1,0 +1,24 @@
+[
+  {
+    "id": 762,
+    "question": "For no torsion, the plane of bending should",
+    "options": [
+      "be parallel to one of the principal axes",
+      "pass through shear centre of section",
+      "pass through neutral axis of the section",
+      "pass through centre of gravity of the section"
+    ],
+    "correct": 1,
+    "explanation": "For no torsion, the plane of bending should be parallel to one of the principal axes.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Torsion",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Torsion",
+    "ai_correct": "The shear centre is the point through which a transverse load must pass to cause bending without any twisting (torsion) of the beam section.",
+    "ai_wrong": "Students often confuse the shear centre with the centroid or the neutral axis. While they may coincide in symmetric sections, they are distinct concepts.",
+    "formula": "Torsion = 0 if Load passes through Shear Centre",
+    "trick": "Shear centre is the 'no-twist' point."
+  }
+]

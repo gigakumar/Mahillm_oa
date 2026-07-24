@@ -1,0 +1,46 @@
+[
+  {
+    "id": 4569,
+    "question": "A Carnot heat engine operates between a source temperature of 800 K and a sink temperature of 300 K. What is the thermal efficiency of this engine?",
+    "options": [
+      "37.5%",
+      "50.0%",
+      "62.5%",
+      "72.5%"
+    ],
+    "correct": 2,
+    "explanation": "The thermal efficiency of a Carnot engine is calculated using the formula: η = 1 - (T_L / T_H), where T_L is the sink temperature and T_H is the source temperature. Substituting the given values: η = 1 - (300 / 800) = 1 - 0.375 = 0.625 or 62.5%.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Second Law of Thermodynamics",
+    "category": "Thermodynamics",
+    "type": "Numerical / State Relation",
+    "subject": "Second Law of Thermodynamics",
+    "ai_correct": "The thermal efficiency (η) of a Carnot heat engine is calculated using the absolute temperatures of the hot source (Th) and cold sink (Tc) with the formula η = 1 - (Tc / Th). Given Th = 800 K and Tc = 300 K, the efficiency is η = 1 - (300 K / 800 K) = 1 - 0.375 = 0.625. Converting to percentage, this is 62.5%.",
+    "ai_wrong": "A common mistake is to use temperatures in Celsius instead of Kelvin, or to incorrectly formulate the ratio, for example, by calculating (Th - Tc) / Tc or (Th - Tc) / Th, which would yield incorrect results like 500/300 or 500/800 (if not simplified).",
+    "formula": "η = 1 - (Tc / Th)",
+    "trick": "Always convert temperatures to absolute scale (Kelvin) before calculating Carnot efficiency to avoid errors."
+  },
+  {
+    "id": 4575,
+    "question": "A Carnot engine operates between temperatures of 800 K and 400 K. What is the thermal efficiency of this engine?",
+    "options": [
+      "25%",
+      "50%",
+      "75%",
+      "100%"
+    ],
+    "correct": 1,
+    "explanation": "The efficiency of a Carnot engine is given by the formula: η = 1 - (T_L / T_H), where T_L is the absolute temperature of the cold reservoir and T_H is the absolute temperature of the hot reservoir. Substituting the given values: η = 1 - (400 / 800) = 1 - 0.5 = 0.50 or 50%.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Second Law of Thermodynamics",
+    "category": "Thermodynamics",
+    "type": "Numerical / State Relation",
+    "subject": "Second Law of Thermodynamics",
+    "ai_correct": "The thermal efficiency (η) of a Carnot engine is determined by the absolute temperatures of the hot reservoir (Th) and cold reservoir (Tc) using the formula η = 1 - (Tc / Th). With Th = 800 K and Tc = 400 K, the efficiency is η = 1 - (400 K / 800 K) = 1 - 0.5 = 0.5. Expressed as a percentage, this is 50%.",
+    "ai_wrong": "A common error is to use Celsius temperatures instead of Kelvin, or to incorrectly apply the formula, such as calculating (Th - Tc) / Tc. While (Th - Tc) / Th gives the correct numerical answer in this specific case (400/800 = 0.5), it's crucial to remember the fundamental formula 1 - (Tc/Th).",
+    "formula": "η = 1 - (Tc / Th)",
+    "trick": "Always use absolute temperatures (Kelvin) for Carnot efficiency calculations and double-check the formula to ensure the correct ratio is used."
+  }
+]

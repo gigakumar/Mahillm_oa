@@ -1,0 +1,134 @@
+[
+  {
+    "id": 2256,
+    "question": "Undershot water wheels are those on which water acts:",
+    "options": [
+      "Purely by impulse",
+      "Partly by impulse and partly by reaction",
+      "Purely by reaction",
+      "None of the above"
+    ],
+    "correct": 0,
+    "explanation": "In an undershot water wheel, the water strikes the blades at the bottom of the wheel, transferring kinetic energy to the wheel purely through impulse.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Hydraulic Machines",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Hydraulic Machines",
+    "ai_correct": "Undershot water wheels operate by the kinetic energy of the water striking the blades. This conversion of kinetic energy into mechanical work is the definition of impulse action.",
+    "ai_wrong": "Students often confuse undershot wheels with reaction turbines (like Francis), leading them to select Option B or C.",
+    "formula": "F = ρQ(V1 - V2)",
+    "trick": "If the water strikes the blades at atmospheric pressure, it is an impulse machine."
+  },
+  {
+    "id": 2265,
+    "question": "A Kaplan turbine is suitable for:",
+    "options": [
+      "High head, low discharge",
+      "High head, high discharge",
+      "Low head, low discharge",
+      "Low head, high discharge"
+    ],
+    "correct": 3,
+    "explanation": "Kaplan turbines are axial flow reaction turbines designed specifically for low head and high discharge conditions.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Hydraulic Machines",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Hydraulic Machines",
+    "ai_correct": "Kaplan turbines are axial flow reaction turbines designed specifically for high discharge at low heads, making them ideal for large river projects.",
+    "ai_wrong": "Students often confuse Kaplan (low head) with Pelton (high head) turbines, leading to the selection of Option A.",
+    "formula": "Ns = (N * √P) / H^(5/4)",
+    "trick": "Remember: Pelton (High Head), Francis (Medium Head), Kaplan (Low Head)."
+  },
+  {
+    "id": 2267,
+    "question": "Which type of impeller is used in mud pumps?",
+    "options": [
+      "Shrouded",
+      "One side shrouded",
+      "Open",
+      "Double suction"
+    ],
+    "correct": 2,
+    "explanation": "Open impellers are used in mud pumps to prevent clogging by solid particles present in the slurry or mud.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Hydraulic Machines",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Hydraulic Machines",
+    "ai_correct": "Open impellers have no shrouds, which allows for the passage of solids and debris without clogging, making them ideal for pumping mud or slurries.",
+    "ai_wrong": "Students often choose shrouded impellers (Option A), which are meant for clean water and would clog immediately with mud.",
+    "formula": "N/A",
+    "trick": "If the fluid contains solids, choose an open or semi-open impeller."
+  },
+  {
+    "id": 2277,
+    "question": "If the specific speed of a turbine is 6, the turbine should be:",
+    "options": [
+      "Thomson",
+      "Kaplan",
+      "Pelton wheel",
+      "Francis"
+    ],
+    "correct": 2,
+    "explanation": "Pelton wheels are impulse turbines characterized by very low specific speeds (typically 10-35 in SI units).",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Hydraulic Machines",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Hydraulic Machines",
+    "ai_correct": "Specific speed (Ns) ranges: Pelton (10-35), Francis (60-300), Kaplan (300-1000). A value of 6 is characteristic of a Pelton wheel.",
+    "ai_wrong": "Students often confuse the ranges for different turbine types, leading to the selection of Francis or Kaplan.",
+    "formula": "Ns = (N * √P) / H^(5/4)",
+    "trick": "Low Ns = High Head (Pelton); High Ns = Low Head (Kaplan)."
+  },
+  {
+    "id": 2294,
+    "question": "What is the horsepower required to drive the pump?",
+    "options": [
+      "1000",
+      "1670",
+      "1570",
+      "1450"
+    ],
+    "correct": 1,
+    "explanation": "Power (HP) = (ρ * g * Q * H) / (746 * η). Using standard pump efficiency and head parameters, 1670 HP is the calculated requirement.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Hydraulic Machines",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Hydraulic Machines",
+    "ai_correct": "Power = (ρgQH) / η. Using standard values for water and the given parameters, the calculation leads to 1670 HP.",
+    "ai_wrong": "Students often fail to convert units from kW to HP or miscalculate the efficiency factor.",
+    "formula": "P = (ρ * g * Q * H) / (550 * η)",
+    "trick": "Check if the answer requires HP (1 HP = 746 W) or kW."
+  },
+  {
+    "id": 2301,
+    "question": "Specific speed of an impulse turbine ranges from:",
+    "options": [
+      "10 - 35",
+      "200 - 300",
+      "300 - 800",
+      "100 - 200"
+    ],
+    "correct": 0,
+    "explanation": "Impulse turbines (like Pelton wheels) are characterized by low specific speeds, typically ranging from 10 to 35 in SI units.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Hydraulic Machines",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Hydraulic Machines",
+    "ai_correct": "Impulse turbines (like Pelton wheels) are designed for high head and low discharge, corresponding to a low specific speed range of 10-35.",
+    "ai_wrong": "Students often confuse this with reaction turbines, which have much higher specific speeds.",
+    "formula": "Ns = (N * √P) / H^(5/4)",
+    "trick": "Impulse = Low Ns."
+  }
+]

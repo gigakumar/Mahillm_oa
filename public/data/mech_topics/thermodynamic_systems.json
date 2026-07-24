@@ -1,0 +1,24 @@
+[
+  {
+    "id": 160,
+    "question": "Which of the following is an open thermodynamic system?",
+    "options": [
+      "pressure cooker",
+      "manual ice cream freezer",
+      "centrifugal pump",
+      "none of the above"
+    ],
+    "correct": 2,
+    "explanation": "An open thermodynamic system is one where mass and energy can cross the system boundary. A centrifugal pump is an example of an open system because it takes in fluid (mass) at the inlet, adds energy to it through the impeller, and then expels the fluid (mass) at the outlet. In contrast, a pressure cooker and a manual ice cream freezer are closed systems because they do not exchange mass with their surroundings during operation. The centrifugal pump's ability to exchange both mass and energy with its surroundings makes it an open system.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Thermodynamic Systems",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Thermodynamic Systems",
+    "ai_correct": "A centrifugal pump is an open system because it involves the continuous flow of mass (fluid) across its control volume boundaries while performing work. This allows for both mass and energy transfer.",
+    "ai_wrong": "Students often pick A (pressure cooker) because they associate it with a device, but a closed pressure cooker only allows energy transfer (heat) and restricts mass transfer, making it a closed system.",
+    "formula": "dm/dt ≠ 0 (Open System)",
+    "trick": "Ask yourself: 'Does the substance cross the boundary of the device during operation?' If yes, it is an open system."
+  }
+]

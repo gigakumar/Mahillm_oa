@@ -1,0 +1,24 @@
+[
+  {
+    "id": 4568,
+    "question": "A rigid container contains 2 kg of an ideal gas at 300 K and 100 kPa. Heat is transferred to the gas until its temperature reaches 400 K. If the specific heat at constant volume of the gas is Cv = 0.718 kJ/kg·K, determine the amount of heat transfer.",
+    "options": [
+      "143.6 kJ",
+      "287.2 kJ",
+      "71.8 kJ",
+      "200.0 kJ"
+    ],
+    "correct": 0,
+    "explanation": "For a rigid container, the volume is constant (V = const), so the work done W = 0. According to the first law of thermodynamics, Q - W = delta U. Since W = 0, Q = delta U = m * Cv * (T2 - T1) = 2 kg * 0.718 kJ/kg·K * (400 K - 300 K) = 2 * 0.718 * 100 = 143.6 kJ.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "First Law of Thermodynamics",
+    "category": "Thermodynamics",
+    "type": "Numerical / State Relation",
+    "subject": "First Law of Thermodynamics",
+    "ai_correct": "For a rigid container, the volume is constant, meaning no boundary work is done (W=0). The heat transfer (Q) for an ideal gas at constant volume is given by Q = m * Cv * ΔT. Substituting the given values: mass (m) = 2 kg, specific heat at constant volume (Cv) = 0.718 kJ/kg·K, and temperature change (ΔT) = (400 K - 300 K) = 100 K. Therefore, Q = 2 kg * 0.718 kJ/kg·K * 100 K = 143.6 kJ.",
+    "ai_wrong": "A common mistake is to incorrectly assume a constant pressure process and use Cp instead of Cv, or to attempt to calculate work done, which is zero for a rigid container. For instance, if Cp were used, the result would be different.",
+    "formula": "Q = m * Cv * ΔT",
+    "trick": "Recognize 'rigid container' as a key indicator for a constant volume process, implying zero boundary work (W=0) and thus Q = ΔU = m * Cv * ΔT."
+  }
+]

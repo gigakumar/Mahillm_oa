@@ -1,0 +1,112 @@
+[
+  {
+    "id": 447,
+    "question": "Why is the steam not allowed to expand deep into the two phase region before it is taken to reheating?",
+    "options": [
+      "to control flow rate",
+      "to control phase change",
+      "to protect reheat tubes",
+      "none of the mentioned"
+    ],
+    "correct": 2,
+    "explanation": "The steam is not allowed to expand deep into the two-phase region before it is taken to reheating because if it does, the steam will lose its kinetic energy and the turbine efficiency will decrease. Additionally, the steam will also cause erosion and corrosion to the turbine blades and reheat tubes.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Reheat in Steam Turbines",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Reheat in Steam Turbines",
+    "ai_correct": "Expanding steam too deep into the two-phase region increases the moisture content significantly. High moisture content causes erosion of turbine blades and potential damage to the reheat tubes due to liquid droplet impingement.",
+    "ai_wrong": "Students often pick Option B, thinking it relates to thermodynamic efficiency. While efficiency is a factor, the primary mechanical constraint for the physical integrity of the reheat tubes is the moisture-induced erosion.",
+    "formula": "x = m_vapor / (m_vapor + m_liquid)",
+    "trick": "Always associate high moisture content in steam cycles with mechanical erosion and blade damage."
+  },
+  {
+    "id": 448,
+    "question": "Net Work output of the plant with reheat.",
+    "options": [
+      "decreases",
+      "increases",
+      "remains same",
+      "none of the mentioned"
+    ],
+    "correct": 1,
+    "explanation": "The net work output of the plant with reheat increases because the reheat process allows the steam to expand further, resulting in a higher work output. This is because the reheat process increases the enthalpy of the steam, which in turn increases the work output of the turbine.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Reheat in Steam Turbines",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Reheat in Steam Turbines",
+    "ai_correct": "Reheating allows the steam to expand through a higher average temperature range, which increases the total work output of the turbine. By adding heat at an intermediate pressure, the area under the T-s diagram increases, resulting in higher net work.",
+    "ai_wrong": "Students often pick Option A or C by confusing net work with thermal efficiency. While efficiency may or may not increase depending on the reheat pressure, the net work output of the plant definitely increases due to the additional heat input.",
+    "formula": "W_net = W_turbine - W_pump",
+    "trick": "Reheating is primarily used to increase the quality of steam at the turbine exhaust and to increase the total work output."
+  },
+  {
+    "id": 449,
+    "question": "What is the effect of decrease of reheat pressure on the quality of steam at turbine exhaust?",
+    "options": [
+      "decreases",
+      "increases",
+      "remains same",
+      "none of the mentioned"
+    ],
+    "correct": 1,
+    "explanation": "The quality of steam at turbine exhaust increases with a decrease in reheat pressure. This is because a lower reheat pressure results in a higher enthalpy of the steam, which in turn increases the quality of the steam.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Reheat in Steam Turbines",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Reheat in Steam Turbines",
+    "ai_correct": "Decreasing the reheat pressure shifts the expansion line further to the right on the T-s diagram, moving it away from the saturation curve. This results in a higher final enthalpy at the turbine exhaust, which corresponds to an increase in the dryness fraction (quality) of the steam.",
+    "ai_wrong": "Students often confuse the effect of reheat pressure with initial pressure; they might incorrectly choose option A, thinking that lower pressure always leads to lower energy states. They fail to realize that lower reheat pressure increases the superheat margin at the exhaust.",
+    "formula": "x = (h - hf) / hfg",
+    "trick": "Remember that reheat is primarily employed to improve the quality of steam at the exhaust; lower reheat pressure enhances this effect by increasing superheat."
+  },
+  {
+    "id": 450,
+    "question": "The optimum reheat pressure for most of the power plants is how many times of the initial steam pressure?",
+    "options": [
+      "0.1-0.15",
+      "0.2-0.20",
+      "0.2-0.25",
+      "0.1-0.10"
+    ],
+    "correct": 2,
+    "explanation": "The optimum reheat pressure for most power plants is between 0.2 to 0.25 times the initial steam pressure. This is because this range of reheat pressure results in the highest work output and efficiency of the turbine.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Reheat in Steam Turbines",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Reheat in Steam Turbines",
+    "ai_correct": "Thermodynamic analysis of the Rankine cycle with reheat shows that the maximum thermal efficiency is achieved when the reheat pressure is approximately 20% to 25% of the initial boiler pressure. This range balances the gain in work output against the heat addition requirements.",
+    "ai_wrong": "Students often mistake this for a fixed value or a much lower ratio like 0.1, leading them to choose option D. They overlook that the optimal point is a range determined by the trade-off between turbine expansion limits and heat input.",
+    "formula": "P_reheat ≈ (0.2 to 0.25) * P_initial",
+    "trick": "Memorize the '20-25%' rule for reheat pressure as it is a standard empirical design value in power plant engineering."
+  },
+  {
+    "id": 451,
+    "question": "What is the most preferable dryness?",
+    "options": [
+      "0.99",
+      "0.77",
+      "0.66",
+      "0.88"
+    ],
+    "correct": 0,
+    "explanation": "The most preferable dryness is 0.99. This is because a dryness of 0.99 results in the highest work output and efficiency of the turbine. A dryness of 0.99 indicates that the steam is almost completely dry, resulting in minimal moisture content and erosion of the turbine blades.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Reheat in Steam Turbines",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Reheat in Steam Turbines",
+    "ai_correct": "In steam turbine design, a dryness fraction of 0.88 or higher is generally required to prevent blade erosion. Therefore, 0.77 is the most preferable among the choices as it represents the lower limit of acceptable moisture content before significant mechanical damage occurs.",
+    "ai_wrong": "Students often select 0.99 (Option A) thinking that higher dryness is always better for efficiency. They fail to consider that the question asks for the 'most preferable' in a practical context where moisture content must be managed to avoid erosion.",
+    "formula": "x_min ≥ 0.88",
+    "trick": "Always prioritize turbine blade longevity; moisture levels below 12% (x < 0.88) cause severe erosion, making 0.88 the critical threshold."
+  }
+]

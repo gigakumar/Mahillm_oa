@@ -1,0 +1,110 @@
+[
+  {
+    "id": 512,
+    "question": "In a mixture of dry air and water vapour, which of the following relations is correct?",
+    "options": [
+      "mole fraction of dry air = pa/p",
+      "mole fraction of water vapour = pw/p",
+      "both of the mentioned",
+      "none of the mentioned"
+    ],
+    "correct": 2,
+    "explanation": "According to Dalton's Law of partial pressures, the mole fraction of a component in a gas mixture is equal to the ratio of its partial pressure to the total pressure. Thus, for dry air (pa/p) and water vapour (pw/p), both are correct.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Psychrometrics",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Psychrometrics",
+    "ai_correct": "According to Dalton's Law and the ideal gas law, the mole fraction of a component in a gas mixture is equal to the ratio of its partial pressure to the total pressure. Thus, both the mole fraction of dry air (pa/p) and water vapor (pw/p) are correct representations.",
+    "ai_wrong": "Students often select only one option (A or B) because they focus on the component they are most familiar with, overlooking that the definition applies to all components in the mixture.",
+    "formula": "xi = pi / p",
+    "trick": "Recall that for any ideal gas mixture, the mole fraction is equivalent to the volume fraction and the pressure ratio."
+  },
+  {
+    "id": 513,
+    "question": "When the partial pressure of water vapour (pw) is very small compared to the saturation pressure at the given temperature, which of the following is true?",
+    "options": [
+      "saturation temperature of water vapour at pw is less than atmospheric temperature",
+      "water vapour in air exists in superheated state",
+      "air is said to be in unsaturated state",
+      "all of the mentioned"
+    ],
+    "correct": 3,
+    "explanation": "When pw is less than the saturation pressure at the ambient temperature, the water vapour is superheated, the saturation temperature (dew point) is lower than the ambient temperature, and the air is considered unsaturated.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Psychrometrics",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Psychrometrics",
+    "ai_correct": "When pw is less than the saturation pressure (psat) at the given temperature, the vapor is superheated, meaning its temperature is higher than the saturation temperature. Consequently, the air is unsaturated because it can still hold more moisture before reaching the dew point.",
+    "ai_wrong": "Students often pick only one option, such as C, because they recognize the definition of unsaturated air. They fail to realize that the superheated state and the relationship between saturation temperature and ambient temperature are direct thermodynamic consequences of pw < psat.",
+    "formula": "pw < psat(T)",
+    "trick": "If pw < psat, the vapor is superheated; if pw = psat, the vapor is saturated; if pw > psat, condensation occurs."
+  },
+  {
+    "id": 514,
+    "question": "Relative humidity is defined as the ratio of:",
+    "options": [
+      "(saturation pressure of pure water) / pw",
+      "pw / (saturation pressure of pure water)",
+      "(saturation pressure of pure water) / p",
+      "p / (saturation pressure of pure water)"
+    ],
+    "correct": 1,
+    "explanation": "Relative humidity (RH) is defined as the ratio of the actual partial pressure of water vapour (pw) in the air to the saturation pressure of pure water at the same temperature.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Psychrometrics",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Psychrometrics",
+    "ai_correct": "Relative humidity (RH) is defined as the ratio of the partial pressure of water vapor (pw) in a mixture to the saturation pressure of pure water (ps) at the same temperature. This ratio represents the degree of saturation of the air-vapor mixture.",
+    "ai_wrong": "Students often confuse relative humidity with the inverse ratio (Option A), which represents the reciprocal of the saturation degree. Picking Option A implies that the saturation pressure is the numerator, which would result in a value greater than 1 for unsaturated air.",
+    "formula": "RH = pw / ps",
+    "trick": "Remember RH is always <= 1; if your calculation yields > 1, you have likely inverted the numerator and denominator."
+  },
+  {
+    "id": 515,
+    "question": "For saturated air, is the relative humidity 0%?",
+    "options": [
+      "true",
+      "false"
+    ],
+    "correct": 1,
+    "explanation": "For saturated air, the partial pressure of water vapour equals the saturation pressure, meaning the relative humidity is 100%, not 0%.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Psychrometrics",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Psychrometrics",
+    "ai_correct": "For saturated air, the partial pressure of water vapor (pw) is exactly equal to the saturation pressure of water (ps) at that temperature. Therefore, the relative humidity is 100%, not 0%.",
+    "ai_wrong": "Students often mistake 'saturated' for 'dry' or 'empty', leading them to incorrectly associate it with a zero value. In thermodynamics, saturation implies the maximum capacity for vapor has been reached.",
+    "formula": "RH = (pw / ps) * 100; if pw = ps, RH = 100%",
+    "trick": "Saturated means 'full', so the ratio must be 1 (100%), not 0."
+  },
+  {
+    "id": 516,
+    "question": "If water is injected into a container containing unsaturated air, what happens?",
+    "options": [
+      "water will evaporate",
+      "moisture content of air will decrease",
+      "pw will decrease",
+      "all of the mentioned"
+    ],
+    "correct": 0,
+    "explanation": "When water is added to unsaturated air, the air absorbs moisture until it reaches saturation, causing the water to evaporate and the partial pressure of water vapour (pw) to increase.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Psychrometrics",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Psychrometrics",
+    "ai_correct": "When water is injected into unsaturated air, the air is not yet at its maximum vapor capacity. Consequently, the liquid water will evaporate into the air to increase the partial pressure of the vapor until equilibrium is reached.",
+    "ai_wrong": "Students often assume that adding water to a container will automatically increase the total pressure or decrease the moisture content (Option B). However, evaporation increases the mass of vapor, thereby increasing the moisture content and the partial pressure (pw).",
+    "formula": "dm_v/dt > 0 until pw = ps",
+    "trick": "Think of unsaturated air as a 'dry sponge' that will absorb water until it is fully saturated."
+  }
+]

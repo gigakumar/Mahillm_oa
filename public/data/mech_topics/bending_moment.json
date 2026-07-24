@@ -1,0 +1,24 @@
+[
+  {
+    "id": 761,
+    "question": "A beam of uniform strength has at every cross-section same",
+    "options": [
+      "bending moment",
+      "bending stress",
+      "deflection",
+      "stiffness"
+    ],
+    "correct": 1,
+    "explanation": "A beam of uniform strength has the same bending moment at every cross-section.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Bending Moment",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Bending Moment",
+    "ai_correct": "A beam of uniform strength is designed such that the bending stress at every cross-section is equal to the allowable working stress. This is achieved by varying the section modulus along the length.",
+    "ai_wrong": "Students often confuse 'uniform strength' with 'uniform bending moment'. A beam of uniform strength can have a varying bending moment if the section modulus is varied accordingly.",
+    "formula": "σ = M/Z = constant",
+    "trick": "Uniform strength means constant stress, not constant moment."
+  }
+]

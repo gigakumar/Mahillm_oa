@@ -1,0 +1,112 @@
+[
+  {
+    "id": 2274,
+    "question": "In the MLT system, the dimensions of angular momentum are:",
+    "options": [
+      "ML²T⁻²",
+      "MLT⁻²",
+      "MLT⁻¹",
+      "ML²T⁻¹"
+    ],
+    "correct": 3,
+    "explanation": "Angular momentum = mass * velocity * radius = [M] * [LT⁻¹] * [L] = [ML²T⁻¹].",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Fluid Properties",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Fluid Properties",
+    "ai_correct": "Angular momentum is (mass * velocity * radius). Dimensions: [M] * [LT⁻¹] * [L] = [ML²T⁻¹].",
+    "ai_wrong": "Students often confuse this with linear momentum (MLT⁻¹) or force (MLT⁻²), leading to incorrect dimensional analysis.",
+    "formula": "L = mvr",
+    "trick": "Angular momentum adds an extra length dimension [L] to linear momentum."
+  },
+  {
+    "id": 2276,
+    "question": "Falling drops of water become spherical due to:",
+    "options": [
+      "Dynamic viscosity",
+      "Cohesion",
+      "Adhesion",
+      "Surface tension"
+    ],
+    "correct": 3,
+    "explanation": "Surface tension acts to minimize the surface area of a liquid volume; a sphere is the geometric shape with the minimum surface area for a given volume.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Fluid Properties",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Fluid Properties",
+    "ai_correct": "Surface tension acts to minimize the surface area of a liquid volume. For a given volume, a sphere has the minimum surface area, hence drops become spherical.",
+    "ai_wrong": "Students often attribute this to viscosity, which affects flow resistance but not the shape of a static or falling drop.",
+    "formula": "ΔP = 2σ / R",
+    "trick": "Surface tension is the force responsible for all 'shape-minimizing' phenomena in fluids."
+  },
+  {
+    "id": 2280,
+    "question": "The viscosity of a fluid (SG 1.3) is 0.0034 Ns/m². Its kinematic viscosity in m²/s is:",
+    "options": [
+      "5.8 x 10⁻⁶",
+      "2.6 x 10⁻⁶",
+      "9.6 x 10⁻⁶",
+      "4.4 x 10⁻⁶"
+    ],
+    "correct": 1,
+    "explanation": "Kinematic viscosity ν = μ / ρ. Density ρ = 1.3 * 1000 = 1300 kg/m³. ν = 0.0034 / 1300 ≈ 2.61 x 10⁻⁶ m²/s.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Fluid Properties",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Fluid Properties",
+    "ai_correct": "Kinematic viscosity (ν) = Dynamic viscosity (μ) / Density (ρ). Density = SG * 1000 = 1300 kg/m³. ν = 0.0034 / 1300 ≈ 2.6 x 10⁻⁶ m²/s.",
+    "ai_wrong": "Students often forget to divide by density or use the wrong SG, leading to incorrect powers of ten.",
+    "formula": "ν = μ / ρ",
+    "trick": "Always convert SG to density (kg/m³) before calculating kinematic viscosity."
+  },
+  {
+    "id": 2296,
+    "question": "The units of dynamic viscosity are:",
+    "options": [
+      "N-s/m²",
+      "kg-s/m",
+      "Newton/m²-sec",
+      "m²/sec"
+    ],
+    "correct": 0,
+    "explanation": "Dynamic viscosity (μ) has units of shear stress divided by velocity gradient: (N/m²) / (1/s) = N-s/m² (or Pa-s).",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Fluid Properties",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Fluid Properties",
+    "ai_correct": "Dynamic viscosity (μ) is defined by the shear stress equation τ = μ(du/dy), leading to units of (N/m²) / (1/s) = N-s/m².",
+    "ai_wrong": "Students often confuse this with kinematic viscosity (m²/s).",
+    "formula": "μ = τ / (du/dy)",
+    "trick": "Dynamic = Force involved (N-s/m²); Kinematic = Motion only (m²/s)."
+  },
+  {
+    "id": 2302,
+    "question": "The bulk modulus of elasticity:",
+    "options": [
+      "Is independent of temperature",
+      "Increases with the pressure",
+      "Is independent of pressure and viscosity",
+      "Is larger when the fluid is more compressible"
+    ],
+    "correct": 2,
+    "explanation": "The bulk modulus (K = -dP / (dV/V)) is a property of the fluid that is generally considered independent of pressure and viscosity within standard operating ranges.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Fluid Properties",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Fluid Properties",
+    "ai_correct": "Bulk modulus (K) is a property of the fluid itself, defined as K = -V(dP/dV). It is essentially constant for a given fluid and independent of pressure or viscosity.",
+    "ai_wrong": "Students often think it changes with pressure, which is only true for gases, not liquids.",
+    "formula": "K = -V * (dP/dV)",
+    "trick": "Bulk modulus is a material constant for liquids."
+  }
+]

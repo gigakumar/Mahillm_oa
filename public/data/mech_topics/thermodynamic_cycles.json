@@ -1,0 +1,46 @@
+[
+  {
+    "id": 129,
+    "question": "A series of operations, which take place in a certain order and restore the initial condition, is known as",
+    "options": [
+      "reversible cycle",
+      "irreversible cycle",
+      "thermodynamic cycle",
+      "none of the above"
+    ],
+    "correct": 2,
+    "explanation": "A thermodynamic cycle is a series of operations that take place in a certain order and restore the initial condition. This means that the system returns to its initial state after completing the cycle. Thermodynamic cycles are used to describe the operation of heat engines, refrigerators, and other devices that convert energy from one form to another. The key characteristic of a thermodynamic cycle is that it is a closed loop, meaning that the system returns to its initial state after completing the cycle.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Thermodynamic Cycles",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Thermodynamic Cycles",
+    "ai_correct": "A thermodynamic cycle is defined as a sequence of processes that begins and ends at the same state, thereby restoring the initial properties of the system. This cyclic nature ensures that the net change in any state function over the cycle is zero.",
+    "ai_wrong": "Students often confuse this with a 'reversible cycle' (Option A). While a reversible cycle is a specific type of thermodynamic cycle, not all thermodynamic cycles are reversible, making Option C the more general and correct definition.",
+    "formula": "∮ dP = 0 (for any property P)",
+    "trick": "Always look for the most general definition; 'thermodynamic cycle' covers both reversible and irreversible cycles."
+  },
+  {
+    "id": 130,
+    "question": "The condition for the reversibility of a cycle is",
+    "options": [
+      "the pressure and temperature of the working substance must not differ appreciably from those of the surroundings",
+      "all the processes taking place in the cycle of operation must be extremely slow",
+      "the working parts of the engine must be friction-free",
+      "all of the above"
+    ],
+    "correct": 3,
+    "explanation": "For a cycle to be reversible, it must meet certain conditions. These conditions include: (1) the pressure and temperature of the working substance must not differ appreciably from those of the surroundings, (2) all the processes taking place in the cycle of operation must be extremely slow, and (3) the working parts of the engine must be friction-free. If these conditions are met, the cycle can be reversed without any change in the surroundings, and the system can return to its initial state. Reversible cycles are idealized cycles that are used as a benchmark to compare the performance of real cycles.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Thermodynamic Cycles",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Thermodynamic Cycles",
+    "ai_correct": "For a cycle to be reversible, it must be quasi-static (extremely slow), frictionless, and in thermal/mechanical equilibrium with the surroundings to avoid entropy generation. Since all these conditions eliminate irreversibilities, Option D is correct.",
+    "ai_wrong": "Students often pick only one condition like 'friction-free' (Option C) or 'slow processes' (Option B). However, reversibility requires the simultaneous absence of all dissipative effects, including heat transfer across finite temperature differences.",
+    "formula": "S_gen = 0 (for a reversible process)",
+    "trick": "In 'all of the above' questions regarding reversibility, check if the options cover heat, work, and internal dissipative effects."
+  }
+]

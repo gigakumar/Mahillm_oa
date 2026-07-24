@@ -1,0 +1,24 @@
+[
+  {
+    "id": 707,
+    "question": "A steel strip is welded to a copper strip of the same dimensions along the length. The coefficient of thermal expansion for copper is greater than that for steel. If temperature is increased, ______.",
+    "options": [
+      "copper has tensile stress",
+      "steel has tensile stress",
+      "both have tensile stress",
+      "none of the above"
+    ],
+    "correct": 2,
+    "explanation": "When the temperature is increased, the copper strip will expand more than the steel strip, causing the copper to be in tension and the steel to be in compression.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Thermal Stress",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Thermal Stress",
+    "ai_correct": "When heated, copper tries to expand more than steel. Because they are bonded, steel restricts copper's expansion (putting copper in compression) and copper pulls steel (putting steel in tension).",
+    "ai_wrong": "Students often assume both materials experience the same type of stress, failing to realize the bond forces them to reach a common equilibrium length.",
+    "formula": "ε_steel = ε_copper",
+    "trick": "The material with the higher α will always be in compression when heated."
+  }
+]

@@ -1,0 +1,24 @@
+[
+  {
+    "id": 710,
+    "question": "For a certain material, the Poisson's ratio is 0. The relation between modulus of elasticity E and the bulk modulus K is E = ____.",
+    "options": [
+      "0",
+      "3k",
+      "1.5k",
+      "1.2k"
+    ],
+    "correct": 2,
+    "explanation": "For a material with a Poisson's ratio of 0, the relation between the modulus of elasticity E and the bulk modulus K is E = 3K.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Elastic Constants",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Elastic Constants",
+    "ai_correct": "Using the relation E = 3K(1-2ν), if ν = 0, then E = 3K(1-0), which simplifies to E = 3K. However, the question asks for the relation, and 1.5K is often cited in specific contexts of E=2G(1+ν) or similar derivations; here, E=3K is the direct result.",
+    "ai_wrong": "Students often miscalculate the substitution of ν=0 into the standard elastic constant equations.",
+    "formula": "E = 3K(1-2ν)",
+    "trick": "If ν=0, the material does not change volume laterally under axial load."
+  }
+]

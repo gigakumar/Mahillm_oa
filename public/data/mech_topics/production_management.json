@@ -1,0 +1,68 @@
+[
+  {
+    "id": 23133,
+    "question": "The average revenue curve of a firm is",
+    "options": [
+      "the curve representing the cost per unit of output",
+      "the same as the demand curve of consumers for the firm's product",
+      "total receipts realised by the firm",
+      "B and C above"
+    ],
+    "correct": 1,
+    "explanation": "Average revenue is the revenue per unit sold. Since the price a firm can charge is determined by the consumer's demand, the average revenue curve is identical to the firm's demand curve.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Production Management",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Industrial Engineering",
+    "ai_correct": "The average revenue (AR) curve represents the price per unit at different quantities, which is identical to the demand curve faced by the firm.",
+    "ai_wrong": "Students often confuse AR with Marginal Revenue (MR). AR is always the demand curve.",
+    "formula": "AR = Total Revenue / Quantity = Price",
+    "trick": "AR = Price = Demand Curve."
+  },
+  {
+    "id": 23156,
+    "question": "If a reduction in prices increases revenue, then the demand curve is said to be",
+    "options": [
+      "Either elastic or inelastic",
+      "Elastic",
+      "Inelastic",
+      "Not determinable from given data"
+    ],
+    "correct": 1,
+    "explanation": "When demand is elastic, a decrease in price leads to a proportionately larger increase in the quantity demanded, resulting in an increase in total revenue.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Production Management",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Industrial Engineering",
+    "ai_correct": "ABC analysis (Always Better Control) is a fundamental technique for inventory management based on the value and quantity of items.",
+    "ai_wrong": "Students might confuse it with project management tools like CPM/PERT.",
+    "formula": "ABC = f(Value, Quantity)",
+    "trick": "ABC = Inventory."
+  },
+  {
+    "id": 23158,
+    "question": "The substitution effect works to encourage a consumer to purchase more of a product when the price of that good is falling because",
+    "options": [
+      "The consumer's real income has increased",
+      "The consumer's real income has decreased",
+      "The product is now less expensive than before",
+      "Other products are now less expensive than before"
+    ],
+    "correct": 2,
+    "explanation": "The substitution effect occurs when consumers replace more expensive goods with cheaper alternatives. When the price of a good falls, it becomes relatively cheaper compared to other goods, encouraging consumers to substitute it for others.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Production Management",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Industrial Engineering",
+    "ai_correct": "In the long run, all inputs (labor, capital, etc.) can be adjusted, meaning there are no fixed costs; all costs are variable.",
+    "ai_wrong": "Students often think some costs remain fixed in the long run, but by definition, the long run allows for full adjustment of all factors.",
+    "formula": "Long Run: TC = VC",
+    "trick": "Long run = No fixed costs."
+  }
+]

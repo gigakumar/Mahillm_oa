@@ -39,10 +39,10 @@ function parseArgs() {
   const args = process.argv.slice(2);
   const opts = {
     file: path.join(__dirname, '../public/data/mechEngQuestions.json'),
-    model: 'gemini-3.1-flash-lite',
-    batch: 500,
+    model: 'gemini-3.5-flash-lite',
+    batch: 15,
     concur: 1,
-    delay: 2000,
+    delay: 1000,
     limit: Infinity,
     force: false,
   };
@@ -61,15 +61,28 @@ function parseArgs() {
 const opts = parseArgs();
 
 // ── Validate API key ──────────────────────────────────────────────────────────
-const API_KEY = process.env.GEMINI_API_KEY;
+let API_KEY = process.env.GEMINI_API_KEY;
 if (!API_KEY) {
-  console.error('\n❌  GEMINI_API_KEY env var not set.');
-  console.error('    Run as:  GEMINI_API_KEY=your_key node scripts/gemini_batch_enrich.js\n');
+  const envPath = path.join(__dirname, '../.env.local');
+  if (fs.existsSync(envPath)) {
+    const dotenvContent = fs.readFileSync(envPath, 'utf-8');
+    dotenvContent.split('\n').forEach(line => {
+      const [k, v] = line.split('=');
+      if (k && k.trim() === 'VITE_GEMINI_API_KEY') {
+        API_KEY = v.trim();
+      }
+    });
+  }
+}
+
+if (!API_KEY) {
+  console.error('\n❌  GEMINI_API_KEY env var not set and not found in .env.local.');
   process.exit(1);
 }
 
 // ── Model display map ─────────────────────────────────────────────────────────
 const MODEL_LABELS = {
+  'gemini-3.5-flash-lite': 'Gemini 3.5 Flash Lite',
   'gemini-flash-latest':   'Gemini Flash (Latest)',
   'gemini-3.5-flash':      'Gemini 3.5 Flash',
   'gemini-2.5-flash':      'Gemini 2.5 Flash',

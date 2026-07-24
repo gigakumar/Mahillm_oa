@@ -1,0 +1,134 @@
+[
+  {
+    "id": 2255,
+    "question": "In a Buttress dam, the slenderness ratio of the buttress is usually maintained between:",
+    "options": [
+      "2 to 5",
+      "12 to 15",
+      "20 to 25",
+      "5 to 7"
+    ],
+    "correct": 1,
+    "explanation": "The slenderness ratio for structural members in buttress dams is typically kept between 12 and 15 to ensure stability against buckling while maintaining structural efficiency.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Hydraulic Structures",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Hydraulic Structures",
+    "ai_correct": "In structural engineering for dams, the slenderness ratio of a buttress is defined by the ratio of its height to its thickness. A range of 12 to 15 is standard to ensure stability against buckling.",
+    "ai_wrong": "Students often confuse this with the slenderness ratio of columns in building frames (often 20-25), leading to the selection of Option C.",
+    "formula": "λ = H / t",
+    "trick": "Remember that dam buttresses are massive structures, so their slenderness ratio is significantly lower than that of slender building columns."
+  },
+  {
+    "id": 2257,
+    "question": "Which of the following dams is constructed on the Chambal River?",
+    "options": [
+      "Jawahar Sagar",
+      "Rana Pratap Sagar",
+      "Gandhi Sagar",
+      "All of the above"
+    ],
+    "correct": 3,
+    "explanation": "The Chambal Valley Project includes three major dams: Gandhi Sagar, Rana Pratap Sagar, and Jawahar Sagar.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Hydraulic Structures",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Hydraulic Structures",
+    "ai_correct": "The Chambal River project is a major multi-purpose scheme in India. Gandhi Sagar, Rana Pratap Sagar, and Jawahar Sagar are all major dams built sequentially along the Chambal River.",
+    "ai_wrong": "Students often only remember the most famous one (Gandhi Sagar) and ignore the others, leading to an incomplete selection.",
+    "formula": "N/A",
+    "trick": "For river projects, remember the sequence of dams from upstream to downstream: Gandhi Sagar -> Rana Pratap Sagar -> Jawahar Sagar -> Kota Barrage."
+  },
+  {
+    "id": 2270,
+    "question": "The simplest type of control for reservoir outlets is provided by:",
+    "options": [
+      "Radial gates",
+      "Slide gates",
+      "Jet flow gates",
+      "Cylindrical gates"
+    ],
+    "correct": 1,
+    "explanation": "Slide gates are the most basic and common mechanical devices used to control the flow of water from reservoir outlets.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Hydraulic Structures",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Hydraulic Structures",
+    "ai_correct": "Slide gates are the most basic and common mechanical devices used to control the flow of water from reservoirs by simply sliding a plate across an opening.",
+    "ai_wrong": "Students often think of more complex gates like radial or jet flow gates, which are used for high-pressure or large-scale regulation.",
+    "formula": "N/A",
+    "trick": "Slide gates are the 'simplest' because they involve simple linear motion."
+  },
+  {
+    "id": 2286,
+    "question": "The portion of the power canal that extends from the intake works to the powerhouse is known as:",
+    "options": [
+      "Lead race",
+      "Main storage",
+      "Tail race",
+      "Diversion canal"
+    ],
+    "correct": 0,
+    "explanation": "The lead race (or head race) carries water from the reservoir/intake to the powerhouse, while the tail race carries it away after passing through the turbines.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Hydraulic Structures",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Hydraulic Structures",
+    "ai_correct": "The lead race (or head race) is the channel that carries water from the reservoir/intake to the turbine/powerhouse.",
+    "ai_wrong": "Students often confuse this with the tail race, which carries water away from the powerhouse.",
+    "formula": "N/A",
+    "trick": "Lead = Leading to the turbine."
+  },
+  {
+    "id": 2297,
+    "question": "Formation of air pockets in a pressure tunnel may be avoided by:",
+    "options": [
+      "Avoiding partial gate opening",
+      "Avoiding traps or pockets along the crown",
+      "Avoiding vortices formation",
+      "Avoiding small intakes"
+    ],
+    "correct": 0,
+    "explanation": "Partial gate opening can lead to air entrainment and the formation of air pockets; maintaining full gate operation helps ensure the tunnel remains full.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Hydraulic Structures",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Hydraulic Structures",
+    "ai_correct": "Partial gate opening creates turbulence and air entrainment, which can lead to the formation of air pockets in high-pressure tunnels.",
+    "ai_wrong": "Students often think the intake size is the problem, but gate operation is the primary control factor.",
+    "formula": "N/A",
+    "trick": "Always operate gates fully open or closed to avoid cavitation and air pockets."
+  },
+  {
+    "id": 2300,
+    "question": "The purpose of a surge tank in a pipeline is to:",
+    "options": [
+      "Maintain the flow of water under emergency conditions",
+      "Relieve the pressure due to water hammer",
+      "Smoothen the flow of water",
+      "Prevent occurrence of hydraulic jump"
+    ],
+    "correct": 1,
+    "explanation": "A surge tank acts as a reservoir to absorb pressure fluctuations and dampen the effects of water hammer caused by sudden valve closure.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Hydraulic Structures",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Hydraulic Structures",
+    "ai_correct": "A surge tank acts as a reservoir to absorb the pressure waves (water hammer) caused by sudden changes in flow velocity in a pipeline.",
+    "ai_wrong": "Students often think it is for smoothing flow, but its primary safety function is pressure relief.",
+    "formula": "ΔP = ρ * c * Δv",
+    "trick": "Surge tank = Water hammer protection."
+  }
+]

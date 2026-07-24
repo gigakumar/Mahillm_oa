@@ -1,0 +1,44 @@
+[
+  {
+    "id": 896,
+    "question": "In a riveted joint, when the rivets in the adjacent rows are staggered in such a way that every rivet is in the middle of the two rivets of the opposite row, the joint is said to be diamond riveted.",
+    "options": [
+      "Yes",
+      "No"
+    ],
+    "correct": 1,
+    "explanation": "Diamond riveting is a type of riveting pattern where the rivets in adjacent rows are staggered, with each rivet positioned between the two rivets of the opposite row. This pattern is used to provide additional strength and stability to the joint.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Riveted Joints",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Riveted Joints",
+    "ai_correct": "Diamond riveting is a specific pattern where the number of rivets increases in each row towards the center; the description provided is for staggered riveting.",
+    "ai_wrong": "Students often confuse staggered riveting with diamond riveting.",
+    "formula": "N/A",
+    "trick": "Diamond riveting = increasing rivets per row."
+  },
+  {
+    "id": 899,
+    "question": "The centre to centre distance, between two consecutive rivets in a row, is called",
+    "options": [
+      "margin",
+      "pitch",
+      "back pitch",
+      "diagonal pitch"
+    ],
+    "correct": 2,
+    "explanation": "The centre to centre distance between two consecutive rivets in a row is called the pitch. The pitch is an important parameter in the design of riveted joints.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Riveted Joints",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Riveted Joints",
+    "ai_correct": "Back pitch is the distance between two consecutive rows of rivets.",
+    "ai_wrong": "Students often confuse back pitch with pitch (distance between rivets in the same row).",
+    "formula": "N/A",
+    "trick": "Pitch = same row; Back pitch = different rows."
+  }
+]

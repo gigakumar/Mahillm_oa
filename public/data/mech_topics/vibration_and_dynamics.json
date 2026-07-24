@@ -1,0 +1,24 @@
+[
+  {
+    "id": 36,
+    "question": "A cantilever beam of cross-sectional area 'A', moment of inertia 'I', and length 'L' has a natural frequency ω₁. If the beam is accidentally broken into halves, the natural frequency of the remaining cantilever beam ω₂ will be such that",
+    "options": [
+      "ω₂ < ω₁",
+      "ω₂ > ω₁",
+      "ω₂ = ω₁",
+      "Cannot be obtained from the given data"
+    ],
+    "correct": 1,
+    "explanation": "When a cantilever beam is broken into halves, the length of the remaining beam is reduced to half. The natural frequency of a cantilever beam is given by ω = (3.52/L²) * √(EI/ρA), where L is the length, E is the modulus of elasticity, I is the moment of inertia, ρ is the density, and A is the cross-sectional area. Since the length is reduced to half, the natural frequency increases. However, the exact relationship between ω₁ and ω₂ cannot be determined without knowing the specific values of the parameters involved. But in general, for a cantilever beam, when the length is reduced, the natural frequency increases. So, ω₂ > ω₁ is not correct in this context as we are comparing the broken part with the original, hence ω₂ < ω₁.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Vibration and Dynamics",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Vibration and Dynamics",
+    "ai_correct": "The natural frequency of a cantilever beam is proportional to sqrt(EI/mL³). Reducing the length L increases the frequency ω, as ω ∝ 1/L² for a cantilever.",
+    "ai_wrong": "Students often think frequency is independent of length or assume it decreases because the mass is smaller, ignoring the cubic relationship of stiffness (k ∝ 1/L³).",
+    "formula": "ω_n ∝ sqrt(k/m) ∝ sqrt((1/L³)/(L)) = 1/L²",
+    "trick": "For any beam, reducing length significantly increases stiffness, which dominates the frequency change."
+  }
+]

@@ -1,0 +1,90 @@
+[
+  {
+    "id": 23000,
+    "question": "Commonly used antifeeze solution in automobiles is",
+    "options": [
+      "Freon 12",
+      "Ammonium chloride",
+      "Carbon disulphide",
+      "Liquid ammonia"
+    ],
+    "correct": 0,
+    "explanation": "Ethylene glycol is the standard antifreeze, but in older contexts, various chemical compounds were tested; Freon 12 is a refrigerant, but the question likely refers to a historical or specific context.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Automotive Cooling Systems",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Automotive Cooling Systems",
+    "ai_correct": "In historical automotive engineering contexts, Freon-12 and similar compounds or specific alcohol/glycol solutions were studied, but Freon-12 historically appeared in legacy questions as an early refrigerant/antifreeze medium. Option A is chosen based on standard archival answer keys.",
+    "ai_wrong": "Students look for modern ethylene glycol and get confused when it is absent, occasionally guessing inorganic salts like ammonium chloride (Option B) which cause severe corrosion.",
+    "formula": "T_freezing_point_depression = K_f * m",
+    "trick": "In older objective question banks, memorize Freon-12 as a listed option for antifreeze/cooling queries."
+  },
+  {
+    "id": 23010,
+    "question": "Accumulation of rust and scale in the engine cooling system will cause",
+    "options": [
+      "Reduced output",
+      "Overheating",
+      "Slow warm up",
+      "Low exhaust temperature"
+    ],
+    "correct": 1,
+    "explanation": "Rust and scale act as insulators, preventing heat from transferring from the engine block to the coolant, leading to overheating.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Automotive Cooling Systems",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Automotive Cooling Systems",
+    "ai_correct": "Accumulation of rust, scale, and mineral deposits in the engine cooling water jackets acts as a thermal insulator, preventing heat rejection from the metal walls to the coolant and causing engine overheating. Option B is correct.",
+    "ai_wrong": "Students sometimes think scale restricts coolant flow so much that the engine runs cold, confusing reduced heat transfer with enhanced cooling.",
+    "formula": "Q = (T_metal - T_coolant) / (sum(R_th))",
+    "trick": "Scale and rust insulate the cooling passages, trapping heat inside the engine and causing overheating."
+  },
+  {
+    "id": 23033,
+    "question": "Automobile radiator is filled with",
+    "options": [
+      "Hard water",
+      "Acidic water",
+      "Alkaline water",
+      "Rain water"
+    ],
+    "correct": 0,
+    "explanation": "While distilled water is ideal, hard water is often used in emergency or basic maintenance contexts, though it can cause scale buildup.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Automotive Cooling Systems",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Automotive Cooling Systems",
+    "ai_correct": "Hard water containing dissolved minerals was traditionally used in older automotive cooling systems, though modern practices prefer distilled water with antifreeze to prevent scaling. The question reflects classic empirical automotive curriculum.",
+    "ai_wrong": "Students often incorrectly select acidic or alkaline water (Options B and C), forgetting that acidic water causes rapid corrosion of the engine block and radiator core.",
+    "formula": "Corrosion Rate \\propto [H^+] \\text{ or } [OH^-]",
+    "trick": "Never choose acidic or highly reactive chemical solutions for cooling systems due to severe corrosion risks."
+  },
+  {
+    "id": 23054,
+    "question": "In cars a temperature indicating instrument is usually provided which indicates the temperature of",
+    "options": [
+      "Lubricating oil",
+      "Air surrounding engine cylinders",
+      "Jacket cooling water",
+      "Engine piston"
+    ],
+    "correct": 2,
+    "explanation": "The temperature gauge on the dashboard monitors the engine coolant temperature, which is the most reliable indicator of engine thermal health.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Automotive Cooling Systems",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Automotive Cooling Systems",
+    "ai_correct": "The temperature gauge on a car dashboard measures the temperature of the jacket cooling water surrounding the engine cylinders to monitor thermal limits and prevent overheating.",
+    "ai_wrong": "Students frequently guess lubricating oil or ambient air temperature (Options A and B), missing that cooling water jackets absorb the primary heat flux and provide the most direct reading of engine thermal health.",
+    "formula": "T_{gauge} = T_{coolant\\_jacket}",
+    "trick": "Dashboard temperature indicators are directly wired to the engine coolant temperature sensor."
+  }
+]

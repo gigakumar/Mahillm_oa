@@ -81,20 +81,6 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
 
           <div className="sidebar-divider" />
 
-          <a 
-            href="https://chrome.google.com" 
-            target="_blank" 
-            rel="noreferrer"
-            className="sidebar-link external-link"
-          >
-            <div className="chrome-icon-badge">
-              <span className="chrome-dot red" />
-              <span className="chrome-dot yellow" />
-              <span className="chrome-dot green" />
-            </div>
-            <span className="sidebar-link-label">Install Extension</span>
-            <ExternalLink size={14} className="external-arrow" />
-          </a>
         </nav>
 
         {/* Bottom Theme Toggle */}

@@ -1,0 +1,24 @@
+[
+  {
+    "id": 4572,
+    "question": "A student writes a letter using a wooden pencil. If the force applied normal to the paper is 2.0 N and the coefficient of kinetic friction between the graphite lead and the paper is 0.15, what is the magnitude of the frictional force resisting the motion of the pencil?",
+    "options": [
+      "0.15 N",
+      "0.30 N",
+      "1.33 N",
+      "2.00 N"
+    ],
+    "correct": 1,
+    "explanation": "The frictional force (F_f) is calculated using the formula F_f = μ_k * F_N, where μ_k is the coefficient of kinetic friction and F_N is the normal force. Given μ_k = 0.15 and F_N = 2.0 N, we have F_f = 0.15 * 2.0 N = 0.30 N.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Friction",
+    "category": "Engineering Mechanics",
+    "type": "Numerical / State Relation",
+    "subject": "Friction",
+    "ai_correct": "The magnitude of the kinetic frictional force (Ff) is calculated by multiplying the coefficient of kinetic friction (μk) by the normal force (N). Given μk = 0.15 and N = 2.0 N, the frictional force is Ff = 0.15 * 2.0 N = 0.30 N.",
+    "ai_wrong": "A common mistake is to confuse the coefficient of friction with the frictional force itself, or to perform an incorrect mathematical operation. For instance, some might mistakenly choose 0.15 N (the coefficient) or 2.0 N (the normal force) as the answer.",
+    "formula": "Ff = μk * N",
+    "trick": "Ensure you correctly identify the normal force and the coefficient of friction, and remember that the frictional force is a product of these two values."
+  }
+]

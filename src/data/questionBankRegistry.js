@@ -32,13 +32,14 @@ async function fetchQuestionsFromFirestore(categoryKey, filterTopic = null, filt
     console.error(`[Firestore Loader] Error fetching questions for ${categoryKey}:`, err);
   }
 
-  // Fallback to local public JSON files (filter client-side for topic)
+  // Fallback to local public JSON files
   if (fallbackPath) {
     console.log(`[Firestore Loader] Fetching fallback from: ${fallbackPath}`);
     const res = await fetch(fallbackPath);
     const localData = await res.json();
     let filtered = localData;
-    if (filterTopic && filterTopic !== 'all') {
+    // We don't filter mech topics here anymore because they're pre-split in their own files
+    if (categoryKey !== 'Mechanical Engineering' && filterTopic && filterTopic !== 'all') {
       filtered = localData.filter(q => q.topic === filterTopic);
     }
     if (filterDifficulty && filterDifficulty !== 'all') {
@@ -57,7 +58,7 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '🔥',
     color: 'rgba(239,68,68,0.8)',
     topics: [
-      { name: 'Thermodynamics', count: 5313 },
+      { name: 'Thermodynamics', count: 4888 },
       { name: 'First Law of Thermodynamics', count: 1 },
       { name: 'Second Law of Thermodynamics', count: 2 },
       { name: 'Laws of Thermodynamics', count: 1 },
@@ -79,7 +80,7 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '💧',
     color: 'rgba(6,182,212,0.8)',
     topics: [
-      { name: 'Fluid Mechanics', count: 3030 },
+      { name: 'Fluid Mechanics', count: 2825 },
       { name: 'Fluid Dynamics', count: 13 },
       { name: 'Fluid Statics', count: 7 },
       { name: 'Fluid Kinematics', count: 3 },
@@ -95,10 +96,10 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '♨️',
     color: 'rgba(245,158,11,0.8)',
     topics: [
-      { name: 'Heat Transfer', count: 2457 },
+      { name: 'Heat Transfer', count: 2266 },
       { name: 'Convection', count: 1 },
       { name: 'Reheat in Steam Turbines', count: 5 },
-      { name: 'Refrigeration & AC', count: 22 },
+      { name: 'Refrigeration AC', count: 22 },
       { name: 'Thermal Expansion', count: 1 },
       { name: 'Thermal Stress', count: 1 },
     ]
@@ -108,9 +109,9 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '🏭',
     color: 'rgba(139,92,246,0.8)',
     topics: [
-      { name: 'Manufacturing Engineering', count: 2932 },
+      { name: 'Manufacturing Engineering', count: 2803 },
       { name: 'Manufacturing Science', count: 1 },
-      { name: 'Machining & Machine Tools', count: 30 },
+      { name: 'Machining Machine Tools', count: 30 },
     ]
   },
   {
@@ -118,15 +119,15 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '🏗️',
     color: 'rgba(16,185,129,0.8)',
     topics: [
-      { name: 'Strength of Materials', count: 1893 },
+      { name: 'Strength of Materials', count: 1754 },
       { name: 'Mechanical Properties of Materials', count: 1 },
       { name: 'Elastic Constants', count: 1 },
-      { name: "Poisson's Ratio", count: 1 },
+      { name: "Poisson s Ratio", count: 1 },
       { name: 'Section Modulus', count: 2 },
       { name: 'Shear Stress in Beams', count: 1 },
       { name: 'Bending Moment', count: 1 },
       { name: 'Torsion', count: 1 },
-      { name: "Mohr's Circle", count: 1 },
+      { name: "Mohr s Circle", count: 1 },
       { name: 'Column Buckling', count: 2 },
       { name: 'Riveted Joints', count: 2 },
     ]
@@ -136,9 +137,9 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '⚙️',
     color: 'rgba(255,107,0,0.8)',
     topics: [
-      { name: 'Machine Design', count: 1687 },
-      { name: 'Theory of Machines', count: 1388 },
-      { name: 'Theory of Machines & Vibrations', count: 60 },
+      { name: 'Machine Design', count: 1616 },
+      { name: 'Theory of Machines', count: 1176 },
+      { name: 'Theory of Machines Vibrations', count: 60 },
       { name: 'Vibration and Dynamics', count: 1 },
     ]
   },
@@ -147,7 +148,7 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '📐',
     color: 'rgba(236,72,153,0.8)',
     topics: [
-      { name: 'Engineering Mechanics', count: 1043 },
+      { name: 'Engineering Mechanics', count: 968 },
       { name: 'Energy and Work', count: 2 },
       { name: 'Friction', count: 1 },
     ]
@@ -158,10 +159,10 @@ export const MECH_TOPIC_GROUPS = [
     color: 'rgba(99,102,241,0.8)',
     topics: [
       { name: 'Industrial Engineering', count: 59 },
-      { name: 'Production Management', count: 4 },
+      { name: 'Production Management', count: 3 },
       { name: 'Inventory Control', count: 8 },
       { name: 'CPM and PERT', count: 30 },
-      { name: 'Automation & CIM', count: 30 },
+      { name: 'Automation CIM', count: 30 },
     ]
   },
   {
@@ -179,7 +180,6 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '🔬',
     color: 'rgba(20,184,166,0.8)',
     topics: [
-      { name: 'Materials Science', count: 14 },
       { name: 'Material Science', count: 29 },
       { name: 'Structural Analysis', count: 10 },
     ]
@@ -206,12 +206,20 @@ export const MECH_TOPIC_GROUPS = [
 // Flat list of all mech topics (for registry)
 const ALL_MECH_TOPICS = MECH_TOPIC_GROUPS.flatMap(g => g.topics.map(t => t.name));
 
+// Helper to convert topic name to file name matching split script
+function getTopicFileName(topic) {
+  if (!topic) return 'uncategorized.json';
+  return topic.toLowerCase().replace(/[^a-z0-9]/g, '_').replace(/_+/g, '_') + '.json';
+}
+
 export const QuestionBankRegistry = [
   {
     id: "mechanical",
     label: "Mechanical Engineering",
     loader: async (filterTopic = null, filterDifficulty = null) => {
-      return fetchQuestionsFromFirestore("Mechanical Engineering", filterTopic, filterDifficulty, "/data/mechEngQuestions.json");
+      // Direct load specific topic file instead of the huge mechEngQuestions.json
+      const fileName = (filterTopic && filterTopic !== 'all') ? getTopicFileName(filterTopic) : 'mechanical_engineering.json';
+      return fetchQuestionsFromFirestore("Mechanical Engineering", filterTopic, filterDifficulty, `/data/mech_topics/${fileName}`);
     },
     enabled: true,
     estimatedCount: 23489,
@@ -223,45 +231,37 @@ export const QuestionBankRegistry = [
     id: "quantitative",
     label: "Quantitative Aptitude",
     loader: async (filterTopic = null, filterDifficulty = null) => {
-      return fetchQuestionsFromFirestore("Quantitative Aptitude", filterTopic, filterDifficulty, "/data/quantsQuestions.json");
+      // Use the quantitative aptitude split from mechanical as it has answers
+      return fetchQuestionsFromFirestore("Quantitative Aptitude", filterTopic, filterDifficulty, "/data/mech_topics/quantitative_aptitude.json");
     },
     enabled: true,
-    estimatedCount: 348,
+    estimatedCount: 868,
     categoryKey: 'Quantitative Aptitude',
-    topics: ["Percentages", "Profit & Loss", "Time & Work", "Algebra", "Geometry"]
+    topics: ["Arithmetic", "Algebra", "Geometry"]
   },
   {
     id: "data-interpretation",
     label: "Data Interpretation",
     loader: async (filterTopic = null, filterDifficulty = null) => {
-      return fetchQuestionsFromFirestore("Data Interpretation", filterTopic, filterDifficulty, "/data/dataInterpretationQuestions.json");
+      // Use DI split from mechanical
+      return fetchQuestionsFromFirestore("Data Interpretation", filterTopic, filterDifficulty, "/data/mech_topics/data_interpretation.json");
     },
     enabled: true,
-    estimatedCount: 5,
+    estimatedCount: 556,
     categoryKey: 'Data Interpretation',
-    topics: ["Tables", "Bar Charts", "Pie Charts", "Line Graphs"]
+    topics: ["Tables", "Charts"]
   },
   {
     id: "dilr",
     label: "DILR Puzzles",
     loader: async (filterTopic = null, filterDifficulty = null) => {
-      return fetchQuestionsFromFirestore("DILR", filterTopic, filterDifficulty, "/data/dilrQuestions.json");
+      // Use our brand new Gemini generated CAT DILR sets!
+      return fetchQuestionsFromFirestore("DILR", filterTopic, filterDifficulty, "/data/normalized_dilr.json");
     },
     enabled: true,
-    estimatedCount: 14,
+    estimatedCount: 20,
     categoryKey: 'DILR',
-    topics: ["Seating Arrangements", "Constraint Satisfaction", "Ordering"]
-  },
-  {
-    id: "logical-reasoning",
-    label: "Logical Reasoning",
-    loader: async (filterTopic = null, filterDifficulty = null) => {
-      return fetchQuestionsFromFirestore("Logical Reasoning", filterTopic, filterDifficulty, "/data/logicalReasoningQuestions.json");
-    },
-    enabled: true,
-    estimatedCount: 59,
-    categoryKey: 'Logical Reasoning',
-    topics: ["Series", "Coding-Decoding", "Direction Sense", "Syllogisms"]
+    topics: ["Seating Arrangements", "Constraint Satisfaction", "Ordering", "Matrix Arrangement", "Multiple Charts"]
   }
 ];
 

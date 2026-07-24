@@ -1,0 +1,24 @@
+[
+  {
+    "id": 2269,
+    "question": "The critical depth in a channel is given by:",
+    "options": [
+      "h = v²/g",
+      "h = v²/2g",
+      "h = v/g",
+      "h = 2v/g"
+    ],
+    "correct": 0,
+    "explanation": "For a rectangular channel, the condition for critical flow is Fr = v/√(gh) = 1, which simplifies to h = v²/g.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Open Channel Flow",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Open Channel Flow",
+    "ai_correct": "Critical depth occurs when the specific energy is minimum, which for a rectangular channel is given by yc = (q²/g)^(1/3), which simplifies to the relation h = v²/g.",
+    "ai_wrong": "Students often confuse this with the velocity head formula (v²/2g), leading to the selection of Option B.",
+    "formula": "yc = v²/g",
+    "trick": "Remember that for critical flow, the Froude number is 1, leading to v = √(gy)."
+  }
+]

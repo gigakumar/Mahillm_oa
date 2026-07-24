@@ -1,0 +1,90 @@
+[
+  {
+    "id": 142,
+    "question": "Which one of the following processes or systems does not involve heat?",
+    "options": [
+      "steady processes",
+      "isothermal processes",
+      "adiabatic processes",
+      "thermal processes"
+    ],
+    "correct": 2,
+    "explanation": "An adiabatic process is a thermodynamic process in which there is no heat transfer between the system and its surroundings. This means that the system is insulated from its surroundings, and no heat is added or removed from the system. Therefore, adiabatic processes do not involve heat.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Thermodynamic Processes",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Thermodynamic Processes",
+    "ai_correct": "An adiabatic process is defined as a thermodynamic process in which there is no heat transfer into or out of the system (dQ = 0). This is typically achieved by perfect insulation or by the process occurring so rapidly that heat exchange is negligible.",
+    "ai_wrong": "Students often mistake isothermal processes (Option B) for adiabatic ones. An isothermal process maintains constant temperature, but it requires heat transfer to compensate for work done, whereas adiabatic processes specifically exclude heat transfer.",
+    "formula": "dQ = 0",
+    "trick": "Adiabatic does not mean constant temperature; it means zero heat interaction."
+  },
+  {
+    "id": 145,
+    "question": "In which of the following processes is the external work done not zero?",
+    "options": [
+      "throttling",
+      "free expansion",
+      "constant volume process",
+      "constant pressure process"
+    ],
+    "correct": 3,
+    "explanation": "In a constant pressure process, the external work done is not zero. This is because the system expands or contracts against a constant external pressure, resulting in work being done on or by the system. The work done is given by the product of the external pressure and the change in volume of the system. In contrast, throttling and free expansion are processes in which the work done is zero, and constant volume processes also result in zero work done since there is no change in volume.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Thermodynamic Processes",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Thermodynamic Processes",
+    "ai_correct": "Work done in a thermodynamic process is defined by the integral of pressure with respect to volume change. In a constant pressure process, the integral results in W = P(V2 - V1), which is non-zero as long as there is a change in volume.",
+    "ai_wrong": "Students often choose option C (constant volume) because they confuse the lack of boundary work (W=0) with the presence of other forms of work, or they mistakenly assume throttling (A) involves external work, whereas throttling is an isenthalpic process with zero work.",
+    "formula": "W = ∫ P dV",
+    "trick": "Remember that boundary work is only zero if the volume remains constant; any process involving expansion or compression performs work."
+  },
+  {
+    "id": 146,
+    "question": "The extension and compression of a helical spring is an example of",
+    "options": [
+      "irreversible process",
+      "reversible process",
+      "isothermal process",
+      "adiabatic process"
+    ],
+    "correct": 1,
+    "explanation": "The extension and compression of a helical spring is an example of an irreversible process. When a spring is stretched or compressed, the process is not reversible because the spring does not return to its original state spontaneously. The process involves energy dissipation due to friction and other losses, making it irreversible. In contrast, reversible processes are idealized processes that can be reversed without any energy loss or dissipation.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Thermodynamic Processes",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Thermodynamic Processes",
+    "ai_correct": "A helical spring undergoing extension or compression within its elastic limit stores energy as potential energy without significant dissipation. Since the process can be reversed by removing the load, it is considered an ideal reversible process.",
+    "ai_wrong": "Students often choose option A (irreversible) by assuming that all real-world mechanical processes involve friction. However, in the context of idealized thermodynamics, elastic deformation is treated as a reversible energy storage mechanism.",
+    "formula": "U = 0.5 * k * x²",
+    "trick": "Always distinguish between idealized elastic deformation (reversible) and plastic deformation or friction-heavy processes (irreversible)."
+  },
+  {
+    "id": 161,
+    "question": "Which of the following is a non-quasistatic process?",
+    "options": [
+      "free expansion of gas",
+      "expansion of gas in a cylinder under constant pressure",
+      "rapid leakage of air from a bicycle tire",
+      "gradual compression of gas inside a piston-cylinder arrangement"
+    ],
+    "correct": 0,
+    "explanation": "A non-quasistatic process is one that occurs rapidly and does not allow the system to remain in equilibrium at all times. The free expansion of gas is an example of a non-quasistatic process because it occurs rapidly, without any external control, and the system does not pass through a series of equilibrium states. In contrast, the expansion of gas in a cylinder under constant pressure, the rapid leakage of air from a bicycle tire can be considered quasistatic if the leak is slow, and the gradual compression of gas inside a piston-cylinder arrangement are quasistatic processes because they occur slowly and the system remains in equilibrium at all times. The free expansion of gas is the most clearly non-quasistatic process listed.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Thermodynamic Processes",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Thermodynamic Processes",
+    "ai_correct": "A quasistatic process is one that occurs infinitely slowly, allowing the system to remain in thermodynamic equilibrium at every stage. Free expansion is a spontaneous, rapid process where the system is highly non-equilibrium, making it inherently non-quasistatic.",
+    "ai_wrong": "Students often pick option D because they associate piston-cylinder arrangements with quasistatic processes. However, the question asks for a non-quasistatic process, and gradual compression is the definition of a quasistatic process.",
+    "formula": "dt → 0 (for quasistatic processes)",
+    "trick": "Look for keywords like 'free', 'sudden', 'rapid', or 'unrestrained' to identify non-quasistatic processes."
+  }
+]

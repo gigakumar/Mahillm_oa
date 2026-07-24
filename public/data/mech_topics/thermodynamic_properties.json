@@ -1,0 +1,46 @@
+[
+  {
+    "id": 144,
+    "question": "Which of the following is not a property of the system?",
+    "options": [
+      "pressure",
+      "temperature",
+      "heat",
+      "specific volume"
+    ],
+    "correct": 2,
+    "explanation": "Heat is not a property of the system. It is a form of energy that is transferred between systems due to a temperature difference. Properties of a system are characteristics that can be measured or calculated, such as pressure, temperature, and specific volume. These properties are used to describe the state of the system, whereas heat is a process that occurs between systems.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Thermodynamic Properties",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Thermodynamic Properties",
+    "ai_correct": "A property of a system is a macroscopic characteristic that depends only on the state of the system and not on its history. Heat is a path function, meaning it depends on the process taken to reach a state, not the state itself.",
+    "ai_wrong": "Students often confuse heat (Option C) with internal energy or temperature because they are all related to thermal energy. Remember that heat and work are energy in transit, whereas pressure, temperature, and specific volume are point functions (properties).",
+    "formula": "∫ dX = X2 - X1 (for properties)",
+    "trick": "Remember the mnemonic 'PATH': Path functions are Heat and Work; everything else is usually a property."
+  },
+  {
+    "id": 159,
+    "question": "As differentials, heat and work would be described mathematically as",
+    "options": [
+      "exact",
+      "inexact",
+      "point function",
+      "discontinuity"
+    ],
+    "correct": 1,
+    "explanation": "Heat (Q) and work (W) are inexact differentials because their values depend on the path taken during a thermodynamic process, not just the initial and final states. This means that the amount of heat transferred or work done cannot be determined solely by the initial and final states of the system. In contrast, exact differentials, such as the change in internal energy (dU), are path-independent and can be determined by the initial and final states alone. The inexact nature of heat and work differentials is a fundamental concept in thermodynamics.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Thermodynamic Properties",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Thermodynamic Properties",
+    "ai_correct": "Heat and work are path functions, meaning their values depend on the process taken between two states rather than the states themselves. Mathematically, their differentials are inexact, denoted by the symbol δ instead of d.",
+    "ai_wrong": "Students often mistake them for exact differentials because they confuse path functions with state functions like pressure or temperature, which are point functions.",
+    "formula": "∫δQ ≠ Q_2 - Q_1; ∫δW ≠ W_2 - W_1",
+    "trick": "Remember 'Inexact' for 'Interaction' (Work/Heat) and 'Exact' for 'State' (Properties like P, V, T)."
+  }
+]

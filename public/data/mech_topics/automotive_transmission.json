@@ -1,0 +1,112 @@
+[
+  {
+    "id": 22958,
+    "question": "In transmission system if the reverse gear slips out, the probable cause could be",
+    "options": [
+      "Reverse sliding gear teeth worn out",
+      "Main shaft spines worn",
+      "Reverse idler gear teeth worn",
+      "Insufficient gear mesh"
+    ],
+    "correct": 0,
+    "explanation": "Worn gear teeth or damaged synchronizers/detents prevent the gear from staying fully engaged under load.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Automotive Transmission",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Automotive Transmission",
+    "ai_correct": "If the reverse gear slips out, it is usually because the gear teeth are worn, preventing them from staying fully engaged under load.",
+    "ai_wrong": "Students often blame the main shaft. While possible, worn gear teeth are the most common cause for slipping.",
+    "formula": "F_axial > F_holding",
+    "trick": "Slipping = Worn teeth."
+  },
+  {
+    "id": 22988,
+    "question": "In order to engage securely and prevent dragging the clearance between release bearing and release collar in a clutch is usually",
+    "options": [
+      "30 - 35 mm",
+      "20 - 25 mm",
+      "40 - 50 mm",
+      "2 - 3 mm"
+    ],
+    "correct": 3,
+    "explanation": "A small 'free play' (2-3 mm) is necessary to ensure the release bearing does not constantly press against the pressure plate, which would cause premature wear.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Automotive Transmission",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Automotive Transmission",
+    "ai_correct": "A small clearance of 2 to 3 mm between the release bearing and release collar is maintained in a clutch to ensure complete engagement under spring force and prevent dragging or premature wear. Option D gives this standard clearance value.",
+    "ai_wrong": "Students often pick much larger values like 30-35 mm (Option A) by confusing it with total pedal travel or linkage movement rather than free play.",
+    "formula": "C_free = s_pedal / leverage_ratio",
+    "trick": "Remember that clutch free play is always small, typically measured in millimeters (2-3 mm), to avoid incomplete engagement."
+  },
+  {
+    "id": 23006,
+    "question": "In case of friction clutch the coefficient of friction is expected to be",
+    "options": [
+      "0.4 to 0.5",
+      "0.85 to 0.90",
+      "0.1",
+      "0.01"
+    ],
+    "correct": 0,
+    "explanation": "Friction materials for clutches are designed to provide a stable coefficient of friction, typically in the 0.3 to 0.5 range.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Automotive Transmission",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Automotive Transmission",
+    "ai_correct": "Friction clutches rely on dry friction between the clutch disc facings and the flywheel/pressure plate. Typical friction materials (like molded asbestos or organic composites) have a coefficient of friction (mu) ranging between 0.3 and 0.5. Option A is the correct range.",
+    "ai_wrong": "Students often guess very high coefficients like 0.85-0.90 (Option B), confusing friction clutches with high-grip specialized brakes or locking mechanisms.",
+    "formula": "T_friction = n * mu * W * R_mean",
+    "trick": "Standard automotive clutch friction coefficients are moderate (0.3 to 0.5) to ensure smooth engagement without grabbing."
+  },
+  {
+    "id": 23039,
+    "question": "As a general rule if facing on the friction disc are worn down to the rivet heads",
+    "options": [
+      "The clutch should be replaced",
+      "The linkage should be adjusted",
+      "Rivets head should be filed",
+      "Rivets should be replaced"
+    ],
+    "correct": 0,
+    "explanation": "When the friction material is worn to the rivets, the clutch disc must be replaced to prevent damage to the pressure plate and flywheel.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Automotive Transmission",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Automotive Transmission",
+    "ai_correct": "When the friction facings on a clutch disc wear down to the rivet heads, metal-to-metal contact occurs, scoring the flywheel and pressure plate. Thus, standard procedure dictates replacing the entire clutch disc assembly.",
+    "ai_wrong": "Students often choose to file or replace just the rivets (Options C and D), but structural integrity and safety require complete friction disc replacement once the wear limit is reached.",
+    "formula": "t_{facing} \\le t_{rivet\\_head}",
+    "trick": "When friction material wears down to the fasteners (rivets), component replacement is always preferred over temporary fixes for safety."
+  },
+  {
+    "id": 23096,
+    "question": "Executive clutch clearance caused by improper adjustment or wear of sliding sleeve, generally results in",
+    "options": [
+      "Clutch slip",
+      "Clutch failure to disengage",
+      "Clutch plate over heating",
+      "Uneven clutch engagement"
+    ],
+    "correct": 1,
+    "explanation": "Excessive free play in the clutch linkage means the pressure plate may not fully release when the pedal is depressed, causing the clutch to drag or fail to disengage.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Automotive Transmission",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Automotive Transmission",
+    "ai_correct": "If the sliding sleeve or clutch linkage is improperly adjusted, the clutch may not fully disengage when the pedal is pressed. This prevents the transmission from being disconnected from the engine, causing gear clashing or failure to shift.",
+    "ai_wrong": "Students often pick 'Clutch slip' (Option A), which is actually caused by too little free play or worn friction material, not by the failure of the sliding sleeve to release.",
+    "formula": "Clutch_Clearance = (Free_Play_Distance)",
+    "trick": "Remember: 'Slip' is caused by lack of pressure/friction; 'Disengagement' is caused by lack of movement/clearance."
+  }
+]

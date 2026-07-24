@@ -1,0 +1,24 @@
+[
+  {
+    "id": 351,
+    "question": "For an irreversible process, the entropy change of the system is always greater than or equal to the entropy change of the surroundings. This is expressed by the equation ds >= dq/t.",
+    "options": [
+      "ds = dq/t",
+      "ds > dq/t",
+      "ds < dq/t",
+      "none of the mentioned"
+    ],
+    "correct": 1,
+    "explanation": "Entropy change of the system is always greater than or equal to the entropy change of the surroundings for an irreversible process.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Entropy Change in Irreversible Processes",
+    "category": "Thermodynamics",
+    "type": "MCQ",
+    "subject": "Entropy Change in Irreversible Processes",
+    "ai_correct": "The entropy change of a system for an irreversible process is given by dS = dQ/T + dS_gen, where dS_gen > 0. Therefore, the correct relationship is dS > dQ/T, which is not represented by the equality in option A or the inequality in option B.",
+    "ai_wrong": "Students often misinterpret the Clausius inequality and incorrectly assume that the entropy change must simply be greater than the heat transfer term without considering the specific definition of irreversibility.",
+    "formula": "dS = (dQ / T) + dS_gen",
+    "trick": "Check if the inequality is strict; for irreversible processes, entropy generation is strictly positive, making dS strictly greater than dQ/T."
+  }
+]

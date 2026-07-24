@@ -1,0 +1,24 @@
+[
+  {
+    "id": 4570,
+    "question": "The ratio of kinematic viscosity to thermal diffusivity is known as:",
+    "options": [
+      "Prandtl number",
+      "Nusselt number",
+      "Reynolds number",
+      "Peclet number"
+    ],
+    "correct": 0,
+    "explanation": "The Prandtl number (Pr) is a dimensionless number defined as the ratio of momentum diffusivity (kinematic viscosity) to thermal diffusivity.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Convection",
+    "category": "Heat and Mass Transfer",
+    "type": "Theoretical / Definition",
+    "subject": "Convection",
+    "ai_correct": "The Prandtl number (Pr) is a dimensionless quantity that represents the ratio of momentum diffusivity (kinematic viscosity, ν) to thermal diffusivity (α). It is used to characterize the relative thickness of the hydrodynamic and thermal boundary layers.",
+    "ai_wrong": "Students often confuse the definitions of various dimensionless numbers. For example, the Nusselt number relates convective to conductive heat transfer, and the Reynolds number relates inertial to viscous forces, leading to incorrect selections like option B or C.",
+    "formula": "Pr = ν / α = (μ/ρ) / (k/(ρCp)) = (μCp) / k",
+    "trick": "Memorize the definitions and physical significance of key dimensionless numbers in fluid mechanics and heat transfer, as they are frequently tested."
+  }
+]

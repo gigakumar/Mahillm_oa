@@ -1,0 +1,46 @@
+[
+  {
+    "id": 122,
+    "question": "The value of one bar (in SI units) is equal to",
+    "options": [
+      "100 N/m²",
+      "1000 N/m²",
+      "1×10⁴ N/m²",
+      "1×10⁵ N/m²"
+    ],
+    "correct": 3,
+    "explanation": "One bar is a unit of pressure, and in SI units, it is equal to 100,000 Pascals (Pa). Since 1 Pascal is equal to 1 Newton per square meter (N/m²), we can express one bar as 100,000 N/m² or 1×10⁵ N/m².",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Units and Measurements",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Units and Measurements",
+    "ai_correct": "By definition in the SI system, 1 bar is exactly 100,000 Pascals. Since 1 Pascal is 1 N/m², 1 bar equals 1 × 10⁵ N/m².",
+    "ai_wrong": "Many students mistakenly choose Option A (100 N/m²) by confusing the prefix 'centi-' or misremembering the conversion factor. Always recall that 1 bar is 100 kPa, not 100 Pa.",
+    "formula": "1 bar = 10⁵ Pa = 10⁵ N/m²",
+    "trick": "Associate 'bar' with 'barometer' and the standard atmospheric pressure of roughly 10⁵ Pa."
+  },
+  {
+    "id": 126,
+    "question": "The unit of energy in SI units is",
+    "options": [
+      "joule (J)",
+      "joule metre (Jm)",
+      "watt (W)",
+      "joule/metre (J/m)"
+    ],
+    "correct": 0,
+    "explanation": "The unit of energy in SI units is the joule (J). The joule is defined as the energy expended when a force of 1 Newton (N) is applied over a distance of 1 meter (m). The watt (W) is the unit of power, which is the rate of energy transfer, and is equal to 1 joule per second (J/s).",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Units and Measurements",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Units and Measurements",
+    "ai_correct": "In the SI system, energy is defined as the capacity to do work, which is measured in Joules. One Joule is equivalent to one Newton-meter (N·m) of work done.",
+    "ai_wrong": "Students often confuse energy with power, leading them to select option C (Watt). Watt is the unit of power, which is the rate of energy transfer, not energy itself.",
+    "formula": "E = F × d (Energy = Force × displacement)",
+    "trick": "Energy is a scalar quantity; if you see a time component in the denominator (like per second), it is power, not energy."
+  }
+]

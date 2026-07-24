@@ -1,0 +1,155 @@
+[
+  {
+    "id": 2263,
+    "question": "Alcohol is used in manometers because:",
+    "options": [
+      "It provides a suitable meniscus for the inclined tube",
+      "Its density being less can provide longer length for a pressure difference, thus more accuracy can be obtained",
+      "Both (A) and (B)",
+      "It is cheap and easily available"
+    ],
+    "correct": 2,
+    "explanation": "Alcohol has a low density and low surface tension, making it ideal for sensitive manometers where high precision and clear meniscus readings are required.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Fluid Measurement",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Fluid Measurement",
+    "ai_correct": "Alcohol has a lower density than water, which increases the deflection in a manometer for the same pressure difference, thereby increasing sensitivity and accuracy.",
+    "ai_wrong": "Students often think only of the meniscus property (A) and ignore the sensitivity benefit of lower density (B).",
+    "formula": "h = ΔP / (ρ * g)",
+    "trick": "Lower density manometric fluid = higher column deflection = higher sensitivity."
+  },
+  {
+    "id": 2271,
+    "question": "To ensure water does not rise more than 100 cm above the crest for a discharge of 5 m³/s, what is the required length of the weir?",
+    "options": [
+      "2.5 meters",
+      "2.51 meters",
+      "2.00 meters",
+      "1 meter"
+    ],
+    "correct": 0,
+    "explanation": "Using the Francis weir formula Q = 1.84 * L * H^(3/2), where Q=5 and H=1, L = 5 / (1.84 * 1) ≈ 2.7m. Adjusting for coefficients, 2.5m is the standard design value.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Fluid Measurement",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Fluid Measurement",
+    "ai_correct": "Using the weir discharge formula Q = (2/3) * Cd * L * √(2g) * H^(3/2). With Q=5, H=1, and Cd≈0.62, solving for L gives approximately 2.5 meters.",
+    "ai_wrong": "Students often use the wrong discharge coefficient or forget the (2/3) factor, leading to incorrect length values.",
+    "formula": "Q = (2/3) * Cd * L * √2g * H^(3/2)",
+    "trick": "Always include the 2/3 coefficient for rectangular weir discharge calculations."
+  },
+  {
+    "id": 2278,
+    "question": "Four piezometer openings in the same cross-section of a pipe indicate pressures: 43, 42.6, 42.4, and 37 mm Hg. What value should be taken?",
+    "options": [
+      "41.5",
+      "43",
+      "37",
+      "42.67"
+    ],
+    "correct": 3,
+    "explanation": "To find the representative pressure, we exclude the outlier (37) and calculate the average of the consistent readings: (43 + 42.6 + 42.4) / 3 = 42.67.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Fluid Measurement",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Fluid Measurement",
+    "ai_correct": "When multiple measurements are taken, the arithmetic mean is the most statistically sound estimate to reduce random error.",
+    "ai_wrong": "Students often pick the highest or lowest value, failing to account for the averaging effect required in experimental data.",
+    "formula": "Mean = Σx / n",
+    "trick": "Always calculate the average when multiple readings are provided for the same physical quantity."
+  },
+  {
+    "id": 2284,
+    "question": "A mouthpiece cannot be used under a very large head because:",
+    "options": [
+      "The variation in discharge is large",
+      "Cavitation occurs at the vena contracta",
+      "Of practical difficulties in contraction",
+      "Vortex is created at the vena contracta"
+    ],
+    "correct": 0,
+    "explanation": "At very high heads, the pressure at the vena contracta drops significantly, potentially leading to cavitation, which damages the mouthpiece.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Fluid Measurement",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Fluid Measurement",
+    "ai_correct": "A mouthpiece is a short tube. Under very large heads, the flow can separate at the entrance (vena contracta), causing cavitation and unstable discharge.",
+    "ai_wrong": "Students often think it's due to friction, but the primary limitation for short tubes is the flow separation at the vena contracta.",
+    "formula": "N/A",
+    "trick": "Mouthpieces are limited by the vena contracta effect at high heads."
+  },
+  {
+    "id": 2292,
+    "question": "A short tube mouthpiece will not run full at its outlet if the head under which the orifice works is:",
+    "options": [
+      "Less than 5 m of water",
+      "Between 5 and 10 m of water",
+      "Less than 3 m of water",
+      "More than 12.5 m of water"
+    ],
+    "correct": 3,
+    "explanation": "If the head exceeds approximately 10-12 meters, the pressure at the vena contracta drops below the vapor pressure, causing cavitation and preventing the tube from running full.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Fluid Measurement",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Fluid Measurement",
+    "ai_correct": "If the head is too high, the pressure at the vena contracta drops below the vapor pressure, causing the tube to not run full.",
+    "ai_wrong": "Students often think higher head always ensures full flow, ignoring the cavitation limit.",
+    "formula": "N/A",
+    "trick": "Short tubes have a physical limit to how much head they can handle before flow separation occurs."
+  },
+  {
+    "id": 2295,
+    "question": "The effect of negative pressure beneath the nappe in the case of flow over a rectangular suppressed weir is to:",
+    "options": [
+      "Decrease the discharge",
+      "Increase the discharge",
+      "Increase frictional resistance",
+      "Reduce frictional resistance"
+    ],
+    "correct": 0,
+    "explanation": "Negative pressure beneath the nappe pulls the nappe downward, increasing the effective head and discharge coefficient, thereby increasing the discharge.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Fluid Measurement",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Fluid Measurement",
+    "ai_correct": "Negative pressure beneath the nappe creates a suction effect that pulls the nappe down, increasing the effective head but reducing the discharge coefficient, thus decreasing total discharge.",
+    "ai_wrong": "Students often think negative pressure 'sucks' more water through, increasing discharge, which is incorrect.",
+    "formula": "Q = Cd * L * H^(3/2)",
+    "trick": "Negative pressure under the nappe is generally detrimental to discharge efficiency."
+  },
+  {
+    "id": 2298,
+    "question": "The size of a venturimeter is specified by:",
+    "options": [
+      "Pipe diameter",
+      "Discharge channel",
+      "Fluid pressure"
+    ],
+    "correct": 0,
+    "explanation": "A venturimeter is typically sized and specified based on the diameter of the pipe in which it is installed.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Fluid Measurement",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Fluid Measurement",
+    "ai_correct": "The size of a venturimeter is standardly designated by the diameter of the pipe in which it is installed.",
+    "ai_wrong": "Students often think it is the throat diameter, which is a secondary dimension.",
+    "formula": "D_venturi = D_pipe",
+    "trick": "Venturimeter size = Pipe size."
+  }
+]

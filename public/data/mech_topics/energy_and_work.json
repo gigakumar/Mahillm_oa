@@ -1,0 +1,46 @@
+[
+  {
+    "id": 127,
+    "question": "One watt is equal to",
+    "options": [
+      "1 Nm/s",
+      "1 N/min",
+      "10 N/s",
+      "1 J/s"
+    ],
+    "correct": 3,
+    "explanation": "One watt is equal to one joule per second (1 J/s). This is because power is defined as the rate of doing work or transferring energy. In the International System of Units (SI), the watt is the unit of power, and it is defined as one joule per second. Therefore, the correct answer is 1 J/s.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Energy and Work",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Energy and Work",
+    "ai_correct": "Power is defined as the rate of doing work or the rate of energy transfer over time. Since energy is measured in Joules (J) and time in seconds (s), one Watt is defined as one Joule per second.",
+    "ai_wrong": "Students often select option A (1 Nm/s) thinking it is the only correct unit. While 1 Nm/s is dimensionally equivalent to 1 J/s, the standard definition for Watt is specifically J/s, and students might overlook the direct definition.",
+    "formula": "P = W / t = J / s",
+    "trick": "Remember that 1 Joule = 1 Newton-meter, so 1 J/s is identical to 1 Nm/s; always check if multiple options are equivalent."
+  },
+  {
+    "id": 128,
+    "question": "One joule (J) is equal to",
+    "options": [
+      "1 Nm",
+      "1 kg m",
+      "10 Nm/s",
+      "1 kg m^2/s^2"
+    ],
+    "correct": 0,
+    "explanation": "One joule (J) is equal to one newton-meter (Nm). This is because work is defined as the product of force and distance, and the joule is the unit of work or energy in the International System of Units (SI). Therefore, the correct answer is 1 Nm.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Energy and Work",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Energy and Work",
+    "ai_correct": "Work done is defined as the product of force and displacement in the direction of the force. Since force is in Newtons (N) and displacement is in meters (m), one Joule is equal to one Newton-meter (Nm).",
+    "ai_wrong": "Students often select option D (1 kg m^2/s^2) because it is the base unit representation of a Joule. While it is dimensionally correct, the most fundamental definition of work is Force times distance (Nm).",
+    "formula": "W = F × d = 1 N × 1 m = 1 Nm",
+    "trick": "If the question asks for the unit of energy/work, look for the product of force and distance (Nm) first before looking for base SI units."
+  }
+]

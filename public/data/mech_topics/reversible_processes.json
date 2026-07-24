@@ -1,0 +1,24 @@
+[
+  {
+    "id": 354,
+    "question": "A reversible process is performed in such a way that at the conclusion of the process, both the system and surroundings can be restored to their initial states without producing any change.",
+    "options": [
+      "at the conclusion of process, both system and surroundings can be restored to their initial states without producing any change",
+      "it should not leave any trace to show that the process had ever occurred",
+      "it is carried out infinitely slowly",
+      "all of the mentioned"
+    ],
+    "correct": 0,
+    "explanation": "A reversible process is a process that can be reversed without any change in the system or surroundings.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Reversible Processes",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Reversible Processes",
+    "ai_correct": "A reversible process is defined by the ability to restore both the system and the surroundings to their original states without leaving any net effect on the universe. This satisfies the second law of thermodynamics by ensuring no entropy is generated during the cycle.",
+    "ai_wrong": "Students often pick option D because they assume that because a process is reversible, it must be quasi-static (infinitely slow). While quasi-static is a necessary condition, it is not the definition of reversibility itself, leading to an over-generalization.",
+    "formula": "ΔS_universe = ΔS_system + ΔS_surroundings = 0",
+    "trick": "Focus on the 'no trace' condition; a process is only reversible if the universe remains unchanged after the system and surroundings are restored."
+  }
+]

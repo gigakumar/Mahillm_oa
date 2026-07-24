@@ -1,0 +1,24 @@
+[
+  {
+    "id": 22976,
+    "question": "For flow of petrol from fuel tank to the carburettor, the fuel system includes",
+    "options": [
+      "A vacuum pump",
+      "A suction pump",
+      "A float",
+      "A fuel pump"
+    ],
+    "correct": 3,
+    "explanation": "A mechanical or electric fuel pump is required to deliver fuel from the tank to the carburetor, especially when the tank is lower than the engine.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Automotive Fuel Systems",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Automotive Fuel Systems",
+    "ai_correct": "Because fuel tanks are often located lower than or at a distance from the carburettor (especially in rear-tank layouts), a mechanical or electrical fuel pump is required to positively supply petrol from the fuel tank to the carburettor float bowl.",
+    "ai_wrong": "Students might mistakenly think gravity or a vacuum intake alone (Options A and B) suffices, ignoring that modern fuel delivery systems require a dedicated fuel pump for continuous pressure and flow.",
+    "formula": "\\Delta P_{fuel} \\text{ supplied by Mechanical/Electric Fuel Pump}",
+    "trick": "Whenever fuel needs to be transferred reliably against gravitational or distance gradients from tank to carburettor, a fuel pump is used."
+  }
+]

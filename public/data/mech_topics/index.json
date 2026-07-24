@@ -1,0 +1,392 @@
+[
+  {
+    "topic": "Thermodynamics",
+    "fileName": "thermodynamics.json",
+    "count": 4888
+  },
+  {
+    "topic": "Heat Transfer",
+    "fileName": "heat_transfer.json",
+    "count": 2266
+  },
+  {
+    "topic": "Fluid Mechanics",
+    "fileName": "fluid_mechanics.json",
+    "count": 2825
+  },
+  {
+    "topic": "Machine Design",
+    "fileName": "machine_design.json",
+    "count": 1616
+  },
+  {
+    "topic": "Manufacturing Engineering",
+    "fileName": "manufacturing_engineering.json",
+    "count": 2803
+  },
+  {
+    "topic": "Strength of Materials",
+    "fileName": "strength_of_materials.json",
+    "count": 1754
+  },
+  {
+    "topic": "Engineering Mechanics",
+    "fileName": "engineering_mechanics.json",
+    "count": 968
+  },
+  {
+    "topic": "Theory of Machines",
+    "fileName": "theory_of_machines.json",
+    "count": 1176
+  },
+  {
+    "topic": "Manufacturing Science",
+    "fileName": "manufacturing_science.json",
+    "count": 1
+  },
+  {
+    "topic": "Vibration and Dynamics",
+    "fileName": "vibration_and_dynamics.json",
+    "count": 1
+  },
+  {
+    "topic": "Power Plant Engineering",
+    "fileName": "power_plant_engineering.json",
+    "count": 29
+  },
+  {
+    "topic": "Units and Measurements",
+    "fileName": "units_and_measurements.json",
+    "count": 2
+  },
+  {
+    "topic": "Energy and Work",
+    "fileName": "energy_and_work.json",
+    "count": 2
+  },
+  {
+    "topic": "Thermodynamic Cycles",
+    "fileName": "thermodynamic_cycles.json",
+    "count": 2
+  },
+  {
+    "topic": "Kinetic Theory of Gases",
+    "fileName": "kinetic_theory_of_gases.json",
+    "count": 1
+  },
+  {
+    "topic": "Thermodynamic Processes",
+    "fileName": "thermodynamic_processes.json",
+    "count": 4
+  },
+  {
+    "topic": "Thermodynamic Equilibrium",
+    "fileName": "thermodynamic_equilibrium.json",
+    "count": 2
+  },
+  {
+    "topic": "Thermodynamic Properties",
+    "fileName": "thermodynamic_properties.json",
+    "count": 2
+  },
+  {
+    "topic": "Laws of Thermodynamics",
+    "fileName": "laws_of_thermodynamics.json",
+    "count": 1
+  },
+  {
+    "topic": "Thermodynamic Systems",
+    "fileName": "thermodynamic_systems.json",
+    "count": 1
+  },
+  {
+    "topic": "Entropy Change in Irreversible Processes",
+    "fileName": "entropy_change_in_irreversible_processes.json",
+    "count": 1
+  },
+  {
+    "topic": "Entropy Change in Thermodynamics",
+    "fileName": "entropy_change_in_thermodynamics.json",
+    "count": 2
+  },
+  {
+    "topic": "Reversible Processes",
+    "fileName": "reversible_processes.json",
+    "count": 1
+  },
+  {
+    "topic": "Reversible and Quasi-Static Processes",
+    "fileName": "reversible_and_quasi_static_processes.json",
+    "count": 1
+  },
+  {
+    "topic": "Reheat in Steam Turbines",
+    "fileName": "reheat_in_steam_turbines.json",
+    "count": 5
+  },
+  {
+    "topic": "Psychrometrics",
+    "fileName": "psychrometrics.json",
+    "count": 5
+  },
+  {
+    "topic": "Thermal Expansion",
+    "fileName": "thermal_expansion.json",
+    "count": 1
+  },
+  {
+    "topic": "Thermal Stress",
+    "fileName": "thermal_stress.json",
+    "count": 1
+  },
+  {
+    "topic": "Mechanical Properties of Materials",
+    "fileName": "mechanical_properties_of_materials.json",
+    "count": 1
+  },
+  {
+    "topic": "Poisson’s Ratio",
+    "fileName": "poisson_s_ratio.json",
+    "count": 1
+  },
+  {
+    "topic": "Elastic Constants",
+    "fileName": "elastic_constants.json",
+    "count": 1
+  },
+  {
+    "topic": "Shear Stress in Beams",
+    "fileName": "shear_stress_in_beams.json",
+    "count": 1
+  },
+  {
+    "topic": "Bending Moment",
+    "fileName": "bending_moment.json",
+    "count": 1
+  },
+  {
+    "topic": "Torsion",
+    "fileName": "torsion.json",
+    "count": 1
+  },
+  {
+    "topic": "Section Modulus",
+    "fileName": "section_modulus.json",
+    "count": 2
+  },
+  {
+    "topic": "Structural Analysis",
+    "fileName": "structural_analysis.json",
+    "count": 10
+  },
+  {
+    "topic": "Materials Science",
+    "fileName": "materials_science.json",
+    "count": 14
+  },
+  {
+    "topic": "Riveted Joints",
+    "fileName": "riveted_joints.json",
+    "count": 2
+  },
+  {
+    "topic": "Column Buckling",
+    "fileName": "column_buckling.json",
+    "count": 2
+  },
+  {
+    "topic": "Mohr's Circle",
+    "fileName": "mohr_s_circle.json",
+    "count": 1
+  },
+  {
+    "topic": "Hydraulic Structures",
+    "fileName": "hydraulic_structures.json",
+    "count": 6
+  },
+  {
+    "topic": "Hydraulic Machines",
+    "fileName": "hydraulic_machines.json",
+    "count": 6
+  },
+  {
+    "topic": "Fluid Statics",
+    "fileName": "fluid_statics.json",
+    "count": 7
+  },
+  {
+    "topic": "Fluid Kinematics",
+    "fileName": "fluid_kinematics.json",
+    "count": 3
+  },
+  {
+    "topic": "Fluid Measurement",
+    "fileName": "fluid_measurement.json",
+    "count": 7
+  },
+  {
+    "topic": "Fluid Dynamics",
+    "fileName": "fluid_dynamics.json",
+    "count": 13
+  },
+  {
+    "topic": "Open Channel Flow",
+    "fileName": "open_channel_flow.json",
+    "count": 1
+  },
+  {
+    "topic": "Fluid Properties",
+    "fileName": "fluid_properties.json",
+    "count": 5
+  },
+  {
+    "topic": "Geotechnical Engineering",
+    "fileName": "geotechnical_engineering.json",
+    "count": 2
+  },
+  {
+    "topic": "Industrial Engineering",
+    "fileName": "industrial_engineering.json",
+    "count": 59
+  },
+  {
+    "topic": "Automation & CIM",
+    "fileName": "automation_cim.json",
+    "count": 30
+  },
+  {
+    "topic": "Material Science",
+    "fileName": "material_science.json",
+    "count": 29
+  },
+  {
+    "topic": "Machining & Machine Tools",
+    "fileName": "machining_machine_tools.json",
+    "count": 30
+  },
+  {
+    "topic": "Theory of Machines & Vibrations",
+    "fileName": "theory_of_machines_vibrations.json",
+    "count": 60
+  },
+  {
+    "topic": "First Law of Thermodynamics",
+    "fileName": "first_law_of_thermodynamics.json",
+    "count": 1
+  },
+  {
+    "topic": "Second Law of Thermodynamics",
+    "fileName": "second_law_of_thermodynamics.json",
+    "count": 2
+  },
+  {
+    "topic": "Convection",
+    "fileName": "convection.json",
+    "count": 1
+  },
+  {
+    "topic": "N/A",
+    "fileName": "n_a.json",
+    "count": 2
+  },
+  {
+    "topic": "Friction",
+    "fileName": "friction.json",
+    "count": 1
+  },
+  {
+    "topic": "Data Interpretation",
+    "fileName": "data_interpretation.json",
+    "count": 556
+  },
+  {
+    "topic": "Quantitative Aptitude",
+    "fileName": "quantitative_aptitude.json",
+    "count": 868
+  },
+  {
+    "topic": "Inventory Control",
+    "fileName": "inventory_control.json",
+    "count": 8
+  },
+  {
+    "topic": "CPM and PERT",
+    "fileName": "cpm_and_pert.json",
+    "count": 30
+  },
+  {
+    "topic": "Mechanical Engineering",
+    "fileName": "mechanical_engineering.json",
+    "count": 396
+  },
+  {
+    "topic": "IC Engines",
+    "fileName": "ic_engines.json",
+    "count": 8
+  },
+  {
+    "topic": "Refrigeration & AC",
+    "fileName": "refrigeration_ac.json",
+    "count": 22
+  },
+  {
+    "topic": "Internal Combustion Engines",
+    "fileName": "internal_combustion_engines.json",
+    "count": 99
+  },
+  {
+    "topic": "Automotive Engineering",
+    "fileName": "automotive_engineering.json",
+    "count": 21
+  },
+  {
+    "topic": "Automotive Electrical Systems",
+    "fileName": "automotive_electrical_systems.json",
+    "count": 25
+  },
+  {
+    "topic": "Automotive Maintenance",
+    "fileName": "automotive_maintenance.json",
+    "count": 3
+  },
+  {
+    "topic": "Automotive Body Engineering",
+    "fileName": "automotive_body_engineering.json",
+    "count": 2
+  },
+  {
+    "topic": "Automotive Fuels",
+    "fileName": "automotive_fuels.json",
+    "count": 13
+  },
+  {
+    "topic": "Automotive Braking Systems",
+    "fileName": "automotive_braking_systems.json",
+    "count": 15
+  },
+  {
+    "topic": "Automotive Lubrication",
+    "fileName": "automotive_lubrication.json",
+    "count": 11
+  },
+  {
+    "topic": "Automotive Transmission",
+    "fileName": "automotive_transmission.json",
+    "count": 5
+  },
+  {
+    "topic": "Automotive Fuel Systems",
+    "fileName": "automotive_fuel_systems.json",
+    "count": 1
+  },
+  {
+    "topic": "Automotive Cooling Systems",
+    "fileName": "automotive_cooling_systems.json",
+    "count": 4
+  },
+  {
+    "topic": "Production Management",
+    "fileName": "production_management.json",
+    "count": 3
+  }
+]

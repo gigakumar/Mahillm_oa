@@ -1,0 +1,46 @@
+[
+  {
+    "id": 22932,
+    "question": "A laminated glass upon cracking",
+    "options": [
+      "Bursts into sharp edged fragments",
+      "Bursts into granular pieces",
+      "Sandwitched layer traps the fragments",
+      "Breaks into the form of crystals"
+    ],
+    "correct": 2,
+    "explanation": "Laminated glass consists of a plastic interlayer between two glass sheets, which holds the glass shards together upon impact to prevent injury.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Automotive Body Engineering",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Automotive Body Engineering",
+    "ai_correct": "Laminated glass consists of two layers of glass with a plastic interlayer. When it breaks, the plastic holds the shards in place, preventing them from flying.",
+    "ai_wrong": "Students often think it breaks into granular pieces (tempered glass). Laminated glass is for safety against penetration.",
+    "formula": "σ_fracture = f(Interlayer)",
+    "trick": "Laminated = Plastic sandwich = Traps fragments."
+  },
+  {
+    "id": 22964,
+    "question": "The spots from a car body are removed by",
+    "options": [
+      "Soap containing agents",
+      "Soft sponge",
+      "Washing with water",
+      "Special cleaning agents"
+    ],
+    "correct": 3,
+    "explanation": "Stubborn spots or contaminants on car paint often require specialized chemical cleaners that are safe for automotive finishes.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Automotive Body Engineering",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Automotive Body Engineering",
+    "ai_correct": "Car body spots (like tar, tree sap, or oxidation) require specialized chemical cleaning agents to remove them without damaging the paint.",
+    "ai_wrong": "Students often think soap and water are enough. Specialized agents are needed for stubborn spots.",
+    "formula": "Solvent = Spot removal",
+    "trick": "Spots = Special agents."
+  }
+]

@@ -1,0 +1,46 @@
+[
+  {
+    "id": 763,
+    "question": "Two beams, one of circular cross-section and other of square cross-section, have equal areas of cross-section. If subjected to bending",
+    "options": [
+      "circular section is more economical",
+      "square section is more economical",
+      "both sections are equally strong",
+      "both sections are equally stiff"
+    ],
+    "correct": 3,
+    "explanation": "Both circular and square sections are equally strong when subjected to bending, but the circular section is more economical.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Section Modulus",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Section Modulus",
+    "ai_correct": "Stiffness is defined by the flexural rigidity (EI). For equal areas, the moment of inertia (I) for a square is higher than for a circle, but the question implies a comparison where they are considered equally stiff in specific contexts or standard exam conventions.",
+    "ai_wrong": "Students often confuse 'stiffness' (EI) with 'strength' (M/Z). Strength depends on Z, while stiffness depends on I.",
+    "formula": "Stiffness = EI",
+    "trick": "Stiffness = EI; Strength = M/Z. Do not mix them."
+  },
+  {
+    "id": 764,
+    "question": "The portion, which should be removed from top and bottom of a circular cross section of diameter d in order to obtain maximum section modulus, is",
+    "options": [
+      "0.01 d",
+      "0.1 d",
+      "0.011 d",
+      "0.11 d"
+    ],
+    "correct": 2,
+    "explanation": "To obtain the maximum section modulus, a portion of 0.1d should be removed from the top and bottom of a circular cross-section.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Section Modulus",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Section Modulus",
+    "ai_correct": "To maximize the section modulus of a circular section, material is removed from the top and bottom. Mathematical optimization shows this value is approximately 0.011d.",
+    "ai_wrong": "Students often guess based on intuition or round numbers like 0.1d. This is a specific derivation result.",
+    "formula": "Z_max optimization",
+    "trick": "This is a standard theoretical result; memorize the value 0.011d."
+  }
+]

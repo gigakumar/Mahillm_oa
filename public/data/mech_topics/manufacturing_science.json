@@ -1,0 +1,24 @@
+[
+  {
+    "id": 32,
+    "question": "The frictional shear stress (τ) in metal forming is expressed as",
+    "options": [
+      "mσ̄/√3",
+      "σ̄/√3m",
+      "σ̄/m√3",
+      "(√3/m)σ̄"
+    ],
+    "correct": 0,
+    "explanation": "The frictional shear stress (τ) in metal forming is expressed as τ = mσ̄/√3, where m is the friction factor, σ̄ is the average flow stress, and √3 is a constant. This equation is derived from the theory of plasticity and is used to calculate the frictional shear stress in metal forming processes such as forging, extrusion, and drawing. The friction factor (m) is a measure of the friction between the metal and the die, and it depends on the surface roughness, lubrication, and other factors. The average flow stress (σ̄) is a measure of the metal's resistance to deformation.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Manufacturing Science",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Manufacturing Science",
+    "ai_correct": "In metal forming, the friction shear stress is modeled using the friction factor 'm', where τ = mk. Since the shear yield stress k is related to the flow stress σ̄ by the von Mises criterion k = σ̄/√3, the expression becomes mσ̄/√3.",
+    "ai_wrong": "Students often confuse the friction factor 'm' with the coefficient of friction 'μ', or incorrectly place 'm' in the denominator, leading to options like B or C.",
+    "formula": "τ = mk, k = σ̄/√3",
+    "trick": "Remember that 'm' is a dimensionless factor (0 to 1) that scales the shear yield stress; it should always be a multiplier."
+  }
+]

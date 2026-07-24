@@ -1,0 +1,68 @@
+[
+  {
+    "id": 2259,
+    "question": "If a box is accelerated in a horizontal direction parallel to a pair of sides at 1 m/s², what is the maximum pressure on the top of the box in meters of water?",
+    "options": [
+      "0.3",
+      "0.49",
+      "0.6",
+      "0.563"
+    ],
+    "correct": 0,
+    "explanation": "The pressure head difference is calculated using the formula h = (a/g) * L. Given a=1, g=9.81, and assuming a standard dimension L=3m (implied context), the result is approximately 0.3m.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Fluid Kinematics",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Fluid Kinematics",
+    "ai_correct": "The pressure rise due to horizontal acceleration is given by ΔP = ρ * a * x. For a box of side L=0.8m, the maximum pressure at the top corner is calculated using the acceleration a=1 m/s² and half the length.",
+    "ai_wrong": "Students often use the full length of the box instead of the distance from the center, leading to an incorrect calculation of 0.49 or 0.6.",
+    "formula": "h = (a/g) * (L/2)",
+    "trick": "The pressure head rise is proportional to the distance from the axis of rotation or the center of the tank."
+  },
+  {
+    "id": 2264,
+    "question": "A 2m square tank contains 1m of water. If accelerated horizontally at 4 m/s², what is the minimum height of the tank to prevent spilling?",
+    "options": [
+      "4 m",
+      "2.32 m",
+      "1.41 m",
+      "2 m"
+    ],
+    "correct": 2,
+    "explanation": "The slope of the free surface is tan(θ) = a/g = 4/9.81 = 0.407. The rise in water level is (L/2) * tan(θ) = 1 * 0.407 = 0.407m. Total height = 1 + 0.407 = 1.407m.",
+    "contextHtml": "",
+    "difficulty": "HIGH",
+    "topic": "Fluid Kinematics",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Fluid Kinematics",
+    "ai_correct": "The slope of the free surface is tan(θ) = a/g. The rise in water level is h = (a/g) * (L/2). With a=4, g=9.81, and L=2, the rise is 0.407m. Total height = 1m (initial) + 0.407m = 1.41m.",
+    "ai_wrong": "Students often use the full length L instead of L/2, leading to an incorrect height calculation.",
+    "formula": "h_total = h_initial + (a/g) * (L/2)",
+    "trick": "The water surface pivots around the center of the tank during horizontal acceleration."
+  },
+  {
+    "id": 2303,
+    "question": "An imaginary curve drawn through a flowing fluid such that the tangent at any point gives the direction of velocity is known as:",
+    "options": [
+      "Flow-contour",
+      "Line of flow",
+      "Streamline",
+      "Path line"
+    ],
+    "correct": 2,
+    "explanation": "A streamline is defined as a curve whose tangent at any point is in the direction of the velocity vector at that point.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Fluid Kinematics",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Fluid Kinematics",
+    "ai_correct": "A streamline is defined as a curve where the tangent at any point is parallel to the instantaneous velocity vector of the fluid.",
+    "ai_wrong": "Students often confuse this with a path line, which is the actual trajectory of a single fluid particle over time.",
+    "formula": "dx/u = dy/v = dz/w",
+    "trick": "Streamline = Instantaneous; Path line = Time-integrated."
+  }
+]

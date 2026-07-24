@@ -1,0 +1,222 @@
+[
+  {
+    "id": 785,
+    "question": "Due to a rise in temperature in a three-hinged arch, the induced stress is:",
+    "options": [
+      "direct compressive",
+      "direct tensile",
+      "shear",
+      "none of the above"
+    ],
+    "correct": 3,
+    "explanation": "A three-hinged arch is a statically determinate structure. When the temperature rises, the arch is free to expand because the hinges allow for rotation and displacement. Since the structure is not constrained, no thermal stresses are induced.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Structural Analysis",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Structural Analysis",
+    "ai_correct": "In a three-hinged arch, the hinges allow for rotation, and the structure is statically determinate. Temperature changes cause expansion, but since the supports are usually free to move or the hinges accommodate it, no thermal stress is induced.",
+    "ai_wrong": "Students often assume temperature changes always induce stress, which is only true for statically indeterminate arches (two-hinged or fixed).",
+    "formula": "Thermal stress = 0 for 3-hinged",
+    "trick": "3-hinged arch = Statically determinate = No thermal stress."
+  },
+  {
+    "id": 786,
+    "question": "In a three-hinged arch, the linear arch and the actual arch meet at:",
+    "options": [
+      "at least three points",
+      "at least two points",
+      "all points irrespective of loading",
+      "nowhere"
+    ],
+    "correct": 0,
+    "explanation": "A linear arch is the locus of the resultant internal forces in an arch. For a three-hinged arch, the bending moment is zero at the two supports and the crown hinge. Since the bending moment is zero at these three points, the actual arch and the linear arch must coincide at these locations.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Structural Analysis",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Structural Analysis",
+    "ai_correct": "A three-hinged arch has three hinges (two at supports, one at the crown). The linear arch must pass through these three points to satisfy the equilibrium conditions.",
+    "ai_wrong": "Students often think it only meets at the supports.",
+    "formula": "Linear arch passes through hinges",
+    "trick": "3 hinges = 3 points of intersection."
+  },
+  {
+    "id": 787,
+    "question": "If a three-hinged parabolic arch carries a uniformly distributed load over the entire span, then any section of the arch is subjected to:",
+    "options": [
+      "normal thrust only",
+      "normal thrust and shear force",
+      "normal thrust and bending moment",
+      "normal thrust, shear force and bending moment"
+    ],
+    "correct": 0,
+    "explanation": "For a parabolic arch subjected to a uniformly distributed load over the entire span, the shape of the arch follows the pressure line (funicular polygon). Consequently, the bending moment and shear force are zero at every section, leaving only the normal thrust.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Structural Analysis",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Structural Analysis",
+    "ai_correct": "For a parabolic arch under UDL, the shape of the arch matches the funicular polygon (linear arch) for that load, resulting in zero bending moment and zero shear force throughout.",
+    "ai_wrong": "Students often assume all arches have bending moments, but the parabolic shape is specifically designed to eliminate them under UDL.",
+    "formula": "M = 0, V = 0",
+    "trick": "Parabolic arch + UDL = Pure compression (Normal thrust only)."
+  },
+  {
+    "id": 788,
+    "question": "A three-hinged arch is:",
+    "options": [
+      "statically indeterminate by one degree",
+      "statically indeterminate by two degrees",
+      "statically determinate",
+      "unstable structure"
+    ],
+    "correct": 2,
+    "explanation": "A three-hinged arch has four reaction components (two at each support) and one internal hinge equation. Since the total number of unknowns (4) equals the sum of equilibrium equations (3) plus the condition provided by the internal hinge (1), the structure is statically determinate.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Structural Analysis",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Structural Analysis",
+    "ai_correct": "A three-hinged arch has three reaction components at each support (or two at one and one at the other), totaling 4, and 3 equilibrium equations, plus the hinge condition (M=0 at crown), making it statically determinate.",
+    "ai_wrong": "Students often confuse it with two-hinged or fixed arches, which are indeterminate.",
+    "formula": "Degree of indeterminacy = 0",
+    "trick": "3 hinges = 3 equations = Determinate."
+  },
+  {
+    "id": 789,
+    "question": "A linear arch has:",
+    "options": [
+      "normal thrust only",
+      "shear force only",
+      "bending moment only",
+      "normal thrust and shear force"
+    ],
+    "correct": 0,
+    "explanation": "A linear arch is defined as the shape of an arch that is in pure compression for a given loading condition. By definition, it is the funicular shape for the applied loads, meaning it experiences only axial (normal) thrust and no bending moment or shear force.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Structural Analysis",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Structural Analysis",
+    "ai_correct": "A linear arch is the funicular polygon for a given loading, representing a state where the structure is in pure compression (normal thrust) with no bending.",
+    "ai_wrong": "Students often think it involves bending, but by definition, a linear arch is the path of the resultant force.",
+    "formula": "M = 0",
+    "trick": "Linear arch = Pure compression."
+  },
+  {
+    "id": 790,
+    "question": "A three-hinged arch carries a uniformly distributed load over its entire span. The arch is free from shear force and bending moment if its shape is:",
+    "options": [
+      "circular",
+      "parabolic",
+      "elliptical",
+      "none of the above"
+    ],
+    "correct": 1,
+    "explanation": "For a three-hinged arch subjected to a uniformly distributed load over the entire span, the bending moment at any section is zero if the shape of the arch follows the shape of the bending moment diagram of a simply supported beam under the same loading, which is a parabola.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Structural Analysis",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Structural Analysis",
+    "ai_correct": "A parabolic arch is the ideal shape for a UDL because it follows the pressure line (funicular polygon) of the load, resulting in zero bending moment.",
+    "ai_wrong": "Students often guess circular or elliptical, which are not the ideal shapes for UDL.",
+    "formula": "y = 4h/L² * x(L-x)",
+    "trick": "UDL = Parabolic arch."
+  },
+  {
+    "id": 791,
+    "question": "For a determinate pin-jointed plane frame, what is the relationship between the number of joints (j) and the number of members (m)?",
+    "options": [
+      "m = 2j - 3",
+      "m = 3j - 6",
+      "m > 2j - 3",
+      "m > 3j - 6"
+    ],
+    "correct": 0,
+    "explanation": "A pin-jointed plane frame is statically determinate if the number of members (m) and the number of reactions (r) satisfy the condition m + r = 2j. For a frame supported by 3 reactions (r=3), the equation becomes m + 3 = 2j, or m = 2j - 3.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Structural Analysis",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Structural Analysis",
+    "ai_correct": "For a pin-jointed plane frame to be statically determinate and perfect, the number of members (m) must satisfy m = 2j - 3.",
+    "ai_wrong": "Students often confuse this with the formula for space frames (m = 3j - 6).",
+    "formula": "m = 2j - 3",
+    "trick": "Plane frame = 2j - 3; Space frame = 3j - 6."
+  },
+  {
+    "id": 792,
+    "question": "What is the shape of a basic perfect frame?",
+    "options": [
+      "triangle",
+      "rectangle",
+      "square",
+      "hexagon"
+    ],
+    "correct": 0,
+    "explanation": "A perfect frame is one that can maintain its shape under load without changing the relative positions of its joints. A triangle is the simplest geometric shape that is inherently rigid, making it the basic perfect frame.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Structural Analysis",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Structural Analysis",
+    "ai_correct": "A triangle is the simplest stable polygon; adding members to a triangle maintains stability, making it the basic unit of a perfect frame.",
+    "ai_wrong": "Students often think a rectangle is basic, but a rectangle is unstable without a diagonal member.",
+    "formula": "Stability condition",
+    "trick": "Triangle = Stable."
+  },
+  {
+    "id": 793,
+    "question": "The method of joints is applicable only when the number of unknown forces at the joint under consideration is not more than:",
+    "options": [
+      "one",
+      "two",
+      "three",
+      "four"
+    ],
+    "correct": 1,
+    "explanation": "The method of joints relies on the equations of static equilibrium for a concurrent force system in a plane, which are ΣFx = 0 and ΣFy = 0. Since there are only two independent equations available, a joint can only be solved if there are no more than two unknown forces.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Structural Analysis",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Structural Analysis",
+    "ai_correct": "The method of joints requires that at any joint, there are at most two unknown forces to be solved using the two equilibrium equations (ΣFx=0, ΣFy=0).",
+    "ai_wrong": "Students often think they can solve for more, but the system becomes indeterminate if there are more than two unknowns.",
+    "formula": "ΣFx=0, ΣFy=0",
+    "trick": "Method of joints = Max 2 unknowns."
+  },
+  {
+    "id": 805,
+    "question": "A three hinged parabolic arch rib is acted upon by a single load at the left quarter point. If the central rise is increased and the shape of arch altered to segmental without changing the other details, the horizontal thrust will",
+    "options": [
+      "increase definitely",
+      "decrease definitely",
+      "be difficult to predict",
+      "increase or decrease depending upon the radius of the segmental arch"
+    ],
+    "correct": 2,
+    "explanation": "When the central rise of a parabolic arch is increased and the shape is altered to segmental, the horizontal thrust will be difficult to predict. This is because the change in shape and central rise affects the distribution of forces in the arch, making it challenging to determine the resulting horizontal thrust.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Structural Analysis",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Structural Analysis",
+    "ai_correct": "The horizontal thrust in a three-hinged arch depends on the geometry (rise) and the loading position. Changing the shape to segmental while altering the rise creates a complex interaction where the thrust change is not monotonic.",
+    "ai_wrong": "Students often assume a simple inverse relationship between rise and thrust (Option B), ignoring that the change in arch profile (segmental) alters the influence line for thrust.",
+    "formula": "H = (Σ M_hinge) / r",
+    "trick": "For complex geometric changes in arches, if the rise and shape change simultaneously, the net effect on thrust is usually indeterminate without specific calculations."
+  }
+]

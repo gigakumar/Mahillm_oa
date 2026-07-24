@@ -1,0 +1,46 @@
+[
+  {
+    "id": 2282,
+    "question": "Rocks with excessive internal stresses which may cause spalling are known as:",
+    "options": [
+      "Popping rocks",
+      "Stratified rocks",
+      "Swelling rocks",
+      "Crushed rocks"
+    ],
+    "correct": 1,
+    "explanation": "Rocks that exhibit sudden failure or spalling due to high stored strain energy are often referred to as popping or burst-prone rocks.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Geotechnical Engineering",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Geotechnical Engineering",
+    "ai_correct": "Stratified rocks are sedimentary rocks formed in layers. These layers can contain internal stresses that lead to spalling or popping when excavated.",
+    "ai_wrong": "Students often confuse this with 'popping rocks' (which is a symptom, not the rock type) or 'swelling rocks' (which expand due to moisture).",
+    "formula": "N/A",
+    "trick": "Stratified = Layered; layers often harbor residual stresses."
+  },
+  {
+    "id": 2290,
+    "question": "Which rock is expected to have the highest strength grade?",
+    "options": [
+      "Sandstone rock",
+      "Limestone rock",
+      "Solid quartzite rock",
+      "Marble rocks"
+    ],
+    "correct": 2,
+    "explanation": "Quartzite is a metamorphic rock composed primarily of quartz, known for its extreme hardness and high compressive strength.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Geotechnical Engineering",
+    "category": "Civil Engineering",
+    "type": "MCQ",
+    "subject": "Geotechnical Engineering",
+    "ai_correct": "Quartzite is a metamorphic rock formed from sandstone. It is extremely hard and durable, giving it the highest strength among the options.",
+    "ai_wrong": "Students often pick marble or limestone, which are softer and more prone to weathering.",
+    "formula": "N/A",
+    "trick": "Quartzite is essentially recrystallized quartz, making it one of the strongest common rocks."
+  }
+]

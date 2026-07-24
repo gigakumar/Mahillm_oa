@@ -1,0 +1,24 @@
+[
+  {
+    "id": 708,
+    "question": "While punching a hole in a metal sheet using a punch, ______ stress is developed in the metal sheet.",
+    "options": [
+      "normal compressive",
+      "normal tensile",
+      "shear",
+      "lateral"
+    ],
+    "correct": 2,
+    "explanation": "When a hole is punched in a metal sheet, the metal sheet is subjected to tensile stress due to the deformation caused by the punch.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Mechanical Properties of Materials",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Mechanical Properties of Materials",
+    "ai_correct": "Punching involves the application of a force that causes the material to fail along the shear plane. The punch exerts a force parallel to the cross-section of the hole, inducing shear stress.",
+    "ai_wrong": "Students often mistake the downward force for normal stress, but the failure mechanism in punching is sliding/shearing.",
+    "formula": "τ = P / (πdt)",
+    "trick": "Punching, shearing, and torsion are classic examples of shear stress applications."
+  }
+]

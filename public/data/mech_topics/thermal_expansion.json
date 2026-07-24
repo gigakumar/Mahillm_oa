@@ -1,0 +1,24 @@
+[
+  {
+    "id": 706,
+    "question": "Change in length of a rod due to a change in temperature depends on ______.",
+    "options": [
+      "original length",
+      "change in temperature",
+      "modulus of elasticity",
+      "coefficient of thermal expansion"
+    ],
+    "correct": 3,
+    "explanation": "The change in length of a rod due to a change in temperature depends on the coefficient of thermal expansion.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Thermal Expansion",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Thermal Expansion",
+    "ai_correct": "The change in length is defined by the linear thermal expansion equation ΔL = LαΔT. The coefficient of thermal expansion (α) is the material property that dictates how much it expands per unit temperature change.",
+    "ai_wrong": "Students often pick Modulus of Elasticity (C), confusing it with stress calculations where E is required.",
+    "formula": "ΔL = LαΔT",
+    "trick": "Remember: Expansion is a geometric change, not a force-based one, so E is not involved."
+  }
+]

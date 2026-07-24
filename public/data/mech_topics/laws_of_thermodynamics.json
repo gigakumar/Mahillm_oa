@@ -1,0 +1,24 @@
+[
+  {
+    "id": 158,
+    "question": "The basis for measuring thermodynamic property of temperature is given by the ……. Law of thermodynamics",
+    "options": [
+      "zeroth",
+      "first",
+      "second",
+      "third"
+    ],
+    "correct": 0,
+    "explanation": "The zeroth law of thermodynamics provides the basis for measuring the thermodynamic property of temperature. It states that if two systems are in thermal equilibrium with a third system, then they are also in thermal equilibrium with each other. This law allows for the definition of a temperature scale, which is essential for measuring temperature. The zeroth law is the foundation for the concept of temperature and its measurement.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Laws of Thermodynamics",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Laws of Thermodynamics",
+    "ai_correct": "The Zeroth Law of Thermodynamics states that if two bodies are each in thermal equilibrium with a third body, they are in thermal equilibrium with each other, which provides the logical basis for temperature measurement.",
+    "ai_wrong": "Students frequently confuse this with the First Law, which deals with the conservation of energy and the definition of internal energy, rather than the concept of temperature.",
+    "formula": "If T_A = T_C and T_B = T_C, then T_A = T_B",
+    "trick": "Remember 'Zeroth' comes before 'First'; it establishes the fundamental prerequisite (temperature) before energy laws can be applied."
+  }
+]

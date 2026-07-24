@@ -1,0 +1,24 @@
+[
+  {
+    "id": 131,
+    "question": "According to the kinetic theory of heat",
+    "options": [
+      "temperature should rise during boiling",
+      "temperature should fall during freezing",
+      "at low temperatures, all bodies are in a solid state",
+      "at absolute zero, there is absolutely no vibration of molecules"
+    ],
+    "correct": 3,
+    "explanation": "According to the kinetic theory of heat, at absolute zero (0 K), there is absolutely no vibration of molecules. This is because absolute zero is defined as the temperature at which all molecular motion ceases. The kinetic theory of heat states that the temperature of a substance is a measure of the average kinetic energy of its molecules. As the temperature approaches absolute zero, the molecules slow down and eventually come to rest. However, it is impossible to reach absolute zero by any finite number of processes, and it is a fundamental limit of the laws of thermodynamics.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Kinetic Theory of Gases",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Kinetic Theory of Gases",
+    "ai_correct": "According to the kinetic theory, temperature is a measure of the average kinetic energy of molecules. At absolute zero (0 K), the kinetic energy of the particles theoretically reaches its minimum, resulting in the cessation of molecular motion.",
+    "ai_wrong": "Students often assume that at absolute zero, matter disappears or becomes a gas. This is incorrect because the kinetic theory specifically addresses the motion of particles, which stops at 0 K, not the existence of the matter itself.",
+    "formula": "KE_avg = (3/2)kT",
+    "trick": "Remember that absolute zero is a theoretical limit where molecular kinetic energy vanishes, not where the volume of the particles themselves becomes zero."
+  }
+]

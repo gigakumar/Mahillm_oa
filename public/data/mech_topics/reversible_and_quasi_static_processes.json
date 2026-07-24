@@ -1,0 +1,22 @@
+[
+  {
+    "id": 355,
+    "question": "A reversible process coincides with a quasi-static process.",
+    "options": [
+      "true",
+      "false"
+    ],
+    "correct": 1,
+    "explanation": "A reversible process is a process that can be reversed without any change in the system or surroundings, and a quasi-static process is a process that occurs slowly enough that the system remains in equilibrium at all times.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Reversible and Quasi-Static Processes",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Reversible and Quasi-Static Processes",
+    "ai_correct": "A quasi-static process is one that occurs infinitely slowly, keeping the system in internal equilibrium, but it does not guarantee the absence of external dissipative effects like friction. Therefore, a quasi-static process can still be irreversible, meaning it does not necessarily coincide with a reversible process.",
+    "ai_wrong": "Students often pick option A because they equate 'infinitely slow' (quasi-static) with 'reversible'. They overlook that friction or other external dissipative effects can make a quasi-static process irreversible.",
+    "formula": "Reversible = Quasi-static + No dissipative effects",
+    "trick": "Remember: All reversible processes are quasi-static, but not all quasi-static processes are reversible."
+  }
+]

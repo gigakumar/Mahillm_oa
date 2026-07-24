@@ -1,0 +1,46 @@
+[
+  {
+    "id": 143,
+    "question": "Thermodynamic equilibrium is completely defined by the specification of",
+    "options": [
+      "generalized displacements",
+      "internal energy",
+      "enthalpy",
+      "all of the above"
+    ],
+    "correct": 3,
+    "explanation": "Thermodynamic equilibrium is a state in which the system's properties, such as internal energy, enthalpy, entropy, and temperature, are uniform and unchanging. To completely define thermodynamic equilibrium, we need to specify all the relevant properties of the system, including internal energy, enthalpy, and generalized displacements. These properties are related to the system's energy, and specifying them allows us to determine the system's state.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Thermodynamic Equilibrium",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Thermodynamic Equilibrium",
+    "ai_correct": "Thermodynamic equilibrium requires the simultaneous satisfaction of mechanical, thermal, and chemical equilibrium. These are defined by the specification of state variables such as internal energy, enthalpy, and generalized displacements (like pressure and volume).",
+    "ai_wrong": "Students often pick only one option like internal energy (Option B) because it is a common state function. However, internal energy alone is insufficient to define the state of a system without also knowing other independent properties like pressure or volume.",
+    "formula": "dG = 0 (at constant T, P)",
+    "trick": "If 'all of the above' is an option in equilibrium questions, it is usually correct because equilibrium is a multi-faceted state."
+  },
+  {
+    "id": 157,
+    "question": "A system is said to be in thermodynamic equilibrium if it is in",
+    "options": [
+      "chemical equilibrium",
+      "thermal equilibrium",
+      "mechanical equilibrium",
+      "all of the above"
+    ],
+    "correct": 3,
+    "explanation": "A system is in thermodynamic equilibrium when it has reached a state where its temperature, pressure, and chemical composition are uniform throughout and no longer changing. This means that the system is in thermal equilibrium (no temperature differences), mechanical equilibrium (no pressure differences), and chemical equilibrium (no net chemical reactions). Therefore, for a system to be in thermodynamic equilibrium, it must be in all of the above: thermal, mechanical, and chemical equilibrium.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Thermodynamic Equilibrium",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Thermodynamic Equilibrium",
+    "ai_correct": "A system is in thermodynamic equilibrium only when it simultaneously satisfies thermal, mechanical, and chemical equilibrium conditions. This ensures that temperature, pressure, and chemical potential are uniform throughout the system and its surroundings.",
+    "ai_wrong": "Students often pick B (thermal equilibrium) because it is the most commonly discussed, but thermal equilibrium alone is insufficient to define the complete thermodynamic state of a system.",
+    "formula": "Equilibrium = Thermal + Mechanical + Chemical",
+    "trick": "Always look for the 'all of the above' option in equilibrium questions, as thermodynamic equilibrium is a composite state."
+  }
+]

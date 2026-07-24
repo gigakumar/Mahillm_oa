@@ -1,0 +1,24 @@
+[
+  {
+    "id": 709,
+    "question": "Poisson’s ratio for rubber is ______ that for steel.",
+    "options": [
+      "larger than",
+      "equal to",
+      "smaller than",
+      "any of the above"
+    ],
+    "correct": 0,
+    "explanation": "Poisson’s ratio for rubber is typically larger than that for steel due to the elastic properties of rubber.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Poisson’s Ratio",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Poisson’s Ratio",
+    "ai_correct": "Poisson's ratio is the ratio of lateral strain to longitudinal strain. Rubber is highly incompressible and exhibits significant lateral deformation compared to rigid steel, leading to a higher ratio.",
+    "ai_wrong": "Students often guess equal to (B), assuming material properties are universal, but Poisson's ratio varies significantly by material type.",
+    "formula": "ν = -ε_lateral / ε_longitudinal",
+    "trick": "Rubber is near the theoretical limit of 0.5, while steel is typically around 0.3."
+  }
+]

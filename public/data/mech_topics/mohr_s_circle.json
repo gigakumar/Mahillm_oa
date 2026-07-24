@@ -1,0 +1,24 @@
+[
+  {
+    "id": 898,
+    "question": "The extremeties of any diameter on Mohr's circle represent",
+    "options": [
+      "principal stresses",
+      "normal stresses on planes at 45?",
+      "shear stresses on planes at 45?",
+      "normal and shear stresses on a plane"
+    ],
+    "correct": 1,
+    "explanation": "Mohr's circle is a graphical representation of the state of stress at a point in a material. The extremities of any diameter on Mohr's circle represent the principal stresses at that point.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Mohr's Circle",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Mohr's Circle",
+    "ai_correct": "Mohr's circle represents the state of stress at a point. The extremities of any diameter represent the normal and shear stresses on two mutually perpendicular planes.",
+    "ai_wrong": "Students often confuse the points on the circle with principal stresses only.",
+    "formula": "σ_n = (σx+σy)/2 + ((σx-σy)/2)cos2θ + τsin2θ",
+    "trick": "Diameter = 90 degrees in physical space."
+  }
+]

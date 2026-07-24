@@ -1,0 +1,46 @@
+[
+  {
+    "id": 4571,
+    "question": "No question present in the image. The image contains only the text: 'or All PSU EXAM or STATE PSC EXAM'.",
+    "options": [
+      "N/A",
+      "N/A",
+      "N/A",
+      "N/A"
+    ],
+    "correct": 0,
+    "explanation": "The provided image is a crop containing only a banner text 'or All PSU EXAM or STATE PSC EXAM' and does not contain any exam question.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "N/A",
+    "category": "N/A",
+    "type": "Theoretical / Definition",
+    "subject": "N/A",
+    "ai_correct": "N/A - The question content is missing, stating only 'No question present in the image'. Therefore, a specific explanation cannot be provided.",
+    "ai_wrong": "N/A - The question content is missing, so common wrong reasoning cannot be identified.",
+    "formula": "N/A",
+    "trick": "N/A - No question content available."
+  },
+  {
+    "id": 4573,
+    "question": "If you want to support to build-self study platform - 9649945374@ybl",
+    "options": [
+      "N/A",
+      "N/A",
+      "N/A",
+      "N/A"
+    ],
+    "correct": 0,
+    "explanation": "The provided image contains a watermark/donation request text rather than an academic question.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "N/A",
+    "category": "N/A",
+    "type": "Theoretical / Definition",
+    "subject": "N/A",
+    "ai_correct": "N/A - The provided text is not a question but a request for support, so a specific explanation for a correct answer cannot be given.",
+    "ai_wrong": "N/A - The provided text is not a question, so common wrong reasoning cannot be identified.",
+    "formula": "N/A",
+    "trick": "N/A - No question content available."
+  }
+]

@@ -1,0 +1,46 @@
+[
+  {
+    "id": 352,
+    "question": "For two different paths between the same two points, the entropy change is the same.",
+    "options": [
+      "depends on path taken",
+      "different",
+      "same",
+      "none of the mentioned"
+    ],
+    "correct": 2,
+    "explanation": "Entropy change is a state function, so it depends only on the initial and final states, not on the path taken.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Entropy Change in Thermodynamics",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Entropy Change in Thermodynamics",
+    "ai_correct": "Entropy is a state function, which means its value depends only on the current state of the system and not on the history or the path taken to reach that state. Consequently, the change in entropy between two fixed states is identical regardless of the path.",
+    "ai_wrong": "Students often confuse entropy with path functions like work or heat, leading them to incorrectly select option A or B, assuming that the path taken influences the final change in entropy.",
+    "formula": "ΔS = ∫(dQ / T)_rev",
+    "trick": "If a property is a state function, its differential is exact, and its integral between two points is path-independent."
+  },
+  {
+    "id": 353,
+    "question": "For the general case, we can write the entropy change as s2 - s1 >= dq/t for a path.",
+    "options": [
+      "s2 - s1 <= dq/t for a path",
+      "s2 - s1 >= dq/t for a path",
+      "s2 - s1 ≠ dq/t for a path",
+      "none of the mentioned"
+    ],
+    "correct": 2,
+    "explanation": "Entropy change is always greater than or equal to the heat transfer divided by temperature for a path.",
+    "contextHtml": "",
+    "difficulty": "LOW",
+    "topic": "Entropy Change in Thermodynamics",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Entropy Change in Thermodynamics",
+    "ai_correct": "The Clausius inequality states that for any cycle, the cyclic integral of dQ/T is less than or equal to zero. For a process, the entropy change is defined as dS = dQ/T for reversible paths, but for an irreversible path, dS > dQ/T, making the general relationship an inequality that does not strictly equal the heat transfer ratio.",
+    "ai_wrong": "Students often pick option B because they confuse the definition of entropy change for a reversible process (dS = dQ/T) with the general case. They fail to account for the entropy generation term (S_gen) present in irreversible processes, which makes the equality invalid.",
+    "formula": "dS = (dQ/T) + dS_gen, where dS_gen ≥ 0",
+    "trick": "Always remember that entropy is a property and a point function, while heat transfer is a path function; they can only be equated under the specific condition of reversibility."
+  }
+]

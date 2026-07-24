@@ -1,0 +1,24 @@
+[
+  {
+    "id": 760,
+    "question": "A beam of triangular cross section is placed with its base horizontal. The maximum shear stress intensity in the section will be",
+    "options": [
+      "at the neutral axis",
+      "at the base",
+      "above the neutral axis",
+      "below the neutral axis"
+    ],
+    "correct": 2,
+    "explanation": "The maximum shear stress intensity in a triangular cross-section beam occurs above the neutral axis.",
+    "contextHtml": "",
+    "difficulty": "MEDIUM",
+    "topic": "Shear Stress in Beams",
+    "category": "Mechanical Engineering",
+    "type": "MCQ",
+    "subject": "Shear Stress in Beams",
+    "ai_correct": "For a triangular section, the shear stress distribution is parabolic, and the maximum value occurs at the height of 2h/3 from the apex, which is above the neutral axis (h/3 from the base).",
+    "ai_wrong": "Students often assume the maximum shear stress is always at the neutral axis, as it is for rectangular and circular sections.",
+    "formula": "τ_max at y = 2h/3 from apex",
+    "trick": "The neutral axis is not always the location of maximum shear stress for non-symmetric sections."
+  }
+]
