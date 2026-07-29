@@ -169,7 +169,7 @@ export default function Profile() {
       xp,
       nextLevelXp,
 
-      streak: scoreData?.streak || dbProfile?.streak || 14,
+      streak: scoreData?.streak ?? dbProfile?.streak ?? 0,
       questionsSolved,
       accuracy,
       testsCompleted: testsCompleted || (testHistory ? testHistory.length : 0) || scoreData?.testsCompleted || 0,

@@ -14,6 +14,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
   background: rgba(15, 23, 42, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 20px;
@@ -21,6 +23,41 @@
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
+}
+
+/* Live platform stats pills */
+.arena-live-stats {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.live-stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.45rem 0.9rem;
+  border-radius: 30px;
+  font-size: 0.82rem;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.live-stat-pill strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: pulse-dot 2s infinite;
+  flex-shrink: 0;
 }
 
 .arena-title-wrapper {
@@ -410,6 +447,51 @@
   gap: 0.85rem;
 }
 
+/* Empty state placeholder */
+.no-matches-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.75rem 0;
+  color: #475569;
+  font-size: 0.9rem;
+}
+
+.no-matches-placeholder p {
+  margin: 0;
+  color: #475569;
+}
+
+/* Quick stats row below recent matches */
+.quick-stats-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.qs-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.qs-item strong {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.qs-item span {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+  text-align: center;
+}
+
 .match-row {
   display: flex;
   align-items: center;
@@ -477,6 +559,31 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+}
+
+/* Skeleton loader for leaderboard */
+.lb-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.lb-skeleton {
+  height: 52px;
+  border-radius: 12px;
+  background: linear-gradient(90deg,
+    rgba(255,255,255,0.03) 25%,
+    rgba(255,255,255,0.07) 50%,
+    rgba(255,255,255,0.03) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 .lb-row {
@@ -556,7 +663,10 @@
   .arena-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1.5rem;
+    gap: 1rem;
     padding: 1.5rem;
+  }
+  .arena-live-stats {
+    width: 100%;
   }
 }
