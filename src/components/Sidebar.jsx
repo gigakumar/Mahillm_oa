@@ -45,6 +45,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
     { path: '/syllabus', label: 'GATE Syllabus', icon: Target },
     { path: '/formulas', label: 'Formula Revision', icon: Layers },
     { path: '/readiness', label: 'Readiness Radar', icon: Activity },
+    { path: '/inspector', label: 'Component Inspector', icon: Compass },
     { path: '/mock-interview', label: 'AI Mock Interview', icon: Mic },
     { path: '/duel', label: '1v1 Speed Duel', icon: Swords },
     { path: '/gate-predictor', label: 'GATE Predictor', icon: Compass },

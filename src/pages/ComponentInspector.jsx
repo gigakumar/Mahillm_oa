@@ -1,25 +1,26 @@
 import React, { useState, useMemo } from 'react';
-import { 
-  FileText, 
-  Download, 
-  Sparkles, 
-  Layers, 
-  RotateCw, 
-  CheckCircle, 
-  BookOpen, 
+import {
+  FileText,
+  Download,
+  Sparkles,
+  Layers,
+  RotateCw,
+  CheckCircle,
+  BookOpen,
   Sliders,
   Maximize2,
   Activity,
-  Zap
+  Zap,
+  SlidersHorizontal
 } from 'lucide-react';
 import { FORMULA_SHEETS } from '../data/formulaSheets';
 import MathRenderer from '../components/MathRenderer';
-import { 
-  pumpHeadFromRPM, 
-  pumpPowerFromRPM, 
-  ottoCycleEfficiency, 
-  peltonOptimalBucketSpeed, 
-  peltonPowerOutput 
+import {
+  pumpHeadFromRPM,
+  pumpPowerFromRPM,
+  ottoCycleEfficiency,
+  peltonOptimalBucketSpeed,
+  peltonPowerOutput
 } from '../utils/inspectorPhysics';
 import './ComponentInspector.css';
 
@@ -70,6 +71,22 @@ const COMPONENTS_3D = [
     keyFormulas: [
       'u_{opt} = 0.46 \\cdot V_1',
       'P_{mech} = m \\cdot u \\cdot (V_1 - u) \\cdot (1 + \\cos \\beta)'
+    ]
+  },
+  {
+    id: 'cantilever_beam',
+    name: 'Cantilever Beam Deflection & Stress',
+    category: 'Strength of Materials',
+    description: 'Simulates elastic bending deformation of a fixed-end cantilever beam subject to a concentrated point load at the free end.',
+    svgType: 'beam',
+    parameters: [
+      { name: 'Point Load (P)', defaultVal: 5000, min: 500, max: 20000, unit: 'N' },
+      { name: 'Beam Length (L)', defaultVal: 2.5, min: 0.5, max: 6.0, unit: 'm' },
+      { name: 'Modulus E', defaultVal: 200, min: 50, max: 300, unit: 'GPa' }
+    ],
+    keyFormulas: [
+      '\\delta_{max} = \\frac{P \\cdot L^3}{3 \\cdot E \\cdot I}',
+      'M_{max} = P \\cdot L'
     ]
   }
 ];
@@ -123,6 +140,18 @@ export default function ComponentInspector() {
         { label: 'Optimal Bucket Speed (u)', val: `${uOpt.toFixed(1)} m/s` },
         { label: 'Theoretical Mechanical Power', val: `${pKw.toFixed(1)} kW` }
       ];
+    } else if (selectedComponent.id === 'cantilever_beam') {
+      const P = params.p1;
+      const L = params.p2;
+      const E_GPa = params.p3;
+      const E = E_GPa * 1e9; // Pa
+      const I = 8.33e-6; // m4 for 100mm x 100mm beam
+      const deltaM = (P * Math.pow(L, 3)) / (3 * E * I);
+      const momentNm = P * L;
+      return [
+        { label: 'Max Deflection (δ_max)', val: `${(deltaM * 1000).toFixed(2)} mm` },
+        { label: 'Max Bending Moment (M_max)', val: `${(momentNm / 1000).toFixed(2)} kN·m` }
+      ];
     }
     return [];
   }, [selectedComponent.id, params]);
@@ -138,162 +167,141 @@ export default function ComponentInspector() {
         <div className="header-info">
           <div className="header-badge">
             <Sparkles className="w-4 h-4 text-amber-400" />
-            <span>Interactive Visual Learning Suite</span>
+            <span>Interactive Physics Engine</span>
           </div>
-          <h1>3D Mechanical Component Inspector & PDF Notes Generator</h1>
-          <p>Explore interactive engineering mechanisms, parameter dynamics, and export formatted PDF revision cheat sheets.</p>
+          <h1>Mechanical Component Inspector & Physics Simulator</h1>
+          <p>Real-time parametric simulation, thermodynamic cycle analysis, and formula verification for core engineering components.</p>
         </div>
 
-        <button className="export-pdf-btn" onClick={handlePrintPDF}>
-          <Download className="w-4 h-4" /> Export PDF Study Notes
-        </button>
+        <div className="inspector-controls-bar">
+          <button className="btn btn-outline btn-sm" onClick={handlePrintPDF}>
+            <Download className="w-4 h-4" /> Export Report
+          </button>
+        </div>
       </div>
 
-      {/* Component Selector Tabs */}
-      <div className="component-tabs-bar">
+      {/* Selector Tabs */}
+      <div className="component-selector-tabs">
         {COMPONENTS_3D.map(comp => (
           <button
             key={comp.id}
-            className={`comp-tab-btn ${selectedComponent.id === comp.id ? 'active' : ''}`}
+            className={`tab-btn ${selectedComponent.id === comp.id ? 'active' : ''}`}
             onClick={() => handleComponentSelect(comp)}
           >
-            <Layers className="w-4 h-4" /> {comp.name}
+            <Layers className="w-4 h-4" />
+            <span>{comp.name}</span>
           </button>
         ))}
       </div>
 
-      {/* Main Grid: Interactive 3D Model + Controls */}
+      {/* Main Simulation View Area */}
       <div className="inspector-grid">
-        {/* Interactive Visual Canvas */}
-        <div className="visual-canvas-card">
+        {/* Left: 2D/3D Diagram Canvas */}
+        <div className="diagram-canvas-card card">
           <div className="canvas-header">
-            <span className="comp-cat-badge">{selectedComponent.category}</span>
-            <button className={`rotate-toggle ${isRotating ? 'active' : ''}`} onClick={() => setIsRotating(!isRotating)}>
-              <RotateCw className={`w-4 h-4 ${isRotating ? 'animate-spin' : ''}`} /> {isRotating ? 'Rotation On' : 'Paused'}
-            </button>
+            <h3>{selectedComponent.name}</h3>
+            <span className="badge badge-accent">{selectedComponent.category}</span>
           </div>
 
-          <div className="svg-canvas-wrapper">
-            {selectedComponent.svgType === 'pump' && (
-              <svg className={`mech-svg ${isRotating ? 'rotating-svg' : ''}`} viewBox="0 0 200 200">
-                <circle cx="100" cy="100" r="80" fill="none" stroke="#6366f1" strokeWidth="6" strokeDasharray="8 4" />
-                <circle cx="100" cy="100" r="45" fill="rgba(99, 102, 241, 0.2)" stroke="#818cf8" strokeWidth="4" />
-                <path d="M 100 55 L 100 145 M 55 100 L 145 100 M 68 68 L 132 132 M 68 132 L 132 68" stroke="#38bdf8" strokeWidth="4" strokeLinecap="round" />
-                <circle cx="100" cy="100" r="12" fill="#fbbf24" />
-              </svg>
-            )}
+          <div className="canvas-viewport">
+            <div className={`viewport-render ${isRotating ? 'rotating' : ''}`}>
+              {selectedComponent.svgType === 'pump' && (
+                <svg viewBox="0 0 200 200" className="comp-svg">
+                  <circle cx="100" cy="100" r="70" fill="none" stroke="#6366f1" strokeWidth="4" />
+                  <circle cx="100" cy="100" r="25" fill="#38bdf8" opacity="0.3" />
+                  <path d="M100 30 Q120 70 100 100 Q80 70 100 30" fill="#818cf8" />
+                  <path d="M170 100 Q130 120 100 100 Q130 80 170 100" fill="#818cf8" />
+                  <path d="M100 170 Q80 130 100 100 Q120 130 100 170" fill="#818cf8" />
+                  <path d="M30 100 Q70 80 100 100 Q70 120 30 100" fill="#818cf8" />
+                </svg>
+              )}
 
-            {selectedComponent.svgType === 'engine' && (
-              <svg className="mech-svg" viewBox="0 0 200 200">
-                <rect x="60" y="30" width="80" height="110" fill="none" stroke="#475569" strokeWidth="6" rx="4" />
-                <rect x="66" y={50 + (isRotating ? (Math.sin(Date.now() / 200) * 20) : 0)} width="68" height="35" fill="rgba(244, 63, 94, 0.4)" stroke="#f43f5e" strokeWidth="3" rx="3" />
-                <line x1="100" y1={85 + (isRotating ? (Math.sin(Date.now() / 200) * 20) : 0)} x2="100" y2="155" stroke="#38bdf8" strokeWidth="5" />
-                <circle cx="100" cy="155" r="16" fill="none" stroke="#fbbf24" strokeWidth="4" />
-              </svg>
-            )}
+              {selectedComponent.svgType === 'engine' && (
+                <svg viewBox="0 0 200 200" className="comp-svg">
+                  <rect x="60" y="20" width="80" height="120" rx="6" fill="none" stroke="#f43f5e" strokeWidth="4" />
+                  <rect x="65" y="50" width="70" height="40" rx="4" fill="#fb923c" opacity="0.5" />
+                  <line x1="100" y1="90" x2="100" y2="160" stroke="#f59e0b" strokeWidth="6" strokeLinecap="round" />
+                  <circle cx="100" cy="160" r="16" fill="none" stroke="#38bdf8" strokeWidth="4" />
+                </svg>
+              )}
 
-            {selectedComponent.svgType === 'turbine' && (
-              <svg className={`mech-svg ${isRotating ? 'rotating-svg' : ''}`} viewBox="0 0 200 200">
-                <circle cx="100" cy="100" r="70" fill="none" stroke="#38bdf8" strokeWidth="5" />
-                <circle cx="100" cy="100" r="25" fill="#4f46e5" />
-                <path d="M 100 30 Q 115 30 115 45 Q 115 60 100 60 Q 85 60 85 45 Z" fill="#fbbf24" />
-                <path d="M 100 140 Q 115 140 115 155 Q 115 170 100 170 Q 85 170 85 155 Z" fill="#fbbf24" />
-                <path d="M 30 100 Q 30 115 45 115 Q 60 115 60 100 Q 60 85 45 85 Z" fill="#fbbf24" />
-                <path d="M 140 100 Q 140 115 155 115 Q 170 115 170 100 Q 170 85 155 85 Z" fill="#fbbf24" />
-              </svg>
-            )}
+              {selectedComponent.svgType === 'turbine' && (
+                <svg viewBox="0 0 200 200" className="comp-svg">
+                  <circle cx="100" cy="100" r="60" fill="none" stroke="#34d399" strokeWidth="4" />
+                  <circle cx="100" cy="100" r="12" fill="#34d399" />
+                  <path d="M100 40 A20 20 0 0 1 100 20 A20 20 0 0 1 100 40" fill="#38bdf8" />
+                  <path d="M160 100 A20 20 0 0 1 180 100 A20 20 0 0 1 160 100" fill="#38bdf8" />
+                  <path d="M100 160 A20 20 0 0 1 100 180 A20 20 0 0 1 100 160" fill="#38bdf8" />
+                  <path d="M40 100 A20 20 0 0 1 20 100 A20 20 0 0 1 40 100" fill="#38bdf8" />
+                </svg>
+              )}
+
+              {selectedComponent.svgType === 'beam' && (
+                <svg viewBox="0 0 200 200" className="comp-svg">
+                  <rect x="20" y="40" width="15" height="120" fill="#64748b" />
+                  <path d="M35 95 Q110 98 175 125" fill="none" stroke="#f87171" strokeWidth="6" strokeLinecap="round" />
+                  <line x1="175" y1="70" x2="175" y2="120" stroke="#fbbf24" strokeWidth="3" markerEnd="url(#arrow)" />
+                </svg>
+              )}
+            </div>
           </div>
 
-          <p className="comp-desc">{selectedComponent.description}</p>
+          <p className="canvas-description">{selectedComponent.description}</p>
         </div>
 
-        {/* Live Controls & Calculated Outputs */}
-        <div className="controls-card">
-          <h3><Sliders className="w-5 h-5 text-indigo-400" /> Parameter Dynamics</h3>
-
-          <div className="sliders-list">
-            {selectedComponent.parameters.map((p, idx) => (
-              <div key={idx} className="slider-group">
-                <div className="slider-header">
-                  <span>{p.name}</span>
-                  <strong className="text-amber-400">{params[`p${idx + 1}`]} {p.unit}</strong>
-                </div>
-                <input
-                  type="range"
-                  min={p.min}
-                  max={p.max}
-                  value={params[`p${idx + 1}`]}
-                  onChange={(e) => handleParamChange(idx, e.target.value)}
-                  className="param-slider"
-                />
-              </div>
-            ))}
+        {/* Right: Parametric Sliders & Physics Calculations */}
+        <div className="params-card card">
+          <div className="card-title">
+            <SlidersHorizontal className="w-5 h-5 text-indigo-400" />
+            <span>Parametric Controls</span>
           </div>
 
-          {/* Live Physics Calculations Box */}
-          <div style={{ background: 'rgba(99, 102, 241, 0.1)', border: '1px solid rgba(99, 102, 241, 0.3)', borderRadius: '8px', padding: '1rem', marginTop: '1rem' }}>
-            <h4 style={{ margin: '0 0 0.5rem 0', color: '#818cf8', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              <Zap size={16} /> Live Theoretical Engine Outputs:
-            </h4>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
-              {calculatedOutputs.map((calc, i) => (
-                <div key={i} style={{ background: 'rgba(15, 23, 42, 0.6)', padding: '0.6rem 0.75rem', borderRadius: '6px' }}>
-                  <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{calc.label}</div>
-                  <div style={{ fontSize: '1.05rem', fontWeight: '700', color: '#34d399', marginTop: '0.1rem' }}>{calc.val}</div>
+          <div className="sliders-list">
+            {selectedComponent.parameters.map((param, idx) => {
+              const key = `p${idx + 1}`;
+              const currentVal = params[key];
+              return (
+                <div key={idx} className="slider-group">
+                  <div className="slider-label-row">
+                    <span>{param.name}</span>
+                    <strong className="text-indigo-400">{currentVal} {param.unit}</strong>
+                  </div>
+                  <input
+                    type="range"
+                    min={param.min}
+                    max={param.max}
+                    value={currentVal}
+                    onChange={e => handleParamChange(idx, e.target.value)}
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Real-Time Calculated Physics Outputs */}
+          <div className="outputs-box">
+            <h4>Live Computed Physics Outputs</h4>
+            <div className="outputs-grid">
+              {calculatedOutputs.map((out, i) => (
+                <div key={i} className="output-row">
+                  <span className="out-label">{out.label}</span>
+                  <span className="out-val">{out.val}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="key-formulas-box" style={{ marginTop: '1rem' }}>
-            <h4><BookOpen className="w-4 h-4 text-indigo-400 inline mr-1" /> Core Governing Equations:</h4>
-            {selectedComponent.keyFormulas.map((eq, i) => (
-              <div key={i} className="formula-math-row">
-                <MathRenderer text={`$$${eq}$$`} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Revision Flashcards Section */}
-      <div className="flashcards-section-card">
-        <div className="fc-header">
-          <h3><Layers className="w-5 h-5 text-emerald-400" /> Interactive Revision Flashcard Deck</h3>
-          <span className="fc-count">Card {flashcardIdx + 1} of {FORMULA_SHEETS.length}</span>
-        </div>
-
-        <div className="flashcard-container" onClick={() => setFlashcardFlipped(!flashcardFlipped)}>
-          <div className={`flashcard ${flashcardFlipped ? 'flipped' : ''}`}>
-            <div className="fc-front">
-              <span className="fc-subject">{FORMULA_SHEETS[flashcardIdx].subject}</span>
-              <h2>{FORMULA_SHEETS[flashcardIdx].name}</h2>
-              <p className="fc-tap-prompt">Tap card to reveal formula & common traps</p>
-            </div>
-            <div className="fc-back">
-              <MathRenderer text={`$$${FORMULA_SHEETS[flashcardIdx].formula}$$`} />
-              <div className="fc-trap-box">
-                <strong>Common Trap:</strong> {FORMULA_SHEETS[flashcardIdx].common_trap}
-              </div>
+          {/* Governing LaTeX Formulas */}
+          <div className="formulas-box">
+            <h4>Governing Equations</h4>
+            <div className="math-list">
+              {selectedComponent.keyFormulas.map((f, i) => (
+                <div key={i} className="math-row">
+                  <MathRenderer math={f} />
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-
-        <div className="fc-nav-controls">
-          <button 
-            className="fc-nav-btn"
-            onClick={() => { setFlashcardIdx(i => Math.max(0, i - 1)); setFlashcardFlipped(false); }}
-            disabled={flashcardIdx === 0}
-          >
-            Previous Card
-          </button>
-          <button 
-            className="fc-nav-btn primary"
-            onClick={() => { setFlashcardIdx(i => Math.min(FORMULA_SHEETS.length - 1, i + 1)); setFlashcardFlipped(false); }}
-            disabled={flashcardIdx === FORMULA_SHEETS.length - 1}
-          >
-            Next Card
-          </button>
         </div>
       </div>
     </div>
