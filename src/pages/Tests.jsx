@@ -21,6 +21,9 @@ const PRESETS = [
   { id: 'standard', name: 'Standard OA 📋', desc: '30 questions, 45 minutes. Mimics typical first-round placement assessments.', count: 30, time: 45, dist: { ME: 50, QA: 20, LR: 15, DI: 15 } },
   { id: 'full', name: 'Full OA Simulation 🏆', desc: '50 questions, 60 minutes. High-pressure mixed placement simulation.', count: 50, time: 60, dist: { ME: 60, QA: 20, LR: 10, DI: 10 } },
   { id: 'mechanical', name: 'Mechanical Technical 🔩', desc: '50 core mechanical engineering questions, 60 minutes. Gate/PSU format.', count: 50, time: 60, dist: { ME: 100, QA: 0, LR: 0, DI: 0 } },
+  { id: 'thermo_special', name: 'Thermodynamics & Heat Transfer 🌡️', desc: '20 targeted thermal engineering questions, 30 minutes.', count: 20, time: 30, dist: { ME: 100, QA: 0, LR: 0, DI: 0 } },
+  { id: 'som_design', name: 'SOM & Machine Design ⚙️', desc: '20 solid mechanics & machine element questions, 30 minutes.', count: 20, time: 30, dist: { ME: 100, QA: 0, LR: 0, DI: 0 } },
+  { id: 'fluids_sprint', name: 'Fluid Mechanics & Hydraulics 🌊', desc: '20 fluid dynamics & turbo-machinery questions, 30 minutes.', count: 20, time: 30, dist: { ME: 100, QA: 0, LR: 0, DI: 0 } },
   { id: 'aptitude', name: 'General Aptitude Round 🧮', desc: '30 general aptitude & reasoning questions, 30 minutes.', count: 30, time: 30, dist: { ME: 0, QA: 50, LR: 30, DI: 20 } }
 ];
 
