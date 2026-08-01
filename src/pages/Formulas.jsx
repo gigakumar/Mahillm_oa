@@ -242,6 +242,13 @@ export default function Formulas() {
           >
             <Layers size={16} /> Flashcard Deck ({masteredIds.length}/{FORMULA_SHEETS.length})
           </button>
+          <button
+            className="mode-btn print-btn"
+            onClick={() => window.print()}
+            title="Print or Save PDF Cheat Sheet"
+          >
+            <Sparkles size={16} className="text-amber-400" /> Export PDF Sheet
+          </button>
         </div>
       </header>
 
