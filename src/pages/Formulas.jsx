@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FORMULA_SHEETS } from '../data/formulaSheets';
-import { Search, Brain, HelpCircle, Play, AlertTriangle, ArrowRight, Calculator, Layers, RotateCw, CheckCircle, XCircle, Sparkles, BookOpen, RefreshCw } from 'lucide-react';
+import { Search, Brain, HelpCircle, Play, AlertTriangle, ArrowRight, Calculator, Layers, RotateCw, CheckCircle, XCircle, Sparkles, BookOpen, RefreshCw, Volume2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import MathRenderer from '../components/MathRenderer';
 import './Formulas.css';
@@ -354,10 +354,25 @@ export default function Formulas() {
                 </button>
 
                 <button
+                  className="btn btn-secondary fc-nav-btn"
+                  onClick={() => {
+                    if (!window.speechSynthesis || !currentFlashcard) return;
+                    window.speechSynthesis.cancel();
+                    const text = `${currentFlashcard.name}. ${currentFlashcard.readable}. ${currentFlashcard.common_trap ? 'Common trap: ' + currentFlashcard.common_trap : ''}`;
+                    const u = new SpeechSynthesisUtterance(text);
+                    u.rate = 0.95;
+                    window.speechSynthesis.speak(u);
+                  }}
+                  title="Listen to formula pronunciation"
+                >
+                  <Volume2 size={16} /> Listen
+                </button>
+
+                <button
                   className={`btn ${masteredIds.includes(currentFlashcard.id) ? 'btn-success' : 'btn-primary'} fc-master-btn`}
                   onClick={() => toggleMastered(currentFlashcard.id)}
                 >
-                  {masteredIds.includes(currentFlashcard.id) ? '✅ Mark as Mastered' : '⭐ Mark as Mastered'}
+                  {masteredIds.includes(currentFlashcard.id) ? '✅ Mastered' : '⭐ Mark as Mastered'}
                 </button>
 
                 <button className="btn btn-secondary fc-nav-btn" onClick={handleNextFlashcard}>
