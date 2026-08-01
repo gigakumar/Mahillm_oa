@@ -1,0 +1,11 @@
+/* ================================================
+   GATE 2026 6-MONTH ROADMAP — CSS
+   ================================================ */
+
+.gate-roadmap-card {
+  backdrop-filter: blur(16px);
+}
+
+.roadmap-phase-box:hover {
+  transform: translateY(-2px);
+}

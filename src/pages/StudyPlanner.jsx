@@ -12,6 +12,7 @@ import ReviewTasks from '../components/planner/ReviewTasks';
 import AnalyticsDashboard from '../components/planner/AnalyticsDashboard';
 import GamificationPanel from '../components/planner/GamificationPanel';
 import EmptyState from '../components/planner/EmptyState';
+import GateScheduleRoadmap from '../components/planner/GateScheduleRoadmap';
 
 import './StudyPlanner.css';
 
@@ -111,6 +112,10 @@ export default function StudyPlanner() {
 
       <motion.div variants={itemVariants}>
         <AnalyticsDashboard />
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <GateScheduleRoadmap />
       </motion.div>
 
       <div className="planner-main-grid">
