@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import HeaderBar from './HeaderBar';
+import QuickNotesModal from './QuickNotesModal';
 import './Layout.css';
 
 export default function Layout({ children }) {
@@ -21,6 +22,9 @@ export default function Layout({ children }) {
           {children}
         </main>
       </div>
+
+      {/* Global Floating Quick Notes Scratchpad */}
+      <QuickNotesModal />
     </div>
   );
 }

@@ -18,7 +18,8 @@ import {
   Award,
   Bookmark,
   Activity,
-  Mic
+  Mic,
+  Target
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -41,6 +42,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
     { path: '/tests', label: 'Tests', icon: ClipboardCheck },
     { path: '/oa-practice', label: 'Practice & PYQs', icon: Sparkles },
     { path: '/mistakes', label: 'Notebooks', icon: BookMarked },
+    { path: '/syllabus', label: 'GATE Syllabus', icon: Target },
     { path: '/formulas', label: 'Formula Revision', icon: Layers },
     { path: '/readiness', label: 'Readiness Radar', icon: Activity },
     { path: '/mock-interview', label: 'AI Mock Interview', icon: Mic },
