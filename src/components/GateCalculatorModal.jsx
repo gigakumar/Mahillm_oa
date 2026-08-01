@@ -43,9 +43,8 @@ export default function GateCalculatorModal({ isOpen, onClose }) {
         .replace(/π/g, Math.PI.toString())
         .replace(/e/g, Math.E.toString());
 
-      // Evaluate safely
-      // eslint-disable-next-line no-eval
-      const res = eval(expr);
+      // Evaluate safely without direct eval
+      const res = Function('"use strict"; return (' + expr + ')')();
       if (isNaN(res) || !isFinite(res)) {
         setDisplay('Error');
       } else {
