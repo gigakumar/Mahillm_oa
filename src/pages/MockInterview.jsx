@@ -3,7 +3,14 @@ import { Mic, Square, Sparkles, Volume2, VolumeX, MessageSquare, RefreshCw, Send
 import { AIInterviewerService } from '../utils/aiInterviewerService';
 import './MockInterview.css';
 
-const INTERVIEW_TOPICS = ['Thermodynamics', 'Fluid Mechanics', 'Strength of Materials', 'Behavioral & HR'];
+const INTERVIEW_TOPICS = [
+  'Thermodynamics & Thermal Power',
+  'Strength of Materials & Machine Design',
+  'Fluid Mechanics & Turbo-Machinery',
+  'Manufacturing & Material Science',
+  'Heat & Mass Transfer',
+  'PSU & General Technical HR'
+];
 
 export default function MockInterview() {
   const [topic, setTopic] = useState('');
