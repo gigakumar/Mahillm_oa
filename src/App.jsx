@@ -32,6 +32,7 @@ import StudyPlanner from './pages/StudyPlanner';
 import GatePredictor from './pages/GatePredictor';
 import PeerDuel from './pages/PeerDuel';
 import ComponentInspector from './pages/ComponentInspector';
+import Formulas from './pages/Formulas';
 
 
 import ErrorBoundary from './components/ErrorBoundary';
@@ -143,6 +144,14 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <StudyPlanner />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/formulas" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Formulas />
                     </Layout>
                   </ProtectedRoute>
                 } />

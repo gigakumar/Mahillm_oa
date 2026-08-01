@@ -1,17 +1,27 @@
 import React, { useState } from 'react';
 import { FORMULA_SHEETS } from '../data/formulaSheets';
-import { Search, Brain, HelpCircle, Play, AlertTriangle, ArrowRight, Calculator } from 'lucide-react';
+import { Search, Brain, HelpCircle, Play, AlertTriangle, ArrowRight, Calculator, Layers, RotateCw, CheckCircle, XCircle, Sparkles, BookOpen, RefreshCw } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import MathRenderer from '../components/MathRenderer';
 import './Formulas.css';
 
-const SUBJECTS = ['All', 'Thermodynamics', 'Strength of Materials', 'Quantitative Aptitude'];
+const SUBJECTS = ['All', 'Thermodynamics', 'Strength of Materials', 'Fluid Mechanics', 'Heat Transfer', 'Quantitative Aptitude'];
 
 export default function Formulas() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [subjectFilter, setSubjectFilter] = useState('All');
-  
+  const [viewMode, setViewMode] = useState('sheet'); // 'sheet' | 'flashcard'
+
+  // Flashcard mode states
+  const [flashcardIdx, setFlashcardIdx] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [masteredIds, setMasteredIds] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('mastered_formulas') || '[]');
+    } catch { return []; }
+  });
+
   // Calculator states
   const [activeCalculator, setActiveCalculator] = useState(null); // formula ID
   const [calcValues, setCalcValues] = useState({});
@@ -20,13 +30,43 @@ export default function Formulas() {
     setCalcValues(prev => ({ ...prev, [field]: val }));
   };
 
+  const toggleMastered = (id) => {
+    setMasteredIds(prev => {
+      const next = prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id];
+      localStorage.setItem('mastered_formulas', JSON.stringify(next));
+      return next;
+    });
+  };
+
+  // Filtered formulas
+  const filteredFormulas = FORMULA_SHEETS.filter(item => {
+    const matchesSubject = subjectFilter === 'All' || item.subject === subjectFilter;
+    const matchesSearch = searchQuery.trim() === '' ||
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.readable.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.subject && item.subject.toLowerCase().includes(searchQuery.toLowerCase()));
+    return matchesSubject && matchesSearch;
+  });
+
+  const currentFlashcard = filteredFormulas[flashcardIdx % Math.max(1, filteredFormulas.length)];
+
+  const handleNextFlashcard = () => {
+    setIsFlipped(false);
+    setFlashcardIdx(prev => (prev + 1) % Math.max(1, filteredFormulas.length));
+  };
+
+  const handlePrevFlashcard = () => {
+    setIsFlipped(false);
+    setFlashcardIdx(prev => (prev - 1 + filteredFormulas.length) % Math.max(1, filteredFormulas.length));
+  };
+
   const calculateResult = (formulaId) => {
     try {
       if (formulaId === 'thermo_first_law') {
         const dQ = parseFloat(calcValues.dQ);
         const dU = parseFloat(calcValues.dU);
         const dW = parseFloat(calcValues.dW);
-        
+
         let count = 0;
         if (!isNaN(dQ)) count++;
         if (!isNaN(dU)) count++;
@@ -38,14 +78,14 @@ export default function Formulas() {
         if (isNaN(dW)) return `dW = ${(dQ - dU).toFixed(2)} J`;
         return `All values provided: dQ = dU + dW is ${dQ === dU + dW ? 'Balanced ✅' : 'Unbalanced ❌'}`;
       }
-      
+
       if (formulaId === 'thermo_polytropic_work') {
         const p1 = parseFloat(calcValues.p1);
         const v1 = parseFloat(calcValues.v1);
         const p2 = parseFloat(calcValues.p2);
         const v2 = parseFloat(calcValues.v2);
         const n = parseFloat(calcValues.n);
-        
+
         if (isNaN(p1) || isNaN(v1) || isNaN(p2) || isNaN(v2) || isNaN(n)) {
           return 'Enter all values.';
         }
@@ -98,250 +138,307 @@ export default function Formulas() {
   const renderCalculator = (formulaId) => {
     if (formulaId === 'thermo_first_law') {
       return (
-        <div className="calculator-inputs">
-          <div className="input-group">
-            <label>dQ (Heat, J)</label>
-            <input type="number" placeholder="Leave empty to solve" value={calcValues.dQ || ''} onChange={e => handleInputChange('dQ', e.target.value)} />
+        <div className="calc-panel">
+          <h4>Interactive First Law Solver</h4>
+          <div className="calc-grid">
+            <div className="calc-field">
+              <label>Heat (dQ in J)</label>
+              <input type="number" placeholder="e.g. 500" value={calcValues.dQ || ''} onChange={e => handleInputChange('dQ', e.target.value)} />
+            </div>
+            <div className="calc-field">
+              <label>Internal Energy (dU in J)</label>
+              <input type="number" placeholder="e.g. 200" value={calcValues.dU || ''} onChange={e => handleInputChange('dU', e.target.value)} />
+            </div>
+            <div className="calc-field">
+              <label>Work (dW in J)</label>
+              <input type="number" placeholder="Leave blank if target" value={calcValues.dW || ''} onChange={e => handleInputChange('dW', e.target.value)} />
+            </div>
           </div>
-          <div className="input-group">
-            <label>dU (Int Energy, J)</label>
-            <input type="number" placeholder="Leave empty to solve" value={calcValues.dU || ''} onChange={e => handleInputChange('dU', e.target.value)} />
-          </div>
-          <div className="input-group">
-            <label>dW (Work, J)</label>
-            <input type="number" placeholder="Leave empty to solve" value={calcValues.dW || ''} onChange={e => handleInputChange('dW', e.target.value)} />
-          </div>
+          <div className="calc-result">{calculateResult(formulaId)}</div>
         </div>
       );
     }
+
     if (formulaId === 'thermo_polytropic_work') {
       return (
-        <div className="calculator-inputs">
-          <div className="input-group"><label>P1 (Pa)</label><input type="number" value={calcValues.p1 || ''} onChange={e => handleInputChange('p1', e.target.value)} /></div>
-          <div className="input-group"><label>V1 (m³)</label><input type="number" step="0.001" value={calcValues.v1 || ''} onChange={e => handleInputChange('v1', e.target.value)} /></div>
-          <div className="input-group"><label>P2 (Pa)</label><input type="number" value={calcValues.p2 || ''} onChange={e => handleInputChange('p2', e.target.value)} /></div>
-          <div className="input-group"><label>V2 (m³)</label><input type="number" step="0.001" value={calcValues.v2 || ''} onChange={e => handleInputChange('v2', e.target.value)} /></div>
-          <div className="input-group"><label>n (Index)</label><input type="number" step="0.1" value={calcValues.n || '1.4'} onChange={e => handleInputChange('n', e.target.value)} /></div>
+        <div className="calc-panel">
+          <h4>Polytropic Work Calculator</h4>
+          <div className="calc-grid">
+            <div className="calc-field"><label>P1 (Pa)</label><input type="number" value={calcValues.p1 || ''} onChange={e => handleInputChange('p1', e.target.value)} /></div>
+            <div className="calc-field"><label>V1 (m³)</label><input type="number" value={calcValues.v1 || ''} onChange={e => handleInputChange('v1', e.target.value)} /></div>
+            <div className="calc-field"><label>P2 (Pa)</label><input type="number" value={calcValues.p2 || ''} onChange={e => handleInputChange('p2', e.target.value)} /></div>
+            <div className="calc-field"><label>V2 (m³)</label><input type="number" value={calcValues.v2 || ''} onChange={e => handleInputChange('v2', e.target.value)} /></div>
+            <div className="calc-field"><label>Index (n)</label><input type="number" step="0.1" placeholder="e.g. 1.3" value={calcValues.n || ''} onChange={e => handleInputChange('n', e.target.value)} /></div>
+          </div>
+          <div className="calc-result">{calculateResult(formulaId)}</div>
         </div>
       );
     }
+
     if (formulaId === 'som_axial_deformation') {
       return (
-        <div className="calculator-inputs">
-          <div className="input-group"><label>Load P (N)</label><input type="number" value={calcValues.p || ''} onChange={e => handleInputChange('p', e.target.value)} /></div>
-          <div className="input-group"><label>Length L (m)</label><input type="number" value={calcValues.l || ''} onChange={e => handleInputChange('l', e.target.value)} /></div>
-          <div className="input-group"><label>Area A (m²)</label><input type="number" step="0.0001" value={calcValues.a || ''} onChange={e => handleInputChange('a', e.target.value)} /></div>
-          <div className="input-group"><label>Modulus E (Pa)</label><input type="number" value={calcValues.e || '2e11'} onChange={e => handleInputChange('e', e.target.value)} /></div>
+        <div className="calc-panel">
+          <h4>Axial Deformation Calculator</h4>
+          <div className="calc-grid">
+            <div className="calc-field"><label>Load P (N)</label><input type="number" value={calcValues.p || ''} onChange={e => handleInputChange('p', e.target.value)} /></div>
+            <div className="calc-field"><label>Length L (m)</label><input type="number" value={calcValues.l || ''} onChange={e => handleInputChange('l', e.target.value)} /></div>
+            <div className="calc-field"><label>Area A (m²)</label><input type="number" value={calcValues.a || ''} onChange={e => handleInputChange('a', e.target.value)} /></div>
+            <div className="calc-field"><label>Modulus E (Pa)</label><input type="number" value={calcValues.e || ''} onChange={e => handleInputChange('e', e.target.value)} /></div>
+          </div>
+          <div className="calc-result">{calculateResult(formulaId)}</div>
         </div>
       );
     }
+
     if (formulaId === 'quant_successive_profit_loss') {
       return (
-        <div className="calculator-inputs">
-          <div className="input-group">
-            <label>Change x (%)</label>
-            <input type="number" value={calcValues.x || ''} onChange={e => handleInputChange('x', e.target.value)} />
+        <div className="calc-panel">
+          <h4>Net Loss Solver</h4>
+          <div className="calc-grid">
+            <div className="calc-field"><label>Common % (x)</label><input type="number" placeholder="e.g. 20" value={calcValues.x || ''} onChange={e => handleInputChange('x', e.target.value)} /></div>
           </div>
+          <div className="calc-result">{calculateResult(formulaId)}</div>
         </div>
       );
     }
+
     if (formulaId === 'quant_classical_probability') {
       return (
-        <div className="calculator-inputs">
-          <div className="input-group"><label>Favorable N(A)</label><input type="number" value={calcValues.na || ''} onChange={e => handleInputChange('na', e.target.value)} /></div>
-          <div className="input-group"><label>Total N(S)</label><input type="number" value={calcValues.ns || ''} onChange={e => handleInputChange('ns', e.target.value)} /></div>
+        <div className="calc-panel">
+          <h4>Probability Calculator</h4>
+          <div className="calc-grid">
+            <div className="calc-field"><label>Favorable N(A)</label><input type="number" value={calcValues.na || ''} onChange={e => handleInputChange('na', e.target.value)} /></div>
+            <div className="calc-field"><label>Total Sample N(S)</label><input type="number" value={calcValues.ns || ''} onChange={e => handleInputChange('ns', e.target.value)} /></div>
+          </div>
+          <div className="calc-result">{calculateResult(formulaId)}</div>
         </div>
       );
     }
+
     return null;
-  };
-
-  // Filter formulas
-  const filteredFormulas = FORMULA_SHEETS.filter(item => {
-    // Subject filter
-    if (subjectFilter !== 'All' && item.subject !== subjectFilter) return false;
-
-    // Search query
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase();
-      const matchName = item.name.toLowerCase().includes(q);
-      const matchFormula = item.formula.toLowerCase().includes(q);
-      const matchSubject = item.subject.toLowerCase().includes(q);
-      return matchName || matchFormula || matchSubject;
-    }
-
-    return true;
-  });
-
-  const handlePracticeFormula = (formula) => {
-    if (!formula.linkedQuestions || formula.linkedQuestions.length === 0) return;
-
-    // Resolve category of the linked questions to set up the config distribution
-    let category = "Mechanical Engineering";
-    if (formula.subject === "Quantitative Aptitude") {
-      category = "Quantitative Aptitude";
-    }
-
-    localStorage.setItem('current_test_config', JSON.stringify({
-      name: `Formula Practice: ${formula.name}`,
-      duration: Math.max(5, formula.linkedQuestions.length * 2), // 2 mins per question
-      difficulty: 'all',
-      negativeMarking: false,
-      distribution: { [category]: 100 },
-      count: formula.linkedQuestions.length,
-      overrideQuestionIds: formula.linkedQuestions // pass explicitly
-    }));
-
-    localStorage.removeItem('current_test_session');
-    navigate(`/tests/session`);
   };
 
   return (
     <div className="page-content formulas-page">
-      <h1>Formula Revision Sheets 📋</h1>
-      <p className="practice-subtitle" style={{ marginBottom: '2rem' }}>
-        Review core engineering and aptitude equations. Access prerequisites, common traps, and linked practice questions.
-      </p>
+      <header className="formulas-header">
+        <div>
+          <h1>Formula Revision & Memory Hub 📐</h1>
+          <p className="formulas-subtitle">
+            Master essential Mechanical Engineering & Aptitude equations, test your memory with interactive flashcards, and run live calculations.
+          </p>
+        </div>
+
+        {/* View Mode Switcher */}
+        <div className="mode-switcher">
+          <button
+            className={`mode-btn ${viewMode === 'sheet' ? 'active' : ''}`}
+            onClick={() => setViewMode('sheet')}
+          >
+            <BookOpen size={16} /> Formula Sheets
+          </button>
+          <button
+            className={`mode-btn ${viewMode === 'flashcard' ? 'active' : ''}`}
+            onClick={() => setViewMode('flashcard')}
+          >
+            <Layers size={16} /> Flashcard Deck ({masteredIds.length}/{FORMULA_SHEETS.length})
+          </button>
+        </div>
+      </header>
 
       {/* Filter and Search Bar */}
-      <div className="card" style={{ padding: '1.25rem', marginBottom: '2rem', display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
-        <div style={{ position: 'relative', flexGrow: 1, maxWidth: '400px' }}>
-          <Search size={16} style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} />
+      <div className="formulas-controls card">
+        <div className="search-box">
+          <Search size={18} className="search-icon" />
           <input
             type="text"
-            className="form-input"
-            style={{ paddingLeft: '2.2rem', margin: 0, height: '38px' }}
-            placeholder="Search equations, symbols, subjects..."
+            placeholder="Search equations, concepts, or variables..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
-        <div className="filter-pills" style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-          {SUBJECTS.map(s => (
+        <div className="subject-pills">
+          {SUBJECTS.map(subj => (
             <button
-              key={s}
-              className={`pill ${subjectFilter === s ? 'active' : ''}`}
-              onClick={() => setSubjectFilter(s)}
-              style={{ fontSize: '0.85rem', padding: '0.4rem 0.8rem' }}
+              key={subj}
+              className={`pill ${subjectFilter === subj ? 'active' : ''}`}
+              onClick={() => { setSubjectFilter(subj); setFlashcardIdx(0); }}
             >
-              {s}
+              {subj}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Formulas Grid */}
-      {filteredFormulas.length === 0 ? (
-        <div className="card text-center" style={{ padding: '4rem 2rem' }}>
-          <HelpCircle size={48} style={{ color: 'var(--text-secondary)', marginBottom: '1rem', opacity: 0.5 }} />
-          <h3>No equations found</h3>
-          <p style={{ color: 'var(--text-secondary)' }}>Try adjusting your filters or search query.</p>
-        </div>
-      ) : (
-        <div className="formulas-grid">
-          {filteredFormulas.map((item) => {
-            const classSubject = item.subject.toLowerCase().replace(/\s+/g, '-');
-            const hasQuestions = item.linkedQuestions && item.linkedQuestions.length > 0;
-            const solvable = ['thermo_first_law', 'thermo_polytropic_work', 'som_axial_deformation', 'quant_successive_profit_loss', 'quant_classical_probability'].includes(item.id);
-
-            return (
-              <div key={item.id} className={`card formula-card ${classSubject}`}>
-                <div className="formula-card-header">
-                  <span className="formula-card-title">{item.name}</span>
-                  <span className="badge badge-accent" style={{ fontSize: '0.75rem' }}>{item.subject}</span>
+      {/* FLASHCARD MODE */}
+      {viewMode === 'flashcard' && (
+        <div className="flashcard-container">
+          {filteredFormulas.length === 0 ? (
+            <div className="card empty-flashcard">
+              <p>No formulas matched your search/filter.</p>
+            </div>
+          ) : (
+            <div className="flashcard-deck">
+              <div className="flashcard-progress-bar">
+                <span>Card {flashcardIdx + 1} of {filteredFormulas.length}</span>
+                <div className="fc-track">
+                  <div className="fc-fill" style={{ width: `${((flashcardIdx + 1) / filteredFormulas.length) * 100}%` }} />
                 </div>
+                <span className="fc-mastered-tag">
+                  {masteredIds.includes(currentFlashcard.id) ? '✅ Mastered' : '⏳ Learning'}
+                </span>
+              </div>
 
-                {/* Math layout display */}
-                <div className="formula-math-display">
-                  <MathRenderer formula={item.formula} />
-                  {item.readable && (
-                    <div className="formula-readable-subtitle">
-                      {item.readable}
+              {/* Interactive 3D Flip Card */}
+              <div
+                className={`flashcard-scene ${isFlipped ? 'flipped' : ''}`}
+                onClick={() => setIsFlipped(!isFlipped)}
+              >
+                <div className="flashcard-card">
+                  {/* Card Front */}
+                  <div className="flashcard-face flashcard-front card">
+                    <span className="fc-subject-badge">{currentFlashcard.subject}</span>
+                    <h2 className="fc-title">{currentFlashcard.name}</h2>
+                    <p className="fc-instruction">Click card to reveal formula & variables 🔄</p>
+
+                    <div className="fc-variables-preview">
+                      <strong>Variables involved:</strong>
+                      <ul>
+                        {currentFlashcard.variables.map((v, i) => (
+                          <li key={i}>{v}</li>
+                        ))}
+                      </ul>
                     </div>
-                  )}
-                </div>
 
-                <div className="formula-details-list">
-                  <div>
-                    <span className="formula-details-heading">Variables</span>
-                    <div className="formula-variables-grid">
-                      {item.variables.map((v, idx) => (
-                        <div key={idx} style={{ color: 'var(--text-secondary)' }}>
-                          • <MathRenderer text={v} inline />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <span className="formula-details-heading">SI Units</span>
-                    <div className="formula-variables-grid" style={{ color: 'var(--text-secondary)' }}>
-                      {item.units.map((u, idx) => (
-                        <div key={idx}>• {u}</div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div>
-                    <span className="formula-details-heading">Prerequisites / Conditions</span>
-                    <p style={{ margin: 0, color: 'var(--text-primary)', fontSize: '0.85rem' }}>{item.conditions}</p>
-                  </div>
-
-                  {item.common_trap && (
-                    <div className="formula-trap-box">
-                      <div style={{ display: 'flex', gap: '0.25rem', alignItems: 'center', fontWeight: 'bold', fontSize: '0.8rem', marginBottom: '0.25rem' }}>
-                        <AlertTriangle size={12} /> Common Trap
+                    {currentFlashcard.common_trap && (
+                      <div className="fc-trap-box">
+                        <AlertTriangle size={14} />
+                        <span><strong>Common Trap:</strong> {currentFlashcard.common_trap}</span>
                       </div>
-                      {item.common_trap}
+                    )}
+                  </div>
+
+                  {/* Card Back */}
+                  <div className="flashcard-face flashcard-back card">
+                    <span className="fc-subject-badge">{currentFlashcard.subject}</span>
+                    <h3 className="fc-back-title">{currentFlashcard.name}</h3>
+
+                    <div className="fc-formula-box">
+                      <MathRenderer math={currentFlashcard.formula || currentFlashcard.readable} />
                     </div>
-                  )}
 
-                  {/* Sandbox Calculator Option */}
-                  {solvable && (
-                    <div className="calculator-section">
-                      <button 
-                        className="btn btn-ghost calculator-toggle-btn"
-                        onClick={() => {
-                          if (activeCalculator === item.id) {
-                            setActiveCalculator(null);
-                          } else {
-                            setActiveCalculator(item.id);
-                            setCalcValues({});
-                          }
-                        }}
-                      >
-                        <Calculator size={14} />
-                        {activeCalculator === item.id ? 'Close Sandbox Calculator' : 'Open Sandbox Calculator'}
-                      </button>
-
-                      {activeCalculator === item.id && (
-                        <div className="calculator-panel">
-                          {renderCalculator(item.id)}
-                          <div className="calculator-result-box">
-                            <strong>Result:</strong> {calculateResult(item.id)}
-                          </div>
-                        </div>
+                    <div className="fc-details">
+                      {currentFlashcard.conditions && (
+                        <p className="fc-conditions"><strong>Conditions:</strong> {currentFlashcard.conditions}</p>
                       )}
                     </div>
-                  )}
-                </div>
 
-                {hasQuestions ? (
-                  <button 
-                    className="formula-practice-btn"
-                    onClick={() => handlePracticeFormula(item)}
-                  >
-                    <Play size={12} fill="currentColor" /> Practice this formula ({item.linkedQuestions.length} Q)
-                  </button>
-                ) : (
-                  <span className="text-secondary" style={{ fontSize: '0.8rem', fontStyle: 'italic', marginTop: 'auto' }}>
-                    No linked questions in core pack
-                  </span>
-                )}
+                    <button className="fc-flip-again" onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}>
+                      <RotateCw size={14} /> Flip Back
+                    </button>
+                  </div>
+                </div>
               </div>
-            );
-          })}
+
+              {/* Controls */}
+              <div className="flashcard-actions">
+                <button className="btn btn-secondary fc-nav-btn" onClick={handlePrevFlashcard}>
+                  ← Previous
+                </button>
+
+                <button
+                  className={`btn ${masteredIds.includes(currentFlashcard.id) ? 'btn-success' : 'btn-primary'} fc-master-btn`}
+                  onClick={() => toggleMastered(currentFlashcard.id)}
+                >
+                  {masteredIds.includes(currentFlashcard.id) ? '✅ Mark as Mastered' : '⭐ Mark as Mastered'}
+                </button>
+
+                <button className="btn btn-secondary fc-nav-btn" onClick={handleNextFlashcard}>
+                  Next →
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* FORMULA SHEETS MODE */}
+      {viewMode === 'sheet' && (
+        <div className="formulas-grid">
+          {filteredFormulas.map(item => (
+            <div key={item.id} className="formula-card card">
+              <div className="formula-card-header">
+                <div>
+                  <span className="formula-subject-badge">{item.subject}</span>
+                  <h3>{item.name}</h3>
+                </div>
+                <button
+                  className={`bookmark-btn ${masteredIds.includes(item.id) ? 'bookmarked' : ''}`}
+                  onClick={() => toggleMastered(item.id)}
+                  title="Mark as Mastered"
+                >
+                  <CheckCircle size={18} fill={masteredIds.includes(item.id) ? '#10b981' : 'none'} color={masteredIds.includes(item.id) ? '#10b981' : '#64748b'} />
+                </button>
+              </div>
+
+              <div className="formula-math-container">
+                <MathRenderer math={item.formula || item.readable} />
+              </div>
+
+              {item.variables && item.variables.length > 0 && (
+                <div className="formula-section">
+                  <h4>Variables</h4>
+                  <ul>
+                    {item.variables.map((v, idx) => (
+                      <li key={idx}>{v}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {item.units && item.units.length > 0 && (
+                <div className="formula-section">
+                  <h4>Units</h4>
+                  <ul>
+                    {item.units.map((u, idx) => (
+                      <li key={idx}>{u}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {item.conditions && (
+                <div className="formula-conditions">
+                  <strong>Prerequisite Conditions:</strong> {item.conditions}
+                </div>
+              )}
+
+              {item.common_trap && (
+                <div className="formula-trap">
+                  <AlertTriangle size={16} className="trap-icon" />
+                  <div>
+                    <strong>Common Trap:</strong> {item.common_trap}
+                  </div>
+                </div>
+              )}
+
+              {/* Calculator Toggle */}
+              {['thermo_first_law', 'thermo_polytropic_work', 'som_axial_deformation', 'quant_successive_profit_loss', 'quant_classical_probability'].includes(item.id) && (
+                <div className="calculator-trigger">
+                  <button
+                    className="btn btn-ghost btn-sm"
+                    onClick={() => setActiveCalculator(activeCalculator === item.id ? null : item.id)}
+                  >
+                    <Calculator size={14} />
+                    {activeCalculator === item.id ? 'Hide Calculator' : 'Run Calculation'}
+                  </button>
+                </div>
+              )}
+
+              {/* Interactive Calculator Drawer */}
+              {activeCalculator === item.id && renderCalculator(item.id)}
+            </div>
+          ))}
         </div>
       )}
     </div>

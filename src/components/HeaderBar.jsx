@@ -1,15 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  ChevronDown, 
-  Trophy, 
-  Sparkles, 
-  Menu, 
+import {
+  ChevronDown,
+  Trophy,
+  Sparkles,
+  Menu,
   X,
   User
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useScore } from '../contexts/ScoreContext';
+import CommandPalette from './CommandPalette';
 import './HeaderBar.css';
 
 export default function HeaderBar({ mobileOpen, setMobileOpen }) {
@@ -38,6 +39,9 @@ export default function HeaderBar({ mobileOpen, setMobileOpen }) {
             </div>
           </div>
         </div>
+
+        {/* Global Command Palette Trigger */}
+        <CommandPalette />
       </div>
 
       {/* Right Action Counters */}

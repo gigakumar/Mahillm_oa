@@ -16,7 +16,9 @@ import {
   Layers,
   Compass,
   Award,
-  Bookmark
+  Bookmark,
+  Activity,
+  Mic
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -39,6 +41,9 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
     { path: '/tests', label: 'Tests', icon: ClipboardCheck },
     { path: '/oa-practice', label: 'Practice & PYQs', icon: Sparkles },
     { path: '/mistakes', label: 'Notebooks', icon: BookMarked },
+    { path: '/formulas', label: 'Formula Revision', icon: Layers },
+    { path: '/readiness', label: 'Readiness Radar', icon: Activity },
+    { path: '/mock-interview', label: 'AI Mock Interview', icon: Mic },
     { path: '/duel', label: '1v1 Speed Duel', icon: Swords },
     { path: '/gate-predictor', label: 'GATE Predictor', icon: Compass },
     { path: '/planner', label: 'Study Planner', icon: Calendar },
