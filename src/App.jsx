@@ -16,6 +16,7 @@ import SessionBriefing from './pages/tests/SessionBriefing';
 import TestSession from './pages/TestSession';
 import TestResult from './pages/TestResult';
 import Mistakes from './pages/Mistakes';
+import RevisionSession from './pages/RevisionSession';
 
 import Intelligence from './pages/Intelligence';
 import ReadinessHeatmap from './pages/ReadinessHeatmap';
@@ -137,6 +138,14 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <Mistakes />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/revision" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <RevisionSession />
                     </Layout>
                   </ProtectedRoute>
                 } />
