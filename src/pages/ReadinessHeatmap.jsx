@@ -7,6 +7,7 @@ import GitHubHeatmap from '../components/GitHubHeatmap';
 import { useNavigate } from 'react-router-dom';
 import { compileLearnerState } from '../intelligence/learnerStateModel';
 import { companyProfiles } from '../config/companyProfiles';
+import ConceptKnowledgeGraph from '../components/ConceptKnowledgeGraph';
 import { 
   ChevronDown, 
   ChevronUp, 
@@ -180,7 +181,13 @@ export default function ReadinessHeatmap() {
           className={`tab-btn ${activeTab === 'heatmap' ? 'active' : ''}`}
           onClick={() => setActiveTab('heatmap')}
         >
-          <Activity size={16} /> Syllabus Mastery Map
+          <Activity size={16} /> Detailed Heatmap
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'graph' ? 'active' : ''}`}
+          onClick={() => setActiveTab('graph')}
+        >
+          <Brain size={16} /> Concept Topology Graph
         </button>
       </div>
 
@@ -189,10 +196,11 @@ export default function ReadinessHeatmap() {
           <div className="spinner" style={{ border: '4px solid var(--border)', borderTop: '4px solid var(--accent)', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite', margin: '0 auto 1rem auto' }}></div>
           <p>Analyzing question database and building telemetry model...</p>
         </div>
+      ) : activeTab === 'graph' ? (
+        <ConceptKnowledgeGraph />
       ) : activeTab === 'analytics' ? (
         <div className="analytics-tab-content" style={{ animation: 'fadeIn 0.3s ease-out' }}>
-          
-          {/* Most Wronged Topic Card (Generated from Test Hashmap & HashSet Analysis) */}
+          {/* Most Wronged Topic Card */}
           <div className="card" style={{ padding: '1.75rem', marginBottom: '1.5rem', border: '1px solid rgba(214, 48, 49, 0.3)', background: 'linear-gradient(135deg, rgba(214, 48, 49, 0.08) 0%, rgba(253, 121, 168, 0.03) 100%)', borderRadius: '16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
               <div>
