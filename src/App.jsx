@@ -38,6 +38,7 @@ import Syllabus from './pages/Syllabus';
 import CollegePredictor from './pages/CollegePredictor';
 import Bookmarks from './pages/Bookmarks';
 import ExamStrategy from './pages/ExamStrategy';
+import PyqBank from './pages/PyqBank';
 
 
 import ErrorBoundary from './components/ErrorBoundary';
@@ -197,6 +198,14 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <ExamStrategy />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/pyq-bank" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <PyqBank />
                     </Layout>
                   </ProtectedRoute>
                 } />

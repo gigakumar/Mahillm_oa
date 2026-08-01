@@ -21,7 +21,8 @@ import {
   Mic,
   Target,
   GraduationCap,
-  Clock
+  Clock,
+  BookOpen
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -43,6 +44,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
     { path: '/', label: 'Home', icon: Home },
     { path: '/tests', label: 'Tests', icon: ClipboardCheck },
     { path: '/oa-practice', label: 'Practice & PYQs', icon: Sparkles },
+    { path: '/pyq-bank', label: 'GATE PYQ Bank', icon: BookOpen },
     { path: '/bookmarks', label: 'Starred PYQs', icon: Bookmark },
     { path: '/mistakes', label: 'Notebooks', icon: BookMarked },
     { path: '/revision', label: 'Spaced Revision', icon: Brain },
