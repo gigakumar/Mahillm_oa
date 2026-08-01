@@ -36,6 +36,7 @@ import ComponentInspector from './pages/ComponentInspector';
 import Formulas from './pages/Formulas';
 import Syllabus from './pages/Syllabus';
 import CollegePredictor from './pages/CollegePredictor';
+import Bookmarks from './pages/Bookmarks';
 
 
 import ErrorBoundary from './components/ErrorBoundary';
@@ -179,6 +180,14 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <CollegePredictor />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/bookmarks" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Bookmarks />
                     </Layout>
                   </ProtectedRoute>
                 } />

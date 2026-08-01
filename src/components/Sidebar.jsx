@@ -42,6 +42,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
     { path: '/', label: 'Home', icon: Home },
     { path: '/tests', label: 'Tests', icon: ClipboardCheck },
     { path: '/oa-practice', label: 'Practice & PYQs', icon: Sparkles },
+    { path: '/bookmarks', label: 'Starred PYQs', icon: Bookmark },
     { path: '/mistakes', label: 'Notebooks', icon: BookMarked },
     { path: '/revision', label: 'Spaced Revision', icon: Brain },
     { path: '/syllabus', label: 'GATE Syllabus', icon: Target },
