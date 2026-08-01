@@ -11,6 +11,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { useScore } from '../contexts/ScoreContext';
 import CommandPalette from './CommandPalette';
+import FocusTimerModal from './FocusTimerModal';
 import './HeaderBar.css';
 
 export default function HeaderBar({ mobileOpen, setMobileOpen }) {
@@ -44,8 +45,11 @@ export default function HeaderBar({ mobileOpen, setMobileOpen }) {
         <CommandPalette />
       </div>
 
-      {/* Right Action Counters */}
+      {/* Right Action Counters & Focus Timer */}
       <div className="header-right">
+        {/* Focus Stopwatch & Pomodoro Timer */}
+        <FocusTimerModal />
+
         {/* XP / Sparkle Pill */}
         <div className="header-stat-pill xp-pill" onClick={() => navigate('/stats')} title="Experience Points (XP) earned from practice">
           <Sparkles size={16} className="pill-icon text-amber-400" />
