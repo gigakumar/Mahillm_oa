@@ -12,6 +12,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useScore } from '../contexts/ScoreContext';
 import CommandPalette from './CommandPalette';
 import FocusTimerModal from './FocusTimerModal';
+import FocusAudioPlayer from './FocusAudioPlayer';
 import './HeaderBar.css';
 
 export default function HeaderBar({ mobileOpen, setMobileOpen }) {
@@ -45,8 +46,11 @@ export default function HeaderBar({ mobileOpen, setMobileOpen }) {
         <CommandPalette />
       </div>
 
-      {/* Right Action Counters & Focus Timer */}
+      {/* Right Action Counters, Focus Timer & Audio Beats */}
       <div className="header-right">
+        {/* Ambient Study Beats Player */}
+        <FocusAudioPlayer />
+
         {/* Focus Stopwatch & Pomodoro Timer */}
         <FocusTimerModal />
 
