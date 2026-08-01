@@ -6,6 +6,7 @@ import { getDueQuestions } from '../utils/spacedRepetition';
 import { getWeakestTopics } from '../utils/adaptiveEngine';
 import { Activity, Target, Zap, Clock, BookOpen, Repeat, Brain, Code, CheckCircle2, XCircle, Award, TrendingUp } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
+import SubjectCompetencyRadar from '../components/SubjectCompetencyRadar';
 import './Stats.css';
 
 const AnimatedCounter = ({ end, duration = 1000, prefix = '', suffix = '' }) => {
@@ -163,6 +164,9 @@ export default function Stats() {
       </div>
 
       <div className="stats-dashboard-grid">
+        {/* Subject Competency Radar Chart */}
+        <SubjectCompetencyRadar masteryScores={masteryScores} />
+
         {/* Trend Graphs */}
         <div className="card chart-card">
           <h3 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><TrendingUp size={18} /> Activity Trends (Last 7 Days)</h3>
