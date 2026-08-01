@@ -1,0 +1,178 @@
+/* ================================================
+   DASHBOARD LIVE GATE COUNTDOWN & TARGET SPRINTS — CSS
+   ================================================ */
+
+.dashboard-countdown-card {
+  padding: 1.75rem 2rem;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95)) !important;
+  border: 1px solid rgba(99, 102, 241, 0.25) !important;
+  border-radius: 24px !important;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+  margin-bottom: 2rem;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(16px);
+}
+
+@media (max-width: 900px) {
+  .dashboard-countdown-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Left Countdown Box */
+.dc-countdown-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.12);
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  width: fit-content;
+}
+
+.dc-timer-grid {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.dc-timer-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 0.6rem 0.85rem;
+  min-width: 64px;
+}
+
+.dc-num {
+  font-size: 1.75rem;
+  font-weight: 800;
+  font-family: var(--font-display);
+  color: #f1f5f9;
+  line-height: 1;
+}
+
+.dc-unit-label {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: 0.05em;
+  margin-top: 4px;
+}
+
+.dc-colon {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #6366f1;
+}
+
+.dc-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+.dc-sprint-btn {
+  padding: 0.55rem 1.15rem;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+/* Right Checklist Box */
+.dc-checklist-box {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dc-checklist-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dc-pct-tag {
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+}
+
+.dc-checklist-bar {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.dc-cb-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.dc-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.dc-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.dc-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.dc-item.done {
+  color: #34d399;
+}
+
+.dc-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  color: #10b981;
+}
+
+.dc-item.done .dc-checkbox {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: #10b981;
+}

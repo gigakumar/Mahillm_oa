@@ -34,6 +34,7 @@ import {
 
 import { QuestionBankRegistry } from '../data/questionBankRegistry';
 import AIStudyCoach from '../components/AIStudyCoach';
+import DashboardCountdown from '../components/DashboardCountdown';
 import './Dashboard.css';
 
 const DIGITAL_BOOKS = [
@@ -193,6 +194,8 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-container">
+      {/* Live GATE 2026 Countdown & Daily Target Sprint Card */}
+      <DashboardCountdown />
 
       {/* TOP ROW: DAILY GOAL STEPPER CARD */}
       <div className="dashboard-daily-goal-card">
