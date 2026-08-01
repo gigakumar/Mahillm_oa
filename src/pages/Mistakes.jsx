@@ -208,15 +208,15 @@ export default function Mistakes() {
 
   return (
     <div className="page-content mistakes-page">
-      <h1>Mistake Notebook 📓</h1>
-      <p className="practice-subtitle" style={{ marginBottom: '2rem' }}>
-        Review, classify, and resolve your mistakes. Repetition cures error.
-      </p>
+      <div className="mistakes-page-header">
+        <h1>Mistake Notebook 📓</h1>
+        <p>Review, classify, and resolve your mistakes. Repetition cures error.</p>
+      </div>
 
       {totalActiveMistakes === 0 && (
-        <div className="alert-info" style={{ marginBottom: '1.5rem', padding: '1rem', background: 'var(--bg-card)', borderRadius: '8px', borderLeft: '4px solid var(--accent)' }}>
-          <strong style={{ display: 'block', marginBottom: '0.25rem' }}>No confirmed mistakes yet.</strong>
-          <span style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>Insights based on attempt patterns are visible on the <Link to="/intelligence" style={{ color: 'var(--accent)', textDecoration: 'none' }}>Intelligence</Link> page.</span>
+        <div style={{ marginBottom: '1.5rem', padding: '1rem 1.25rem', background: 'rgba(99,102,241,0.08)', borderRadius: '12px', borderLeft: '3px solid #6366f1' }}>
+          <strong style={{ display: 'block', marginBottom: '0.25rem', color: '#a5b4fc' }}>No confirmed mistakes yet.</strong>
+          <span style={{ fontSize: '0.88rem', color: '#64748b' }}>Insights based on attempt patterns are visible on the <Link to="/intelligence" style={{ color: '#818cf8', textDecoration: 'none' }}>Intelligence</Link> page.</span>
         </div>
       )}
 
@@ -224,64 +224,65 @@ export default function Mistakes() {
       <div className="mistakes-stats-row">
         <div className="card mistake-stat-card">
           <span className="mistake-stat-label">Active Errors</span>
-          <span className="mistake-stat-val" style={{ color: 'var(--danger)' }}>{totalActiveMistakes}</span>
-          <span className="badge badge-danger-soft" style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem', width: 'fit-content' }}>
-            <TrendingDown size={12} style={{ marginRight: '0.25rem' }} /> Action required
+          <span className="mistake-stat-val" style={{ color: '#f87171' }}>{totalActiveMistakes}</span>
+          <span className="mistake-stat-badge danger">
+            <TrendingDown size={11} /> Action Required
           </span>
         </div>
         <div className="card mistake-stat-card">
           <span className="mistake-stat-label">Repeated Mistakes</span>
-          <span className="mistake-stat-val" style={{ color: 'var(--accent)' }}>{repeatCount}</span>
-          <span className="badge badge-accent-soft" style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem', width: 'fit-content' }}>
+          <span className="mistake-stat-val" style={{ color: '#a5b4fc' }}>{repeatCount}</span>
+          <span className="mistake-stat-badge accent">
             Incorrect ≥ 2 times
           </span>
         </div>
         <div className="card mistake-stat-card">
           <span className="mistake-stat-label">Primary Weakness</span>
-          <span className="mistake-stat-val" style={{ fontSize: '1.05rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '0.25rem' }}>
+          <span className="mistake-stat-val" style={{ fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '0.25rem' }}>
             {primaryWeakness}
           </span>
-          <span className="badge badge-secondary-soft" style={{ fontSize: '0.8rem', padding: '0.2rem 0.5rem', width: 'fit-content', marginTop: '0.25rem' }}>
-            Target for revision
+          <span className="mistake-stat-badge secondary">
+            Target for Revision
           </span>
         </div>
       </div>
 
       {/* Breakdown Block & Fingerprint Chart */}
-      <div className="card" style={{ padding: '1.25rem', marginBottom: '2rem' }}>
-        <h3 style={{ margin: '0 0 1.5rem 0', fontFamily: 'var(--font-display)', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Activity size={20} /> Your Mistake Fingerprint
-        </h3>
+      <div className="fingerprint-card card">
+        <div className="fingerprint-card-header">
+          <Activity size={20} style={{ color: '#818cf8' }} />
+          <h3>Your Mistake Fingerprint</h3>
+        </div>
         
         {fingerprintData.length > 0 ? (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem', alignItems: 'center' }}>
-            <div className="mistakes-breakdown" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+          <div className="fingerprint-grid">
+            <div className="fingerprint-legend">
               {MISTAKE_REASONS.map(r => {
                 const count = reasonStats[r.value] || 0;
                 if (count === 0) return null;
                 return (
-                  <span key={r.value} className={`badge badge-reason ${r.value}`} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.5rem 1rem', borderRadius: 'var(--radius-md)', fontSize: '0.9rem' }}>
+                  <span key={r.value} className={`fingerprint-legend-item badge-reason ${r.value}`}>
                     <span>{r.emoji}</span>
-                    <span style={{ flex: 1 }}>{r.label}</span>
-                    <strong style={{ opacity: 0.8 }}>{count}</strong>
+                    <span style={{ flex: 1, fontSize: '0.82rem' }}>{r.label}</span>
+                    <span className="fingerprint-legend-count">{count}</span>
                   </span>
                 );
               })}
             </div>
             
-            <div style={{ height: 220, width: '100%' }}>
+            <div className="fingerprint-chart-wrap">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={fingerprintData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(255,255,255,0.05)" />
                   <XAxis type="number" hide />
-                  <YAxis dataKey="shortName" type="category" axisLine={false} tickLine={false} fontSize={12} stroke="var(--text-secondary)" width={100} />
+                  <YAxis dataKey="shortName" type="category" axisLine={false} tickLine={false} fontSize={12} stroke="#64748b" width={90} />
                   <Tooltip 
-                    cursor={{fill: 'rgba(255,255,255,0.05)'}} 
-                    contentStyle={{ background: 'var(--bg-card)', border: '1px solid var(--border-color)', borderRadius: '8px' }}
+                    cursor={{fill: 'rgba(255,255,255,0.04)'}} 
+                    contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#f1f5f9' }}
                   />
-                  <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                  <Bar dataKey="count" radius={[0, 5, 5, 0]}>
                     {fingerprintData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                      <Cell key={`cell-${index}`} fill={entry.fill} fillOpacity={0.85} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -289,7 +290,11 @@ export default function Mistakes() {
             </div>
           </div>
         ) : (
-          <p style={{ color: 'var(--text-secondary)' }}>No active mistakes to fingerprint.</p>
+          <div className="mistakes-empty-state">
+            <span>🎯</span>
+            <h3>No mistake patterns yet</h3>
+            <p>Practice more questions and your mistake fingerprint will appear here.</p>
+          </div>
         )}
       </div>
 
@@ -324,22 +329,20 @@ export default function Mistakes() {
             {MISTAKE_REASONS.map(r => <option key={r.value} value={r.value}>{r.emoji} {r.label}</option>)}
           </select>
 
-          <label className="checkbox-label" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+          <label className="filter-repeated-label">
             <input 
               type="checkbox" 
               checked={repeatedOnly} 
               onChange={(e) => { setRepeatedOnly(e.target.checked); setCurrentPage(1); }}
-              style={{ accentColor: 'var(--primary)' }}
             />
             🔥 Repeated Mistakes
           </label>
 
           <button 
-            className={`btn ${!showResolved ? 'btn-ghost' : 'btn-secondary'}`}
-            style={{ padding: '0.4rem 0.8rem', fontSize: '0.85rem', marginLeft: 'auto' }}
+            className={`btn-view-resolved ${showResolved ? 'active' : ''}`}
             onClick={() => { setShowResolved(!showResolved); setCurrentPage(1); }}
           >
-            {showResolved ? 'View Active Mistakes' : 'View Resolved Mistakes'}
+            {showResolved ? '← View Active Mistakes' : 'View Resolved Mistakes →'}
           </button>
         </div>
       </div>
@@ -404,29 +407,27 @@ export default function Mistakes() {
 
                     {!m.isResolved ? (
                       <button 
-                        className="btn btn-secondary" 
-                        style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem', borderColor: 'var(--success)', color: 'var(--success)' }}
+                        className="btn-mistake-action btn-mistake-resolve"
                         onClick={() => resolveMistake(m.questionId, true)}
                       >
-                        <Check size={14} style={{ marginRight: '0.25rem' }} /> Resolve
+                        <Check size={13} /> Resolve
                       </button>
                     ) : (
                       <button 
-                        className="btn btn-ghost" 
-                        style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
+                        className="btn-mistake-action"
+                        style={{ background: 'rgba(255,255,255,0.05)', color: '#94a3b8', borderColor: 'rgba(255,255,255,0.1)' }}
                         onClick={() => resolveMistake(m.questionId, false)}
                       >
-                        <RotateCcw size={14} style={{ marginRight: '0.25rem' }} /> Re-open
+                        <RotateCcw size={13} /> Re-open
                       </button>
                     )}
 
                     {qObj && (
                       <button 
-                        className="btn btn-primary"
-                        style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
+                        className="btn-mistake-action btn-mistake-reattempt"
                         onClick={() => handlePracticeSingle(m.questionId)}
                       >
-                        Re-attempt <ArrowRight size={14} style={{ marginLeft: '0.25rem' }} />
+                        Re-attempt <ArrowRight size={13} />
                       </button>
                     )}
                   </div>
@@ -513,27 +514,25 @@ export default function Mistakes() {
       {totalPages > 1 && (
         <div className="pagination-controls">
           <button 
-            className="btn btn-ghost" 
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
           >
-            Prev
+            ← Prev
           </button>
           {[...Array(totalPages).keys()].map(page => (
             <button
               key={page + 1}
-              className={`btn ${currentPage === page + 1 ? 'btn-primary' : 'btn-ghost'}`}
+              className={currentPage === page + 1 ? 'active' : ''}
               onClick={() => setCurrentPage(page + 1)}
             >
               {page + 1}
             </button>
           ))}
           <button 
-            className="btn btn-ghost" 
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
           >
-            Next
+            Next →
           </button>
         </div>
       )}

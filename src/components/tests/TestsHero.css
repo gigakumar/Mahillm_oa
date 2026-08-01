@@ -285,3 +285,30 @@
     width: 100%;
   }
 }
+
+.trend-down {
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.trend-neutral {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.chart-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 80px;
+}
+
+.chart-empty-state p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.5;
+  opacity: 0.7;
+}
+

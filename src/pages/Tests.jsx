@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useUserData } from '../contexts/UserDataContext';
+import { useScore } from '../contexts/ScoreContext';
 import { Award, Clipboard, Plus, BarChart2 } from 'lucide-react';
 import { MOCK_TESTS } from '../data/mockSeriesConfig';
-import metadata from '../data/metadata';
 
-// New Sub-components
+// Sub-components
 import TestsHero from '../components/tests/TestsHero';
 import PerformanceCards from '../components/tests/PerformanceCards';
 import TestsQuickActions from '../components/tests/TestsQuickActions';
@@ -26,10 +26,176 @@ const PRESETS = [
 
 export default function Tests() {
   const { user } = useAuth();
-  const { testHistory = [], loading: historyLoading } = useUserData();
+  const { testHistory = [], masteryScores = {}, questionProgress = {}, loading: historyLoading } = useUserData();
+  const { scoreData } = useScore();
   const navigate = useNavigate();
-  
-  const [activeTab, setActiveTab] = useState('mocks'); // 'mocks' | 'presets' | 'custom' | 'history'
+
+  const [activeTab, setActiveTab] = useState('mocks');
+
+  // ── Derived Stats ────────────────────────────────────────────────────────
+  const stats = useMemo(() => {
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const weekAgoStr = new Date(now - 7 * 86400000).toISOString().split('T')[0];
+
+    // --- Questions solved this week (from dailyStats) ---
+    const dailyStats = scoreData?.dailyStats || {};
+    let weekQuestions = 0;
+    let weekCorrect = 0;
+    let weekStudyMs = 0;
+    Object.entries(dailyStats).forEach(([date, ds]) => {
+      if (date >= weekAgoStr) {
+        weekQuestions += ds.questions || 0;
+        weekCorrect += ds.correct || 0;
+        weekStudyMs += (ds.studyMinutes || 0) * 60000;
+      }
+    });
+
+    // --- Total study time this week (from questionProgress) ---
+    const weekProgressEntries = Object.values(questionProgress).filter(p => {
+      if (!p.updatedAt) return false;
+      const d = new Date(p.updatedAt).toISOString().split('T')[0];
+      return d >= weekAgoStr;
+    });
+    const weekQsSolvedFromProgress = weekProgressEntries.length;
+
+    // --- Total questions solved (questionProgress) ---
+    const totalQsSolved = Object.keys(questionProgress).length;
+
+    // --- Accuracy from scoreData ---
+    const accuracy = scoreData?.accuracy || 0;
+
+    // --- Last week accuracy (estimated from dailyStats) ---
+    const prevWeekStr = new Date(now - 14 * 86400000).toISOString().split('T')[0];
+    let prevWeekCorrect = 0, prevWeekQs = 0;
+    Object.entries(dailyStats).forEach(([date, ds]) => {
+      if (date >= prevWeekStr && date < weekAgoStr) {
+        prevWeekCorrect += ds.correct || 0;
+        prevWeekQs += ds.questions || 0;
+      }
+    });
+    const prevAccuracy = prevWeekQs > 0 ? Math.round((prevWeekCorrect / prevWeekQs) * 100) : accuracy;
+    const accuracyDelta = accuracy - prevAccuracy;
+
+    // --- Study time this week (sum of studyMinutes from dailyStats) ---
+    let weekStudyMinutes = 0;
+    Object.entries(dailyStats).forEach(([date, ds]) => {
+      if (date >= weekAgoStr) weekStudyMinutes += ds.studyMinutes || 0;
+    });
+    const weekStudyHrs = Math.floor(weekStudyMinutes / 60);
+    const weekStudyRemMins = Math.round(weekStudyMinutes % 60);
+
+    // --- Previous week study time ---
+    let prevWeekStudyMinutes = 0;
+    Object.entries(dailyStats).forEach(([date, ds]) => {
+      if (date >= prevWeekStr && date < weekAgoStr) prevWeekStudyMinutes += ds.studyMinutes || 0;
+    });
+    const studyTimeDelta = weekStudyMinutes - prevWeekStudyMinutes;
+    const studyDeltaHrs = Math.floor(Math.abs(studyTimeDelta) / 60);
+    const studyDeltaMins = Math.round(Math.abs(studyTimeDelta) % 60);
+
+    // --- Average time per question (fastest solve time proxy) ---
+    const avgTimeMs = scoreData?.fastestSolveTime
+      ? Math.round(scoreData.fastestSolveTime / 1000)
+      : 84; // fallback 1m 24s
+    const avgTimeMins = Math.floor(avgTimeMs / 60);
+    const avgTimeSecs = avgTimeMs % 60;
+
+    // --- Mocks completed this week ---
+    const mocksThisWeek = testHistory.filter(t => {
+      const d = t.completedAt || t.startedAt;
+      if (!d) return false;
+      const dateStr = new Date(d).toISOString().split('T')[0];
+      return dateStr >= weekAgoStr;
+    }).length;
+
+    const totalMocks = testHistory.length;
+
+    // --- Streak ---
+    const streak = scoreData?.streak || 0;
+    const longestStreak = scoreData?.longestStreak || 0;
+
+    // --- Predicted rank based on accuracy ---
+    let predictedRank = 'Top 50%';
+    if (accuracy >= 90) predictedRank = 'Top 5%';
+    else if (accuracy >= 80) predictedRank = 'Top 10%';
+    else if (accuracy >= 70) predictedRank = 'Top 18%';
+    else if (accuracy >= 60) predictedRank = 'Top 25%';
+    else if (accuracy >= 50) predictedRank = 'Top 35%';
+
+    // --- Weakest topic from masteryScores ---
+    const topicEntries = Object.entries(masteryScores)
+      .map(([key, val]) => ({
+        key,
+        name: val.topic || key.split('__')[1] || key,
+        score: val.probabilityKnown || val.score || 0,
+        attempts: val.attemptsCount || val.attempts || 0
+      }))
+      .filter(t => t.attempts >= 3);
+
+    const weakestTopic = topicEntries.sort((a, b) => a.score - b.score)[0] || null;
+    const weakestTopicName = weakestTopic
+      ? (weakestTopic.name.length > 20 ? weakestTopic.name.substring(0, 20) + '…' : weakestTopic.name)
+      : 'Heat Transfer';
+    const weakestTopicAccuracy = weakestTopic
+      ? Math.round(weakestTopic.score * 100)
+      : null;
+
+    // --- Consistency score (based on days active this week vs 7) ---
+    const activeDays = new Set(
+      Object.keys(dailyStats).filter(d => d >= weekAgoStr && (dailyStats[d].questions || 0) > 0)
+    ).size;
+    const consistencyScore = Math.round((activeDays / 7) * 100);
+
+    // --- Last mock for hero ---
+    const sortedMocks = [...testHistory].sort((a, b) => {
+      const ta = a.completedAt || a.startedAt || 0;
+      const tb = b.completedAt || b.startedAt || 0;
+      return new Date(tb) - new Date(ta);
+    });
+    const lastMock = sortedMocks[0] || null;
+
+    // --- Performance trend (last 5 mocks) ---
+    const performanceTrend = sortedMocks
+      .slice(0, 5)
+      .reverse()
+      .map((t, i) => {
+        const d = t.completedAt || t.startedAt;
+        const label = d ? new Date(d).toLocaleDateString('en-US', { day: 'numeric', month: 'short' }) : `Mock ${i + 1}`;
+        return {
+          day: label,
+          score: Math.round((t.score || t.correctCount || 0) / Math.max(1, t.totalCount || t.totalQuestions || 1) * 100)
+        };
+      });
+
+    // If no real trend data, don't show fake data - return empty array
+    return {
+      accuracy,
+      accuracyDelta,
+      prevAccuracy,
+      totalMocks,
+      mocksThisWeek,
+      streak,
+      longestStreak,
+      predictedRank,
+      weekStudyHrs,
+      weekStudyRemMins,
+      studyTimeDelta,
+      studyDeltaHrs,
+      studyDeltaMins,
+      weekQuestions,
+      weekQsSolvedFromProgress,
+      totalQsSolved,
+      avgTimeMins,
+      avgTimeSecs,
+      weakestTopicName,
+      weakestTopicAccuracy,
+      consistencyScore,
+      activeDays,
+      lastMock,
+      performanceTrend
+    };
+  }, [scoreData, testHistory, masteryScores, questionProgress]);
 
   const handleStartMock = (mock) => {
     const config = {
@@ -54,22 +220,20 @@ export default function Tests() {
 
   return (
     <div className="page-content tests-portal">
-      {/* We only show the gamified dashboard on the main 'mocks' tab */}
       {activeTab === 'mocks' ? (
         <div className="dashboard-layout">
           <div className="dashboard-main">
-            <TestsHero />
-            <PerformanceCards />
+            <TestsHero stats={stats} />
+            <PerformanceCards stats={stats} />
             <TestsQuickActions onCustomTest={handleCustomTest} />
             <MockGrid mocks={MOCK_TESTS} onStartMock={handleStartMock} />
           </div>
-          
+
           <aside className="dashboard-sidebar">
-            <TestsSidebar />
+            <TestsSidebar stats={stats} />
           </aside>
         </div>
       ) : (
-        /* Original Portal View for Presets, Custom, History */
         <>
           <header className="portal-header card" style={{ marginBottom: '1.5rem' }}>
             <div>
@@ -92,9 +256,9 @@ export default function Tests() {
               <BarChart2 size={16} /> Scorecards
             </button>
           </div>
-          
+
           <div className="portal-view card">
-             {activeTab === 'presets' && (
+            {activeTab === 'presets' && (
               <div className="presets-list">
                 <h2>Select a Test Preset ⚡</h2>
                 <div className="presets-grid" style={{ display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', marginTop: '1rem' }}>
@@ -108,7 +272,7 @@ export default function Tests() {
                 </div>
               </div>
             )}
-            
+
             {activeTab === 'custom' && (
               <div style={{ animation: 'fadeIn 0.3s ease-out' }}>
                 <CustomTestBuilder />

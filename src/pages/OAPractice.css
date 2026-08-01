@@ -1569,3 +1569,611 @@
   }
 }
 
+
+/* ========================================
+   PREMIUM OVERHAUL — Appended Enhancements
+   All rules override / extend existing ones
+   ======================================== */
+
+/* ── 1. PROGRESS ROW — Dramatic System ──── */
+.progress-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+  padding: 1rem 1.5rem;
+  background: rgba(10, 15, 35, 0.6) !important;
+  border: 1px solid rgba(139, 92, 246, 0.18) !important;
+  border-radius: 16px !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.progress-row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(99,102,241,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+/* Question counter chip */
+.progress-label {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(99,102,241,0.12) !important;
+  border: 1px solid rgba(99,102,241,0.28) !important;
+  border-radius: 999px !important;
+  padding: 0.3rem 0.85rem !important;
+  font-size: 0.78rem !important;
+  font-weight: 800 !important;
+  color: #a5b4fc !important;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  min-width: unset !important;
+  box-shadow: 0 0 10px rgba(99,102,241,0.15);
+}
+
+/* Thicker, glowing track */
+.progress-track {
+  height: 10px !important;
+  background: rgba(255,255,255,0.05) !important;
+  border-radius: 999px !important;
+  overflow: visible !important;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+}
+
+/* Glowing fill with animated shimmer */
+.progress-fill {
+  height: 100% !important;
+  border-radius: 999px !important;
+  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 55%, #c084fc 100%) !important;
+  box-shadow: 0 0 18px rgba(139, 92, 246, 0.7), 0 0 6px rgba(99,102,241,0.5) !important;
+  position: relative !important;
+  overflow: hidden;
+}
+
+.progress-fill::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 80%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  animation: progressShimmer 2.5s ease-in-out infinite;
+}
+
+.progress-fill::after {
+  width: 14px !important;
+  height: 14px !important;
+  background: #c084fc !important;
+  box-shadow: 0 0 14px #c084fc, 0 0 4px #c084fc !important;
+  border: 2px solid rgba(255,255,255,0.3);
+}
+
+@keyframes progressShimmer {
+  0%   { left: -100%; }
+  60%  { left: 120%; }
+  100% { left: 120%; }
+}
+
+/* Percentage chip — place after the track in HTML if possible */
+.progress-pct-chip {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(139,92,246,0.15);
+  border: 1px solid rgba(139,92,246,0.3);
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: #c084fc;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  box-shadow: 0 0 10px rgba(139,92,246,0.2);
+  flex-shrink: 0;
+}
+
+
+/* ── 2. QUESTION CARD — Premium Glass ────── */
+.question-card {
+  padding: 2.5rem 2.75rem !important;
+  background: rgba(12, 18, 42, 0.65) !important;
+  border: 1px solid rgba(139,92,246,0.2) !important;
+  border-radius: 28px !important;
+  backdrop-filter: blur(32px) !important;
+  -webkit-backdrop-filter: blur(32px) !important;
+  box-shadow:
+    0 24px 64px rgba(0,0,0,0.45),
+    0 0 0 1px rgba(255,255,255,0.04) inset,
+    0 1px 0 rgba(255,255,255,0.08) inset !important;
+  position: relative !important;
+  overflow: hidden !important;
+  transition: box-shadow 0.4s ease, border-color 0.4s ease !important;
+}
+
+/* Glowing top-border accent */
+.question-card::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 0; left: 0; right: 0 !important;
+  height: 2px !important;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(99,102,241,0.7) 20%,
+    rgba(139,92,246,0.9) 50%,
+    rgba(192,132,252,0.7) 80%,
+    transparent 100%) !important;
+  pointer-events: none !important;
+}
+
+/* Ambient glow on hover */
+.question-card::after {
+  content: '';
+  position: absolute;
+  bottom: -60px; right: -60px;
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%);
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  opacity: 0;
+}
+
+.question-card:hover {
+  border-color: rgba(139,92,246,0.38) !important;
+  box-shadow:
+    0 28px 72px rgba(0,0,0,0.5),
+    0 0 40px rgba(99,102,241,0.12),
+    0 0 0 1px rgba(255,255,255,0.05) inset,
+    0 1px 0 rgba(255,255,255,0.1) inset !important;
+}
+
+.question-card:hover::after {
+  opacity: 1;
+}
+
+
+/* ── 3. QUESTION META BADGES ─────────────── */
+.question-meta {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0.6rem !important;
+  margin-bottom: 2rem !important;
+  align-items: center;
+}
+
+.badge,
+[class*="badge-"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.32rem 0.9rem !important;
+  border-radius: 999px !important;
+  font-size: 0.72rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.07em !important;
+  text-transform: uppercase;
+  border: 1px solid;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
+.badge-topic,
+.badge.badge-topic {
+  background: rgba(99,102,241,0.12) !important;
+  border-color: rgba(99,102,241,0.35) !important;
+  color: #a5b4fc !important;
+  box-shadow: 0 0 14px rgba(99,102,241,0.18), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}
+
+.badge-easy,
+.badge.badge-easy {
+  background: rgba(16,185,129,0.12) !important;
+  border-color: rgba(16,185,129,0.35) !important;
+  color: #6ee7b7 !important;
+  box-shadow: 0 0 12px rgba(16,185,129,0.18) !important;
+}
+
+.badge-medium,
+.badge.badge-medium {
+  background: rgba(245,158,11,0.12) !important;
+  border-color: rgba(245,158,11,0.38) !important;
+  color: #fcd34d !important;
+  box-shadow: 0 0 12px rgba(245,158,11,0.2) !important;
+}
+
+.badge-hard,
+.badge.badge-hard {
+  background: rgba(239,68,68,0.12) !important;
+  border-color: rgba(239,68,68,0.38) !important;
+  color: #fca5a5 !important;
+  box-shadow: 0 0 12px rgba(239,68,68,0.2) !important;
+}
+
+.badge-info,
+.badge.badge-info,
+.badge-beta,
+.badge.badge-beta {
+  background: rgba(56,189,248,0.1) !important;
+  border-color: rgba(56,189,248,0.3) !important;
+  color: #7dd3fc !important;
+  box-shadow: 0 0 10px rgba(56,189,248,0.15) !important;
+}
+
+
+/* ── 4. TIMER BADGE — Floating + Dramatic ── */
+.timer-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.45rem !important;
+  padding: 0.5rem 1.1rem !important;
+  background: rgba(15, 23, 45, 0.75) !important;
+  border: 1px solid rgba(148,163,184,0.22) !important;
+  border-radius: 999px !important;
+  font-family: var(--font-display) !important;
+  font-weight: 800 !important;
+  font-size: 0.95rem !important;
+  color: #cbd5e1 !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.07) !important;
+  letter-spacing: 0.04em !important;
+  transition: all 0.35s ease !important;
+}
+
+.timer-badge.danger {
+  color: #ff6b6b !important;
+  border-color: rgba(239,68,68,0.55) !important;
+  background: rgba(239, 68, 68, 0.12) !important;
+  animation: timerPulseIntense 0.75s ease-in-out infinite !important;
+}
+
+@keyframes timerPulseIntense {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(239,68,68,0.5), 0 4px 20px rgba(239,68,68,0.2);
+    border-color: rgba(239,68,68,0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(239,68,68,0), 0 4px 28px rgba(239,68,68,0.45);
+    border-color: rgba(239,68,68,0.85);
+  }
+}
+
+@keyframes timerIconShake {
+  0%, 100% { transform: rotate(0deg); }
+  25%       { transform: rotate(-8deg) scale(1.1); }
+  75%       { transform: rotate(8deg) scale(1.1); }
+}
+
+.timer-badge.danger svg {
+  animation: timerIconShake 0.75s ease-in-out infinite;
+}
+
+
+/* ── 5. OPTION BUTTONS — Frosted Glass ───── */
+.option {
+  padding: 1.05rem 1.35rem !important;
+  background: rgba(20, 30, 60, 0.45) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 16px !important;
+  color: #dde4f0 !important;
+  font-size: 0.97rem !important;
+  transition: all 0.22s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.option:hover:not(:disabled):not(.correct):not(.incorrect) {
+  background: rgba(99, 102, 241, 0.1) !important;
+  border-color: rgba(139, 92, 246, 0.45) !important;
+  transform: translateX(5px) !important;
+  box-shadow: 0 6px 24px rgba(99,102,241,0.15), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}
+
+.option-key {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 10px !important;
+  background: rgba(255,255,255,0.07) !important;
+  border: 1px solid rgba(255,255,255,0.14) !important;
+  font-weight: 800 !important;
+  font-size: 0.8rem !important;
+  margin-right: 1.1rem !important;
+  color: #94a3b8 !important;
+  letter-spacing: 0.02em;
+  transition: all 0.22s ease !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+}
+
+.option:hover:not(:disabled):not(.correct):not(.incorrect) .option-key {
+  background: rgba(139,92,246,0.25) !important;
+  border-color: rgba(139,92,246,0.55) !important;
+  color: #c4b5fd !important;
+  box-shadow: 0 0 10px rgba(139,92,246,0.3) !important;
+}
+
+.option.selected {
+  background: rgba(99,102,241,0.13) !important;
+  border-color: rgba(99,102,241,0.55) !important;
+  box-shadow: 0 0 0 1px rgba(99,102,241,0.25), 0 6px 20px rgba(99,102,241,0.12) !important;
+}
+
+.option.selected .option-key {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+  border-color: transparent !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 12px rgba(99,102,241,0.45) !important;
+}
+
+.option.correct {
+  background: rgba(16,185,129,0.1) !important;
+  border-color: rgba(16,185,129,0.5) !important;
+  box-shadow: 0 0 0 1px rgba(16,185,129,0.2), 0 6px 20px rgba(16,185,129,0.1) !important;
+}
+
+.option.correct .option-key {
+  background: linear-gradient(135deg, #10b981, #34d399) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 0 12px rgba(16,185,129,0.4) !important;
+}
+
+.option.incorrect {
+  background: rgba(239,68,68,0.09) !important;
+  border-color: rgba(239,68,68,0.5) !important;
+  box-shadow: 0 0 0 1px rgba(239,68,68,0.2), 0 6px 20px rgba(239,68,68,0.09) !important;
+}
+
+.option.incorrect .option-key {
+  background: linear-gradient(135deg, #ef4444, #f87171) !important;
+  border-color: transparent !important;
+  color: #fff !important;
+  box-shadow: 0 0 12px rgba(239,68,68,0.4) !important;
+}
+
+
+/* ── 6. AI TUTOR BAR — Integrated Panel ──── */
+.ai-tutor-bar,
+.ai-tutor-panel,
+.tutor-bar,
+.tutor-panel {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 1.75rem;
+  padding: 0.9rem 1.35rem;
+  background: linear-gradient(135deg,
+    rgba(99,102,241,0.1) 0%,
+    rgba(139,92,246,0.08) 50%,
+    rgba(168,139,250,0.06) 100%) !important;
+  border: 1px solid rgba(139,92,246,0.25) !important;
+  border-radius: 16px !important;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 24px rgba(99,102,241,0.1), inset 0 1px 0 rgba(255,255,255,0.06) !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ai-tutor-bar::before,
+.ai-tutor-panel::before,
+.tutor-bar::before,
+.tutor-panel::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #6366f1, #8b5cf6, #c084fc);
+  border-radius: 3px 0 0 3px;
+}
+
+.ai-tutor-bar:hover,
+.ai-tutor-panel:hover,
+.tutor-bar:hover,
+.tutor-panel:hover {
+  border-color: rgba(139,92,246,0.4) !important;
+  box-shadow: 0 6px 32px rgba(99,102,241,0.18), inset 0 1px 0 rgba(255,255,255,0.08) !important;
+}
+
+.ai-tutor-icon,
+.tutor-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(99,102,241,0.3), rgba(139,92,246,0.2));
+  border: 1px solid rgba(139,92,246,0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(99,102,241,0.2);
+}
+
+.ai-tutor-text,
+.tutor-text {
+  flex: 1;
+  font-size: 0.88rem;
+  color: #a5b4fc;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.ai-tutor-cta,
+.tutor-cta {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #c084fc;
+  cursor: pointer;
+  padding: 0.35rem 0.9rem;
+  border: 1px solid rgba(192,132,252,0.3);
+  border-radius: 999px;
+  background: rgba(192,132,252,0.08);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.ai-tutor-cta:hover,
+.tutor-cta:hover {
+  background: rgba(192,132,252,0.18);
+  border-color: rgba(192,132,252,0.5);
+  box-shadow: 0 0 12px rgba(192,132,252,0.25);
+}
+
+
+/* ── 7. CHECK ANSWER — Premium CTA Button ── */
+.question-actions .btn-primary,
+.question-actions .btn.btn-primary,
+.btn-check-answer {
+  padding: 0.85rem 2.75rem !important;
+  font-size: 1rem !important;
+  font-weight: 800 !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #6366f1 0%, #7c3aed 55%, #8b5cf6 100%) !important;
+  border: none !important;
+  color: #ffffff !important;
+  cursor: pointer !important;
+  letter-spacing: 0.04em !important;
+  min-width: 180px !important;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 4px 24px rgba(99,102,241,0.4),
+    0 0 0 1px rgba(255,255,255,0.08) inset !important;
+  transition: all 0.28s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+}
+
+.question-actions .btn-primary::after,
+.question-actions .btn.btn-primary::after,
+.btn-check-answer::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; bottom: 0;
+  width: 60%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
+  pointer-events: none;
+}
+
+.question-actions .btn-primary:hover:not(:disabled)::after,
+.question-actions .btn.btn-primary:hover:not(:disabled)::after,
+.btn-check-answer:hover:not(:disabled)::after {
+  left: 140%;
+}
+
+.question-actions .btn-primary:hover:not(:disabled),
+.question-actions .btn.btn-primary:hover:not(:disabled),
+.btn-check-answer:hover:not(:disabled) {
+  transform: translateY(-3px) !important;
+  box-shadow:
+    0 8px 32px rgba(99,102,241,0.55),
+    0 2px 8px rgba(0,0,0,0.3),
+    0 0 0 1px rgba(255,255,255,0.1) inset !important;
+  filter: brightness(1.08) !important;
+}
+
+.question-actions .btn-primary:active:not(:disabled),
+.question-actions .btn.btn-primary:active:not(:disabled),
+.btn-check-answer:active:not(:disabled) {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 16px rgba(99,102,241,0.35) !important;
+}
+
+.question-actions .btn-primary:disabled,
+.question-actions .btn.btn-primary:disabled,
+.btn-check-answer:disabled {
+  opacity: 0.38 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+  filter: grayscale(0.3) !important;
+}
+
+
+/* ── 8. VERTICAL RHYTHM & SPACING ────────── */
+.question-text {
+  font-size: 1.2rem !important;
+  line-height: 1.8 !important;
+  margin-bottom: 2.25rem !important;
+  font-weight: 500 !important;
+  color: #edf2f7 !important;
+  letter-spacing: 0.012em !important;
+}
+
+.options {
+  gap: 0.75rem !important;
+  margin-bottom: 2.25rem !important;
+}
+
+.question-header-row {
+  margin-bottom: 2rem !important;
+}
+
+.question-actions {
+  padding-top: 1.75rem !important;
+  border-top: 1px solid rgba(255,255,255,0.07) !important;
+}
+
+.explanation {
+  padding: 1.35rem 1.6rem !important;
+  background: rgba(99,102,241,0.07) !important;
+  border-left: 3px solid rgba(99,102,241,0.6) !important;
+  border-radius: 0 16px 16px 0 !important;
+  margin-bottom: 1.75rem !important;
+  font-size: 0.92rem !important;
+  line-height: 1.75 !important;
+  color: #cbd5e1 !important;
+}
+
+
+/* ── 9. PRACTICE HEADER POLISH ───────────── */
+.practice-header {
+  padding: 1.6rem 2.25rem !important;
+  background: rgba(10, 15, 38, 0.6) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  border-radius: 22px !important;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+  margin-bottom: 2.25rem !important;
+}
+
+.practice-header h1 {
+  font-size: 1.85rem !important;
+  background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 60%, #a5b4fc 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+
+/* ── 10. BOOKMARK BUTTON POLISH ──────────── */
+.bookmark-btn {
+  width: 40px !important;
+  height: 40px !important;
+  border-radius: 12px !important;
+  background: rgba(20, 30, 60, 0.5) !important;
+  border: 1px solid rgba(255,255,255,0.09) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05) !important;
+  transition: all 0.22s ease !important;
+}
+
+.bookmark-btn:hover {
+  background: rgba(245,158,11,0.14) !important;
+  border-color: rgba(245,158,11,0.38) !important;
+  color: #fbbf24 !important;
+  box-shadow: 0 0 14px rgba(245,158,11,0.25) !important;
+  transform: scale(1.08) !important;
+}
+
+.bookmark-btn.bookmarked {
+  color: #f59e0b !important;
+  background: rgba(245,158,11,0.13) !important;
+  border-color: rgba(245,158,11,0.35) !important;
+  box-shadow: 0 0 12px rgba(245,158,11,0.2) !important;
+}

@@ -1,134 +1,368 @@
+/* Gamification Panel */
 .gamification-container {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  gap: 1.25rem;
 }
 
+/* Level card */
 .level-card {
-  padding: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 1.25rem;
+  position: relative;
 }
 
 .level-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 1rem;
 }
 
 .l-left {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.85rem;
 }
 
 .level-badge {
-  width: 48px;
-  height: 48px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(250, 204, 21, 0.2), rgba(234, 179, 8, 0.1));
-  border: 1px solid rgba(250, 204, 21, 0.3);
+  background: rgba(234, 179, 8, 0.15);
+  border: 1px solid rgba(234, 179, 8, 0.3);
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 20px rgba(234, 179, 8, 0.2);
+  flex-shrink: 0;
 }
 
 .l-left h3 {
-  margin: 0 0 0.25rem 0;
-  font-size: 1.15rem;
+  margin: 0;
+  font-size: 1rem;
   font-weight: 700;
-  color: #f8fafc;
+  color: #f1f5f9;
 }
 
 .l-left p {
-  margin: 0;
-  font-size: 0.85rem;
-  color: #94a3b8;
+  margin: 2px 0 0;
+  font-size: 0.75rem;
+  color: #64748b;
 }
 
 .total-xp {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: 800;
-  color: #fcd34d;
-  background: rgba(252, 211, 77, 0.1);
-  padding: 0.4rem 0.85rem;
-  border-radius: 0.75rem;
-  border: 1px solid rgba(252, 211, 77, 0.2);
+  color: #fbbf24;
+  background: rgba(234,179,8,0.1);
+  border: 1px solid rgba(234,179,8,0.2);
+  padding: 0.25rem 0.65rem;
+  border-radius: 8px;
 }
 
 .xp-bar-wrapper {
-  width: 100%;
+  margin-top: 0.25rem;
 }
 
 .xp-bar-bg {
-  width: 100%;
+  background: rgba(255,255,255,0.07);
+  border-radius: 6px;
   height: 8px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 9999px;
   overflow: hidden;
 }
 
 .xp-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, #eab308, #f59e0b);
-  border-radius: 9999px;
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+  border-radius: 6px;
 }
 
-.mastery-section h4 {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #e2e8f0;
-  margin: 0 0 1rem 0;
-}
-
-.mastery-chips {
+/* Level edit button */
+.btn-level-edit {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(99, 102, 241, 0.12);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  color: #a5b4fc;
+  border-radius: 7px;
+  padding: 5px 6px;
+  cursor: pointer;
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+.level-card:hover .btn-level-edit { opacity: 1; }
+.btn-level-edit:hover { background: rgba(99,102,241,0.28); color: #fff; }
+
+/* Level edit form */
+.level-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.gedit-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.gedit-input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(99,102,241,0.35);
+  border-radius: 7px;
+  color: #e2e8f0;
+  font-size: 0.88rem;
+  padding: 0.35rem 0.65rem;
+  outline: none;
+  font-family: inherit;
+  width: 100%;
+}
+.gedit-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.2);
+}
+
+.gedit-action-row {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+
+.btn-gsave {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-gsave:hover { background: #4338ca; }
+.btn-gsave.small { padding: 4px 8px; font-size: 0.72rem; }
+
+.btn-gcancel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.06);
+  color: #94a3b8;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 7px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-gcancel:hover { background: rgba(255,255,255,0.12); color: #f1f5f9; }
+.btn-gcancel.small { padding: 4px 8px; font-size: 0.72rem; }
+
+/* Mastery section */
+.mastery-section {
+  display: flex;
+  flex-direction: column;
   gap: 0.75rem;
 }
 
-.mastery-chip {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
-  flex: 1;
-  min-width: 150px;
+.mastery-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mastery-section h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.btn-mastery-edit {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #64748b;
+  border-radius: 7px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-mastery-edit:hover {
+  background: rgba(99,102,241,0.12);
+  border-color: rgba(99,102,241,0.35);
+  color: #a5b4fc;
+}
+.btn-mastery-edit.active {
+  background: rgba(99,102,241,0.18);
+  border-color: #6366f1;
+  color: #a5b4fc;
+}
+
+/* Mastery chips */
+.mastery-chips {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  cursor: default;
+  gap: 0.65rem;
+}
+
+.mastery-chip {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 0.75rem 0.85rem;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.mastery-chip.chip-edit-mode {
+  border-color: rgba(99,102,241,0.2);
 }
 
 .m-chip-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .m-name {
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   font-weight: 600;
-  color: #cbd5e1;
+  color: #e2e8f0;
 }
 
 .m-pct {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 700;
 }
 
 .m-bar-bg {
-  width: 100%;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
+  height: 5px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .m-bar-fill {
   height: 100%;
-  border-radius: 2px;
+  border-radius: 4px;
+}
+
+/* Chip controls */
+.chip-controls {
+  position: absolute;
+  top: 0.45rem;
+  right: 0.5rem;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.btn-chip-edit,
+.btn-chip-delete {
+  display: flex;
+  align-items: center;
+  border-radius: 5px;
+  padding: 3px 4px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s;
+}
+
+.btn-chip-edit {
+  background: rgba(99,102,241,0.12);
+  border-color: rgba(99,102,241,0.3);
+  color: #a5b4fc;
+}
+.btn-chip-edit:hover { background: rgba(99,102,241,0.28); color: #fff; }
+
+.btn-chip-delete {
+  background: rgba(239,68,68,0.1);
+  border-color: rgba(239,68,68,0.25);
+  color: #f87171;
+}
+.btn-chip-delete:hover { background: rgba(239,68,68,0.22); color: #fff; }
+
+/* Subject edit form */
+.sub-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.sub-edit-input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: 0.82rem;
+  padding: 0.28rem 0.5rem;
+  outline: none;
+  font-family: inherit;
+  width: 100%;
+}
+.sub-edit-input:focus { border-color: #6366f1; }
+.sub-edit-input.pct { width: 60px; text-align: right; }
+
+.sub-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.sub-pct-sign {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.sub-color-row {
+  display: flex;
+  gap: 0.3rem;
+  flex-wrap: wrap;
+}
+
+.sub-color-swatch {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.sub-color-swatch.selected { border-color: #fff; transform: scale(1.3); }
+
+/* Add subject button */
+.btn-add-subject {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: rgba(99,102,241,0.06);
+  border: 1px dashed rgba(99,102,241,0.35);
+  color: #818cf8;
+  border-radius: 10px;
+  padding: 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-add-subject:hover {
+  background: rgba(99,102,241,0.14);
+  border-color: #6366f1;
+  color: #a5b4fc;
 }

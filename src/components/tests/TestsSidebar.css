@@ -221,3 +221,26 @@
   font-weight: 600;
   color: var(--text-secondary);
 }
+
+/* Trend colours */
+.trend-up   { color: #4ade80; }
+.trend-down { color: #f87171; }
+
+/* Weak topic empty state */
+.weak-topic-empty {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-top: 0.5rem;
+  line-height: 1.4;
+}
+
+/* Consistency days label */
+.consistency-days-label {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+

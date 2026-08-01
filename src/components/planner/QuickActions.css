@@ -1,78 +1,284 @@
+/* Quick Actions Container */
 .quick-actions-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .quick-actions-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 1.25rem;
 }
 
 .quick-actions-header h2 {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: #f8fafc;
   margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #f1f5f9;
 }
 
+.qa-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Resume studying button */
 .resume-studying-btn {
-  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-  color: #ffffff;
-  border: none;
-  border-radius: 9999px;
-  padding: 0.65rem 1.5rem;
-  font-weight: 600;
-  font-size: 0.9rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.55rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
-  transition: box-shadow 0.2s ease;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
 }
 
-.resume-studying-btn:hover {
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.6);
+/* Edit mode toggle button */
+.btn-edit-mode {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  border-radius: 9px;
+  padding: 0.5rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
+.btn-edit-mode:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.4);
+  color: #a5b4fc;
+}
+
+.btn-edit-mode.active {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: #6366f1;
+  color: #a5b4fc;
+}
+
+/* Actions grid */
 .actions-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 1.25rem;
-  perspective: 1000px; /* For 3D tilt */
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
 }
 
+@media (max-width: 1100px) {
+  .actions-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .actions-grid { grid-template-columns: 1fr; }
+}
+
+/* Action card */
 .action-card {
   display: flex;
   align-items: center;
-  gap: 1.25rem;
-  padding: 1.25rem;
+  gap: 1rem;
+  padding: 1.1rem 1.25rem;
   cursor: pointer;
-  transform-style: preserve-3d;
+  border-radius: 14px;
+  transition: all 0.2s ease;
+  position: relative;
+  border: 1px solid rgba(255,255,255,0.07);
+}
+
+.action-card.edit-mode-active {
+  border-color: rgba(99,102,241,0.25);
+  cursor: default;
 }
 
 .action-icon-wrapper {
-  width: 50px;
-  height: 50px;
-  border-radius: 0.75rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 
+.action-details {
+  flex: 1;
+  min-width: 0;
+}
+
 .action-details h3 {
-  font-size: 1rem;
-  font-weight: 600;
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
   color: #f1f5f9;
-  margin: 0 0 0.35rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .action-details p {
-  font-size: 0.85rem;
+  margin: 3px 0 0;
+  font-size: 0.75rem;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Edit controls overlay */
+.action-edit-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.btn-action-edit,
+.btn-action-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  padding: 5px 6px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.btn-action-edit {
+  background: rgba(99,102,241,0.12);
+  border-color: rgba(99,102,241,0.3);
+  color: #a5b4fc;
+}
+.btn-action-edit:hover { background: rgba(99,102,241,0.25); color: #fff; }
+
+.btn-action-delete {
+  background: rgba(239,68,68,0.1);
+  border-color: rgba(239,68,68,0.25);
+  color: #f87171;
+}
+.btn-action-delete:hover { background: rgba(239,68,68,0.22); color: #fff; }
+
+/* Inline edit form */
+.action-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.action-edit-input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(99,102,241,0.35);
+  border-radius: 7px;
+  color: #e2e8f0;
+  font-size: 0.88rem;
+  padding: 0.35rem 0.65rem;
+  outline: none;
+  font-family: inherit;
+  width: 100%;
+}
+
+.action-edit-input.sub {
+  font-size: 0.78rem;
   color: #94a3b8;
-  margin: 0;
+}
+
+.action-edit-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.2);
+}
+
+/* Color picker */
+.color-picker-row {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+
+.color-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.color-swatch.selected {
+  border-color: #ffffff;
+  transform: scale(1.25);
+}
+
+/* Edit action row (shared) */
+.edit-action-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.btn-save-edit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.btn-save-edit:hover { background: #4338ca; }
+
+.btn-cancel-edit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.06);
+  color: #94a3b8;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 7px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.btn-cancel-edit:hover { background: rgba(255,255,255,0.12); color: #f1f5f9; }
+
+/* Add action button */
+.btn-add-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px dashed rgba(99,102,241,0.4);
+  background: rgba(99,102,241,0.06);
+  color: #818cf8;
+  border-radius: 14px;
+  padding: 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 80px;
+}
+.btn-add-action:hover {
+  background: rgba(99,102,241,0.14);
+  border-color: #6366f1;
+  color: #a5b4fc;
 }

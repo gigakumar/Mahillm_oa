@@ -68,3 +68,8 @@
     grid-template-columns: 1fr;
   }
 }
+
+.trend-up    { color: #4ade80; }
+.trend-down  { color: #f87171; }
+.trend-neutral { color: var(--text-secondary); }
+

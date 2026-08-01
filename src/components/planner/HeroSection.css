@@ -199,3 +199,260 @@
     flex-direction: column;
   }
 }
+
+/* ── Inline edit button ──────────────────────────────── */
+.inline-edit-btn {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  background: rgba(99, 102, 241, 0.18);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  color: #a5b4fc;
+  border-radius: 7px;
+  padding: 4px 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease, background 0.2s ease;
+  z-index: 10;
+}
+
+.ai-coach-message:hover .inline-edit-btn,
+.goal-card:hover .inline-edit-btn,
+.retention-card:hover .inline-edit-btn {
+  opacity: 1;
+}
+
+.inline-edit-btn:hover {
+  background: rgba(99, 102, 241, 0.35);
+  color: #fff;
+}
+
+.goal-edit-btn {
+  top: 0.6rem;
+  right: 0.6rem;
+}
+
+.retention-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.retention-header-row h4 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+.inline-edit-btn-sm {
+  background: rgba(99, 102, 241, 0.18);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  color: #a5b4fc;
+  border-radius: 7px;
+  padding: 4px 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.inline-edit-btn-sm:hover {
+  background: rgba(99, 102, 241, 0.4);
+  color: #fff;
+}
+
+/* ── Edit action row ─────────────────────────────────── */
+.edit-action-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+}
+
+.btn-save-edit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.btn-save-edit:hover { background: #4338ca; }
+
+.btn-cancel-edit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255,255,255,0.07);
+  color: #94a3b8;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 7px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.btn-cancel-edit:hover { background: rgba(255,255,255,0.12); color: #f1f5f9; }
+
+/* ── Insight edit ────────────────────────────────────── */
+.insight-edit-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.insight-textarea {
+  width: 100%;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(99,102,241,0.4);
+  border-radius: 8px;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  line-height: 1.55;
+  padding: 0.5rem 0.75rem;
+  resize: none;
+  outline: none;
+  font-family: inherit;
+}
+.insight-textarea:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.25);
+}
+
+/* ── Goal edit ───────────────────────────────────────── */
+.goal-edit-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0.25rem 0;
+}
+
+.edit-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0;
+}
+
+.edit-input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(99,102,241,0.35);
+  border-radius: 7px;
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  padding: 0.35rem 0.6rem;
+  outline: none;
+  width: 100%;
+  font-family: inherit;
+}
+.edit-input:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(99,102,241,0.2);
+}
+
+.goal-completed-label {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin: 0.35rem 0 0;
+  text-align: center;
+}
+
+/* ── Chart edit ──────────────────────────────────────── */
+.chart-edit-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+  overflow-y: auto;
+  max-height: 220px;
+}
+
+.chart-edit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  overflow-y: auto;
+}
+
+.chart-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.chart-input-day {
+  flex: 1;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: 0.78rem;
+  padding: 0.3rem 0.5rem;
+  outline: none;
+  font-family: inherit;
+  min-width: 0;
+}
+
+.chart-input-val {
+  width: 52px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(99,102,241,0.3);
+  border-radius: 6px;
+  color: #e2e8f0;
+  font-size: 0.78rem;
+  padding: 0.3rem 0.4rem;
+  outline: none;
+  font-family: inherit;
+  text-align: right;
+}
+
+.chart-pct-label {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.btn-remove-row {
+  background: rgba(239,68,68,0.12);
+  border: 1px solid rgba(239,68,68,0.25);
+  color: #f87171;
+  border-radius: 6px;
+  padding: 4px 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  transition: background 0.15s ease;
+}
+.btn-remove-row:hover { background: rgba(239,68,68,0.25); }
+
+.btn-add-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(99,102,241,0.12);
+  border: 1px dashed rgba(99,102,241,0.35);
+  color: #a5b4fc;
+  border-radius: 7px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  align-self: flex-start;
+  margin-top: 0.15rem;
+}
+.btn-add-row:hover { background: rgba(99,102,241,0.22); }
