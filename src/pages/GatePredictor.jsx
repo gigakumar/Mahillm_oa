@@ -2,22 +2,26 @@ import React, { useState, useMemo } from 'react';
 import { useUserData } from '../contexts/UserDataContext';
 import { useScore } from '../contexts/ScoreContext';
 import { predictGatePerformance, REFERENCE_YEAR } from '../utils/gatePredictorEngine';
-import { 
-  Trophy, 
-  Target, 
-  TrendingUp, 
-  Award, 
-  Building, 
+import {
+  Trophy,
+  Target,
+  TrendingUp,
+  Award,
+  Building,
   Sparkles,
   ShieldCheck,
   Zap,
   BarChart2,
   AlertTriangle,
   Info,
-  ExternalLink
+  ExternalLink,
+  Search,
+  DollarSign
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './GatePredictor.css';
+
+const PSU_CATEGORIES = ['All', 'Maharatna', 'Govt Research', 'Space Research', 'PSU Defence', 'State PSU'];
 
 export default function GatePredictor() {
   const navigate = useNavigate();
@@ -26,6 +30,8 @@ export default function GatePredictor() {
 
   const [isSimulating, setIsSimulating] = useState(false);
   const [targetMarks, setTargetMarks] = useState(70);
+  const [psuSearch, setPsuSearch] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('All');
 
   const totalAttempted = scoreData?.totalAttempted || 0;
   const totalCorrect = scoreData?.totalCorrect || 0;
@@ -39,6 +45,15 @@ export default function GatePredictor() {
     }
     return predictGatePerformance(testHistory || [], masteryScores || {}, overallAccuracy);
   }, [testHistory, masteryScores, overallAccuracy, isSimulating, targetMarks]);
+
+  // Filter PSUs
+  const filteredPsus = prediction.psuStatusList.filter(psu => {
+    const matchesCat = categoryFilter === 'All' || psu.category === categoryFilter;
+    const matchesSearch = psuSearch.trim() === '' ||
+      psu.name.toLowerCase().includes(psuSearch.toLowerCase()) ||
+      psu.category.toLowerCase().includes(psuSearch.toLowerCase());
+    return matchesCat && matchesSearch;
+  });
 
   return (
     <div className="gate-predictor-container">
@@ -74,7 +89,7 @@ export default function GatePredictor() {
             <Zap size={18} className="text-amber-400" />
             <span>Target Marks Simulator ("What-If" Analysis)</span>
           </div>
-          <button 
+          <button
             className={`btn ${isSimulating ? 'btn-primary' : 'btn-outline'} btn-sm`}
             onClick={() => setIsSimulating(!isSimulating)}
           >
@@ -88,11 +103,11 @@ export default function GatePredictor() {
               <span style={{ color: '#94a3b8' }}>Simulated GATE Marks out of 100:</span>
               <strong style={{ color: '#38bdf8', fontSize: '1.1rem' }}>{targetMarks} / 100 Marks</strong>
             </div>
-            <input 
-              type="range" 
-              min="20" 
-              max="95" 
-              value={targetMarks} 
+            <input
+              type="range"
+              min="20"
+              max="95"
+              value={targetMarks}
               onChange={(e) => setTargetMarks(parseInt(e.target.value))}
               style={{ accentColor: '#6366f1', cursor: 'pointer', height: '6px' }}
             />
@@ -154,12 +169,39 @@ export default function GatePredictor() {
       <div className="psu-section-card">
         <div className="psu-header">
           <div>
-            <h2><Building className="w-5 h-5 text-amber-400" /> PSU Shortlist Call Bands</h2>
+            <h2><Building className="w-5 h-5 text-amber-400" /> PSU Shortlist Call Bands & Salary Packages</h2>
             <p>Qualitative shortlist bands based on official PSU recruitment notifications ({REFERENCE_YEAR}).</p>
           </div>
           <button className="practice-boost-btn" onClick={() => navigate('/tests')}>
             <BarChart2 className="w-4 h-4" /> Take Mock Test to Refine
           </button>
+        </div>
+
+        {/* PSU Filter Controls */}
+        <div className="psu-filter-bar" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', margin: '1rem 0', padding: '0.75rem 1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(30, 41, 59, 0.7)', padding: '0.35rem 0.75rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', flex: 1, minWidth: '200px' }}>
+            <Search size={15} color="#64748b" />
+            <input
+              type="text"
+              placeholder="Search PSU (e.g. IOCL, ONGC, ISRO...)"
+              value={psuSearch}
+              onChange={e => setPsuSearch(e.target.value)}
+              style={{ background: 'transparent', border: 'none', color: '#f1f5f9', fontSize: '0.85rem', outline: 'none', width: '100%' }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+            {PSU_CATEGORIES.map(cat => (
+              <button
+                key={cat}
+                className={`btn btn-sm ${categoryFilter === cat ? 'btn-primary' : 'btn-ghost'}`}
+                style={{ fontSize: '0.78rem', padding: '0.3rem 0.65rem' }}
+                onClick={() => setCategoryFilter(cat)}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="psu-table-wrapper">
@@ -168,14 +210,14 @@ export default function GatePredictor() {
               <tr>
                 <th>PSU Organization</th>
                 <th>Category</th>
+                <th>Est. Package</th>
                 <th>Est. Cutoff (GATE Score)</th>
-                <th>Historical Target AIR</th>
-                <th>Official Source Citation</th>
+                <th>Target AIR</th>
                 <th>Shortlist Band</th>
               </tr>
             </thead>
             <tbody>
-              {prediction.psuStatusList.map((psu, idx) => {
+              {filteredPsus.map((psu, idx) => {
                 const probColor = psu.bandColor === 'emerald' ? 'badge-success' : psu.bandColor === 'amber' ? 'badge-warning' : 'badge-danger';
                 return (
                   <tr key={idx}>
@@ -184,12 +226,13 @@ export default function GatePredictor() {
                       <strong>{psu.name}</strong>
                     </td>
                     <td><span className="psu-cat-tag">{psu.category}</span></td>
+                    <td>
+                      <span className="psu-pkg-tag" style={{ color: '#fbbf24', fontWeight: 700, fontSize: '0.82rem', background: 'rgba(245, 158, 11, 0.1)', padding: '0.2rem 0.5rem', borderRadius: '6px', border: '1px solid rgba(245, 158, 11, 0.25)' }}>
+                        💼 {psu.avgPackage || '12.0 LPA'}
+                      </span>
+                    </td>
                     <td><span className="font-mono">{psu.minGateScore}+</span></td>
                     <td><span className="font-mono">&lt; #{psu.minAir}</span></td>
-                    <td className="source-citation-td">
-                      <Info className="w-3.5 h-3.5 text-indigo-400 inline mr-1" />
-                      <span className="text-xs text-slate-400">{psu.source}</span>
-                    </td>
                     <td>
                       <span className={`badge ${probColor} font-semibold`}>
                         {psu.band}
