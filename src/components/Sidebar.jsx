@@ -20,7 +20,8 @@ import {
   Activity,
   Mic,
   Target,
-  GraduationCap
+  GraduationCap,
+  Clock
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -53,6 +54,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
     { path: '/duel', label: '1v1 Speed Duel', icon: Swords },
     { path: '/gate-predictor', label: 'GATE Predictor', icon: Compass },
     { path: '/college-predictor', label: 'M.Tech Predictor', icon: GraduationCap },
+    { path: '/exam-strategy', label: 'Exam Strategy', icon: Clock },
     { path: '/planner', label: 'Study Planner', icon: Calendar },
     { path: '/profile', label: 'Profile', icon: User },
   ];

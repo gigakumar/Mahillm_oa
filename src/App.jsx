@@ -37,6 +37,7 @@ import Formulas from './pages/Formulas';
 import Syllabus from './pages/Syllabus';
 import CollegePredictor from './pages/CollegePredictor';
 import Bookmarks from './pages/Bookmarks';
+import ExamStrategy from './pages/ExamStrategy';
 
 
 import ErrorBoundary from './components/ErrorBoundary';
@@ -188,6 +189,14 @@ function App() {
                   <ProtectedRoute>
                     <Layout>
                       <Bookmarks />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
+
+                <Route path="/exam-strategy" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <ExamStrategy />
                     </Layout>
                   </ProtectedRoute>
                 } />
