@@ -6,19 +6,22 @@ import {
   Sparkles,
   Menu,
   X,
-  User
+  User,
+  Calculator
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useScore } from '../contexts/ScoreContext';
 import CommandPalette from './CommandPalette';
 import FocusTimerModal from './FocusTimerModal';
 import FocusAudioPlayer from './FocusAudioPlayer';
+import GateCalculatorModal from './GateCalculatorModal';
 import './HeaderBar.css';
 
 export default function HeaderBar({ mobileOpen, setMobileOpen }) {
   const { user } = useAuth();
   const { scoreData } = useScore();
   const navigate = useNavigate();
+  const [calcOpen, setCalcOpen] = React.useState(false);
 
   const firstName = user?.displayName?.split(' ')[0] || 'harshit';
   const photoUrl = user?.photoURL || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80';
@@ -48,6 +51,14 @@ export default function HeaderBar({ mobileOpen, setMobileOpen }) {
 
       {/* Right Action Counters, Focus Timer & Audio Beats */}
       <div className="header-right">
+        {/* GATE Scientific Calculator Modal Trigger */}
+        <button className="header-stat-pill calc-pill" onClick={() => setCalcOpen(true)} title="Open Official GATE Scientific Calculator">
+          <Calculator size={15} className="text-amber-400" />
+          <span className="pill-val">GATE Calc</span>
+        </button>
+
+        <GateCalculatorModal isOpen={calcOpen} onClose={() => setCalcOpen(false)} />
+
         {/* Ambient Study Beats Player */}
         <FocusAudioPlayer />
 
