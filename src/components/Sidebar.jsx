@@ -40,25 +40,43 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
     return false;
   };
 
-  const navItems = [
-    { path: '/', label: 'Home', icon: Home },
-    { path: '/tests', label: 'Tests', icon: ClipboardCheck },
-    { path: '/oa-practice', label: 'Practice & PYQs', icon: Sparkles },
-    { path: '/pyq-bank', label: 'GATE PYQ Bank', icon: BookOpen },
-    { path: '/bookmarks', label: 'Starred PYQs', icon: Bookmark },
-    { path: '/mistakes', label: 'Notebooks', icon: BookMarked },
-    { path: '/revision', label: 'Spaced Revision', icon: Brain },
-    { path: '/syllabus', label: 'GATE Syllabus', icon: Target },
-    { path: '/formulas', label: 'Formula Revision', icon: Layers },
-    { path: '/readiness', label: 'Readiness Radar', icon: Activity },
-    { path: '/inspector', label: 'Component Inspector', icon: Compass },
-    { path: '/mock-interview', label: 'AI Mock Interview', icon: Mic },
-    { path: '/duel', label: '1v1 Speed Duel', icon: Swords },
-    { path: '/gate-predictor', label: 'GATE Predictor', icon: Compass },
-    { path: '/college-predictor', label: 'M.Tech Predictor', icon: GraduationCap },
-    { path: '/exam-strategy', label: 'Exam Strategy', icon: Clock },
-    { path: '/planner', label: 'Study Planner', icon: Calendar },
-    { path: '/profile', label: 'Profile', icon: User },
+  const navGroups = [
+    {
+      title: "Core",
+      items: [
+        { path: '/', label: 'Home', icon: Home },
+        { path: '/planner', label: 'Study Planner', icon: Calendar },
+        { path: '/profile', label: 'Profile', icon: User },
+      ]
+    },
+    {
+      title: "Practice & Learn",
+      items: [
+        { path: '/tests', label: 'Tests', icon: ClipboardCheck },
+        { path: '/oa-practice', label: 'Practice & PYQs', icon: Sparkles },
+        { path: '/bookmarks', label: 'Starred PYQs', icon: Bookmark },
+        { path: '/mistakes', label: 'Notebooks', icon: BookMarked },
+        { path: '/revision', label: 'Spaced Revision', icon: Brain },
+      ]
+    },
+    {
+      title: "Tools & Analytics",
+      items: [
+        { path: '/readiness', label: 'Readiness Radar', icon: Activity },
+        { path: '/mock-interview', label: 'AI Mock Interview', icon: Mic },
+        { path: '/duel', label: '1v1 Speed Duel', icon: Swords },
+        { path: '/formulas', label: 'Formula Revision', icon: Layers },
+        { path: '/syllabus', label: 'GATE Syllabus', icon: Target },
+      ]
+    },
+    {
+      title: "Predictors & Strategy",
+      items: [
+        { path: '/gate-predictor', label: 'GATE Predictor', icon: Compass },
+        { path: '/college-predictor', label: 'M.Tech Predictor', icon: GraduationCap },
+        { path: '/exam-strategy', label: 'Exam Strategy', icon: Clock },
+      ]
+    }
   ];
 
   return (
@@ -79,24 +97,26 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
 
         {/* Navigation Items */}
         <nav className="sidebar-nav">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.path);
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`sidebar-link ${active ? 'active' : ''}`}
-                onClick={() => setMobileOpen(false)}
-              >
-                <Icon size={19} className="sidebar-link-icon" />
-                <span className="sidebar-link-label">{item.label}</span>
-              </Link>
-            );
-          })}
-
-          <div className="sidebar-divider" />
-
+          {navGroups.map((group, gIdx) => (
+            <div key={gIdx} className="nav-group">
+              <div className="nav-group-title">{group.title}</div>
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                const active = isActive(item.path);
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`sidebar-link ${active ? 'active' : ''}`}
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <Icon size={18} className="sidebar-link-icon" />
+                    <span className="sidebar-link-label">{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          ))}
         </nav>
 
         {/* Bottom Theme Toggle */}
