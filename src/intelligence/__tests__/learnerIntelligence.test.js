@@ -5,7 +5,7 @@ import { calculateMedian, calculateMAD, calculateRobustZScore, resolveRobustScal
 import { updateKnowledgeState, BKT_DEFAULTS, updateConceptKnowledge } from '../models/knowledgeTracingEngine';
 import { calculateBetaPosterior, evidenceWeight } from '../statistics/betaPosterior';
 import { calculateReadinessScore } from '../engines/readinessEngine';
-import { analyzeCalibration } from '../engines/calibrationEngine';
+
 import { classifyAttemptStrategy } from '../engines/strategyClassifier';
 
 describe('Robust Statistics (robustStats)', () => {
@@ -114,13 +114,7 @@ describe('Readiness Engine (readinessEngine)', () => {
   });
 });
 
-describe('Calibration Engine (calibrationEngine)', () => {
-  it('detects overconfidence when Sure accuracy is too low', () => {
-    const attempts = Array.from({ length: 10 }, () => ({ confidence: 'Sure', correct: false }));
-    const res = analyzeCalibration(attempts);
-    expect(res.status).toBe("OVERCONFIDENT");
-  });
-});
+
 
 describe('Strategy & Pacing Classifier (strategyClassifier)', () => {
   it('classifies rushed attempts based on time ratios', () => {

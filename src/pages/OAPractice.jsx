@@ -12,7 +12,7 @@ import { db } from '../firebase';
 import { collection, getDocs } from 'firebase/firestore';
 import AITutorWidget from '../components/AITutorWidget';
 import './OAPractice.css';
-import './AdaptivePractice.css';
+
 
 // Cache is ONLY used for non-Mech categories or when topic='all'
 // For Mech with a specific topic, we always fetch scoped from Firestore/JSON

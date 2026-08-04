@@ -21,8 +21,7 @@ import {
   Activity,
   Calendar,
   Award,
-  Swords,
-  Layers
+  Swords
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -114,7 +113,7 @@ export default function Navbar() {
         <div className="nav-dropdown-wrapper">
           <button 
             ref={moreTriggerRef}
-            className={`nav-dropdown-trigger ${['/planner', '/gate-predictor', '/duel', '/inspector', '/mock-interview', '/readiness', '/daily-challenge', '/attempt-replay', '/leaderboard', '/stats'].some(p => isActive(p)) ? 'active' : ''}`}
+            className={`nav-dropdown-trigger ${['/planner', '/gate-predictor', '/duel', '/mock-interview', '/readiness', '/daily-challenge', '/attempt-replay', '/leaderboard', '/stats'].some(p => isActive(p)) ? 'active' : ''}`}
             onClick={() => toggleMenu('more')}
             style={{ background: 'none', border: 'none', fontFamily: 'inherit' }}
           >
@@ -138,9 +137,7 @@ export default function Navbar() {
             <Link to="/duel" role="menuitem" className={`dropdown-item ${isActive('/duel') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
               <Swords size={15} style={{ color: '#fb7185' }} /> 1v1 Speed Duel
             </Link>
-            <Link to="/inspector" role="menuitem" className={`dropdown-item ${isActive('/inspector') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
-              <Layers size={15} style={{ color: '#38bdf8' }} /> 3D Inspector & Notes
-            </Link>
+
             <Link to="/mock-interview" role="menuitem" className={`dropdown-item ${isActive('/mock-interview') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
               <Mic size={15} style={{ color: '#c084fc' }} /> Voice Viva Coach
             </Link>

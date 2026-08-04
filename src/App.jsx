@@ -12,7 +12,7 @@ import Leaderboard from './pages/Leaderboard';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Tests from './pages/Tests';
-import SessionBriefing from './pages/tests/SessionBriefing';
+
 import TestSession from './pages/TestSession';
 import TestResult from './pages/TestResult';
 import Mistakes from './pages/Mistakes';
@@ -32,13 +32,13 @@ import Stats from './pages/Stats';
 import StudyPlanner from './pages/StudyPlanner';
 import GatePredictor from './pages/GatePredictor';
 import PeerDuel from './pages/PeerDuel';
-import ComponentInspector from './pages/ComponentInspector';
+
 import Formulas from './pages/Formulas';
 import Syllabus from './pages/Syllabus';
 import CollegePredictor from './pages/CollegePredictor';
 import Bookmarks from './pages/Bookmarks';
 import ExamStrategy from './pages/ExamStrategy';
-import PyqBank from './pages/PyqBank';
+
 
 
 import ErrorBoundary from './components/ErrorBoundary';
@@ -116,13 +116,7 @@ function App() {
                     </Layout>
                   </ProtectedRoute>
                 } />
-                <Route path="/tests/session-briefing" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <SessionBriefing />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+
 
                 <Route path="/tests/session" element={
                   <ProtectedRoute>
@@ -202,13 +196,7 @@ function App() {
                   </ProtectedRoute>
                 } />
 
-                <Route path="/pyq-bank" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <PyqBank />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+
 
                 <Route path="/gate-predictor" element={
                   <ProtectedRoute>
@@ -226,13 +214,7 @@ function App() {
                   </ProtectedRoute>
                 } />
 
-                <Route path="/inspector" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <ComponentInspector />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
+
 
 
 

@@ -9,10 +9,7 @@ import HeroSection from '../components/planner/HeroSection';
 import QuickActions from '../components/planner/QuickActions';
 import SmartSchedule from '../components/planner/SmartSchedule';
 import ReviewTasks from '../components/planner/ReviewTasks';
-import AnalyticsDashboard from '../components/planner/AnalyticsDashboard';
-import GamificationPanel from '../components/planner/GamificationPanel';
 import EmptyState from '../components/planner/EmptyState';
-import GateScheduleRoadmap from '../components/planner/GateScheduleRoadmap';
 
 import './StudyPlanner.css';
 
@@ -110,16 +107,10 @@ export default function StudyPlanner() {
         <QuickActions onNavigate={navigate} />
       </motion.div>
 
-      <motion.div variants={itemVariants}>
-        <AnalyticsDashboard />
-      </motion.div>
 
-      <motion.div variants={itemVariants}>
-        <GateScheduleRoadmap />
-      </motion.div>
 
-      <div className="planner-main-grid">
-        <div className="planner-left-col">
+      <div className="planner-main-grid single-col">
+        <div className="planner-left-col" style={{ width: '100%' }}>
           <motion.div variants={itemVariants}>
             <SmartSchedule 
               weekSchedule={weekSchedule} 
@@ -152,12 +143,6 @@ export default function StudyPlanner() {
             ) : (
               <ReviewTasks highRiskItems={highRiskItems} selectedDateOffset={selectedDateOffset} />
             )}
-          </motion.div>
-        </div>
-
-        <div className="planner-right-col">
-          <motion.div variants={itemVariants}>
-            <GamificationPanel />
           </motion.div>
         </div>
       </div>

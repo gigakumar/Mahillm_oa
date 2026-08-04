@@ -31,10 +31,10 @@ export default function AdminDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
   
-  const [isAdmin, setIsAdmin] = useState(null); // null = checking, false = unauthorized, true = admin
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminLoading, setAdminLoading] = useState(true);
   const [reports, setReports] = useState([]);
   const [quarantinedIds, setQuarantinedIds] = useState(new Set());
-  const [loading, setLoading] = useState(true);
   const [loadedQuestions, setLoadedQuestions] = useState({});
   const [loadingPools, setLoadingPools] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -42,8 +42,7 @@ export default function AdminDashboard() {
   // 1. Verify admin privilege
   useEffect(() => {
     if (!user) {
-      setIsAdmin(false);
-      setLoading(false);
+      navigate('/');
       return;
     }
     async function checkAdmin() {
@@ -53,22 +52,22 @@ export default function AdminDashboard() {
         if (snap.exists() && snap.data().isAdmin) {
           setIsAdmin(true);
         } else {
-          setIsAdmin(false);
+          navigate('/');
         }
       } catch (e) {
         console.error("Error validating admin role in dashboard:", e);
-        setIsAdmin(false);
+        navigate('/');
       } finally {
-        setLoading(false);
+        setAdminLoading(false);
       }
     }
     checkAdmin();
-  }, [user]);
+  }, [user, navigate]);
 
   // 2. Load reports and quarantine list
   const fetchAdminData = async () => {
     if (isAdmin !== true) return;
-    setLoading(true);
+    setAdminLoading(true);
     try {
       // Fetch reported questions
       const reportsSnap = await getDocs(collection(db, 'reports'));
@@ -88,7 +87,7 @@ export default function AdminDashboard() {
     } catch (e) {
       console.error("Error fetching admin dashboard registers:", e);
     } finally {
-      setLoading(false);
+      setAdminLoading(false);
     }
   };
 
@@ -188,7 +187,7 @@ export default function AdminDashboard() {
     }
   };
 
-  if (loading) {
+  if (adminLoading) {
     return (
       <div className="page-content admin-page">
         <div className="loading" style={{ textAlign: 'center', padding: '5rem 0' }}>
@@ -199,17 +198,8 @@ export default function AdminDashboard() {
     );
   }
 
-  if (isAdmin === false) {
-    return (
-      <div className="page-content admin-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '60vh' }}>
-        <div className="card text-center" style={{ maxWidth: '400px', padding: '2rem' }}>
-          <ShieldAlert size={48} style={{ color: 'var(--danger)', marginBottom: '1rem' }} />
-          <h2>Unauthorized Access</h2>
-          <p style={{ color: 'var(--text-secondary)' }}>You must be logged in with administrator privileges to view this page.</p>
-          <button className="btn btn-primary" onClick={() => navigate('/')}>Back to Home</button>
-        </div>
-      </div>
-    );
+  if (!isAdmin) {
+    return null;
   }
 
   // Filter reports

@@ -7,7 +7,7 @@ import GitHubHeatmap from '../components/GitHubHeatmap';
 import { useNavigate } from 'react-router-dom';
 import { compileLearnerState } from '../intelligence/learnerStateModel';
 import { companyProfiles } from '../config/companyProfiles';
-import ConceptKnowledgeGraph from '../components/ConceptKnowledgeGraph';
+
 import { 
   ChevronDown, 
   ChevronUp, 
@@ -183,12 +183,7 @@ export default function ReadinessHeatmap() {
         >
           <Activity size={16} /> Detailed Heatmap
         </button>
-        <button 
-          className={`tab-btn ${activeTab === 'graph' ? 'active' : ''}`}
-          onClick={() => setActiveTab('graph')}
-        >
-          <Brain size={16} /> Concept Topology Graph
-        </button>
+
       </div>
 
       {loadingPools ? (
@@ -196,8 +191,7 @@ export default function ReadinessHeatmap() {
           <div className="spinner" style={{ border: '4px solid var(--border)', borderTop: '4px solid var(--accent)', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite', margin: '0 auto 1rem auto' }}></div>
           <p>Analyzing question database and building telemetry model...</p>
         </div>
-      ) : activeTab === 'graph' ? (
-        <ConceptKnowledgeGraph />
+
       ) : activeTab === 'analytics' ? (
         <div className="analytics-tab-content" style={{ animation: 'fadeIn 0.3s ease-out' }}>
           {/* Most Wronged Topic Card */}

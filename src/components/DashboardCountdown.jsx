@@ -3,7 +3,7 @@ import { Clock, Calendar, CheckSquare, Zap, Sparkles, Target, ArrowRight, Flame 
 import { useNavigate } from 'react-router-dom';
 import './DashboardCountdown.css';
 
-const GATE_EXAM_DATE = new Date('2026-02-07T09:30:00+05:30'); // Next GATE ME Exam date
+const GATE_EXAM_DATE = new Date('2027-02-06T09:30:00+05:30'); // GATE 2027 ME Exam date
 
 export default function DashboardCountdown() {
   const navigate = useNavigate();
@@ -49,7 +49,7 @@ export default function DashboardCountdown() {
       <div className="dc-countdown-box">
         <div className="dc-badge">
           <Calendar size={13} className="text-amber-400" />
-          <span>GATE ME 2026 Target Countdown</span>
+          <span>GATE ME 2027 Target Countdown</span>
         </div>
 
         <div className="dc-timer-grid">

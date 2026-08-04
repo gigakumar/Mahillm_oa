@@ -22,6 +22,7 @@ export default function FocusTimerModal() {
     } catch { return 0; }
   });
 
+  const [audioCtx, setAudioCtx] = useState(null);
   const timerRef = useRef(null);
 
   useEffect(() => {
@@ -43,6 +44,30 @@ export default function FocusTimerModal() {
     return () => clearInterval(timerRef.current);
   }, [isRunning]);
 
+  const playNotificationBeep = () => {
+    if (!soundEnabled || !audioCtx) return;
+    try {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      
+      // First tone: 523Hz for 150ms
+      osc.frequency.setValueAtTime(523, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0, audioCtx.currentTime + 0.15);
+      
+      // Second tone: 659Hz for 150ms
+      osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime + 0.15);
+      gain.gain.setValueAtTime(0, audioCtx.currentTime + 0.3);
+      
+      osc.start(audioCtx.currentTime);
+      osc.stop(audioCtx.currentTime + 0.3);
+    } catch (e) { console.error(e); }
+  };
+
   const handleTimerComplete = () => {
     setSessionsCompleted(prev => {
       const next = prev + 1;
@@ -50,22 +75,7 @@ export default function FocusTimerModal() {
       return next;
     });
 
-    if (soundEnabled && window.AudioContext) {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5 note
-        osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.3); // A5 note
-        gain.gain.setValueAtTime(0.3, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.5);
-      } catch (e) { console.error(e); }
-    }
+    playNotificationBeep();
   };
 
   const selectPreset = (preset) => {
@@ -161,7 +171,14 @@ export default function FocusTimerModal() {
             <div className="ft-controls">
               <button
                 className={`btn ${isRunning ? 'btn-warning' : 'btn-primary'} ft-play-btn`}
-                onClick={() => setIsRunning(!isRunning)}
+                onClick={() => {
+                  if (!audioCtx && window.AudioContext) {
+                    setAudioCtx(new (window.AudioContext || window.webkitAudioContext)());
+                  } else if (audioCtx && audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                  }
+                  setIsRunning(!isRunning);
+                }}
               >
                 {isRunning ? (
                   <>

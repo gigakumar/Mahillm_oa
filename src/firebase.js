@@ -7,7 +7,6 @@ import {
 } from "firebase/firestore";
 import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "firebase/app-check";
 import { getAnalytics, isSupported } from "firebase/analytics";
-import { getAI, getGenerativeModel } from "firebase/ai";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -60,14 +59,3 @@ try {
 
 export { app, auth, db, analytics, appCheck };
 
-// Initialize Gemini AI Logic
-let generativeModel = null;
-try {
-  const ai = getAI(app);
-  // We use gemini-2.5-flash for speed and multi-turn capabilities.
-  generativeModel = getGenerativeModel(ai, { model: "gemini-2.5-flash" });
-} catch (err) {
-  console.warn("Vertex AI initialization skipped/failed:", err);
-}
-
-export { generativeModel };

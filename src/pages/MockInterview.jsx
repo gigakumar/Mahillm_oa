@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Mic, Square, Sparkles, Volume2, VolumeX, MessageSquare, RefreshCw, Send, CheckCircle, AlertTriangle } from 'lucide-react';
-import { AIInterviewerService } from '../utils/aiInterviewerService';
+import { callGeminiApiStream } from '../services/aiLogicService';
 import './MockInterview.css';
 
 const INTERVIEW_TOPICS = [
@@ -21,9 +21,10 @@ export default function MockInterview() {
   const [isAiThinking, setIsAiThinking] = useState(false);
   const [isTtsEnabled, setIsTtsEnabled] = useState(true);
   const [errorMsg, setErrorMsg] = useState('');
+  const [textInput, setTextInput] = useState('');
+  const hasSpeechRecognition = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
 
   const recognitionRef = useRef(null);
-  const aiServiceRef = useRef(null);
   const scrollRef = useRef(null);
 
   // Initialize SpeechRecognition
@@ -47,6 +48,7 @@ export default function MockInterview() {
         console.error("Speech recognition error:", err);
         setIsRecording(false);
       };
+      
       
       recognitionRef.current = recognition;
     }
@@ -77,6 +79,17 @@ export default function MockInterview() {
     }
   };
 
+  const getSystemInstruction = (currentTopic) => `You are an expert technical interviewer conducting a mock interview on ${currentTopic}. 
+Assess the candidate's answers and ask follow-up questions.
+IMPORTANT: You MUST respond ONLY with a valid JSON object. No markdown formatting, no code blocks, just raw JSON.
+Schema:
+{
+  "feedback": "Your feedback on their last answer (if any). Be constructive.",
+  "score": <number 1-10 rating their answer>,
+  "nextQuestion": "Your next interview question",
+  "isInterviewComplete": <boolean>
+}`;
+
   const startInterview = async (selectedTopic) => {
     setTopic(selectedTopic);
     setIsSessionActive(true);
@@ -85,13 +98,18 @@ export default function MockInterview() {
     setIsAiThinking(true);
     
     try {
-      aiServiceRef.current = new AIInterviewerService(selectedTopic);
-      const initialResponse = await aiServiceRef.current.startInterview();
+      const contents = [
+        { role: 'user', parts: [{ text: `Hello, I'm ready to start the interview on ${selectedTopic}.` }] }
+      ];
       
-      handleAiResponse(initialResponse);
+      const rawResponse = await callGeminiApiStream(contents, getSystemInstruction(selectedTopic));
+      const jsonStr = rawResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+      const aiData = JSON.parse(jsonStr);
+      
+      handleAiResponse(aiData);
     } catch (err) {
       console.error(err);
-      setErrorMsg("Failed to start AI session. Ensure Firebase Vertex AI is configured.");
+      setErrorMsg("Failed to start AI session.");
       setIsSessionActive(false);
     } finally {
       setIsAiThinking(false);
@@ -140,28 +158,55 @@ export default function MockInterview() {
     }
   };
 
-  const submitAnswer = async () => {
-    if (!transcript.trim()) return;
+  const submitAnswer = async (overrideText) => {
+    const answerText = overrideText || transcript.trim();
+    if (!answerText) return;
     
     // Stop recording if active
     if (isRecording) {
       toggleRecording();
     }
     
-    const userMessage = { role: 'user', text: transcript };
+    const userMessage = { role: 'user', text: answerText };
     setConversation(prev => [...prev, userMessage]);
-    const answerText = transcript;
     setTranscript('');
+    setTextInput('');
     setIsAiThinking(true);
     
     try {
-      const aiResponse = await aiServiceRef.current.sendAnswer(answerText);
-      handleAiResponse(aiResponse);
+      const updatedConversation = [...conversation, userMessage];
+      const contents = [
+         { role: 'user', parts: [{ text: `Hello, I'm ready to start the interview on ${topic}.` }] }
+      ];
+      
+      for (const msg of updatedConversation) {
+        if (msg.role === 'user') {
+          contents.push({ role: 'user', parts: [{ text: msg.text }] });
+        } else if (msg.role === 'ai') {
+          contents.push({ 
+            role: 'model', 
+            parts: [{ text: JSON.stringify({ feedback: msg.feedback, score: msg.score, nextQuestion: msg.text }) }] 
+          });
+        }
+      }
+
+      const rawResponse = await callGeminiApiStream(contents, getSystemInstruction(topic));
+      const jsonStr = rawResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+      const aiData = JSON.parse(jsonStr);
+      
+      handleAiResponse(aiData);
     } catch (err) {
       console.error(err);
       setErrorMsg("Failed to process answer with AI.");
     } finally {
       setIsAiThinking(false);
+    }
+  };
+
+  const handleTextSubmit = (e) => {
+    e.preventDefault();
+    if (textInput.trim()) {
+      submitAnswer(textInput.trim());
     }
   };
 
@@ -268,23 +313,50 @@ export default function MockInterview() {
 
       <div className="interview-controls card">
         <div className="control-bar">
-          <button 
-            className={`btn-mic ${isRecording ? 'recording' : ''}`}
-            onClick={toggleRecording}
-            disabled={isAiThinking}
-          >
-            {isRecording ? <Square size={24} /> : <Mic size={24} />}
-            {isRecording ? 'Stop Recording' : 'Hold to Speak'}
-          </button>
-          
-          <button 
-            className="btn btn-primary submit-ans-btn"
-            onClick={submitAnswer}
-            disabled={!transcript.trim() || isAiThinking}
-          >
-            <Send size={18} /> Submit Answer
-          </button>
+          {hasSpeechRecognition && (
+            <>
+              <button 
+                className={`btn-mic ${isRecording ? 'recording' : ''}`}
+                onClick={toggleRecording}
+                disabled={isAiThinking}
+              >
+                {isRecording ? <Square size={24} /> : <Mic size={24} />}
+                {isRecording ? 'Stop Recording' : 'Hold to Speak'}
+              </button>
+              
+              {(transcript.trim()) && (
+                <button 
+                  className="btn btn-primary submit-ans-btn"
+                  onClick={() => submitAnswer()}
+                  disabled={!transcript.trim() || isAiThinking}
+                >
+                  <Send size={18} /> Submit Answer
+                </button>
+              )}
+            </>
+          )}
         </div>
+
+        {/* Text input fallback — always shown */}
+        <form className="text-input-fallback" onSubmit={handleTextSubmit} style={{ display: 'flex', gap: '0.5rem', marginTop: hasSpeechRecognition ? '0.75rem' : '0', width: '100%' }}>
+          <input
+            type="text"
+            className="input"
+            placeholder={hasSpeechRecognition ? 'Or type your answer here...' : 'Type your answer here...'}
+            value={textInput}
+            onChange={(e) => setTextInput(e.target.value)}
+            disabled={isAiThinking}
+            style={{ flex: 1, padding: '0.6rem 1rem', borderRadius: '0.5rem', border: '1px solid var(--border)', background: 'var(--bg-secondary)', color: 'var(--text-primary)', fontSize: '0.9rem' }}
+          />
+          <button 
+            type="submit"
+            className="btn btn-primary"
+            disabled={!textInput.trim() || isAiThinking}
+            style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}
+          >
+            <Send size={16} /> Send
+          </button>
+        </form>
         
         {isRecording && (
           <div className="recording-indicator">

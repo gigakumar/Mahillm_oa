@@ -3,15 +3,42 @@ import { Radar, Hexagon, Sparkles, Award } from 'lucide-react';
 import './SubjectCompetencyRadar.css';
 
 export default function SubjectCompetencyRadar({ masteryScores = {} }) {
-  // Compute subject competencies out of 100
-  const categories = [
-    { key: 'Thermodynamics', label: 'Thermal', val: 78 },
-    { key: 'Strength of Materials', label: 'SOM', val: 84 },
-    { key: 'Fluid Mechanics', label: 'Fluids', val: 65 },
-    { key: 'Heat Transfer', label: 'Heat Tr.', val: 90 },
-    { key: 'Manufacturing Engineering', label: 'Manufact.', val: 72 },
-    { key: 'Quantitative Aptitude', label: 'Aptitude', val: 88 }
-  ];
+  // Map long subject names to shorter labels for the radar chart
+  const SUBJECT_LABELS = {
+    'Thermodynamics': 'Thermal',
+    'Strength of Materials': 'SOM',
+    'Fluid Mechanics': 'Fluids',
+    'Heat Transfer': 'Heat Tr.',
+    'Manufacturing Engineering': 'Manufact.',
+    'Quantitative Aptitude': 'Aptitude',
+    'Engineering Mathematics': 'Maths',
+    'Theory of Machines': 'TOM',
+    'Machine Design': 'Design',
+  };
+
+  const scoreKeys = Object.keys(masteryScores || {});
+  
+  if (scoreKeys.length === 0) {
+    return (
+      <div className="radar-card card">
+        <div className="radar-header">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <Award size={18} className="text-indigo-400" />
+            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#f1f5f9' }}>Competency Radar</h3>
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '260px', color: '#94a3b8' }}>
+          No competency data available yet.
+        </div>
+      </div>
+    );
+  }
+
+  const categories = scoreKeys.map(key => ({
+    key,
+    label: SUBJECT_LABELS[key] || key.substring(0, 8),
+    val: masteryScores[key]
+  }));
 
   // SVG Radar coordinates math (Hexagon 6 points)
   const cx = 140;

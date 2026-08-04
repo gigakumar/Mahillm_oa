@@ -2,10 +2,9 @@ import { Brain, Target, Activity, Search, Star } from 'lucide-react';
 import './IntelligenceDrawer.css';
 
 export default function IntelligenceDrawer({ question }) {
-  // Mock intelligence data for now if missing
-  const difficulty = question.intelligence?.difficulty ?? 0.82;
-  const quality = question.intelligence?.quality ?? "Verified";
-  const targetGap = question.intelligence?.targetGap ?? question.topic;
+  const difficulty = question.intelligence?.difficulty ?? 'N/A';
+  const quality = question.intelligence?.quality ?? '--';
+  const targetGap = question.intelligence?.targetGap ?? question.topic ?? '--';
 
   return (
     <div className="intelligence-drawer">
