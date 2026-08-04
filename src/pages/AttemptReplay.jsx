@@ -186,7 +186,7 @@ export default function AttemptReplay() {
                 
                 {/* Strategic classification diagnostic card */}
                 {strategyDiagnosis && (
-                  <div className="card" style={{ padding: '1.25rem', borderLeft: '4px solid var(--accent)', background: 'linear-gradient(135deg, rgba(108, 92, 231, 0.08) 0%, rgba(255,255,255,0.01) 100%)' }}>
+                  <div className="card" style={{ padding: '1.25rem', borderLeft: '4px solid var(--accent)', background: 'linear-gradient(135deg, rgba(108, 92, 231, 0.08) 0%, var(--border) 100%)' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <h4 style={{ margin: 0, fontSize: '1.05rem', color: 'var(--text-h)' }}>
                         Strategic Category: <span style={{ color: 'var(--accent)' }}>{strategyDiagnosis.strategyType.replace('_', ' ')}</span>
@@ -276,7 +276,7 @@ export default function AttemptReplay() {
                       const isActive = idx <= playbackIndex;
                       const isCurrent = idx === playbackIndex;
                       
-                      let stepColor = 'rgba(255,255,255,0.15)';
+                      let stepColor = 'var(--border)';
                       if (isActive) stepColor = 'var(--accent)';
                       if (isCurrent) stepColor = '#00b894';
 
@@ -295,7 +295,7 @@ export default function AttemptReplay() {
                   </div>
 
                   {/* Log description */}
-                  <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgba(255,255,255,0.01)', borderRadius: 'var(--radius-md)' }}>
+                  <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--border)', borderRadius: 'var(--radius-md)' }}>
                     <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>Event Log</strong>
                     {currentStep ? (
                       <span style={{ fontSize: '0.95rem', color: 'var(--text-h)' }}>

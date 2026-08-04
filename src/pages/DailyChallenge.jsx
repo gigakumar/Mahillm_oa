@@ -415,7 +415,7 @@ export default function DailyChallenge() {
         </header>
 
         {mixBreakdown && (
-          <div className="daily-mix-breakdown" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1.5rem', padding: '0.75rem 1rem', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', alignItems: 'center' }}>
+          <div className="daily-mix-breakdown" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1.5rem', padding: '0.75rem 1rem', background: 'var(--border)', borderRadius: '8px', border: '1px solid var(--border)', alignItems: 'center' }}>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Today's Mix:</span>
             {mixBreakdown.weak > 0 && <span className="badge" style={{ background: 'rgba(239, 68, 68, 0.15)', color: '#ef4444' }}>🎯 {mixBreakdown.weak} Weak Topic</span>}
             {mixBreakdown.revision > 0 && <span className="badge" style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6' }}>🔁 {mixBreakdown.revision} Revision</span>}

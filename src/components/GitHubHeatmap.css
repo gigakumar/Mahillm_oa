@@ -2,7 +2,7 @@
 .github-heatmap-card {
   padding: 1.75rem;
   background: var(--bg-secondary, #161b22);
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--border, var(--border));
   border-radius: 16px;
   margin-bottom: 2rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
@@ -18,7 +18,7 @@
   gap: 1.5rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-bottom: 1px solid var(--border, var(--border));
 }
 
 .github-heatmap-title-group h3 {
@@ -81,8 +81,8 @@
   font-size: 0.8rem;
   font-weight: 600;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  background: var(--border);
+  border: 1px solid var(--border, var(--border));
   color: var(--text-secondary, #8b949e);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -90,7 +90,7 @@
 }
 
 .github-cat-chip:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--border);
   color: var(--text-h, #f0f6fc);
 }
 
@@ -201,7 +201,7 @@
   align-items: center;
   margin-top: 1.25rem;
   padding-top: 0.75rem;
-  border-top: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  border-top: 1px solid var(--border, var(--border));
   font-size: 0.75rem;
   color: var(--text-secondary, #8b949e);
   flex-wrap: wrap;
@@ -229,7 +229,7 @@
   border-radius: 6px;
   font-size: 0.75rem;
   box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid var(--border);
   pointer-events: none;
   z-index: 9999;
   white-space: nowrap;

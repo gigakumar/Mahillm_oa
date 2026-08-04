@@ -13,7 +13,7 @@
 .schedule-header h2 {
   font-size: 1.15rem;
   font-weight: 600;
-  color: #f8fafc;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -93,16 +93,16 @@
 }
 
 .btn-streak-save {
-  background: #f59e0b;
+  background: var(--warning);
   color: #fff;
 }
 .btn-streak-save:hover { background: #d97706; }
 
 .btn-streak-cancel {
-  background: rgba(255,255,255,0.1);
-  color: #94a3b8;
+  background: var(--border);
+  color: var(--text-secondary);
 }
-.btn-streak-cancel:hover { background: rgba(255,255,255,0.2); }
+.btn-streak-cancel:hover { background: var(--border); }
 
 /* Day Note area */
 .day-note-area {
@@ -119,7 +119,7 @@
 
 .day-note-text {
   font-size: 0.68rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   display: block;
   white-space: nowrap;
   overflow: hidden;
@@ -139,7 +139,7 @@
 }
 
 .day-note-input {
-  background: rgba(255,255,255,0.06);
+  background: var(--border);
   border: 1px solid rgba(99,102,241,0.35);
   border-radius: 5px;
   color: #e2e8f0;
@@ -150,7 +150,7 @@
   width: 100%;
 }
 
-.day-note-input:focus { border-color: #6366f1; }
+.day-note-input:focus { border-color: var(--accent); }
 
 .day-note-actions {
   display: flex;
@@ -177,11 +177,11 @@
 .btn-note-save:hover { background: #4338ca; }
 
 .btn-note-cancel {
-  background: rgba(255,255,255,0.06);
-  color: #64748b;
-  border-color: rgba(255,255,255,0.1);
+  background: var(--border);
+  color: var(--text-secondary);
+  border-color: var(--border);
 }
-.btn-note-cancel:hover { background: rgba(255,255,255,0.12); color: #f1f5f9; }
+.btn-note-cancel:hover { background: var(--border); color: var(--text-primary); }
 
 .days-timeline {
   display: grid;
@@ -191,8 +191,8 @@
 
 .timeline-day-card {
   position: relative;
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-base);
+  border: 1px solid var(--border);
   border-radius: 0.75rem;
   padding: 1rem 0.75rem;
   cursor: pointer;
@@ -204,11 +204,11 @@
 }
 
 .timeline-day-card:hover {
-  background: rgba(30, 41, 59, 0.9);
+  background: var(--bg-elevated);
 }
 
 .timeline-day-card.active {
-  border-color: #6366f1;
+  border-color: var(--accent);
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
 }
 
@@ -220,7 +220,7 @@
   border-bottom: 3px solid #ef4444;
 }
 .timeline-day-card.status-yellow {
-  border-bottom: 3px solid #f59e0b;
+  border-bottom: 3px solid var(--warning);
 }
 
 .day-top {
@@ -233,12 +233,12 @@
 .day-name {
   font-size: 0.9rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .day-date {
   font-size: 0.75rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
 }
 
 .day-metrics {
@@ -257,7 +257,7 @@
 }
 
 .metric-label {
-  color: #94a3b8;
+  color: var(--text-secondary);
 }
 
 .metric-value {
@@ -268,7 +268,7 @@
 .completion-bar {
   width: 100%;
   height: 4px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border);
   border-radius: 2px;
   margin-top: 0.25rem;
 }
@@ -276,11 +276,11 @@
 .comp-fill {
   height: 100%;
   border-radius: 2px;
-  background: #6366f1;
+  background: var(--accent);
 }
 .status-green .comp-fill { background: #10b981; }
 .status-red .comp-fill { background: #ef4444; }
-.status-yellow .comp-fill { background: #f59e0b; }
+.status-yellow .comp-fill { background: var(--warning); }
 
 .status-icon {
   position: absolute;
@@ -290,7 +290,7 @@
 
 .status-icon.status-green { color: #10b981; }
 .status-icon.status-red { color: #ef4444; }
-.status-icon.status-yellow { color: #f59e0b; }
+.status-icon.status-yellow { color: var(--warning); }
 
 @media (max-width: 1024px) {
   .days-timeline {

@@ -1236,7 +1236,7 @@ Respond ONLY with the JSON object, no markdown fences.`;
                                 fontSize: '1rem',
                                 fontWeight: 'bold',
                                 padding: '0.6rem',
-                                background: 'rgba(255,255,255,0.04)',
+                                background: 'var(--border)',
                                 border: '1px solid var(--border)',
                                 gridColumn: k === 'Clear' ? 'span 2' : 'span 1'
                               }}
@@ -1341,7 +1341,7 @@ Respond ONLY with the JSON object, no markdown fences.`;
 
                   return (
                     <div className="ai-tutor-card" style={{
-                      background: 'linear-gradient(180deg, rgba(30, 41, 59, 0.4) 0%, rgba(15, 23, 42, 0.8) 100%)',
+                      background: 'linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-base) 100%)',
                       border: '1px solid var(--border-color)',
                       borderRadius: '12px',
                       padding: '1.5rem',
@@ -1387,7 +1387,7 @@ Respond ONLY with the JSON object, no markdown fences.`;
                       </div>
 
                       <div className="insight-row" style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
-                        <div className="insight-item" style={{ flex: '1', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <div className="insight-item" style={{ flex: '1', background: 'var(--border)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border)' }}>
                           <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Formula Used</strong>
                           <code style={{ display: 'block', background: 'var(--bg-body)', padding: '0.25rem 0.5rem', borderRadius: '4px', color: 'var(--accent)', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
                             {ai?.loading ? '…' : (ai?.formula || question.formula || 'See explanation above')}
@@ -1401,7 +1401,7 @@ Respond ONLY with the JSON object, no markdown fences.`;
                             </>
                           )}
                         </div>
-                        <div className="insight-item" style={{ flex: '1', background: 'rgba(255,255,255,0.03)', padding: '1rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                        <div className="insight-item" style={{ flex: '1', background: 'var(--border)', padding: '1rem', borderRadius: '8px', border: '1px solid var(--border)' }}>
                           <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.5rem' }}>Exam Trick</strong>
                           <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--warning)' }}>
                             {ai?.loading ? '…' : (ai?.trick || question.trick || 'Read all options carefully before selecting — common traps use similar numbers.')}

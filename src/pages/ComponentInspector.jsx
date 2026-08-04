@@ -207,12 +207,12 @@ export default function ComponentInspector() {
             <div className={`viewport-render ${isRotating ? 'rotating' : ''}`}>
               {selectedComponent.svgType === 'pump' && (
                 <svg viewBox="0 0 200 200" className="comp-svg">
-                  <circle cx="100" cy="100" r="70" fill="none" stroke="#6366f1" strokeWidth="4" />
+                  <circle cx="100" cy="100" r="70" fill="none" stroke="var(--accent)" strokeWidth="4" />
                   <circle cx="100" cy="100" r="25" fill="#38bdf8" opacity="0.3" />
-                  <path d="M100 30 Q120 70 100 100 Q80 70 100 30" fill="#818cf8" />
-                  <path d="M170 100 Q130 120 100 100 Q130 80 170 100" fill="#818cf8" />
-                  <path d="M100 170 Q80 130 100 100 Q120 130 100 170" fill="#818cf8" />
-                  <path d="M30 100 Q70 80 100 100 Q70 120 30 100" fill="#818cf8" />
+                  <path d="M100 30 Q120 70 100 100 Q80 70 100 30" fill="var(--accent)" />
+                  <path d="M170 100 Q130 120 100 100 Q130 80 170 100" fill="var(--accent)" />
+                  <path d="M100 170 Q80 130 100 100 Q120 130 100 170" fill="var(--accent)" />
+                  <path d="M30 100 Q70 80 100 100 Q70 120 30 100" fill="var(--accent)" />
                 </svg>
               )}
 
@@ -220,7 +220,7 @@ export default function ComponentInspector() {
                 <svg viewBox="0 0 200 200" className="comp-svg">
                   <rect x="60" y="20" width="80" height="120" rx="6" fill="none" stroke="#f43f5e" strokeWidth="4" />
                   <rect x="65" y="50" width="70" height="40" rx="4" fill="#fb923c" opacity="0.5" />
-                  <line x1="100" y1="90" x2="100" y2="160" stroke="#f59e0b" strokeWidth="6" strokeLinecap="round" />
+                  <line x1="100" y1="90" x2="100" y2="160" stroke="var(--warning)" strokeWidth="6" strokeLinecap="round" />
                   <circle cx="100" cy="160" r="16" fill="none" stroke="#38bdf8" strokeWidth="4" />
                 </svg>
               )}
@@ -238,9 +238,9 @@ export default function ComponentInspector() {
 
               {selectedComponent.svgType === 'beam' && (
                 <svg viewBox="0 0 200 200" className="comp-svg">
-                  <rect x="20" y="40" width="15" height="120" fill="#64748b" />
+                  <rect x="20" y="40" width="15" height="120" fill="var(--text-secondary)" />
                   <path d="M35 95 Q110 98 175 125" fill="none" stroke="#f87171" strokeWidth="6" strokeLinecap="round" />
-                  <line x1="175" y1="70" x2="175" y2="120" stroke="#fbbf24" strokeWidth="3" markerEnd="url(#arrow)" />
+                  <line x1="175" y1="70" x2="175" y2="120" stroke="var(--warning)" strokeWidth="3" markerEnd="url(#arrow)" />
                 </svg>
               )}
             </div>

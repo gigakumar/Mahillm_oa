@@ -24,7 +24,7 @@ const SYLLABUS_SECTIONS = [
     weightage: '15%',
     weightageVal: 15,
     recommendedHours: 40,
-    color: '#818cf8',
+    color: 'var(--accent)',
     description: 'Verbal Aptitude, Quantitative Aptitude, Analytical Aptitude, Spatial Aptitude',
     topics: [
       { name: 'Verbal Ability & Grammar', count: 120, highYield: true },
@@ -73,7 +73,7 @@ const SYLLABUS_SECTIONS = [
     weightage: '11%',
     weightageVal: 11,
     recommendedHours: 55,
-    color: '#f59e0b',
+    color: 'var(--warning)',
     description: 'Basic Thermodynamics, IC Engines, Refrigeration & Air Conditioning, Power Plant Engineering',
     topics: [
       { name: 'First & Second Law Systems', count: 420, highYield: true },

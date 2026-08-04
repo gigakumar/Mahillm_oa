@@ -4,7 +4,7 @@
 
 .radar-card {
   padding: 1.5rem;
-  background: rgba(15, 23, 42, 0.6) !important;
+  background: var(--bg-base) !important;
   border: 1px solid rgba(99, 102, 241, 0.25) !important;
   border-radius: 20px !important;
   display: flex;
@@ -22,7 +22,7 @@
 .radar-rank-tag {
   font-size: 0.75rem;
   font-weight: 700;
-  color: #fbbf24;
+  color: var(--warning);
   background: rgba(245, 158, 11, 0.12);
   padding: 0.25rem 0.65rem;
   border-radius: 999px;
@@ -49,18 +49,18 @@
 
 .radar-grid-hex {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.08);
+  stroke: var(--border);
   stroke-width: 1;
 }
 
 .radar-axis-line {
-  stroke: rgba(255, 255, 255, 0.06);
+  stroke: var(--border);
   stroke-width: 1;
 }
 
 .radar-data-poly {
   fill: rgba(99, 102, 241, 0.3);
-  stroke: #818cf8;
+  stroke: var(--accent);
   stroke-width: 2;
   transition: all 0.3s ease;
 }
@@ -74,7 +74,7 @@
 .radar-label-text {
   font-size: 10px;
   font-weight: 700;
-  fill: #94a3b8;
+  fill: var(--text-secondary);
   text-anchor: middle;
   dominant-baseline: central;
 }
@@ -86,8 +86,8 @@
 }
 
 .score-chip {
-  background: rgba(30, 41, 59, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   border-radius: 8px;
   padding: 0.4rem 0.6rem;
   display: flex;
@@ -97,7 +97,7 @@
 
 .sc-name {
   font-size: 0.72rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
 }
 
 .sc-val {

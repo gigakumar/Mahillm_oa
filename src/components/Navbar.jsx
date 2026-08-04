@@ -129,7 +129,7 @@ export default function Navbar() {
             align="left"
           >
             <Link to="/planner" role="menuitem" className={`dropdown-item ${isActive('/planner') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
-              <Calendar size={15} style={{ color: '#818cf8' }} /> Study Planner
+              <Calendar size={15} style={{ color: 'var(--accent)' }} /> Study Planner
             </Link>
             <Link to="/gate-predictor" role="menuitem" className={`dropdown-item ${isActive('/gate-predictor') ? 'active' : ''}`} onClick={() => { setActiveMenu(null); setMenuOpen(false); }}>
               <Award size={15} style={{ color: '#34d399' }} /> GATE & PSU Predictor

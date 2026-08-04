@@ -36,7 +36,7 @@ export default function TestsHero({ stats = {} }) {
   const progressPct = mockTotalQs > 0 ? Math.min(100, Math.round((mockQsAnswered / mockTotalQs) * 100)) : 0;
 
   // Score ring color
-  const ringColor = mockScore >= 75 ? '#10b981' : mockScore >= 50 ? '#f59e0b' : '#ef4444';
+  const ringColor = mockScore >= 75 ? '#10b981' : mockScore >= 50 ? 'var(--warning)' : '#ef4444';
   const statusLabel = mockScore >= 80 ? 'Excellent! 🎉' : mockScore >= 65 ? 'Good Job! 💪' : mockScore >= 50 ? 'Keep Going! 🔥' : totalMocks === 0 ? 'Start a Mock! 🚀' : 'Needs Work 📚';
 
   // Accuracy delta display

@@ -9,20 +9,20 @@
   --font-display: 'Space Grotesk', sans-serif;
   --font-body: 'Inter', sans-serif;
 
-  /* Dark Mode (Default Premium Aesthetic) */
-  --bg-base: #090d16;
-  --bg-workspace: #121824;
-  --bg-sidebar: #090d16;
-  --bg-card: rgba(15, 23, 42, 0.75);
-  --bg-card-hover: rgba(30, 41, 59, 0.85);
-  --bg-elevated: #1e293b;
-  --bg-input: rgba(15, 23, 42, 0.7);
+  /* Dark Mode (Refined, Human Aesthetic) */
+  --bg-base: var(--bg-base);
+  --bg-workspace: var(--bg-elevated);
+  --bg-sidebar: var(--bg-base);
+  --bg-card: var(--bg-elevated);
+  --bg-card-hover: #334155;
+  --bg-elevated: #334155;
+  --bg-input: var(--bg-base);
 
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  --text-primary: var(--text-primary);
+  --text-secondary: var(--text-secondary);
+  --text-muted: var(--text-secondary);
 
-  --accent: #2563eb;
+  --accent: var(--accent);
   --accent-hover: #1d4ed8;
   --accent-glow: rgba(37, 99, 235, 0.35);
   --accent-soft: rgba(37, 99, 235, 0.15);
@@ -33,13 +33,13 @@
   
   --success: #10b981;
   --success-soft: rgba(16, 185, 129, 0.15);
-  --warning: #f59e0b;
+  --warning: var(--warning);
   --warning-soft: rgba(245, 158, 11, 0.15);
   --danger: #ef4444;
   --danger-soft: rgba(239, 68, 68, 0.15);
 
-  --border: rgba(255, 255, 255, 0.08);
-  --border-hover: rgba(255, 255, 255, 0.18);
+  --border: var(--border);
+  --border-hover: var(--border);
   --border-glow: rgba(56, 189, 248, 0.5);
 
   --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
@@ -62,19 +62,19 @@
    LIGHT MODE (Refined)
    ======================================== */
 [data-theme="light"], body.light-mode, html.light-mode {
-  --bg-base: #f1f5f9;
+  --bg-base: var(--text-primary);
   --bg-workspace: #ffffff;
   --bg-sidebar: #ffffff;
   --bg-card: #ffffff;
-  --bg-card-hover: #f8fafc;
+  --bg-card-hover: var(--text-primary);
   --bg-elevated: #ffffff;
-  --bg-input: #f1f5f9;
+  --bg-input: var(--text-primary);
 
-  --text-primary: #0f172a;
+  --text-primary: var(--bg-base);
   --text-secondary: #334155;
-  --text-muted: #64748b;
+  --text-muted: var(--text-secondary);
 
-  --accent: #2563eb;
+  --accent: var(--accent);
   --accent-hover: #1d4ed8;
   --accent-glow: rgba(37, 99, 235, 0.2);
   --accent-soft: rgba(37, 99, 235, 0.1);
@@ -100,14 +100,6 @@
   color: var(--text-primary) !important;
 }
 
-/* ========================================
-   DYNAMIC BACKGROUND ANIMATION
-   ======================================== */
-@keyframes meshShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
 
 /* ========================================
    RESET & BASE
@@ -133,32 +125,7 @@ body {
   position: relative;
 }
 
-/* Dynamic Glowing Orbs / Gradients */
-body::before {
-  content: '';
-  position: fixed;
-  inset: -50%;
-  width: 200%;
-  height: 200%;
-  background: 
-    radial-gradient(circle at 15% 50%, var(--bg-gradient-1), transparent 25%),
-    radial-gradient(circle at 85% 30%, var(--bg-gradient-2), transparent 25%);
-  background-size: 200% 200%;
-  animation: meshShift 20s ease-in-out infinite alternate;
-  z-index: -2;
-  pointer-events: none;
-}
 
-/* Glass noise texture */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  opacity: 0.04;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: -1;
-}
 
 #root {
   position: relative;
@@ -200,9 +167,7 @@ a:hover {
   border-radius: var(--radius-md);
   padding: 1.75rem;
   box-shadow: var(--shadow-sm);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.25s ease;
   position: relative;
   overflow: hidden;
 }
@@ -211,7 +176,7 @@ a:hover {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -338,7 +303,7 @@ a:hover {
 }
 .badge-warning {
   background: rgba(245,158,11,0.1);
-  color: #fbbf24;
+  color: var(--warning);
   border-color: rgba(245,158,11,0.25);
   box-shadow: 0 0 12px rgba(245,158,11,0.06);
 }
@@ -440,7 +405,7 @@ a:hover {
   text-align: center;
   margin: 0.75rem 0;
   padding: 0.5rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--border);
   border-radius: var(--radius-sm);
   border: 1px dashed var(--border);
   overflow-x: auto;

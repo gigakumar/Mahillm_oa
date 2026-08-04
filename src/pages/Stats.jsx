@@ -123,7 +123,7 @@ export default function Stats() {
           <strong>Goal: First 100 Questions</strong>
           <span style={{ color: 'var(--accent)', fontWeight: 'bold' }}>{goalProgress}%</span>
         </div>
-        <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.1)', borderRadius: '4px', overflow: 'hidden' }}>
+        <div style={{ width: '100%', height: '8px', background: 'var(--border)', borderRadius: '4px', overflow: 'hidden' }}>
           <div style={{ width: `${goalProgress}%`, height: '100%', background: 'var(--accent)', transition: 'width 1s ease-out' }}></div>
         </div>
       </div>
@@ -175,7 +175,7 @@ export default function Stats() {
               <LineChart data={last7Days} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
                 <Line type="monotone" dataKey="xp" stroke="var(--warning)" strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} name="XP Earned" />
                 <Line type="monotone" dataKey="questions" stroke="var(--accent)" strokeWidth={2} name="Questions" />
-                <CartesianGrid stroke="rgba(255,255,255,0.05)" strokeDasharray="3 3" vertical={false} />
+                <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
                 <XAxis dataKey="displayDate" stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="var(--text-secondary)" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip 
@@ -193,7 +193,7 @@ export default function Stats() {
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginBottom: '1rem' }}>Focus your practice on these specific areas to improve your placement readiness.</p>
           <div className="weakness-list" style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {weakestTopics.length === 0 ? (
-              <div style={{ padding: '1rem', textAlign: 'center', background: 'rgba(255,255,255,0.02)', borderRadius: '8px' }}>
+              <div style={{ padding: '1rem', textAlign: 'center', background: 'var(--border)', borderRadius: '8px' }}>
                 Not enough data yet. Keep practicing!
               </div>
             ) : (
@@ -220,7 +220,7 @@ export default function Stats() {
               <p style={{ color: 'var(--text-secondary)', gridColumn: '1 / -1' }}>Complete goals to earn badges!</p>
             ) : (
               badges.map((b, i) => (
-                <div key={i} style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', textAlign: 'center', transition: 'transform 0.2s' }}>
+                <div key={i} style={{ padding: '1rem', background: 'var(--border)', border: '1px solid var(--border)', borderRadius: '12px', textAlign: 'center', transition: 'transform 0.2s' }}>
                   <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{b.icon}</div>
                   <strong style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.25rem' }}>{b.title}</strong>
                   <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{b.desc}</span>

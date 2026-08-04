@@ -19,14 +19,14 @@ import {
 import './CommandPalette.css';
 
 const QUICK_ACTIONS = [
-  { id: 'practice', title: 'Practice & PYQs', sub: 'Adaptive & topic practice questions', icon: Sparkles, color: '#818cf8', path: '/oa-practice' },
+  { id: 'practice', title: 'Practice & PYQs', sub: 'Adaptive & topic practice questions', icon: Sparkles, color: 'var(--accent)', path: '/oa-practice' },
   { id: 'tests', title: 'Tests & Mocks Portal', sub: 'Full OA simulations & exam presets', icon: ClipboardCheck, color: '#38bdf8', path: '/tests' },
   { id: 'formulas', title: 'Formula Revision Hub', sub: 'Interactive LaTeX sheets & 3D memory flashcards', icon: Layers, color: '#34d399', path: '/formulas' },
-  { id: 'readiness', title: 'Readiness & Skill Radar', sub: 'GitHub study heatmap & company target readiness', icon: Activity, color: '#f59e0b', path: '/readiness' },
+  { id: 'readiness', title: 'Readiness & Skill Radar', sub: 'GitHub study heatmap & company target readiness', icon: Activity, color: 'var(--warning)', path: '/readiness' },
   { id: 'mistakes', title: 'Mistake Notebook', sub: 'Classify & resolve repeat error patterns', icon: BookMarked, color: '#f87171', path: '/mistakes' },
   { id: 'interview', title: 'AI Mock Interview', icon: Mic, sub: 'Live voice technical & HR interviewer', color: '#c084fc', path: '/mock-interview' },
   { id: 'duel', title: '1v1 Speed Duel', icon: Swords, sub: 'Real-time multiplayer mechanical duels', color: '#fb923c', path: '/duel' },
-  { id: 'planner', title: 'Study Planner', icon: Calendar, sub: 'Customizable schedule & streak tracker', color: '#6366f1', path: '/planner' },
+  { id: 'planner', title: 'Study Planner', icon: Calendar, sub: 'Customizable schedule & streak tracker', color: 'var(--accent)', path: '/planner' },
   { id: 'gate', title: 'GATE Rank Predictor', icon: Compass, sub: 'Marks & percentile analysis', color: '#22d3ee', path: '/gate-predictor' }
 ];
 
@@ -186,7 +186,7 @@ export default function CommandPalette() {
                             onClick={() => handleSelect(topic.path)}
                             onMouseEnter={() => setSelectedIndex(itemIndex)}
                           >
-                            <div className="cmd-item-icon" style={{ color: '#f59e0b', background: 'rgba(245, 158, 11, 0.12)' }}>
+                            <div className="cmd-item-icon" style={{ color: 'var(--warning)', background: 'rgba(245, 158, 11, 0.12)' }}>
                               <Zap size={16} />
                             </div>
                             <div className="cmd-item-text">

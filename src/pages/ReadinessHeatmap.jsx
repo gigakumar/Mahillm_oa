@@ -244,7 +244,7 @@ export default function ReadinessHeatmap() {
             )}
 
             {rankedWrongTopics.length > 1 && (
-              <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)' }}>
+              <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--text-h)', display: 'block', marginBottom: '0.75rem' }}>
                   Ranked Wronged Topics (Generated from Test Hashmaps):
                 </strong>
@@ -312,7 +312,7 @@ export default function ReadinessHeatmap() {
               </div>
               <div style={{ position: 'relative', width: '120px', height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <svg width="120" height="120" viewBox="0 0 120 120" style={{ transform: 'rotate(-90deg)' }}>
-                  <circle cx="60" cy="60" r="48" fill="transparent" stroke="rgba(255,255,255,0.03)" strokeWidth="8" />
+                  <circle cx="60" cy="60" r="48" fill="transparent" stroke="var(--border)" strokeWidth="8" />
                   <circle 
                     cx="60" 
                     cy="60" 
@@ -336,7 +336,7 @@ export default function ReadinessHeatmap() {
             {/* Micro component progress bar indices */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '1rem', marginTop: '2rem' }}>
               {Object.entries(learnerState.readinessComponents).map(([key, val]) => (
-                <div key={key} className="card" style={{ padding: '1rem', background: 'rgba(255,255,255,0.02)' }}>
+                <div key={key} className="card" style={{ padding: '1rem', background: 'var(--border)' }}>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textTransform: 'capitalize' }}>{key}</span>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.25rem' }}>
                     <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--text-h)' }}>{val}%</span>
@@ -359,7 +359,7 @@ export default function ReadinessHeatmap() {
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {Object.entries(learnerState.weaknessDiagnoses).map(([topic, diagnosis]) => (
-                    <div key={topic} className="card" style={{ padding: '1rem', borderLeft: '3px solid #fdcb6e', background: 'rgba(255,255,255,0.01)' }}>
+                    <div key={topic} className="card" style={{ padding: '1rem', borderLeft: '3px solid #fdcb6e', background: 'var(--border)' }}>
                       <strong style={{ display: 'block', fontSize: '0.95rem', color: 'var(--text-h)' }}>Topic: {topic}</strong>
                       <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                         {diagnosis.message}
@@ -411,19 +411,19 @@ export default function ReadinessHeatmap() {
                 <Activity size={18} style={{ color: '#0984e3' }} /> Strategic Telemetry
               </h3>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
-                <div className="card" style={{ padding: '1rem', background: 'rgba(255,255,255,0.01)' }}>
+                <div className="card" style={{ padding: '1rem', background: 'var(--border)' }}>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Rushed Errors</span>
                   <h4 style={{ margin: '0.25rem 0', fontSize: '1.5rem', fontWeight: 800 }}>{Math.round(learnerState.behaviour.rushRate * 100)}%</h4>
                 </div>
-                <div className="card" style={{ padding: '1rem', background: 'rgba(255,255,255,0.01)' }}>
+                <div className="card" style={{ padding: '1rem', background: 'var(--border)' }}>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Time Sinks</span>
                   <h4 style={{ margin: '0.25rem 0', fontSize: '1.5rem', fontWeight: 800 }}>{Math.round(learnerState.behaviour.timeSinkRate * 100)}%</h4>
                 </div>
-                <div className="card" style={{ padding: '1rem', background: 'rgba(255,255,255,0.01)' }}>
+                <div className="card" style={{ padding: '1rem', background: 'var(--border)' }}>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Second Guessing</span>
                   <h4 style={{ margin: '0.25rem 0', fontSize: '1.5rem', fontWeight: 800 }}>{Math.round(learnerState.behaviour.secondGuessRate * 100)}%</h4>
                 </div>
-                <div className="card" style={{ padding: '1rem', background: 'rgba(255,255,255,0.01)' }}>
+                <div className="card" style={{ padding: '1rem', background: 'var(--border)' }}>
                   <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Guess Dependency</span>
                   <h4 style={{ margin: '0.25rem 0', fontSize: '1.5rem', fontWeight: 800 }}>{Math.round(learnerState.behaviour.guessDependency * 100)}%</h4>
                 </div>
@@ -544,7 +544,7 @@ export default function ReadinessHeatmap() {
                     <div 
                       key={need.topicId} 
                       className={need.priority >= 0.70 ? "diagnostic-need-critical" : ""}
-                      style={{ padding: '0.85rem', background: 'rgba(255,255,255,0.02)', border: '1px solid var(--border)', borderRadius: '8px', transition: 'all 0.3s ease' }}
+                      style={{ padding: '0.85rem', background: 'var(--border)', border: '1px solid var(--border)', borderRadius: '8px', transition: 'all 0.3s ease' }}
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
                         <strong style={{ fontSize: '0.9rem', color: 'var(--text-h)' }}>{need.topicId}</strong>

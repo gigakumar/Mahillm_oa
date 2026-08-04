@@ -196,13 +196,13 @@ export default function TestResult() {
           <div className="card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             <h3 style={{ fontSize: '1rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Performance Index Metrics</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>
                 <span className="text-secondary">READINESS INDEX</span>
                 <strong style={{ fontFamily: 'var(--font-mono)' }}>
                   {Math.max(40, result.accuracy - 5)}% → {Math.max(40, result.accuracy)}%
                 </strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem' }}>
                 <span className="text-secondary">ABILITY ESTIMATE</span>
                 <strong style={{ fontFamily: 'var(--font-mono)' }}>
                   {result.accuracy >= 70 ? 'CALIBRATING → ADVANCED' : 'CALIBRATING → DEVELOPING'}
@@ -232,13 +232,13 @@ export default function TestResult() {
           <div className="card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             <h3 style={{ fontSize: '1rem', borderBottom: '1px solid var(--border)', paddingBottom: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px' }}>WHAT CHANGED</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.9rem' }}>
-              <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.75rem' }}>
+              <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
                 <strong>Concept Mastery Updates:</strong>
                 <p style={{ margin: '0.25rem 0 0 0', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
                   Entropy Generation mastery index adjusted by +4.2% based on correct irreversible control-volume responses.
                 </p>
               </div>
-              <div style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '0.75rem' }}>
+              <div style={{ borderBottom: '1px solid var(--border)', paddingBottom: '0.75rem' }}>
                 <strong>Stability changes:</strong>
                 <p style={{ margin: '0.25rem 0 0 0', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
                   Standard deviation in timing reduced, improving timing stability index by +2.1%.

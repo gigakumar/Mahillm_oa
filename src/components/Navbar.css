@@ -12,7 +12,7 @@
   margin-bottom: 3rem;
   background: rgba(26, 26, 46, 0.7);
   backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -69,7 +69,7 @@
 
 .nav-link:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--border);
 }
 
 [data-theme="light"] .nav-link:hover {
@@ -104,7 +104,7 @@
 
 .nav-dropdown-trigger:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--border);
 }
 
 

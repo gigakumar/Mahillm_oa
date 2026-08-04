@@ -14,7 +14,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--border);
   padding: 1.25rem;
   border-radius: 12px;
   border: 1px solid var(--border-color);
@@ -98,7 +98,7 @@
 
 .meter-track {
   height: 6px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border);
   border-radius: 3px;
   overflow: hidden;
 }

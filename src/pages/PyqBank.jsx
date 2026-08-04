@@ -65,7 +65,7 @@ export default function PyqBank() {
       {/* Filter and Search Bar */}
       <div className="pyq-controls card">
         <div className="pyq-search">
-          <Search size={16} color="#64748b" />
+          <Search size={16} color="var(--text-secondary)" />
           <input
             type="text"
             placeholder="Search PYQ concepts, equations, or topics..."
@@ -92,8 +92,8 @@ export default function PyqBank() {
       {/* PYQ Cards Grid */}
       {loading ? (
         <div className="card empty-pyq" style={{ textAlign: 'center', padding: '3rem 1rem' }}>
-          <div className="spinner" style={{ border: '3px solid rgba(255,255,255,0.1)', borderTop: '3px solid #6366f1', borderRadius: '50%', width: '32px', height: '32px', animation: 'spin 1s linear infinite', margin: '0 auto 1rem auto' }}></div>
-          <p style={{ color: '#94a3b8' }}>Loading PYQ Question Bank...</p>
+          <div className="spinner" style={{ border: '3px solid var(--border)', borderTop: '3px solid var(--accent)', borderRadius: '50%', width: '32px', height: '32px', animation: 'spin 1s linear infinite', margin: '0 auto 1rem auto' }}></div>
+          <p style={{ color: 'var(--text-secondary)' }}>Loading PYQ Question Bank...</p>
         </div>
       ) : (
         <div className="pyq-grid">
@@ -115,7 +115,7 @@ export default function PyqBank() {
                     onClick={() => toggleBookmark(q.id)}
                     title={isBookmarked ? 'Bookmarked' : 'Bookmark Question'}
                   >
-                    <Bookmark size={16} fill={isBookmarked ? '#fbbf24' : 'none'} color={isBookmarked ? '#fbbf24' : '#64748b'} />
+                    <Bookmark size={16} fill={isBookmarked ? 'var(--warning)' : 'none'} color={isBookmarked ? 'var(--warning)' : 'var(--text-secondary)'} />
                   </button>
                 </div>
 

@@ -89,15 +89,15 @@ export default function DashboardCountdown() {
         <div className="dc-checklist-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <Target size={16} className="text-indigo-400" />
-            <strong style={{ color: '#f1f5f9', fontSize: '0.92rem' }}>Today's Target Sprint ({completedCount}/{tasksCount})</strong>
+            <strong style={{ color: 'var(--text-primary)', fontSize: '0.92rem' }}>Today's Target Sprint ({completedCount}/{tasksCount})</strong>
           </div>
-          <span className="dc-pct-tag" style={{ color: targetPct === 100 ? '#34d399' : '#818cf8' }}>
+          <span className="dc-pct-tag" style={{ color: targetPct === 100 ? '#34d399' : 'var(--accent)' }}>
             {targetPct}% Done
           </span>
         </div>
 
         <div className="dc-checklist-bar">
-          <div className="dc-cb-fill" style={{ width: `${targetPct}%`, background: targetPct === 100 ? '#10b981' : '#6366f1' }} />
+          <div className="dc-cb-fill" style={{ width: `${targetPct}%`, background: targetPct === 100 ? '#10b981' : 'var(--accent)' }} />
         </div>
 
         <div className="dc-items-list">

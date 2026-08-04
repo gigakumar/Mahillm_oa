@@ -76,7 +76,7 @@
 .tag-secondary {
   font-size: 0.75rem;
   color: var(--text-secondary);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--border);
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
 }
@@ -105,7 +105,7 @@
 }
 
 .category-node-header:hover {
-  background: rgba(255,255,255,0.02);
+  background: var(--border);
 }
 
 .category-title {
@@ -136,7 +136,7 @@
   font-size: 0.75rem;
   color: var(--text-secondary);
   text-transform: uppercase;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border);
 }
 
 .concept-row-node {
@@ -145,7 +145,7 @@
   padding: 0.85rem 1rem;
   font-size: 0.9rem;
   cursor: pointer;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid var(--border);
 }
 
 .concept-row-node:last-child {
@@ -153,7 +153,7 @@
 }
 
 .concept-row-node:hover {
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--border);
 }
 
 .c-name {
@@ -233,8 +233,8 @@
 .scatter-plot-area {
   height: 250px;
   position: relative;
-  border-left: 2px solid rgba(255,255,255,0.2);
-  border-bottom: 2px solid rgba(255,255,255,0.2);
+  border-left: 2px solid var(--border);
+  border-bottom: 2px solid var(--border);
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 1fr 1fr;
@@ -246,9 +246,9 @@
   justify-content: center;
   font-size: 0.75rem;
   font-weight: 700;
-  color: rgba(255, 255, 255, 0.1);
+  color: var(--border);
   text-transform: uppercase;
-  border: 1px dashed rgba(255,255,255,0.05);
+  border: 1px dashed var(--border);
 }
 
 .scatter-svg {
@@ -329,7 +329,7 @@
   justify-content: space-between;
   font-size: 0.9rem;
   padding: 0.5rem 0.75rem;
-  background: rgba(255,255,255,0.02);
+  background: var(--border);
   border-radius: 6px;
 }
 
@@ -396,7 +396,7 @@
   bottom: 0.5rem;
   left: 3px;
   width: 2px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border);
 }
 
 .timeline-item {
@@ -454,8 +454,8 @@
 .empty-insights-card {
   padding: 3rem;
   text-align: center;
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px dashed rgba(255, 255, 255, 0.1);
+  background: var(--border);
+  border: 1px dashed var(--border);
 }
 
 .empty-insights-icon {
@@ -556,7 +556,7 @@
 .confidence-track {
   width: 60px;
   height: 6px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -609,8 +609,8 @@
 }
 
 .concept-chip {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--border);
+  border: 1px solid var(--border);
   color: var(--text-primary);
   padding: 0.35rem 0.75rem;
   border-radius: 6px;
@@ -620,7 +620,7 @@
 }
 
 .concept-chip:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--border);
   border-color: var(--accent);
   color: var(--accent);
 }
@@ -663,7 +663,7 @@
   text-transform: uppercase;
   letter-spacing: 1px;
   margin: 0 0 0.5rem 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border);
   padding-bottom: 0.25rem;
 }
 
@@ -684,7 +684,7 @@
 }
 
 .heatmap-row:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--border);
 }
 
 .heatmap-topic-name {
@@ -711,7 +711,7 @@
 }
 
 .heatmap-block.empty {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--border);
 }
 
 .heatmap-block.filled.weak {
@@ -720,7 +720,7 @@
 }
 
 .heatmap-block.filled.moderate {
-  background: #f59e0b;
+  background: var(--warning);
   box-shadow: 0 0 5px rgba(245, 158, 11, 0.4);
 }
 

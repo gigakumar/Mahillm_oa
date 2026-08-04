@@ -75,7 +75,7 @@
 }
 
 .heatmap-cat-header:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--border);
 }
 
 .heatmap-cat-title {
@@ -107,7 +107,7 @@
 
 .heatmap-cat-content {
   padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.01);
+  background: var(--border);
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 1rem;
@@ -144,7 +144,7 @@
 .heatmap-topic-cell.weak { border-color: rgba(214, 48, 49, 0.2); background: rgba(214, 48, 49, 0.03); }
 .heatmap-topic-cell.weak::after { background-color: #d63031; }
 
-.heatmap-topic-cell.unattempted { border-color: var(--border); background: rgba(255, 255, 255, 0.01); }
+.heatmap-topic-cell.unattempted { border-color: var(--border); background: var(--border); }
 .heatmap-topic-cell.unattempted::after { background-color: #636e72; }
 
 .heatmap-topic-cell:hover {
@@ -228,7 +228,7 @@
 
 .tab-btn:hover {
   color: var(--text-h);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--border);
 }
 
 .tab-btn.active {
@@ -345,8 +345,8 @@
 .heatmap-stat-card {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: linear-gradient(135deg, var(--border) 0%, var(--border) 100%) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 16px !important;
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
   backdrop-filter: blur(8px) !important;
@@ -359,20 +359,20 @@
 }
 
 .heatmap-cat-section {
-  border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 16px !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2) !important;
 }
 
 .heatmap-cat-header {
   border-radius: 16px 16px 0 0 !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+  border-bottom: 1px solid var(--border) !important;
 }
 
 /* Heatmap cells improvements */
 .heatmap-topic-cell {
   border-radius: 12px !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid var(--border) !important;
   box-shadow: 0 4px 10px rgba(0,0,0,0.15) !important;
 }
 .heatmap-topic-cell:hover {

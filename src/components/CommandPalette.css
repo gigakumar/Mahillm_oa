@@ -6,11 +6,11 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 0.4rem 0.85rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-size: 0.82rem;
   font-weight: 500;
   cursor: pointer;
@@ -19,17 +19,17 @@
 }
 
 .cmd-trigger-btn:hover {
-  background: rgba(30, 41, 59, 0.9);
+  background: var(--bg-elevated);
   border-color: rgba(99, 102, 241, 0.35);
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .cmd-kbd {
   font-family: inherit;
   font-size: 0.7rem;
   font-weight: 700;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--border);
+  border: 1px solid var(--border);
   color: #a5b4fc;
   padding: 0.15rem 0.45rem;
   border-radius: 5px;
@@ -41,7 +41,7 @@
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(15, 23, 42, 0.75);
+  background: var(--bg-base);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   display: flex;
@@ -59,10 +59,10 @@
 .cmd-modal {
   width: 100%;
   max-width: 620px;
-  background: rgba(15, 23, 42, 0.95);
+  background: var(--bg-base);
   border: 1px solid rgba(99, 102, 241, 0.25);
   border-radius: 20px;
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--border);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -78,12 +78,12 @@
   display: flex;
   align-items: center;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border);
   gap: 0.75rem;
 }
 
 .cmd-search-icon {
-  color: #6366f1;
+  color: var(--accent);
   flex-shrink: 0;
 }
 
@@ -91,20 +91,20 @@
   flex: 1;
   background: transparent;
   border: none;
-  color: #f1f5f9;
+  color: var(--text-primary);
   font-size: 1rem;
   outline: none;
   font-family: inherit;
 }
 
 .cmd-input::placeholder {
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .cmd-clear {
   background: transparent;
   border: none;
-  color: #64748b;
+  color: var(--text-secondary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -113,9 +113,9 @@
 .cmd-esc {
   font-size: 0.68rem;
   font-weight: 700;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #64748b;
+  background: var(--border);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
 }
@@ -134,7 +134,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #64748b;
+  color: var(--text-secondary);
   padding: 0.25rem 0.6rem;
   margin-bottom: 0.25rem;
 }
@@ -176,16 +176,16 @@
 .cmd-item-title {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .cmd-item-sub {
   font-size: 0.75rem;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .cmd-item-arrow {
-  color: #64748b;
+  color: var(--text-secondary);
   opacity: 0;
   transition: opacity 0.15s, transform 0.15s;
 }
@@ -204,7 +204,7 @@
   justify-content: center;
   padding: 3rem 1rem;
   text-align: center;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .cmd-empty span {
@@ -219,15 +219,15 @@
   gap: 1.25rem;
   padding: 0.65rem 1.25rem;
   background: rgba(0, 0, 0, 0.3);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--border);
   font-size: 0.72rem;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 .cmd-footer kbd {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #94a3b8;
+  background: var(--border);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
   padding: 0.1rem 0.35rem;
   border-radius: 4px;
   font-family: inherit;

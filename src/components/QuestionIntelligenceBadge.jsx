@@ -7,7 +7,7 @@ export default function QuestionIntelligenceBadge({ attempts = 0 }) {
     return (
       <span className="badge" style={{ 
         background: 'rgba(245, 158, 11, 0.15)', 
-        color: '#f59e0b', 
+        color: 'var(--warning)', 
         display: 'inline-flex', 
         alignItems: 'center', 
         gap: '0.25rem',

@@ -18,7 +18,7 @@
 .formulas-header h1 {
   font-size: 2rem;
   font-weight: 800;
-  background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+  background: linear-gradient(135deg, #ffffff 0%, var(--text-secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -28,7 +28,7 @@
 
 .formulas-subtitle {
   font-size: 0.88rem;
-  color: #64748b;
+  color: var(--text-secondary);
   margin: 0;
   max-width: 600px;
 }
@@ -36,10 +36,10 @@
 /* ── Mode Switcher ───────────────────────────── */
 .mode-switcher {
   display: flex;
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--bg-base);
   padding: 4px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
   gap: 4px;
 }
 
@@ -49,7 +49,7 @@
   gap: 0.5rem;
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-size: 0.85rem;
   font-weight: 600;
   padding: 0.5rem 1rem;
@@ -59,7 +59,7 @@
 }
 
 .mode-btn:hover {
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .mode-btn.active {
@@ -75,8 +75,8 @@
   gap: 1rem;
   padding: 1.25rem 1.5rem;
   margin-bottom: 2rem;
-  background: rgba(15, 23, 42, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--bg-base);
+  border: 1px solid var(--border);
   border-radius: 16px;
   backdrop-filter: blur(12px);
 }
@@ -84,27 +84,27 @@
 .search-box {
   display: flex;
   align-items: center;
-  background: rgba(30, 41, 59, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 0.5rem 1rem;
   gap: 0.6rem;
 }
 
 .search-box:focus-within {
-  border-color: #6366f1;
+  border-color: var(--accent);
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
 }
 
 .search-icon {
-  color: #64748b;
+  color: var(--text-secondary);
   flex-shrink: 0;
 }
 
 .search-box input {
   background: transparent;
   border: none;
-  color: #f1f5f9;
+  color: var(--text-primary);
   font-size: 0.9rem;
   outline: none;
   width: 100%;
@@ -117,9 +117,9 @@
 }
 
 .subject-pills .pill {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #94a3b8;
+  background: var(--border);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
   font-size: 0.8rem;
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
@@ -133,9 +133,9 @@
 }
 
 .subject-pills .pill.active {
-  background: #6366f1;
+  background: var(--accent);
   color: #ffffff;
-  border-color: #6366f1;
+  border-color: var(--accent);
 }
 
 /* ── Formula Cards Grid ──────────────────────── */
@@ -147,8 +147,8 @@
 
 .formula-card {
   padding: 1.5rem;
-  background: rgba(15, 23, 42, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: var(--bg-base);
+  border: 1px solid var(--border);
   border-radius: 18px;
   display: flex;
   flex-direction: column;
@@ -175,7 +175,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #818cf8;
+  color: var(--accent);
   background: rgba(99, 102, 241, 0.12);
   padding: 0.25rem 0.6rem;
   border-radius: 6px;
@@ -188,14 +188,14 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .formula-math-container {
   background: rgba(0, 0, 0, 0.3);
   padding: 1rem 1.25rem;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
   font-size: 1.15rem;
   color: #a5b4fc;
   display: flex;
@@ -208,7 +208,7 @@
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #64748b;
+  color: var(--text-secondary);
   margin: 0 0 0.4rem 0;
 }
 
@@ -221,11 +221,11 @@
 
 .formula-conditions {
   font-size: 0.82rem;
-  color: #94a3b8;
-  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-secondary);
+  background: var(--border);
   padding: 0.65rem 0.85rem;
   border-radius: 8px;
-  border-left: 3px solid #6366f1;
+  border-left: 3px solid var(--accent);
 }
 
 .formula-trap {
@@ -251,7 +251,7 @@
 }
 
 .calc-panel {
-  background: rgba(30, 41, 59, 0.6);
+  background: var(--bg-elevated);
   border: 1px solid rgba(99, 102, 241, 0.25);
   border-radius: 12px;
   padding: 1rem;
@@ -281,12 +281,12 @@
 
 .calc-field label {
   font-size: 0.7rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
 }
 
 .calc-field input {
-  background: rgba(15, 23, 42, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-base);
+  border: 1px solid var(--border);
   border-radius: 6px;
   color: #e2e8f0;
   padding: 0.35rem 0.5rem;
@@ -327,21 +327,21 @@
   align-items: center;
   gap: 1rem;
   font-size: 0.82rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-weight: 600;
 }
 
 .fc-track {
   flex: 1;
   height: 8px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--border);
   border-radius: 999px;
   overflow: hidden;
 }
 
 .fc-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4f46e5, #818cf8);
+  background: linear-gradient(90deg, #4f46e5, var(--accent));
   border-radius: 999px;
   transition: width 0.3s ease;
 }
@@ -384,18 +384,18 @@
   flex-direction: column;
   justify-content: space-between;
   border-radius: 24px !important;
-  background: rgba(15, 23, 42, 0.85) !important;
+  background: var(--bg-base) !important;
   border: 1px solid rgba(99, 102, 241, 0.2) !important;
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
 }
 
 .flashcard-front {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)) !important;
+  background: linear-gradient(135deg, var(--bg-elevated), var(--bg-base)) !important;
 }
 
 .flashcard-back {
   transform: rotateY(180deg);
-  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.9)) !important;
+  background: linear-gradient(135deg, var(--bg-base), var(--bg-elevated)) !important;
   border-color: rgba(16, 185, 129, 0.3) !important;
 }
 
@@ -405,7 +405,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #818cf8;
+  color: var(--accent);
   background: rgba(99, 102, 241, 0.12);
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
@@ -415,13 +415,13 @@
 .fc-title {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #f1f5f9;
+  color: var(--text-primary);
   margin: 0.5rem 0 0.25rem 0;
 }
 
 .fc-instruction {
   font-size: 0.8rem;
-  color: #818cf8;
+  color: var(--accent);
   margin: 0 0 1rem 0;
   font-weight: 600;
 }
@@ -434,7 +434,7 @@
 .fc-variables-preview ul {
   margin: 0.35rem 0 0 0;
   padding-left: 1.2rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
 }
 
 .fc-trap-box {
@@ -479,9 +479,9 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #94a3b8;
+  background: var(--border);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
   font-size: 0.78rem;
   padding: 0.35rem 0.85rem;
   border-radius: 999px;
@@ -490,7 +490,7 @@
 }
 
 .fc-flip-again:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--border);
   color: #ffffff;
 }
 

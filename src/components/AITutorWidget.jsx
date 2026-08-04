@@ -143,10 +143,10 @@ export default function AITutorWidget({ question, userAnswer = null, questionId 
   };
 
   return (
-    <div className="card" style={{ background: 'rgba(15, 23, 42, 0.95)', border: '1px solid rgba(99, 102, 241, 0.35)', borderRadius: '12px', padding: '1.25rem', marginTop: '1.25rem', color: '#fff' }}>
+    <div className="card" style={{ background: 'var(--bg-base)', border: '1px solid rgba(99, 102, 241, 0.35)', borderRadius: '12px', padding: '1.25rem', marginTop: '1.25rem', color: '#fff' }}>
       {/* Widget Header Controls */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '700', color: '#818cf8', fontSize: '1rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: '700', color: 'var(--accent)', fontSize: '1rem' }}>
           <Sparkles size={18} className="text-amber-400" />
           <span>AI Tutor & Real-Time Hint Assistant</span>
         </div>
@@ -160,9 +160,9 @@ export default function AITutorWidget({ question, userAnswer = null, questionId 
               padding: '0.4rem 0.85rem', 
               gap: '0.35rem',
               borderRadius: '8px',
-              background: activeTab === 'hint' ? '#2563eb' : 'rgba(255, 255, 255, 0.08)',
+              background: activeTab === 'hint' ? 'var(--accent)' : 'var(--border)',
               color: '#fff',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              border: '1px solid var(--border)',
               fontWeight: '600'
             }}
           >
@@ -178,9 +178,9 @@ export default function AITutorWidget({ question, userAnswer = null, questionId 
                 padding: '0.4rem 0.85rem', 
                 gap: '0.35rem',
                 borderRadius: '8px',
-                background: activeTab === 'explanation' ? '#2563eb' : 'rgba(255, 255, 255, 0.08)',
+                background: activeTab === 'explanation' ? 'var(--accent)' : 'var(--border)',
                 color: '#fff',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
+                border: '1px solid var(--border)',
                 fontWeight: '600'
               }}
             >
@@ -196,9 +196,9 @@ export default function AITutorWidget({ question, userAnswer = null, questionId 
               padding: '0.4rem 0.85rem', 
               gap: '0.35rem',
               borderRadius: '8px',
-              background: activeTab === 'chat' ? '#ea580c' : 'rgba(255, 255, 255, 0.08)',
+              background: activeTab === 'chat' ? '#ea580c' : 'var(--border)',
               color: '#fff',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              border: '1px solid var(--border)',
               fontWeight: '600'
             }}
           >
@@ -209,7 +209,7 @@ export default function AITutorWidget({ question, userAnswer = null, questionId 
 
       {/* Thinking Skeleton State */}
       {isThinking && (
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.85rem 0', color: '#fbbf24', fontSize: '0.875rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.85rem 0', color: 'var(--warning)', fontSize: '0.875rem' }}>
           <RefreshCw size={16} className="animate-spin text-amber-400" />
           <span>AI Tutor is thinking and generating response...</span>
         </div>
@@ -217,7 +217,7 @@ export default function AITutorWidget({ question, userAnswer = null, questionId 
 
       {/* Single Hint or Explanation Stream Output */}
       {activeTab && activeTab !== 'chat' && streamedText && (
-        <div style={{ marginTop: '0.85rem', background: 'rgba(30, 41, 59, 0.75)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '8px', padding: '0.9rem 1.1rem', fontSize: '0.92rem', lineHeight: '1.6', color: '#f1f5f9' }}>
+        <div style={{ marginTop: '0.85rem', background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.9rem 1.1rem', fontSize: '0.92rem', lineHeight: '1.6', color: 'var(--text-primary)' }}>
           <MathRenderer text={streamedText} />
         </div>
       )}
@@ -236,7 +236,7 @@ export default function AITutorWidget({ question, userAnswer = null, questionId 
               background: 'rgba(10, 15, 30, 0.85)', 
               padding: '0.85rem', 
               borderRadius: '8px', 
-              border: '1px solid rgba(255, 255, 255, 0.1)' 
+              border: '1px solid var(--border)' 
             }}
           >
             {chatHistory.map((msg, idx) => (
@@ -244,8 +244,8 @@ export default function AITutorWidget({ question, userAnswer = null, questionId 
                 key={idx} 
                 style={{ 
                   alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start', 
-                  background: msg.role === 'user' ? '#2e2b5f' : 'rgba(30, 41, 59, 0.95)', 
-                  border: msg.role === 'user' ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid rgba(255, 255, 255, 0.08)',
+                  background: msg.role === 'user' ? '#2e2b5f' : 'var(--bg-elevated)', 
+                  border: msg.role === 'user' ? '1px solid rgba(99, 102, 241, 0.4)' : '1px solid var(--border)',
                   padding: '0.65rem 0.85rem', 
                   borderRadius: '10px', 
                   maxWidth: '85%', 
@@ -270,7 +270,7 @@ export default function AITutorWidget({ question, userAnswer = null, questionId 
               style={{ 
                 flex: 1, 
                 background: 'rgba(10, 15, 30, 0.95)', 
-                border: '1.5px solid #2563eb', 
+                border: '1.5px solid var(--accent)', 
                 borderRadius: '8px', 
                 padding: '0.65rem 0.9rem', 
                 color: '#fff', 

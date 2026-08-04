@@ -166,7 +166,7 @@ export default function Mistakes() {
           r.value === 'formula' ? '#eab308' : 
           r.value === 'unit_conversion' ? '#3b82f6' : 
           r.value === 'misread' ? '#a855f7' : 
-          r.value === 'time_pressure' ? '#64748b' : '#94a3b8'
+          r.value === 'time_pressure' ? 'var(--text-secondary)' : 'var(--text-secondary)'
   })).filter(d => d.count > 0);
 
   // Pagination slice
@@ -214,9 +214,9 @@ export default function Mistakes() {
       </div>
 
       {totalActiveMistakes === 0 && (
-        <div style={{ marginBottom: '1.5rem', padding: '1rem 1.25rem', background: 'rgba(99,102,241,0.08)', borderRadius: '12px', borderLeft: '3px solid #6366f1' }}>
+        <div style={{ marginBottom: '1.5rem', padding: '1rem 1.25rem', background: 'rgba(99,102,241,0.08)', borderRadius: '12px', borderLeft: '3px solid var(--accent)' }}>
           <strong style={{ display: 'block', marginBottom: '0.25rem', color: '#a5b4fc' }}>No confirmed mistakes yet.</strong>
-          <span style={{ fontSize: '0.88rem', color: '#64748b' }}>Insights based on attempt patterns are visible on the <Link to="/intelligence" style={{ color: '#818cf8', textDecoration: 'none' }}>Intelligence</Link> page.</span>
+          <span style={{ fontSize: '0.88rem', color: 'var(--text-secondary)' }}>Insights based on attempt patterns are visible on the <Link to="/intelligence" style={{ color: 'var(--accent)', textDecoration: 'none' }}>Intelligence</Link> page.</span>
         </div>
       )}
 
@@ -250,7 +250,7 @@ export default function Mistakes() {
       {/* Breakdown Block & Fingerprint Chart */}
       <div className="fingerprint-card card">
         <div className="fingerprint-card-header">
-          <Activity size={20} style={{ color: '#818cf8' }} />
+          <Activity size={20} style={{ color: 'var(--accent)' }} />
           <h3>Your Mistake Fingerprint</h3>
         </div>
         
@@ -273,12 +273,12 @@ export default function Mistakes() {
             <div className="fingerprint-chart-wrap">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={fingerprintData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="rgba(255,255,255,0.05)" />
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="var(--border)" />
                   <XAxis type="number" hide />
-                  <YAxis dataKey="shortName" type="category" axisLine={false} tickLine={false} fontSize={12} stroke="#64748b" width={90} />
+                  <YAxis dataKey="shortName" type="category" axisLine={false} tickLine={false} fontSize={12} stroke="var(--text-secondary)" width={90} />
                   <Tooltip 
-                    cursor={{fill: 'rgba(255,255,255,0.04)'}} 
-                    contentStyle={{ background: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '10px', color: '#f1f5f9' }}
+                    cursor={{fill: 'var(--border)'}} 
+                    contentStyle={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '10px', color: 'var(--text-primary)' }}
                   />
                   <Bar dataKey="count" radius={[0, 5, 5, 0]}>
                     {fingerprintData.map((entry, index) => (
@@ -415,7 +415,7 @@ export default function Mistakes() {
                     ) : (
                       <button 
                         className="btn-mistake-action"
-                        style={{ background: 'rgba(255,255,255,0.05)', color: '#94a3b8', borderColor: 'rgba(255,255,255,0.1)' }}
+                        style={{ background: 'var(--border)', color: 'var(--text-secondary)', borderColor: 'var(--border)' }}
                         onClick={() => resolveMistake(m.questionId, false)}
                       >
                         <RotateCcw size={13} /> Re-open

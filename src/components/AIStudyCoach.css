@@ -89,8 +89,8 @@
   border-color: var(--border-hover);
 }
 
-.task-review  { border-left: 4px solid #f59e0b; }
-.task-practice { border-left: 4px solid #2563eb; }
+.task-review  { border-left: 4px solid var(--warning); }
+.task-practice { border-left: 4px solid var(--accent); }
 .task-revise  { border-left: 4px solid #10b981; }
 
 .ai-task-content {

@@ -346,29 +346,29 @@ export default function SpeedDuelLobby({
       </div>
 
       {/* 2B. SUBJECT ARENA PRESETS */}
-      <div className="subject-arenas-card card" style={{ padding: '1.25rem 1.5rem', marginBottom: '2rem', background: 'rgba(15, 23, 42, 0.6)', border: '1px solid rgba(99, 102, 241, 0.2)', borderRadius: '18px' }}>
-        <h3 style={{ fontSize: '1rem', fontWeight: 800, color: '#f1f5f9', margin: '0 0 0.85rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Swords size={16} color="#fbbf24" /> Subject-Specific Speed Battle Presets
+      <div className="subject-arenas-card card" style={{ padding: '1.25rem 1.5rem', marginBottom: '2rem', background: 'var(--bg-base)', border: '1px solid rgba(99, 102, 241, 0.2)', borderRadius: '18px' }}>
+        <h3 style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--text-primary)', margin: '0 0 0.85rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Swords size={16} color="var(--warning)" /> Subject-Specific Speed Battle Presets
         </h3>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.85rem' }}>
-          <div className="arena-preset-box" style={{ background: 'rgba(30, 41, 59, 0.5)', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer' }} onClick={onQuickMatch}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f1f5f9' }}>🌡️ Thermo &amp; Heat Battle</div>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '2px' }}>5 Questions • 60s / Question</div>
+          <div className="arena-preset-box" style={{ background: 'var(--bg-elevated)', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid var(--border)', cursor: 'pointer' }} onClick={onQuickMatch}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>🌡️ Thermo &amp; Heat Battle</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>5 Questions • 60s / Question</div>
           </div>
 
-          <div className="arena-preset-box" style={{ background: 'rgba(30, 41, 59, 0.5)', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer' }} onClick={onQuickMatch}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f1f5f9' }}>⚙️ SOM &amp; Machine Design</div>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '2px' }}>5 Questions • 60s / Question</div>
+          <div className="arena-preset-box" style={{ background: 'var(--bg-elevated)', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid var(--border)', cursor: 'pointer' }} onClick={onQuickMatch}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>⚙️ SOM &amp; Machine Design</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>5 Questions • 60s / Question</div>
           </div>
 
-          <div className="arena-preset-box" style={{ background: 'rgba(30, 41, 59, 0.5)', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer' }} onClick={onQuickMatch}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f1f5f9' }}>🌊 Fluid Mechanics Duel</div>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '2px' }}>5 Questions • 60s / Question</div>
+          <div className="arena-preset-box" style={{ background: 'var(--bg-elevated)', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid var(--border)', cursor: 'pointer' }} onClick={onQuickMatch}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>🌊 Fluid Mechanics Duel</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>5 Questions • 60s / Question</div>
           </div>
 
-          <div className="arena-preset-box" style={{ background: 'rgba(30, 41, 59, 0.5)', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.08)', cursor: 'pointer' }} onClick={onQuickMatch}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#f1f5f9' }}>🏭 Manufacturing Sprint</div>
-            <div style={{ fontSize: '0.75rem', color: '#94a3b8', marginTop: '2px' }}>5 Questions • 60s / Question</div>
+          <div className="arena-preset-box" style={{ background: 'var(--bg-elevated)', padding: '0.85rem 1rem', borderRadius: '12px', border: '1px solid var(--border)', cursor: 'pointer' }} onClick={onQuickMatch}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>🏭 Manufacturing Sprint</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '2px' }}>5 Questions • 60s / Question</div>
           </div>
         </div>
       </div>

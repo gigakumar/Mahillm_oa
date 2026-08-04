@@ -199,8 +199,8 @@
 }
 
 .locked-icon {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
+  background: var(--border);
+  border-color: var(--border);
   color: var(--text-secondary);
 }
 
@@ -220,7 +220,7 @@
 }
 
 .mock-tag {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--border);
   color: var(--text-secondary);
   font-size: 0.7rem;
   padding: 0.2rem 0.5rem;
@@ -236,10 +236,10 @@
 .meta-item {
   font-size: 0.8rem;
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.03);
+  background: var(--border);
   padding: 0.3rem 0.6rem;
   border-radius: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
 }
 
 .mock-stats-row {

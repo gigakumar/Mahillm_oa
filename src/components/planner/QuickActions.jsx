@@ -5,9 +5,9 @@ import './QuickActions.css';
 
 const ICON_OPTIONS = { RotateCcw, TrendingDown, Zap, Target };
 const COLOR_PRESETS = [
-  { color: '#6366f1', bg: 'rgba(99, 102, 241, 0.15)' },
+  { color: 'var(--accent)', bg: 'rgba(99, 102, 241, 0.15)' },
   { color: '#ef4444', bg: 'rgba(239, 68, 68, 0.15)' },
-  { color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
+  { color: 'var(--warning)', bg: 'rgba(245, 158, 11, 0.15)' },
   { color: '#10b981', bg: 'rgba(16, 185, 129, 0.15)' },
   { color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.15)' },
   { color: '#ec4899', bg: 'rgba(236, 72, 153, 0.15)' },

@@ -124,7 +124,7 @@ export default function CollegePredictor() {
       {/* Filter Bar */}
       <div className="cp-filter-bar card">
         <div className="cp-search">
-          <Search size={16} color="#64748b" />
+          <Search size={16} color="var(--text-secondary)" />
           <input
             type="text"
             placeholder="Search institute or branch (e.g. Thermal, Design, IIT Bombay...)"

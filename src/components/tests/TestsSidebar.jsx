@@ -128,10 +128,10 @@ export default function TestsSidebar({ stats = {} }) {
           </div>
           <div className="consistency-ring">
             <svg viewBox="0 0 36 36">
-              <path className="circle-bg" stroke="rgba(255,255,255,0.1)" strokeWidth="3" fill="none"
+              <path className="circle-bg" stroke="var(--border)" strokeWidth="3" fill="none"
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
               <path className="circle"
-                stroke={consistencyScore >= 70 ? '#10b981' : consistencyScore >= 40 ? '#f59e0b' : '#ef4444'}
+                stroke={consistencyScore >= 70 ? '#10b981' : consistencyScore >= 40 ? 'var(--warning)' : '#ef4444'}
                 strokeWidth="3"
                 strokeDasharray={`${consistencyScore}, 100`}
                 fill="none"
@@ -151,7 +151,7 @@ export default function TestsSidebar({ stats = {} }) {
 
         <div className="weak-topic-content">
           <div className="weak-topic-title">
-            <AlertCircle size={16} color={topicAcc !== null ? '#ef4444' : '#64748b'} />
+            <AlertCircle size={16} color={topicAcc !== null ? '#ef4444' : 'var(--text-secondary)'} />
             {topicName}
           </div>
           {topicAcc !== null ? (
@@ -162,7 +162,7 @@ export default function TestsSidebar({ stats = {} }) {
                   style={{
                     width: `${topicAcc}%`,
                     background: topicAcc < 40 ? 'linear-gradient(90deg, #ef4444, #f97316)' :
-                      topicAcc < 65 ? 'linear-gradient(90deg, #f59e0b, #eab308)' :
+                      topicAcc < 65 ? 'linear-gradient(90deg, var(--warning), #eab308)' :
                         'linear-gradient(90deg, #10b981, #34d399)'
                   }}
                 />
@@ -230,22 +230,22 @@ export default function TestsSidebar({ stats = {} }) {
             title="First Mock">🛡️</div>
           <div className="achievement-badge"
             style={{
-              background: totalMocks >= 5 ? 'linear-gradient(135deg, rgba(234,179,8,0.2), rgba(234,179,8,0.05))' : 'rgba(255,255,255,0.04)',
-              borderColor: totalMocks >= 5 ? 'rgba(234,179,8,0.5)' : 'rgba(255,255,255,0.1)',
+              background: totalMocks >= 5 ? 'linear-gradient(135deg, rgba(234,179,8,0.2), rgba(234,179,8,0.05))' : 'var(--border)',
+              borderColor: totalMocks >= 5 ? 'rgba(234,179,8,0.5)' : 'var(--border)',
               opacity: totalMocks >= 5 ? 1 : 0.4
             }}
             title="5 Mocks (5-Star)">⭐</div>
           <div className="achievement-badge"
             style={{
-              background: totalMocks >= 10 ? 'linear-gradient(135deg, rgba(59,130,246,0.2), rgba(59,130,246,0.05))' : 'rgba(255,255,255,0.04)',
-              borderColor: totalMocks >= 10 ? 'rgba(59,130,246,0.5)' : 'rgba(255,255,255,0.1)',
+              background: totalMocks >= 10 ? 'linear-gradient(135deg, rgba(59,130,246,0.2), rgba(59,130,246,0.05))' : 'var(--border)',
+              borderColor: totalMocks >= 10 ? 'rgba(59,130,246,0.5)' : 'var(--border)',
               opacity: totalMocks >= 10 ? 1 : 0.4
             }}
             title="10 Mocks (Diamond)">💎</div>
           <div className="achievement-badge"
             style={{
-              background: totalQsSolved >= 100 ? 'linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05))' : 'rgba(255,255,255,0.04)',
-              borderColor: totalQsSolved >= 100 ? 'rgba(16,185,129,0.5)' : 'rgba(255,255,255,0.1)',
+              background: totalQsSolved >= 100 ? 'linear-gradient(135deg, rgba(16,185,129,0.2), rgba(16,185,129,0.05))' : 'var(--border)',
+              borderColor: totalQsSolved >= 100 ? 'rgba(16,185,129,0.5)' : 'var(--border)',
               opacity: totalQsSolved >= 100 ? 1 : 0.4
             }}
             title="100 Questions Solved">🌿</div>

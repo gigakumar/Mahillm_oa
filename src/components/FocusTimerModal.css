@@ -6,11 +6,11 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   border-radius: 999px;
   padding: 0.35rem 0.85rem;
-  color: #f1f5f9;
+  color: var(--text-primary);
   font-size: 0.82rem;
   font-weight: 700;
   font-family: var(--font-display);
@@ -19,7 +19,7 @@
 }
 
 .focus-timer-pill:hover {
-  background: rgba(30, 41, 59, 0.9);
+  background: var(--bg-elevated);
   border-color: rgba(99, 102, 241, 0.35);
   box-shadow: 0 0 12px rgba(99, 102, 241, 0.2);
 }
@@ -27,15 +27,15 @@
 .focus-timer-pill.running {
   background: rgba(245, 158, 11, 0.12);
   border-color: rgba(245, 158, 11, 0.35);
-  color: #fbbf24;
+  color: var(--warning);
 }
 
 .running-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #f59e0b;
-  box-shadow: 0 0 6px #f59e0b;
+  background: var(--warning);
+  box-shadow: 0 0 6px var(--warning);
   animation: dotPulse 1.2s infinite ease-in-out;
 }
 
@@ -49,7 +49,7 @@
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(15, 23, 42, 0.75);
+  background: var(--bg-base);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   display: flex;
@@ -67,7 +67,7 @@
 .ft-modal {
   width: 100%;
   max-width: 440px;
-  background: rgba(15, 23, 42, 0.95) !important;
+  background: var(--bg-base) !important;
   border: 1px solid rgba(99, 102, 241, 0.3) !important;
   border-radius: 24px !important;
   padding: 1.5rem !important;
@@ -95,7 +95,7 @@
   gap: 0.5rem;
   font-size: 1rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .ft-header-right {
@@ -105,9 +105,9 @@
 }
 
 .ft-icon-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #94a3b8;
+  background: var(--border);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
   border-radius: 8px;
   padding: 0.35rem;
   cursor: pointer;
@@ -118,7 +118,7 @@
 }
 
 .ft-icon-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--border);
   color: #ffffff;
 }
 
@@ -130,9 +130,9 @@
 }
 
 .ft-preset-btn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #94a3b8;
+  background: var(--border);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.35rem 0.75rem;
@@ -147,8 +147,8 @@
 }
 
 .ft-preset-btn.active {
-  background: #6366f1;
-  border-color: #6366f1;
+  background: var(--accent);
+  border-color: var(--accent);
   color: #ffffff;
   box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
 }
@@ -172,13 +172,13 @@
 
 .ft-ring-bg {
   fill: none;
-  stroke: rgba(255, 255, 255, 0.06);
+  stroke: var(--border);
   stroke-width: 6;
 }
 
 .ft-ring-fill {
   fill: none;
-  stroke: #6366f1;
+  stroke: var(--accent);
   stroke-width: 6;
   stroke-linecap: round;
   transition: stroke-dashoffset 0.5s ease;
@@ -198,13 +198,13 @@
   font-size: 2.25rem;
   font-weight: 800;
   font-family: var(--font-display);
-  color: #f1f5f9;
+  color: var(--text-primary);
   letter-spacing: 0.02em;
 }
 
 .ft-preset-name {
   font-size: 0.72rem;
-  color: #818cf8;
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -227,7 +227,7 @@
 }
 
 .btn-warning {
-  background: #f59e0b;
+  background: var(--warning);
   color: #ffffff;
   border: none;
 }
@@ -246,7 +246,7 @@
   flex-direction: column;
   gap: 0.35rem;
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid var(--border);
 }
 
 .ft-stat {
@@ -260,5 +260,5 @@
 
 .ft-tip {
   font-size: 0.7rem;
-  color: #64748b;
+  color: var(--text-secondary);
 }

@@ -399,7 +399,7 @@ export default function Formulas() {
                   onClick={() => toggleMastered(item.id)}
                   title="Mark as Mastered"
                 >
-                  <CheckCircle size={18} fill={masteredIds.includes(item.id) ? '#10b981' : 'none'} color={masteredIds.includes(item.id) ? '#10b981' : '#64748b'} />
+                  <CheckCircle size={18} fill={masteredIds.includes(item.id) ? '#10b981' : 'none'} color={masteredIds.includes(item.id) ? '#10b981' : 'var(--text-secondary)'} />
                 </button>
               </div>
 

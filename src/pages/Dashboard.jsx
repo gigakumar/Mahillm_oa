@@ -67,7 +67,7 @@ const DIGITAL_BOOKS = [
     title: 'GATE Top 1000 Numerical PYQs',
     subtitle: 'MCQs for GATE ME',
     tag: 'HIGH YIELD',
-    colorGradient: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+    colorGradient: 'linear-gradient(135deg, var(--bg-elevated) 0%, #334155 100%)',
     badgeText: '2026 EDITION'
   },
   {

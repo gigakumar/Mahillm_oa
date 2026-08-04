@@ -316,11 +316,11 @@ export default function Profile() {
         </section>
 
         {/* DREAM GATE GOAL & TARGET MILESTONE CARD */}
-        <section className="card" style={{ padding: '1.5rem', marginBottom: '2rem', background: 'linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(15, 23, 42, 0.8))', border: '1px solid rgba(99, 102, 241, 0.25)', borderRadius: '20px' }}>
+        <section className="card" style={{ padding: '1.5rem', marginBottom: '2rem', background: 'linear-gradient(135deg, var(--bg-elevated), var(--bg-base))', border: '1px solid rgba(99, 102, 241, 0.25)', borderRadius: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <Trophy size={20} color="#fbbf24" />
-              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: '#f1f5f9' }}>Dream Goal &amp; Milestone Target</h3>
+              <Trophy size={20} color="var(--warning)" />
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--text-primary)' }}>Dream Goal &amp; Milestone Target</h3>
             </div>
             <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#38bdf8', background: 'rgba(56, 189, 248, 0.12)', padding: '0.3rem 0.75rem', borderRadius: '999px', border: '1px solid rgba(56, 189, 248, 0.25)' }}>
               GATE 2026 Milestone Active 🚀
@@ -328,19 +328,19 @@ export default function Profile() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-            <div style={{ background: 'rgba(15, 23, 42, 0.5)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Target All India Rank</div>
-              <strong style={{ fontSize: '1.25rem', color: '#fbbf24', fontFamily: 'var(--font-display)' }}>AIR &lt; #150</strong>
+            <div style={{ background: 'var(--bg-base)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>Target All India Rank</div>
+              <strong style={{ fontSize: '1.25rem', color: 'var(--warning)', fontFamily: 'var(--font-display)' }}>AIR &lt; #150</strong>
             </div>
 
-            <div style={{ background: 'rgba(15, 23, 42, 0.5)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Dream PSU / IIT</div>
+            <div style={{ background: 'var(--bg-base)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>Dream PSU / IIT</div>
               <strong style={{ fontSize: '1.15rem', color: '#34d399' }}>IOCL / IIT Bombay</strong>
             </div>
 
-            <div style={{ background: 'rgba(15, 23, 42, 0.5)', padding: '1rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ fontSize: '0.72rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase' }}>Target GATE Score</div>
-              <strong style={{ fontSize: '1.25rem', color: '#818cf8', fontFamily: 'var(--font-display)' }}>780 / 1000 Marks</strong>
+            <div style={{ background: 'var(--bg-base)', padding: '1rem', borderRadius: '12px', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase' }}>Target GATE Score</div>
+              <strong style={{ fontSize: '1.25rem', color: 'var(--accent)', fontFamily: 'var(--font-display)' }}>780 / 1000 Marks</strong>
             </div>
           </div>
         </section>

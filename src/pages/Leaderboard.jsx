@@ -209,11 +209,11 @@ export default function Leaderboard() {
       case 0:
         return { label: 'Gold Scholar', color: 'var(--warning)', bg: 'rgba(245, 158, 11, 0.12)' };
       case 1:
-        return { label: 'Silver Specialist', color: '#94a3b8', bg: 'rgba(148, 163, 184, 0.12)' };
+        return { label: 'Silver Specialist', color: 'var(--text-secondary)', bg: 'rgba(148, 163, 184, 0.12)' };
       case 2:
         return { label: 'Bronze Practitioner', color: '#b45309', bg: 'rgba(180, 83, 9, 0.12)' };
       default:
-        return { label: 'Competitor', color: 'var(--text-secondary)', bg: 'rgba(255, 255, 255, 0.05)' };
+        return { label: 'Competitor', color: 'var(--text-secondary)', bg: 'var(--border)' };
     }
   };
 
@@ -434,7 +434,7 @@ export default function Leaderboard() {
                           </td>
                           <td className="accuracy-col" style={{ color: activeTab === 'accuracy' ? 'var(--accent)' : 'inherit' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                              <div style={{ width: '40px', height: '4px', background: 'rgba(255,255,255,0.1)', borderRadius: '2px', overflow: 'hidden' }}>
+                              <div style={{ width: '40px', height: '4px', background: 'var(--border)', borderRadius: '2px', overflow: 'hidden' }}>
                                 <div style={{ height: '100%', width: `${accuracy}%`, background: 'var(--accent)' }}></div>
                               </div>
                               {accuracy}%

@@ -8,8 +8,8 @@
 }
 
 .inspector-header-card {
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-base) 100%);
+  border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.75rem 2rem;
   display: flex;
@@ -41,8 +41,8 @@
 }
 
 .comp-tab-btn {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   color: #cbd5e1;
   padding: 0.6rem 1.25rem;
   border-radius: 0.75rem;
@@ -59,7 +59,7 @@
 .comp-tab-btn.active {
   background: #4f46e5;
   color: #ffffff;
-  border-color: #6366f1;
+  border-color: var(--accent);
 }
 
 /* Grid Layout */
@@ -70,8 +70,8 @@
 }
 
 .visual-canvas-card, .controls-card {
-  background: rgba(30, 41, 59, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.5rem;
   display: flex;
@@ -88,16 +88,16 @@
 .comp-cat-badge {
   font-size: 0.75rem;
   background: rgba(99, 102, 241, 0.15);
-  color: #818cf8;
+  color: var(--accent);
   padding: 0.2rem 0.6rem;
   border-radius: 0.4rem;
   font-weight: 600;
 }
 
 .rotate-toggle {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #94a3b8;
+  background: var(--border);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
   border-radius: 0.5rem;
   padding: 0.35rem 0.75rem;
   font-size: 0.75rem;
@@ -112,7 +112,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--bg-base);
   border-radius: 0.85rem;
   padding: 1rem;
 }
@@ -133,7 +133,7 @@
 
 .comp-desc {
   font-size: 0.9rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   line-height: 1.5;
   margin: 0;
 }
@@ -160,12 +160,12 @@
 
 .param-slider {
   width: 100%;
-  accent-color: #6366f1;
+  accent-color: var(--accent);
 }
 
 .key-formulas-box {
-  background: rgba(15, 23, 42, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: var(--bg-base);
+  border: 1px solid var(--border);
   border-radius: 0.75rem;
   padding: 1rem;
   margin-top: 0.5rem;
@@ -173,8 +173,8 @@
 
 /* Flashcards Section */
 .flashcards-section-card {
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   border-radius: 1rem;
   padding: 1.5rem;
   display: flex;
@@ -196,7 +196,7 @@
 .flashcard {
   width: 100%;
   min-height: 180px;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+  background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-base) 100%);
   border: 1px solid rgba(99, 102, 241, 0.3);
   border-radius: 1rem;
   padding: 2rem;
@@ -226,14 +226,14 @@
 
 .fc-subject {
   font-size: 0.75rem;
-  color: #818cf8;
+  color: var(--accent);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
 .fc-tap-prompt {
   font-size: 0.8rem;
-  color: #64748b;
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -254,8 +254,8 @@
 }
 
 .fc-nav-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--border);
+  border: 1px solid var(--border);
   color: #e2e8f0;
   padding: 0.5rem 1.25rem;
   border-radius: 0.6rem;
@@ -266,7 +266,7 @@
 
 .fc-nav-btn.primary {
   background: #4f46e5;
-  border-color: #6366f1;
+  border-color: var(--accent);
   color: #ffffff;
 }
 

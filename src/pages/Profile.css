@@ -459,7 +459,7 @@
 
 .insight-focus .insight-icon {
   background: rgba(245, 158, 11, 0.12);
-  color: #f59e0b;
+  color: var(--warning);
 }
 
 .insight-card span {

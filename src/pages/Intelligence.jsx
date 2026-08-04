@@ -388,7 +388,7 @@ export default function Intelligence() {
       color = '#ef4444'; // Overconfident (low accuracy, high confidence)
       label = 'Overconfident';
     } else if (accuracy < 0.6 && avgConfidence < 0.6) {
-      color = '#f59e0b'; // Realistic Weakness (low accuracy, low confidence)
+      color = 'var(--warning)'; // Realistic Weakness (low accuracy, low confidence)
       label = 'Realistic Weakness';
     }
     
@@ -409,7 +409,7 @@ export default function Intelligence() {
       { topic: "Thermodynamics (Calibrating)", cx: 35, cy: 40, color: "#ef4444", label: "Overconfident", accuracy: 35, confidence: 60 },
       { topic: "Fluid Mechanics (Calibrating)", cx: 85, cy: 80, color: "#10b981", label: "Calibrated Mastery", accuracy: 85, confidence: 20 },
       { topic: "Quantitative Aptitude (Calibrating)", cx: 75, cy: 40, color: "#a78bfa", label: "Hidden Strength", accuracy: 75, confidence: 60 },
-      { topic: "Data Interpretation (Calibrating)", cx: 20, cy: 20, color: "#f59e0b", label: "Realistic Weakness", accuracy: 20, confidence: 80 }
+      { topic: "Data Interpretation (Calibrating)", cx: 20, cy: 20, color: "var(--warning)", label: "Realistic Weakness", accuracy: 20, confidence: 80 }
     );
   }
 
@@ -486,26 +486,26 @@ export default function Intelligence() {
       </section>
 
       {/* PREDICTION ENGINE SECTION */}
-      <section className="intel-prediction-section card" style={{ marginTop: '2rem', padding: '1.5rem', background: 'linear-gradient(145deg, #1e293b, #0f172a)', border: '1px solid #334155' }}>
+      <section className="intel-prediction-section card" style={{ marginTop: '2rem', padding: '1.5rem', background: 'linear-gradient(145deg, var(--bg-elevated), var(--bg-base))', border: '1px solid #334155' }}>
         <div className="section-header" style={{ marginBottom: '1rem', borderBottom: '1px solid #334155', paddingBottom: '0.5rem' }}>
           <h2 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#38bdf8' }}><TrendingUp size={20} /> Prediction Engine</h2>
           <span className="tag-secondary" style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8' }}>Predictive Analytics</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <div>
-            <div style={{ fontSize: '0.9rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Current Accuracy</div>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>Current Accuracy</div>
             <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#fff' }}>
               {bayesianEngine.currentAccuracy}%
             </div>
           </div>
           <div>
-            <div style={{ fontSize: '0.9rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Expected after 5 days</div>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>Expected after 5 days</div>
             <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#10b981' }}>
               {bayesianEngine.expectedAfter5Days}%
             </div>
           </div>
           <div>
-            <div style={{ fontSize: '0.9rem', color: '#94a3b8', marginBottom: '0.25rem' }}>Chance of crossing 90%</div>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>Chance of crossing 90%</div>
             <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#a78bfa' }}>
               {bayesianEngine.chanceOfCrossing90}%
             </div>
@@ -623,7 +623,7 @@ export default function Intelligence() {
                         const priority = mastery < 50 ? 'CRITICAL' : mastery > 80 ? 'LOW' : 'MEDIUM';
                         const difficulty = mastery < 50 ? 'Advanced/Hard' : 'Basic/Foundational';
                         const exposurePercent = Math.min(100, (topic.questionsAttempted || 1) * 10);
-                        const colorCode = mastery < 50 ? '#ef4444' : mastery > 80 ? '#10b981' : '#f59e0b';
+                        const colorCode = mastery < 50 ? '#ef4444' : mastery > 80 ? '#10b981' : 'var(--warning)';
 
                         return (
                           <div 
@@ -633,7 +633,7 @@ export default function Intelligence() {
                               display: 'flex', 
                               flexDirection: 'column', 
                               padding: '12px', 
-                              background: 'rgba(30, 41, 59, 0.7)', 
+                              background: 'var(--bg-elevated)', 
                               borderRadius: '8px', 
                               marginBottom: '10px', 
                               borderLeft: `4px solid ${colorCode}`,
@@ -646,13 +646,13 @@ export default function Intelligence() {
                             onMouseLeave={(e) => e.currentTarget.style.transform = 'none'}
                           >
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                              <span style={{ fontWeight: '600', color: '#f8fafc', fontSize: '0.95rem' }}>{topic.topic}</span>
+                              <span style={{ fontWeight: '600', color: 'var(--text-primary)', fontSize: '0.95rem' }}>{topic.topic}</span>
                               <span style={{ fontSize: '0.9rem', color: colorCode, fontWeight: 'bold' }}>{mastery}% Mastery</span>
                             </div>
                             
                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
-                              <span style={{ fontSize: '0.75rem', color: '#94a3b8', width: '60px' }}>Exposure</span>
-                              <div style={{ flex: 1, background: 'rgba(255,255,255,0.05)', height: '10px', borderRadius: '5px', overflow: 'hidden' }}>
+                              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', width: '60px' }}>Exposure</span>
+                              <div style={{ flex: 1, background: 'var(--border)', height: '10px', borderRadius: '5px', overflow: 'hidden' }}>
                                 <div style={{ 
                                   width: `${exposurePercent}%`, 
                                   height: '100%', 
@@ -669,7 +669,7 @@ export default function Intelligence() {
                               <span style={{ padding: '2px 6px', borderRadius: '4px', background: mastery < 50 ? 'rgba(239, 68, 68, 0.1)' : mastery > 80 ? 'rgba(16, 185, 129, 0.1)' : 'rgba(245, 158, 11, 0.1)', color: colorCode }}>
                                 PRIORITY: {priority}
                               </span>
-                              <span style={{ color: '#64748b' }}>
+                              <span style={{ color: 'var(--text-secondary)' }}>
                                 {difficulty}
                               </span>
                             </div>
@@ -735,7 +735,7 @@ export default function Intelligence() {
                         <text 
                           x={pt.cx + 4} 
                           y={pt.cy + 1} 
-                          fill="#94a3b8" 
+                          fill="var(--text-secondary)" 
                           fontSize="2.8" 
                           fontWeight="600"
                           className="scatter-point-text"

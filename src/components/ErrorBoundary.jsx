@@ -19,8 +19,8 @@ class ErrorBoundary extends React.Component {
       return (
         <div style={{
           minHeight: '100vh',
-          backgroundColor: '#0f172a',
-          color: '#f8fafc',
+          backgroundColor: 'var(--bg-base)',
+          color: 'var(--text-primary)',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
@@ -29,7 +29,7 @@ class ErrorBoundary extends React.Component {
           fontFamily: 'sans-serif'
         }}>
           <div style={{
-            backgroundColor: '#1e293b',
+            backgroundColor: 'var(--bg-elevated)',
             border: '1px solid rgba(239, 68, 68, 0.4)',
             borderRadius: '1rem',
             padding: '2rem',
@@ -37,11 +37,11 @@ class ErrorBoundary extends React.Component {
             textAlign: 'center'
           }}>
             <h2 style={{ color: '#ef4444', marginTop: 0 }}>Application Error</h2>
-            <p style={{ color: '#94a3b8', fontSize: '0.95rem' }}>
+            <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
               Something went wrong while rendering this page.
             </p>
             <pre style={{
-              backgroundColor: '#0f172a',
+              backgroundColor: 'var(--bg-base)',
               color: '#f87171',
               padding: '1rem',
               borderRadius: '0.5rem',
@@ -58,7 +58,7 @@ class ErrorBoundary extends React.Component {
                 window.location.href = '/';
               }}
               style={{
-                backgroundColor: '#6366f1',
+                backgroundColor: 'var(--accent)',
                 color: '#fff',
                 border: 'none',
                 padding: '0.75rem 1.5rem',

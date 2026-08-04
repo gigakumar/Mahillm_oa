@@ -93,9 +93,9 @@ export default function GatePredictor() {
       </div>
 
       {/* What-If Target Marks Simulator Box */}
-      <div className="card" style={{ background: 'rgba(30, 41, 59, 0.8)', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '1.25rem 1.5rem', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <div className="card" style={{ background: 'var(--bg-elevated)', border: '1px solid rgba(99, 102, 241, 0.3)', padding: '1.25rem 1.5rem', borderRadius: '12px', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#f8fafc', fontWeight: '600', fontSize: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-primary)', fontWeight: '600', fontSize: '1rem' }}>
             <Zap size={18} className="text-amber-400" />
             <span>Target Marks Simulator ("What-If" Analysis)</span>
           </div>
@@ -110,7 +110,7 @@ export default function GatePredictor() {
         {isSimulating && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
-              <span style={{ color: '#94a3b8' }}>Simulated GATE Marks out of 100:</span>
+              <span style={{ color: 'var(--text-secondary)' }}>Simulated GATE Marks out of 100:</span>
               <strong style={{ color: '#38bdf8', fontSize: '1.1rem' }}>{targetMarks} / 100 Marks</strong>
             </div>
             <input
@@ -119,7 +119,7 @@ export default function GatePredictor() {
               max="95"
               value={targetMarks}
               onChange={(e) => setTargetMarks(parseInt(e.target.value))}
-              style={{ accentColor: '#6366f1', cursor: 'pointer', height: '6px' }}
+              style={{ accentColor: 'var(--accent)', cursor: 'pointer', height: '6px' }}
             />
           </div>
         )}
@@ -188,15 +188,15 @@ export default function GatePredictor() {
         </div>
 
         {/* PSU Filter Controls */}
-        <div className="psu-filter-bar" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', margin: '1rem 0', padding: '0.75rem 1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '10px', border: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(30, 41, 59, 0.7)', padding: '0.35rem 0.75rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)', flex: 1, minWidth: '200px' }}>
-            <Search size={15} color="#64748b" />
+        <div className="psu-filter-bar" style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', margin: '1rem 0', padding: '0.75rem 1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '10px', border: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'var(--bg-elevated)', padding: '0.35rem 0.75rem', borderRadius: '8px', border: '1px solid var(--border)', flex: 1, minWidth: '200px' }}>
+            <Search size={15} color="var(--text-secondary)" />
             <input
               type="text"
               placeholder="Search PSU (e.g. IOCL, ONGC, ISRO...)"
               value={psuSearch}
               onChange={e => setPsuSearch(e.target.value)}
-              style={{ background: 'transparent', border: 'none', color: '#f1f5f9', fontSize: '0.85rem', outline: 'none', width: '100%' }}
+              style={{ background: 'transparent', border: 'none', color: 'var(--text-primary)', fontSize: '0.85rem', outline: 'none', width: '100%' }}
             />
           </div>
 
@@ -237,7 +237,7 @@ export default function GatePredictor() {
                     </td>
                     <td><span className="psu-cat-tag">{psu.category}</span></td>
                     <td>
-                      <span className="psu-pkg-tag" style={{ color: '#fbbf24', fontWeight: 700, fontSize: '0.82rem', background: 'rgba(245, 158, 11, 0.1)', padding: '0.2rem 0.5rem', borderRadius: '6px', border: '1px solid rgba(245, 158, 11, 0.25)' }}>
+                      <span className="psu-pkg-tag" style={{ color: 'var(--warning)', fontWeight: 700, fontSize: '0.82rem', background: 'rgba(245, 158, 11, 0.1)', padding: '0.2rem 0.5rem', borderRadius: '6px', border: '1px solid rgba(245, 158, 11, 0.25)' }}>
                         💼 {psu.avgPackage || '12.0 LPA'}
                       </span>
                     </td>
@@ -279,7 +279,7 @@ export default function GatePredictor() {
             <tbody>
               {HISTORICAL_GATE_BENCHMARKS.map((row, idx) => (
                 <tr key={idx}>
-                  <td><strong style={{ color: '#818cf8' }}>{row.rankBand}</strong></td>
+                  <td><strong style={{ color: 'var(--accent)' }}>{row.rankBand}</strong></td>
                   <td><span className="font-mono" style={{ color: '#38bdf8', fontWeight: 700 }}>{row.rawMarks}</span></td>
                   <td><span className="font-mono" style={{ color: '#34d399', fontWeight: 700 }}>{row.gateScore}</span></td>
                   <td style={{ color: '#cbd5e1', fontSize: '0.85rem' }}>{row.psuCallStatus}</td>

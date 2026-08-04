@@ -111,7 +111,7 @@
 .silver-podium .podium-avatar {
   width: 68px;
   height: 68px;
-  border: 3px solid #94A3B8;
+  border: 3px solid var(--text-secondary);
   box-shadow: 0 0 12px rgba(148, 163, 184, 0.15);
 }
 
@@ -149,7 +149,7 @@
 }
 
 .badge-silver {
-  color: #94A3B8;
+  color: var(--text-secondary);
   background: rgba(148, 163, 184, 0.1);
 }
 
@@ -190,7 +190,7 @@
   letter-spacing: 0.05em;
   color: var(--text-muted);
   border-bottom: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.02);
+  background: var(--border);
   font-weight: 600;
 }
 
@@ -206,11 +206,11 @@
 }
 
 .leaderboard-table tr:hover {
-  background: rgba(255, 255, 255, 0.01);
+  background: var(--border);
 }
 
 .podium-table-row {
-  background: rgba(255, 255, 255, 0.005);
+  background: var(--border);
 }
 
 .current-user-row {
@@ -229,7 +229,7 @@
 }
 
 .gold { color: var(--warning); }
-.silver { color: #94A3B8; }
+.silver { color: var(--text-secondary); }
 .bronze { color: #B45309; }
 
 .user-cell {

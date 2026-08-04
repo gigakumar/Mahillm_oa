@@ -6,11 +6,11 @@
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  background: rgba(30, 41, 59, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   border-radius: 999px;
   padding: 0.35rem 0.85rem;
-  color: #f1f5f9;
+  color: var(--text-primary);
   font-size: 0.82rem;
   font-weight: 700;
   font-family: var(--font-display);
@@ -19,7 +19,7 @@
 }
 
 .focus-audio-pill:hover {
-  background: rgba(30, 41, 59, 0.9);
+  background: var(--bg-elevated);
   border-color: rgba(16, 185, 129, 0.35);
 }
 
@@ -50,7 +50,7 @@
   right: 1.5rem;
   z-index: 9995;
   width: 320px;
-  background: rgba(15, 23, 42, 0.95) !important;
+  background: var(--bg-base) !important;
   border: 1px solid rgba(16, 185, 129, 0.3) !important;
   border-radius: 20px !important;
   padding: 1.25rem !important;
@@ -79,29 +79,29 @@
   gap: 0.4rem;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .ap-close {
   background: transparent;
   border: none;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   cursor: pointer;
   padding: 0.2rem;
 }
 
-.ap-close:hover { color: #f1f5f9; }
+.ap-close:hover { color: var(--text-primary); }
 
 /* Now Playing Box */
 .ap-now-playing {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: rgba(30, 41, 59, 0.5);
+  background: var(--bg-elevated);
   padding: 0.75rem;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
 }
 
 .ap-track-icon {
@@ -126,7 +126,7 @@
 .ap-track-name {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #f1f5f9;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -134,7 +134,7 @@
 
 .ap-track-desc {
   font-size: 0.7rem;
-  color: #64748b;
+  color: var(--text-secondary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -177,7 +177,7 @@
 
 .ap-vol-pct {
   font-size: 0.72rem;
-  color: #64748b;
+  color: var(--text-secondary);
   width: 32px;
   text-align: right;
 }
@@ -196,14 +196,14 @@
   padding: 0.45rem 0.75rem;
   border-radius: 8px;
   font-size: 0.8rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .ap-track-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #f1f5f9;
+  background: var(--border);
+  color: var(--text-primary);
 }
 
 .ap-track-item.selected {

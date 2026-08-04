@@ -11,7 +11,7 @@
 
 .es-header {
   padding: 2rem;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95)) !important;
+  background: linear-gradient(135deg, var(--bg-elevated), var(--bg-base)) !important;
   border: 1px solid rgba(99, 102, 241, 0.25) !important;
   border-radius: 24px !important;
   display: flex;
@@ -25,7 +25,7 @@
   gap: 0.4rem;
   font-size: 0.78rem;
   font-weight: 700;
-  color: #fbbf24;
+  color: var(--warning);
   background: rgba(245, 158, 11, 0.12);
   border: 1px solid rgba(245, 158, 11, 0.25);
   padding: 0.3rem 0.75rem;
@@ -45,7 +45,7 @@
 
 .es-header p {
   font-size: 0.9rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   margin: 0;
   max-width: 650px;
 }
@@ -53,8 +53,8 @@
 /* Calculator Card */
 .es-calculator-card {
   padding: 1.75rem 2rem;
-  background: rgba(15, 23, 42, 0.55) !important;
-  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  background: var(--bg-base) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 20px !important;
   display: flex;
   flex-direction: column;
@@ -72,7 +72,7 @@
   margin: 0;
   font-size: 1.15rem;
   font-weight: 800;
-  color: #f1f5f9;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -102,20 +102,20 @@
 
 .es-field label {
   font-size: 0.82rem;
-  color: #94a3b8;
+  color: var(--text-secondary);
   font-weight: 600;
 }
 
 .es-field input[type='range'] {
-  accent-color: #6366f1;
+  accent-color: var(--accent);
   cursor: pointer;
 }
 
 .es-field select {
-  background: rgba(30, 41, 59, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  color: #f1f5f9;
+  color: var(--text-primary);
   padding: 0.45rem 0.75rem;
   font-size: 0.88rem;
   outline: none;
@@ -123,7 +123,7 @@
 
 .es-field-val {
   font-size: 0.8rem;
-  color: #818cf8;
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -132,8 +132,8 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 1rem;
-  background: rgba(30, 41, 59, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
   border-radius: 14px;
   padding: 1rem 1.25rem;
 }
@@ -146,7 +146,7 @@
 
 .es-stat .lbl {
   font-size: 0.72rem;
-  color: #64748b;
+  color: var(--text-secondary);
   font-weight: 600;
   text-transform: uppercase;
 }
@@ -165,8 +165,8 @@
 
 .es-phase-card {
   padding: 1.5rem;
-  background: rgba(15, 23, 42, 0.55) !important;
-  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  background: var(--bg-base) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 20px !important;
   display: flex;
   flex-direction: column;
@@ -183,7 +183,7 @@
 .es-phase-num {
   font-size: 1.5rem;
   font-weight: 800;
-  color: #818cf8;
+  color: var(--accent);
   font-family: var(--font-display);
   line-height: 1;
   background: rgba(99, 102, 241, 0.12);
@@ -196,7 +196,7 @@
   margin: 0;
   font-size: 1.05rem;
   font-weight: 800;
-  color: #f1f5f9;
+  color: var(--text-primary);
 }
 
 .es-phase-focus {
@@ -216,8 +216,8 @@
   gap: 0.35rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #94a3b8;
-  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-secondary);
+  background: var(--border);
   padding: 0.25rem 0.6rem;
   border-radius: 6px;
 }
@@ -234,7 +234,7 @@
   align-items: flex-start;
   gap: 0.5rem;
   font-size: 0.8rem;
-  color: #fbbf24;
+  color: var(--warning);
   background: rgba(245, 158, 11, 0.08);
   padding: 0.65rem 0.85rem;
   border-radius: 10px;

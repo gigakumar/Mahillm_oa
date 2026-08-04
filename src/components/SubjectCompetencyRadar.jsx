@@ -24,10 +24,10 @@ export default function SubjectCompetencyRadar({ masteryScores = {} }) {
         <div className="radar-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <Award size={18} className="text-indigo-400" />
-            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#f1f5f9' }}>Competency Radar</h3>
+            <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>Competency Radar</h3>
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '260px', color: '#94a3b8' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '260px', color: 'var(--text-secondary)' }}>
           No competency data available yet.
         </div>
       </div>
@@ -60,7 +60,7 @@ export default function SubjectCompetencyRadar({ masteryScores = {} }) {
       <div className="radar-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
           <Award size={18} className="text-indigo-400" />
-          <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#f1f5f9' }}>Competency Radar</h3>
+          <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: 'var(--text-primary)' }}>Competency Radar</h3>
         </div>
         <span className="radar-rank-tag">Tier: Specialist ⭐</span>
       </div>

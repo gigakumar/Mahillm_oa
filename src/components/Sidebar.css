@@ -27,7 +27,7 @@
 .brand-icon-box {
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #0284c7 0%, var(--accent) 100%);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -114,11 +114,11 @@
 }
 
 .premium-link {
-  color: #fbbf24;
+  color: var(--warning);
 }
 
 .premium-badge {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+  background: linear-gradient(135deg, var(--warning), #d97706);
   color: #fff;
   font-size: 0.65rem;
   font-weight: 800;
@@ -150,7 +150,7 @@
   border-radius: 50%;
 }
 .chrome-dot.red { background: #ef4444; }
-.chrome-dot.yellow { background: #f59e0b; }
+.chrome-dot.yellow { background: var(--warning); }
 .chrome-dot.green { background: #10b981; }
 
 .external-arrow {

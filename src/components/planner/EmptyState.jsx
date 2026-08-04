@@ -18,7 +18,7 @@ export default function EmptyState() {
         height={400} 
         recycle={false} 
         numberOfPieces={200}
-        colors={['#6366f1', '#ec4899', '#10b981', '#f59e0b']}
+        colors={['var(--accent)', '#ec4899', '#10b981', 'var(--warning)']}
       />
       
       <motion.div 

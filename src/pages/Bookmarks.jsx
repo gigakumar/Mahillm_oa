@@ -89,7 +89,7 @@ export default function Bookmarks() {
       {/* Filter and Search Controls */}
       <div className="bm-controls card">
         <div className="bm-search">
-          <Search size={16} color="#64748b" />
+          <Search size={16} color="var(--text-secondary)" />
           <input
             type="text"
             placeholder="Search saved questions or concepts..."
@@ -114,8 +114,8 @@ export default function Bookmarks() {
       {/* Questions List */}
       {loading ? (
         <div className="card empty-bm" style={{ textAlign: 'center', padding: '3rem 1rem' }}>
-          <div className="spinner" style={{ border: '3px solid rgba(255,255,255,0.1)', borderTop: '3px solid #6366f1', borderRadius: '50%', width: '32px', height: '32px', animation: 'spin 1s linear infinite', margin: '0 auto 1rem auto' }}></div>
-          <p style={{ color: '#94a3b8' }}>Loading saved questions...</p>
+          <div className="spinner" style={{ border: '3px solid var(--border)', borderTop: '3px solid var(--accent)', borderRadius: '50%', width: '32px', height: '32px', animation: 'spin 1s linear infinite', margin: '0 auto 1rem auto' }}></div>
+          <p style={{ color: 'var(--text-secondary)' }}>Loading saved questions...</p>
         </div>
       ) : filteredBookmarks.length === 0 ? (
         <div className="card empty-bm">
