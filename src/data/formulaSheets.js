@@ -646,4 +646,353 @@ export const FORMULA_SHEETS = [
     common_trap: "You cannot add times directly! You must add their work rates (1/T). e.g., if A takes 10 days and B takes 15, together they take 6 days, not 25.",
     linkedQuestions: []
   }
+
+  ,
+  // === NEW THERMODYNAMICS ===
+  {
+    id: "thermo_first_law",
+    name: "First Law of Thermodynamics (Closed System)",
+    subject: "Thermodynamics",
+    formula: "Q - W = \\Delta U",
+    readable: "Q - W = ΔU",
+    variables: [
+      "Q = Heat transferred to the system",
+      "W = Work done by the system",
+      "\\Delta U = Change in internal energy"
+    ],
+    units: ["Heat (Q): Joules (J)", "Work (W): Joules (J)", "Energy (\\Delta U): Joules (J)"],
+    conditions: "Closed system undergoing a process.",
+    common_trap: "Sign convention! Q is positive if added to system, W is positive if done BY system.",
+    linkedQuestions: []
+  },
+  {
+    id: "thermo_carnot_efficiency",
+    name: "Carnot Engine Efficiency",
+    subject: "Thermodynamics",
+    formula: "\\eta_{Carnot} = 1 - \\frac{T_L}{T_H}",
+    readable: "η_Carnot = 1 - (T_L / T_H)",
+    variables: [
+      "\\eta = Thermal efficiency",
+      "T_L = Absolute temperature of cold reservoir",
+      "T_H = Absolute temperature of hot reservoir"
+    ],
+    units: ["Efficiency: Dimensionless (%)", "Temperature (T): Kelvin (K)"],
+    conditions: "Reversible cycle operating between two thermal reservoirs.",
+    common_trap: "Temperatures MUST be in Kelvin, not Celsius.",
+    linkedQuestions: []
+  },
+  {
+    id: "thermo_enthalpy",
+    name: "Enthalpy",
+    subject: "Thermodynamics",
+    formula: "H = U + PV",
+    readable: "H = U + P·V",
+    variables: [
+      "H = Total Enthalpy",
+      "U = Internal Energy",
+      "P = Absolute Pressure",
+      "V = Volume"
+    ],
+    units: ["Enthalpy (H): J", "Energy (U): J", "Pressure (P): Pa", "Volume (V): m³"],
+    conditions: "Applicable to any substance in any state.",
+    common_trap: "P·V must evaluate to Joules. 1 kPa · m³ = 1 kJ.",
+    linkedQuestions: []
+  },
+  {
+    id: "thermo_cop_hp",
+    name: "COP of Heat Pump & Refrigerator",
+    subject: "Thermodynamics",
+    formula: "\\text{COP}_{HP} = \\frac{Q_H}{W_{in}} = \\text{COP}_{R} + 1",
+    readable: "COP_HP = Q_H / W_in = COP_R + 1",
+    variables: [
+      "COP_{HP} = Coefficient of Performance for Heat Pump",
+      "COP_R = Coefficient of Performance for Refrigerator",
+      "Q_H = Heat delivered to hot reservoir",
+      "W_{in} = Work input required"
+    ],
+    units: ["COP: Dimensionless", "Heat (Q): J or W", "Work (W): J or W"],
+    conditions: "Steady operation of vapor-compression or reversible cycles.",
+    common_trap: "COP can be greater than 1, unlike efficiency. Always verify if it's a HP or Refrig.",
+    linkedQuestions: []
+  },
+
+  // === NEW STRENGTH OF MATERIALS ===
+  {
+    id: "som_thermal_stress",
+    name: "Thermal Stress",
+    subject: "Strength of Materials",
+    formula: "\\sigma_{th} = E \\alpha \\Delta T",
+    readable: "σ_th = E · α · ΔT",
+    variables: [
+      "\\sigma_{th} = Thermal stress developed",
+      "E = Young's Modulus",
+      "\\alpha = Coefficient of linear thermal expansion",
+      "\\Delta T = Change in temperature"
+    ],
+    units: ["Stress (\\sigma): Pa or MPa", "Modulus (E): Pa", "Alpha (\\alpha): 1/°C or 1/K", "Temp Change: °C or K"],
+    conditions: "Bar must be completely constrained from expanding/contracting.",
+    common_trap: "If the bar is free to expand, thermal stress is ZERO.",
+    linkedQuestions: []
+  },
+  {
+    id: "som_thin_cylinder_hoop",
+    name: "Hoop Stress (Thin Cylinder)",
+    subject: "Strength of Materials",
+    formula: "\\sigma_h = \\frac{P d}{2 t}",
+    readable: "σ_h = (P · d) / (2 · t)",
+    variables: [
+      "\\sigma_h = Hoop (circumferential) stress",
+      "P = Internal fluid pressure",
+      "d = Internal diameter of cylinder",
+      "t = Wall thickness"
+    ],
+    units: ["Stress (\\sigma_h): MPa", "Pressure (P): MPa", "Diameter (d): mm", "Thickness (t): mm"],
+    conditions: "Thin-walled cylinder criteria: d/t > 20.",
+    common_trap: "Longitudinal stress (\\sigma_l) is exactly HALF of hoop stress (P·d / 4t). Failure usually occurs along longitudinal seam due to higher hoop stress.",
+    linkedQuestions: []
+  },
+  {
+    id: "som_euler_buckling",
+    name: "Euler's Column Buckling Load",
+    subject: "Strength of Materials",
+    formula: "P_{cr} = \\frac{\\pi^2 E I}{L_e^2}",
+    readable: "P_cr = (π² · E · I) / (L_e²)",
+    variables: [
+      "P_{cr} = Critical buckling load",
+      "E = Young's modulus",
+      "I = Minimum area moment of inertia",
+      "L_e = Effective length of the column"
+    ],
+    units: ["Load (P): N", "Modulus (E): Pa", "Inertia (I): m⁴", "Length (L_e): m"],
+    conditions: "Long, slender columns with perfect axial loading and linear elastic behavior.",
+    common_trap: "Effective length depends on end conditions: pinned-pinned (L), fixed-free (2L), fixed-fixed (0.5L).",
+    linkedQuestions: []
+  },
+  {
+    id: "som_cantilever_deflection_point",
+    name: "Deflection of Cantilever (End Point Load)",
+    subject: "Strength of Materials",
+    formula: "\\delta_{max} = \\frac{P L^3}{3 E I}",
+    readable: "δ_max = (P · L³) / (3 · E · I)",
+    variables: [
+      "\\delta_{max} = Maximum deflection at the free end",
+      "P = Point load applied at the free end",
+      "L = Length of cantilever beam",
+      "E = Young's Modulus",
+      "I = Area Moment of Inertia"
+    ],
+    units: ["Deflection: m", "Load: N", "Length: m", "Modulus: Pa", "Inertia: m⁴"],
+    conditions: "Small deflections, linear elastic material.",
+    common_trap: "Maximum slope for this case is \\theta = P L^2 / (2 E I).",
+    linkedQuestions: []
+  },
+
+  // === NEW FLUID MECHANICS ===
+  {
+    id: "fluid_hydrostatic_pressure",
+    name: "Hydrostatic Pressure",
+    subject: "Fluid Mechanics",
+    formula: "P = \\rho g h",
+    readable: "P = ρ · g · h",
+    variables: [
+      "P = Gauge pressure at depth h",
+      "\\rho = Density of fluid",
+      "g = Acceleration due to gravity",
+      "h = Depth below free surface"
+    ],
+    units: ["Pressure (P): Pa", "Density: kg/m³", "Depth: m"],
+    conditions: "Fluid at rest (statics), incompressible.",
+    common_trap: "This is gauge pressure. Absolute pressure = P_atm + ρgh.",
+    linkedQuestions: []
+  },
+  {
+    id: "fluid_capillary_rise",
+    name: "Capillary Rise",
+    subject: "Fluid Mechanics",
+    formula: "h = \\frac{4 \\sigma \\cos \\theta}{\\rho g d}",
+    readable: "h = (4 · σ · cos θ) / (ρ · g · d)",
+    variables: [
+      "h = Height of capillary rise/fall",
+      "\\sigma = Surface tension",
+      "\\theta = Contact angle",
+      "\\rho = Density of liquid",
+      "d = Diameter of the tube"
+    ],
+    units: ["Height: m", "Surface Tension: N/m", "Angle: degrees or radians"],
+    conditions: "Narrow circular tube inserted into a liquid.",
+    common_trap: "If \\theta > 90° (e.g., mercury on glass), cos(\\theta) is negative, resulting in a capillary fall.",
+    linkedQuestions: []
+  },
+  {
+    id: "fluid_orifice_discharge",
+    name: "Flow through Orifice (Torricelli)",
+    subject: "Fluid Mechanics",
+    formula: "Q = C_d A \\sqrt{2 g H}",
+    readable: "Q = C_d · A · √(2 · g · H)",
+    variables: [
+      "Q = Actual discharge flow rate",
+      "C_d = Coefficient of discharge (C_c \\times C_v)",
+      "A = Area of orifice",
+      "H = Head of liquid above orifice center"
+    ],
+    units: ["Flow rate (Q): m³/s", "Area: m²", "Head: m"],
+    conditions: "Steady flow of liquid exiting a tank through a small opening.",
+    common_trap: "Ideal velocity is \\sqrt{2gH}. Real velocity is multiplied by C_v (coef of velocity).",
+    linkedQuestions: []
+  },
+  {
+    id: "fluid_lift_force",
+    name: "Lift Force",
+    subject: "Fluid Mechanics",
+    formula: "F_L = \\frac{1}{2} \\rho v^2 C_L A",
+    readable: "FL = 0.5 · ρ · v² · CL · A",
+    variables: [
+      "F_L = Lift force perpendicular to flow",
+      "\\rho = Fluid density",
+      "v = Free stream velocity",
+      "C_L = Lift coefficient",
+      "A = Planform area of wing/body"
+    ],
+    units: ["Lift force: N", "Density: kg/m³", "Velocity: m/s", "Area: m²"],
+    conditions: "Fluid flowing around an asymmetric body or symmetric body at angle of attack.",
+    common_trap: "Lift is strictly perpendicular to the oncoming flow direction, drag is parallel.",
+    linkedQuestions: []
+  },
+
+  // === NEW HEAT TRANSFER ===
+  {
+    id: "ht_thermal_resistance_plane",
+    name: "Thermal Resistance (Plane Wall)",
+    subject: "Heat Transfer",
+    formula: "R_{th} = \\frac{L}{k A}",
+    readable: "R_th = L / (k · A)",
+    variables: [
+      "R_{th} = Thermal resistance to conduction",
+      "L = Thickness of the wall",
+      "k = Thermal conductivity",
+      "A = Cross-sectional area"
+    ],
+    units: ["Resistance: K/W", "Thickness: m", "Conductivity: W/(m·K)", "Area: m²"],
+    conditions: "1D steady state conduction through a plane wall.",
+    common_trap: "For convection, the resistance is 1 / (hA). Combine them as resistors in series for composite walls.",
+    linkedQuestions: []
+  },
+  {
+    id: "ht_lmtd",
+    name: "Log Mean Temperature Difference",
+    subject: "Heat Transfer",
+    formula: "\\Delta T_{lm} = \\frac{\\Delta T_1 - \\Delta T_2}{\\ln(\\Delta T_1 / \\Delta T_2)}",
+    readable: "ΔT_lm = (ΔT₁ - ΔT₂) / ln(ΔT₁ / ΔT₂)",
+    variables: [
+      "\\Delta T_{lm} = LMTD",
+      "\\Delta T_1 = Temp difference between hot and cold fluids at one end",
+      "\\Delta T_2 = Temp difference at the other end"
+    ],
+    units: ["Temperature Difference: K or °C"],
+    conditions: "Heat exchangers (parallel flow or counter flow).",
+    common_trap: "For counter-flow, if ΔT1 = ΔT2, LMTD is undefined via formula; use ΔT_lm = ΔT1 instead.",
+    linkedQuestions: []
+  },
+  {
+    id: "ht_biot_number",
+    name: "Biot Number",
+    subject: "Heat Transfer",
+    formula: "Bi = \\frac{h L_c}{k_s}",
+    readable: "Bi = (h · L_c) / k_s",
+    variables: [
+      "Bi = Biot number (internal conduction resistance / external convection resistance)",
+      "h = Convective heat transfer coefficient",
+      "L_c = Characteristic length (V / A)",
+      "k_s = Thermal conductivity of the SOLID body"
+    ],
+    units: ["Bi: Dimensionless", "h: W/(m²·K)", "L_c: m", "k_s: W/(m·K)"],
+    conditions: "Transient heat conduction.",
+    common_trap: "If Bi < 0.1, Lumped Capacitance method is valid (temperature is uniform within the solid). Don't confuse solid k_s with fluid k_f used in Nusselt number!",
+    linkedQuestions: []
+  },
+  {
+    id: "ht_view_factor_reciprocity",
+    name: "View Factor Reciprocity",
+    subject: "Heat Transfer",
+    formula: "A_1 F_{1\\to2} = A_2 F_{2\\to1}",
+    readable: "A₁ · F_12 = A₂ · F_21",
+    variables: [
+      "A_1, A_2 = Surface areas of bodies 1 and 2",
+      "F_{i\\to j} = View factor (fraction of radiation leaving i that strikes j)"
+    ],
+    units: ["Area: m²", "View Factor: Dimensionless"],
+    conditions: "Diffuse, uniform emission from surfaces.",
+    common_trap: "F_12 is NOT generally equal to F_21 unless the areas are identical.",
+    linkedQuestions: []
+  },
+
+  // === NEW QUANTITATIVE APTITUDE ===
+  {
+    id: "quant_simple_interest",
+    name: "Simple Interest",
+    subject: "Quantitative Aptitude",
+    formula: "SI = \\frac{P \\times R \\times T}{100}",
+    readable: "SI = (P × R × T) / 100",
+    variables: [
+      "SI = Simple Interest amount",
+      "P = Principal amount",
+      "R = Annual interest rate %",
+      "T = Time in years"
+    ],
+    units: ["Interest & Principal: Currency", "Rate: %", "Time: years"],
+    conditions: "Interest is only calculated on the original principal.",
+    common_trap: "If time is given in months, divide by 12 to convert to years before plugging into formula.",
+    linkedQuestions: []
+  },
+  {
+    id: "quant_mixture_alligation",
+    name: "Rule of Alligation",
+    subject: "Quantitative Aptitude",
+    formula: "\\frac{Q_A}{Q_B} = \\frac{\\text{Price}_B - \\text{MeanPrice}}{\\text{MeanPrice} - \\text{Price}_A}",
+    readable: "QtyA / QtyB = (PriceB - MeanPrice) / (MeanPrice - PriceA)",
+    variables: [
+      "Q_A, Q_B = Quantities of ingredient A and B",
+      "Price_A, Price_B = Unit prices of ingredient A (cheaper) and B (dearer)",
+      "MeanPrice = Desired unit price of mixture"
+    ],
+    units: ["Quantity: kg, liters", "Price: per unit currency"],
+    conditions: "Mixing two ingredients to get a mixture of a specific mean value.",
+    common_trap: "Make sure all prices are Cost Prices. Do not mix Selling Price with Cost Price in alligation.",
+    linkedQuestions: []
+  },
+  {
+    id: "quant_train_crossing",
+    name: "Train Crossing a Bridge",
+    subject: "Quantitative Aptitude",
+    formula: "T = \\frac{L_{train} + L_{bridge}}{V_{train}}",
+    readable: "T = (L_train + L_bridge) / V_train",
+    variables: [
+      "T = Time to cross the bridge",
+      "L_{train} = Length of the train",
+      "L_{bridge} = Length of the bridge or platform",
+      "V_{train} = Speed of the train"
+    ],
+    units: ["Length: meters", "Speed: m/s", "Time: seconds"],
+    conditions: "Train speed is constant, bridge is stationary.",
+    common_trap: "If the train is crossing a pole or a standing man, L_bridge is 0. Always convert km/h to m/s.",
+    linkedQuestions: []
+  },
+  {
+    id: "quant_boats_streams",
+    name: "Boats and Streams (Speeds)",
+    subject: "Quantitative Aptitude",
+    formula: "S_d = S_b + S_r, \\quad S_u = S_b - S_r",
+    readable: "Downstream = Boat + River, Upstream = Boat - River",
+    variables: [
+      "S_d = Downstream speed",
+      "S_u = Upstream speed",
+      "S_b = Speed of boat in still water",
+      "S_r = Speed of stream/river current"
+    ],
+    units: ["Speed: km/h or m/s"],
+    conditions: "River flows at constant speed.",
+    common_trap: "Boat speed in still water is the average: S_b = (S_d + S_u) / 2.",
+    linkedQuestions: []
+  }
+
 ];
