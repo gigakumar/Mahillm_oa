@@ -28,7 +28,7 @@ export async function callGeminiApiStream(contents, systemInstruction = '', onCh
   if (ai) {
     try {
       const model = getGenerativeModel(ai, {
-        model: 'gemini-2.5-flash',
+        model: 'gemini-1.5-flash',
         systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined
       });
 
@@ -68,7 +68,7 @@ export async function callGeminiApiStream(contents, systemInstruction = '', onCh
   const apiKey = GEMINI_API_KEY || import.meta.env.VITE_FIREBASE_API_KEY;
   if (apiKey) {
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=${apiKey}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?alt=sse&key=${apiKey}`;
       const payload = {
         contents: Array.isArray(contents) ? contents : [{ parts: [{ text: String(contents) }] }],
         systemInstruction: systemInstruction ? { parts: [{ text: systemInstruction }] } : undefined,

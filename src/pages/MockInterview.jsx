@@ -101,15 +101,18 @@ Schema:
       const contents = [
         { role: 'user', parts: [{ text: `Hello, I'm ready to start the interview on ${selectedTopic}.` }] }
       ];
-      
       const rawResponse = await callGeminiApiStream(contents, getSystemInstruction(selectedTopic));
       const jsonStr = rawResponse.replace(/```json/g, '').replace(/```/g, '').trim();
-      const aiData = JSON.parse(jsonStr);
       
+      if (jsonStr.startsWith('Fallback')) {
+        throw new Error("AI is currently unavailable. Please verify your API key and network connection.");
+      }
+      
+      const aiData = JSON.parse(jsonStr);
       handleAiResponse(aiData);
     } catch (err) {
       console.error(err);
-      setErrorMsg("Failed to start AI session.");
+      setErrorMsg(err.message && err.message.includes("AI is currently unavailable") ? err.message : "Failed to start AI session.");
       setIsSessionActive(false);
     } finally {
       setIsAiThinking(false);
