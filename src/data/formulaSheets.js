@@ -156,6 +156,29 @@ export const FORMULA_SHEETS = [
     common_trap: "Confusing specific gas constant R (e.g., R_air = 287 J/kg·K) with universal gas constant R_u = 8.314 J/mol·K.",
     linkedQuestions: []
   },
+  {
+    id: "thermo_entropy_change_ideal_gas",
+    name: "Entropy Change of Ideal Gas",
+    subject: "Thermodynamics",
+    formula: "\\Delta s = c_p \\ln\\left(\\frac{T_2}{T_1}\\right) - R \\ln\\left(\\frac{P_2}{P_1}\\right)",
+    readable: "Δs = cp·ln(T₂/T₁) - R·ln(P₂/P₁)",
+    variables: [
+      "\\Delta s = Change in specific entropy",
+      "c_p = Specific heat at constant pressure",
+      "T1, T2 = Initial and final absolute temperatures",
+      "P1, P2 = Initial and final absolute pressures",
+      "R = Specific gas constant"
+    ],
+    units: [
+      "Entropy change (\\Delta s): J/(kg·K)",
+      "Specific heat (c_p): J/(kg·K)",
+      "Temperature (T): K",
+      "Pressure (P): Pa"
+    ],
+    conditions: "Ideal gas behaving under reversible or irreversible processes.",
+    common_trap: "Temperatures must be in Kelvin. Don't confuse c_p with c_v! For volume relations: \\Delta s = c_v \\ln(T_2/T_1) + R \\ln(v_2/v_1).",
+    linkedQuestions: []
+  },
 
   // ==========================================
   // Strength of Materials (SOM)
@@ -293,6 +316,24 @@ export const FORMULA_SHEETS = [
     common_trap: "Derivative must be taken with respect to the specific point load in the direction of desired displacement.",
     linkedQuestions: [48]
   },
+  {
+    id: "som_principal_stresses",
+    name: "Principal Stresses (2D)",
+    subject: "Strength of Materials",
+    formula: "\\sigma_{1,2} = \\frac{\\sigma_x + \\sigma_y}{2} \\pm \\sqrt{\\left(\\frac{\\sigma_x - \\sigma_y}{2}\\right)^2 + \\tau_{xy}^2}",
+    readable: "σ₁,₂ = (σx + σy)/2 ± √[ ((σx - σy)/2)² + τxy² ]",
+    variables: [
+      "\\sigma_{1,2} = Maximum and minimum principal stresses",
+      "\\sigma_x, \\sigma_y = Normal stresses in x and y directions",
+      "\\tau_{xy} = Shear stress in xy plane"
+    ],
+    units: [
+      "Stresses (\\sigma, \\tau): MPa or N/mm²"
+    ],
+    conditions: "Plane stress condition (2D stress state).",
+    common_trap: "Pay attention to sign conventions! Tensile is positive, compressive is negative. The radical term represents the maximum in-plane shear stress.",
+    linkedQuestions: []
+  },
 
   // ==========================================
   // Fluid Mechanics
@@ -380,6 +421,30 @@ export const FORMULA_SHEETS = [
     common_trap: "Watch out for Darcy friction factor f vs Fanning friction factor f'. f_darcy = 4 * f_fanning!",
     linkedQuestions: []
   },
+  {
+    id: "fluid_drag_equation",
+    name: "Drag Force Equation",
+    subject: "Fluid Mechanics",
+    formula: "F_D = \\frac{1}{2} \\rho v^2 C_D A",
+    readable: "FD = 0.5 · ρ · v² · CD · A",
+    variables: [
+      "F_D = Drag force",
+      "\\rho = Fluid density",
+      "v = Flow velocity relative to the object",
+      "C_D = Drag coefficient",
+      "A = Reference area"
+    ],
+    units: [
+      "Drag force (F_D): Newtons (N)",
+      "Density (\\rho): kg/m³",
+      "Velocity (v): m/s",
+      "Area (A): m²",
+      "Drag coefficient (C_D): Dimensionless"
+    ],
+    conditions: "Incompressible flow around a solid body.",
+    common_trap: "The reference area A depends on the shape. For bluff bodies (e.g. sphere), it's the frontal projected area. For airfoils, it's the planform area.",
+    linkedQuestions: []
+  },
 
   // ==========================================
   // Heat Transfer
@@ -446,6 +511,26 @@ export const FORMULA_SHEETS = [
     ],
     conditions: "Thermal radiation emission from surface.",
     common_trap: "Radiation calculations ALWAYS require absolute temperature in Kelvin (T in K). Never use °C!",
+    linkedQuestions: []
+  },
+  {
+    id: "ht_critical_radius",
+    name: "Critical Radius of Insulation",
+    subject: "Heat Transfer",
+    formula: "r_c = \\frac{k}{h}",
+    readable: "rc = k / h (for cylinder) or 2k / h (for sphere)",
+    variables: [
+      "r_c = Critical radius of insulation",
+      "k = Thermal conductivity of the insulation material",
+      "h = Convective heat transfer coefficient at outer surface"
+    ],
+    units: [
+      "Critical radius (r_c): meters (m)",
+      "Conductivity (k): W/(m·K)",
+      "Convection coef (h): W/(m²·K)"
+    ],
+    conditions: "Cylindrical pipes or spherical vessels.",
+    common_trap: "Adding insulation below the critical radius INCREASES heat transfer! It only decreases heat transfer if outer radius > r_c.",
     linkedQuestions: []
   },
 
@@ -541,6 +626,24 @@ export const FORMULA_SHEETS = [
     ],
     conditions: "Uniform speed motion.",
     common_trap: "Conversion unit error! To convert km/h to m/s, multiply by 5/18. To convert m/s to km/h, multiply by 18/5.",
+    linkedQuestions: []
+  },
+  {
+    id: "quant_time_and_work",
+    name: "Time and Work Rate",
+    subject: "Quantitative Aptitude",
+    formula: "\\frac{1}{T_{total}} = \\frac{1}{T_A} + \\frac{1}{T_B}",
+    readable: "1/TotalTime = 1/TimeA + 1/TimeB",
+    variables: [
+      "T_{total} = Time taken when working together",
+      "T_A = Time taken by person A working alone",
+      "T_B = Time taken by person B working alone"
+    ],
+    units: [
+      "Time (T): Days, hours, or minutes"
+    ],
+    conditions: "Constant work rate for both individuals.",
+    common_trap: "You cannot add times directly! You must add their work rates (1/T). e.g., if A takes 10 days and B takes 15, together they take 6 days, not 25.",
     linkedQuestions: []
   }
 ];
