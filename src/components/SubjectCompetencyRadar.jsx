@@ -34,11 +34,28 @@ export default function SubjectCompetencyRadar({ masteryScores = {} }) {
     );
   }
 
-  const categories = scoreKeys.map(key => ({
-    key,
-    label: SUBJECT_LABELS[key] || key.substring(0, 8),
-    val: masteryScores[key]
-  }));
+  const categories = scoreKeys.map(key => {
+    const raw = masteryScores[key];
+    const scoreVal = typeof raw === 'number' ? raw : (raw?.pKnow ?? raw?.probabilityKnown ?? raw?.score ?? 0.3);
+    const percentage = scoreVal <= 1 ? Math.round(scoreVal * 100) : Math.round(scoreVal);
+    
+    let baseLabel = key;
+    if (raw && raw.topic) {
+      baseLabel = raw.topic;
+    } else {
+      const parts = key.split('__');
+      baseLabel = parts.length > 1 ? parts[1].replace(/_/g, ' ') : key.replace(/_/g, ' ');
+    }
+    
+    let displayLabel = SUBJECT_LABELS[baseLabel] || baseLabel;
+    if (displayLabel.length > 12) displayLabel = displayLabel.substring(0, 10) + '..';
+
+    return {
+      key,
+      label: displayLabel,
+      val: percentage
+    };
+  });
 
   // SVG Radar coordinates math (Hexagon 6 points)
   const cx = 140;
