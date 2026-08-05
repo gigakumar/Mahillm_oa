@@ -42,7 +42,7 @@
 .tests-portal .portal-header h1 {
   margin: 0 0 0.5rem 0;
   font-size: 1.75rem;
-  background: linear-gradient(90deg, #fff, #cbd5e1);
+  background: linear-gradient(90deg, #fff, var(--text-secondary));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }

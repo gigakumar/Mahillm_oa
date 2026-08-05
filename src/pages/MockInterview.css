@@ -232,7 +232,7 @@
 
 .user .message-avatar {
   background: #334155;
-  color: #cbd5e1;
+  color: var(--text-secondary);
 }
 
 .message-content {

@@ -18,11 +18,7 @@ import TestResult from './pages/TestResult';
 import Mistakes from './pages/Mistakes';
 import RevisionSession from './pages/RevisionSession';
 
-import Intelligence from './pages/Intelligence';
 import ReadinessHeatmap from './pages/ReadinessHeatmap';
-import AttemptReplay from './pages/AttemptReplay';
-import Timeline from './pages/Timeline';
-import HowAIThinks from './pages/HowAIThinks';
 import AdminDashboard from './pages/AdminDashboard';
 import DailyChallenge from './pages/DailyChallenge';
 
@@ -242,21 +238,7 @@ function App() {
                   </ProtectedRoute>
                 } />
 
-                <Route path="/how-ai-thinks" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <HowAIThinks />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
 
-                <Route path="/attempt-replay" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <AttemptReplay />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
 
                 <Route path="/admin/questions" element={
                   <ProtectedRoute>

@@ -282,7 +282,7 @@ export default function GatePredictor() {
                   <td><strong style={{ color: 'var(--accent)' }}>{row.rankBand}</strong></td>
                   <td><span className="font-mono" style={{ color: '#38bdf8', fontWeight: 700 }}>{row.rawMarks}</span></td>
                   <td><span className="font-mono" style={{ color: '#34d399', fontWeight: 700 }}>{row.gateScore}</span></td>
-                  <td style={{ color: '#cbd5e1', fontSize: '0.85rem' }}>{row.psuCallStatus}</td>
+                  <td style={{ color: 'var(--text-secondary)', fontSize: '0.85rem' }}>{row.psuCallStatus}</td>
                   <td><span className="badge badge-secondary" style={{ fontSize: '0.78rem' }}>{row.trend}</span></td>
                 </tr>
               ))}

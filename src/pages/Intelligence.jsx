@@ -660,7 +660,7 @@ export default function Intelligence() {
                                   boxShadow: `0 0 10px ${colorCode}`
                                 }}></div>
                               </div>
-                              <span style={{ fontSize: '0.75rem', color: '#cbd5e1', fontWeight: '500', minWidth: '30px', textAlign: 'right' }}>
+                              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: '500', minWidth: '30px', textAlign: 'right' }}>
                                 {topic.questionsAttempted || 0} Qs
                               </span>
                             </div>

@@ -133,7 +133,7 @@
 .diagnosis-text {
   font-size: 0.95rem;
   line-height: 1.5;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--text-secondary);
 }
 
 .failure-pattern-box {

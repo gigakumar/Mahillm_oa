@@ -71,20 +71,8 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '🔥',
     color: 'rgba(239,68,68,0.8)',
     topics: [
-      { name: 'Thermodynamics', count: 4888 },
-      { name: 'First Law of Thermodynamics', count: 1 },
-      { name: 'Second Law of Thermodynamics', count: 2 },
-      { name: 'Laws of Thermodynamics', count: 1 },
-      { name: 'Thermodynamic Cycles', count: 2 },
-      { name: 'Thermodynamic Processes', count: 4 },
-      { name: 'Thermodynamic Properties', count: 2 },
-      { name: 'Thermodynamic Systems', count: 1 },
-      { name: 'Thermodynamic Equilibrium', count: 2 },
-      { name: 'Entropy Change in Thermodynamics', count: 2 },
-      { name: 'Entropy Change in Irreversible Processes', count: 1 },
-      { name: 'Reversible Processes', count: 1 },
-      { name: 'Reversible and Quasi-Static Processes', count: 1 },
-      { name: 'Kinetic Theory of Gases', count: 1 },
+      { name: 'Thermodynamics', count: 4900 },
+      { name: 'Laws & Cycles of Thermodynamics', count: 15 },
       { name: 'Psychrometrics', count: 5 },
     ]
   },
@@ -93,15 +81,9 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '💧',
     color: 'rgba(6,182,212,0.8)',
     topics: [
-      { name: 'Fluid Mechanics', count: 2825 },
-      { name: 'Fluid Dynamics', count: 13 },
-      { name: 'Fluid Statics', count: 7 },
-      { name: 'Fluid Kinematics', count: 3 },
-      { name: 'Fluid Measurement', count: 7 },
-      { name: 'Fluid Properties', count: 5 },
-      { name: 'Hydraulic Machines', count: 6 },
-      { name: 'Hydraulic Structures', count: 6 },
-      { name: 'Open Channel Flow', count: 1 },
+      { name: 'Fluid Mechanics', count: 2835 },
+      { name: 'Fluid Dynamics & Statics', count: 35 },
+      { name: 'Hydraulic Machines', count: 12 },
     ]
   },
   {
@@ -109,12 +91,9 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '♨️',
     color: 'rgba(245,158,11,0.8)',
     topics: [
-      { name: 'Heat Transfer', count: 2266 },
-      { name: 'Convection', count: 1 },
-      { name: 'Reheat in Steam Turbines', count: 5 },
-      { name: 'Refrigeration AC', count: 22 },
-      { name: 'Thermal Expansion', count: 1 },
-      { name: 'Thermal Stress', count: 1 },
+      { name: 'Heat Transfer', count: 2270 },
+      { name: 'Refrigeration & Air Conditioning', count: 22 },
+      { name: 'Thermal Systems', count: 8 },
     ]
   },
   {
@@ -122,9 +101,8 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '🏭',
     color: 'rgba(139,92,246,0.8)',
     topics: [
-      { name: 'Manufacturing Engineering', count: 2803 },
-      { name: 'Manufacturing Science', count: 1 },
-      { name: 'Machining Machine Tools', count: 30 },
+      { name: 'Manufacturing Engineering', count: 2804 },
+      { name: 'Machining & Machine Tools', count: 30 },
     ]
   },
   {
@@ -132,17 +110,8 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '🏗️',
     color: 'rgba(16,185,129,0.8)',
     topics: [
-      { name: 'Strength of Materials', count: 1754 },
-      { name: 'Mechanical Properties of Materials', count: 1 },
-      { name: 'Elastic Constants', count: 1 },
-      { name: "Poisson s Ratio", count: 1 },
-      { name: 'Section Modulus', count: 2 },
-      { name: 'Shear Stress in Beams', count: 1 },
-      { name: 'Bending Moment', count: 1 },
-      { name: 'Torsion', count: 1 },
-      { name: "Mohr s Circle", count: 1 },
-      { name: 'Column Buckling', count: 2 },
-      { name: 'Riveted Joints', count: 2 },
+      { name: 'Strength of Materials', count: 1755 },
+      { name: 'Stress, Strain & Beams', count: 12 },
     ]
   },
   {
@@ -151,9 +120,7 @@ export const MECH_TOPIC_GROUPS = [
     color: 'rgba(255,107,0,0.8)',
     topics: [
       { name: 'Machine Design', count: 1616 },
-      { name: 'Theory of Machines', count: 1176 },
-      { name: 'Theory of Machines Vibrations', count: 60 },
-      { name: 'Vibration and Dynamics', count: 1 },
+      { name: 'Theory of Machines & Vibrations', count: 1237 },
     ]
   },
   {
@@ -161,9 +128,7 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '📐',
     color: 'rgba(236,72,153,0.8)',
     topics: [
-      { name: 'Engineering Mechanics', count: 968 },
-      { name: 'Energy and Work', count: 2 },
-      { name: 'Friction', count: 1 },
+      { name: 'Engineering Mechanics', count: 971 },
     ]
   },
   {
@@ -171,11 +136,8 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '📊',
     color: 'rgba(99,102,241,0.8)',
     topics: [
-      { name: 'Industrial Engineering', count: 59 },
-      { name: 'Production Management', count: 3 },
-      { name: 'Inventory Control', count: 8 },
-      { name: 'CPM and PERT', count: 30 },
-      { name: 'Automation CIM', count: 30 },
+      { name: 'Industrial Engineering', count: 62 },
+      { name: 'CPM, PERT & Inventory Control', count: 68 },
     ]
   },
   {
@@ -183,8 +145,7 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '🔧',
     color: 'rgba(251,146,60,0.8)',
     topics: [
-      { name: 'Internal Combustion Engines', count: 99 },
-      { name: 'IC Engines', count: 8 },
+      { name: 'Internal Combustion Engines', count: 107 },
       { name: 'Power Plant Engineering', count: 29 },
     ]
   },
@@ -193,8 +154,7 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '🔬',
     color: 'rgba(20,184,166,0.8)',
     topics: [
-      { name: 'Material Science', count: 29 },
-      { name: 'Structural Analysis', count: 10 },
+      { name: 'Material Science', count: 39 },
     ]
   },
   {
@@ -202,16 +162,7 @@ export const MECH_TOPIC_GROUPS = [
     emoji: '🚗',
     color: 'rgba(34,197,94,0.8)',
     topics: [
-      { name: 'Automotive Engineering', count: 21 },
-      { name: 'Automotive Body Engineering', count: 2 },
-      { name: 'Automotive Braking Systems', count: 15 },
-      { name: 'Automotive Cooling Systems', count: 4 },
-      { name: 'Automotive Electrical Systems', count: 25 },
-      { name: 'Automotive Fuel Systems', count: 1 },
-      { name: 'Automotive Fuels', count: 13 },
-      { name: 'Automotive Lubrication', count: 11 },
-      { name: 'Automotive Maintenance', count: 3 },
-      { name: 'Automotive Transmission', count: 5 },
+      { name: 'Automotive Engineering', count: 95 },
     ]
   },
 ];
@@ -326,32 +277,6 @@ export const QuestionBankRegistry = [
     estimatedCount: 1000,
     categoryKey: 'book_high_yield_nat',
     topics: ["Numerical Answer Type"]
-  },
-  {
-    id: "book_rank_booster",
-    label: "GATE 2027 RANK BOOSTER",
-    isDigitalBook: true,
-    loader: async (filterTopic = null, filterDifficulty = null) => {
-      // Load HIGH difficulty
-      return loadMultipleJSONs("Mechanical Engineering", ["mechanical_engineering.json"], filterTopic, 'HIGH');
-    },
-    enabled: true,
-    estimatedCount: 1500,
-    categoryKey: 'book_rank_booster',
-    topics: ["Advanced Level"]
-  },
-  {
-    id: "book_99_percentile",
-    label: "99 Percentile Question Bank",
-    isDigitalBook: true,
-    loader: async (filterTopic = null, filterDifficulty = null) => {
-      // Load MEDIUM/HIGH difficulty
-      return loadMultipleJSONs("Mechanical Engineering", ["mechanical_engineering.json"], filterTopic, filterDifficulty, (q) => q.difficulty === 'HIGH' || q.difficulty === 'MEDIUM');
-    },
-    enabled: true,
-    estimatedCount: 3000,
-    categoryKey: 'book_99_percentile',
-    topics: ["Challenging Problems"]
   }
 ];
 

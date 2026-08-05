@@ -98,14 +98,14 @@
 
 /* Active Link - High Contrast Active Pill */
 .sidebar-link.active {
-  background: var(--text-primary) !important;
-  color: var(--bg-base) !important;
+  background: var(--accent) !important;
+  color: #ffffff !important;
   font-weight: 700;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 12px var(--accent-glow);
 }
 
 .sidebar-link.active .sidebar-link-icon {
-  color: var(--bg-base) !important;
+  color: #ffffff !important;
 }
 
 .sidebar-link-icon {

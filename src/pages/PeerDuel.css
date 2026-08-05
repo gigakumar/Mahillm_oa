@@ -74,7 +74,7 @@
 .diff-btn {
   background: var(--border);
   border: 1px solid var(--border);
-  color: #cbd5e1;
+  color: var(--text-secondary);
   padding: 0.5rem 1rem;
   border-radius: 8px;
   font-size: 0.85rem;
@@ -108,7 +108,7 @@
 
 .join-room-section h4 {
   font-size: 0.95rem;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   margin-bottom: 0.75rem;
 }
 
@@ -307,7 +307,7 @@
 
 .player-name {
   font-size: 0.85rem;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   font-weight: 600;
   margin-bottom: 0.2rem;
 }

@@ -44,27 +44,9 @@ export default function ReadinessHeatmap() {
   });
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Load all question categories in parallel on mount to construct full taxonomy tree
+  // Uses QuestionBankRegistry taxonomy & user data directly without heavy bulk fetching
   useEffect(() => {
-    async function loadAllPools() {
-      setLoadingPools(true);
-      try {
-        const [me, qa, di, dilr, lr] = await Promise.all([
-          fetch('/data/mechEngQuestions.json').then(r => r.json()).then(d => ({ default: d })),
-          fetch('/data/quantsQuestions.json').then(r => r.json()).then(d => ({ default: d })),
-          fetch('/data/dataInterpretationQuestions.json').then(r => r.json()).then(d => ({ default: d })),
-          fetch('/data/dilrQuestions.json').then(r => r.json()).then(d => ({ default: d })),
-          fetch('/data/logicalReasoningQuestions.json').then(r => r.json()).then(d => ({ default: d }))
-        ]);
-        const combined = [...me.default, ...qa.default, ...di.default, ...dilr.default, ...lr.default];
-        setAllQuestions(combined);
-      } catch (e) {
-        console.error("Error loading full question sets for heatmap generation:", e);
-      } finally {
-        setLoadingPools(false);
-      }
-    }
-    loadAllPools();
+    setLoadingPools(false);
   }, []);
 
   const toggleCategory = (cat) => {
