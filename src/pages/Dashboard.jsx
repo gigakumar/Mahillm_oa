@@ -44,7 +44,8 @@ const DIGITAL_BOOKS = [
     subtitle: 'GATE & ESE MCQs',
     tag: 'CONCEPT BOOK',
     colorGradient: 'linear-gradient(135deg, #059669 0%, #10b981 100%)',
-    badgeText: 'FREE FORMULA SHEET'
+    badgeText: 'FREE FORMULA SHEET',
+    route: '/formulas'
   },
   {
     id: 'book_fluids',
@@ -52,7 +53,8 @@ const DIGITAL_BOOKS = [
     subtitle: 'MCQ Edition Vol 2',
     tag: 'SOLVED PAPERS',
     colorGradient: 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
-    badgeText: 'BESTSELLER'
+    badgeText: 'BESTSELLER',
+    route: '/oa-practice?topic=Fluid Mechanics'
   },
   {
     id: 'book_tom_vib',
@@ -60,7 +62,8 @@ const DIGITAL_BOOKS = [
     subtitle: 'MCQ Edition Vol 1',
     tag: 'FORMULA BANK',
     colorGradient: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)',
-    badgeText: 'MUST PRACTICE'
+    badgeText: 'MUST PRACTICE',
+    route: '/formulas'
   },
   {
     id: 'book_high_yield_nat',
@@ -68,7 +71,8 @@ const DIGITAL_BOOKS = [
     subtitle: 'MCQs for GATE ME',
     tag: 'HIGH YIELD',
     colorGradient: 'linear-gradient(135deg, var(--bg-elevated) 0%, #334155 100%)',
-    badgeText: '2026 EDITION'
+    badgeText: '2026 EDITION',
+    route: '/oa-practice?cat=Mechanical Engineering'
   },
   {
     id: 'book_rank_booster',
@@ -76,7 +80,8 @@ const DIGITAL_BOOKS = [
     subtitle: 'Advanced Numerical Problems',
     tag: 'RANK BOOSTER',
     colorGradient: 'linear-gradient(135deg, #991b1b 0%, #ef4444 100%)',
-    badgeText: 'TARGET AIR < 100'
+    badgeText: 'TARGET AIR < 100',
+    route: '/tests'
   },
   {
     id: 'book_99_percentile',
@@ -84,7 +89,8 @@ const DIGITAL_BOOKS = [
     subtitle: 'GATE & PSU Specials',
     tag: 'QUESTION BANK',
     colorGradient: 'linear-gradient(135deg, #172554 0%, #1e40af 100%)',
-    badgeText: 'NEW 2026'
+    badgeText: 'NEW 2026',
+    route: '/syllabus'
   }
 ];
 
@@ -320,7 +326,7 @@ export default function Dashboard() {
 
         <div className="books-horizontal-scroll">
           {DIGITAL_BOOKS.map((book) => (
-            <div key={book.id} className="book-card-3d" onClick={() => navigate(`/oa-practice?cat=${book.id}`)}>
+            <div key={book.id} className="book-card-3d" onClick={() => navigate(book.route || `/oa-practice?cat=${book.id}`)}>
               <div className="book-cover" style={{ background: book.colorGradient }}>
                 <span className="book-top-badge">{book.tag}</span>
                 <h4 className="book-title">{book.title}</h4>
