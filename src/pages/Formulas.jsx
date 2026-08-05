@@ -331,7 +331,7 @@ export default function Formulas() {
                     <h3 className="fc-back-title">{currentFlashcard.name}</h3>
 
                     <div className="fc-formula-box">
-                      <MathRenderer math={currentFlashcard.formula || currentFlashcard.readable} />
+                      <MathRenderer formula={currentFlashcard.formula || currentFlashcard.readable} />
                     </div>
 
                     <div className="fc-details">
@@ -404,28 +404,41 @@ export default function Formulas() {
               </div>
 
               <div className="formula-math-container">
-                <MathRenderer math={item.formula || item.readable} />
+                <div className="math-glow"></div>
+                <MathRenderer formula={item.formula || item.readable} />
               </div>
 
               {item.variables && item.variables.length > 0 && (
                 <div className="formula-section">
                   <h4>Variables</h4>
-                  <ul>
-                    {item.variables.map((v, idx) => (
-                      <li key={idx}>{v}</li>
-                    ))}
-                  </ul>
+                  <div className="pill-list">
+                    {item.variables.map((v, idx) => {
+                      const [sym, desc] = v.split(' = ');
+                      return (
+                        <div className="formula-pill" key={idx}>
+                          <span className="pill-sym">{sym}</span>
+                          {desc && <span className="pill-desc">{desc}</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
               {item.units && item.units.length > 0 && (
                 <div className="formula-section">
                   <h4>Units</h4>
-                  <ul>
-                    {item.units.map((u, idx) => (
-                      <li key={idx}>{u}</li>
-                    ))}
-                  </ul>
+                  <div className="pill-list">
+                    {item.units.map((u, idx) => {
+                      const [sym, desc] = u.split(': ');
+                      return (
+                        <div className="formula-pill unit-pill" key={idx}>
+                          <span className="pill-sym">{sym}</span>
+                          {desc && <span className="pill-desc">{desc}</span>}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 
