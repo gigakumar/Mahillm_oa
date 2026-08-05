@@ -36,8 +36,9 @@ import Bookmarks from './pages/Bookmarks';
 import ExamStrategy from './pages/ExamStrategy';
 
 
-
 import ErrorBoundary from './components/ErrorBoundary';
+import Intelligence from './pages/Intelligence';
+import Timeline from './pages/Timeline';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();

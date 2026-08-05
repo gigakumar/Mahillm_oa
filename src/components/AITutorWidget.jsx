@@ -16,8 +16,6 @@ import {
 import MathRenderer from './MathRenderer';
 
 export default function AITutorWidget({ question, userAnswer = null, questionId = null }) {
-  if (!question) return null;
-
   const [activeTab, setActiveTab] = useState(null); // 'hint' | 'explanation' | 'chat'
   const [isThinking, setIsThinking] = useState(false);
   const [streamedText, setStreamedText] = useState('');
@@ -33,6 +31,8 @@ export default function AITutorWidget({ question, userAnswer = null, questionId 
       chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
     }
   }, [chatHistory, isThinking, streamedText]);
+
+  if (!question) return null;
 
   const handleGetHint = async () => {
     setActiveTab('hint');
