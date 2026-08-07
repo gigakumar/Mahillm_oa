@@ -26,10 +26,10 @@ export default function TestsHero({ stats = {} }) {
   const hasRealChart = performanceTrend.length >= 2;
 
   // Last mock info
-  const mockName = lastMock?.name || 'No mocks taken yet';
+  const mockName = lastMock?.name || lastMock?.title || (lastMock ? 'Recent Mock' : 'No mocks taken yet');
   const mockScore = lastMock
-    ? Math.round((lastMock.score || lastMock.correctCount || 0) /
-        Math.max(1, lastMock.totalCount || lastMock.totalQuestions || 1) * 100)
+    ? Math.min(100, Math.round((lastMock.score || lastMock.correctCount || 0) /
+        Math.max(1, lastMock.totalCount || lastMock.totalQuestions || 1) * 100))
     : 0;
   const mockQsAnswered = lastMock?.questionsAnswered || lastMock?.correctCount || 0;
   const mockTotalQs = lastMock?.totalCount || lastMock?.totalQuestions || 0;

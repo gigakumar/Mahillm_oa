@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ScoreProvider } from './contexts/ScoreContext';
 import { UserDataProvider } from './contexts/UserDataContext';
+import ErrorBoundary from './components/ErrorBoundary';
 
 import Layout from './components/Layout';
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));

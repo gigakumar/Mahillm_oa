@@ -49,7 +49,7 @@ export default function DashboardCountdown() {
       <div className="dc-countdown-box">
         <div className="dc-badge">
           <Calendar size={13} className="text-amber-400" />
-          <span>GATE ME 2027 Target Countdown</span>
+          <span>GATE ME 2026 Target Countdown</span>
         </div>
 
         <div className="dc-timer-grid">
@@ -103,7 +103,7 @@ export default function DashboardCountdown() {
         <div className="dc-items-list">
           <div className={`dc-item ${dailyChecklist.q20 ? 'done' : ''}`} onClick={() => toggleCheck('q20')}>
             <span className="dc-checkbox">{dailyChecklist.q20 ? '✓' : ''}</span>
-            <span>Solve 20 Practice Questions</span>
+            <span title="Click 'Quick Daily 10-Q Practice Sprint' to complete this">Solve 10 Practice Questions</span>
           </div>
 
           <div className={`dc-item ${dailyChecklist.flashcard ? 'done' : ''}`} onClick={() => toggleCheck('flashcard')}>

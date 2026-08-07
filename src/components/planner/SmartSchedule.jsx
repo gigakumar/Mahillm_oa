@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar as CalendarIcon, Flame, CheckCircle, Clock, Pencil, Check, X } from 'lucide-react';
+import { useScore } from '../../contexts/ScoreContext';
 import './SmartSchedule.css';
 
 export default function SmartSchedule({ weekSchedule, selectedDateOffset, setSelectedDateOffset }) {
-  const [streak, setStreak] = useState(7);
-  const [editingStreak, setEditingStreak] = useState(false);
-  const [draftStreak, setDraftStreak] = useState(7);
+  const { scoreData } = useScore();
+  const streak = scoreData?.streak || 0;
 
   // Day notes
   const [dayNotes, setDayNotes] = useState({});
@@ -18,8 +18,6 @@ export default function SmartSchedule({ weekSchedule, selectedDateOffset, setSel
     if (offset === 0) return dueCount > 0 ? 'urgent' : 'completed';
     return 'upcoming';
   };
-
-  const saveStreak = () => { setStreak(Math.max(0, draftStreak)); setEditingStreak(false); };
 
   const openNoteEdit = (offset, e) => {
     e.stopPropagation();
@@ -43,27 +41,10 @@ export default function SmartSchedule({ weekSchedule, selectedDateOffset, setSel
           <CalendarIcon className="w-5 h-5" /> 7-Day Smart Schedule
         </h2>
         <div className="streak-edit-wrapper">
-          {editingStreak ? (
-            <div className="streak-edit-inline" onClick={e => e.stopPropagation()}>
-              <input
-                className="streak-input"
-                type="number"
-                value={draftStreak}
-                min={0}
-                onChange={e => setDraftStreak(Number(e.target.value))}
-                autoFocus
-              />
-              <span className="streak-unit">day streak</span>
-              <button className="btn-streak-save" onClick={saveStreak}><Check size={13} /></button>
-              <button className="btn-streak-cancel" onClick={() => setEditingStreak(false)}><X size={13} /></button>
-            </div>
-          ) : (
-            <div className="streak-indicator" onClick={() => { setDraftStreak(streak); setEditingStreak(true); }} title="Click to edit streak">
-              <Flame className="w-5 h-5 text-orange-500" />
-              <span>{streak} Day Streak!</span>
-              <Pencil size={11} className="streak-edit-icon" />
-            </div>
-          )}
+          <div className="streak-indicator" title="Your current study streak">
+            <Flame className="w-5 h-5 text-orange-500" />
+            <span>{streak} Day Streak{streak > 0 ? '!' : ''}</span>
+          </div>
         </div>
       </div>
 

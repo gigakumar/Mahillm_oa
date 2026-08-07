@@ -68,7 +68,7 @@ export default function HeaderBar({ mobileOpen, setMobileOpen }) {
         {/* XP / Sparkle Pill */}
         <div className="header-stat-pill xp-pill" onClick={() => navigate('/stats')} title="Experience Points (XP) earned from practice">
           <Sparkles size={16} className="pill-icon text-amber-400" />
-          <span className="pill-val">{scoreData?.totalXp || 1476} XP</span>
+          <span className="pill-val">{scoreData?.xp || 0} XP</span>
           <span className="pill-arrow">›</span>
         </div>
 

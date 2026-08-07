@@ -13,7 +13,7 @@ export default function QuestionIntelligenceBadge({ attempts = 0 }) {
         gap: '0.25rem',
         border: '1px solid rgba(245, 158, 11, 0.3)'
       }}>
-        <Beaker size={12} /> Beta
+        <Beaker size={12} /> Calibrating
       </span>
     );
   }

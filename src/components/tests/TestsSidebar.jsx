@@ -137,7 +137,7 @@ export default function TestsSidebar({ stats = {} }) {
                 fill="none"
                 d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
             </svg>
-            <div className="consistency-val">{consistencyScore}</div>
+            <div className="consistency-val">{consistencyScore}<span style={{fontSize: '0.9rem', color: 'var(--text-secondary)'}}>/100</span></div>
           </div>
         </div>
       </div>

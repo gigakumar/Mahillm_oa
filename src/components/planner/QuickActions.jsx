@@ -12,16 +12,13 @@ const COLOR_PRESETS = [
   { color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.15)' },
   { color: '#ec4899', bg: 'rgba(236, 72, 153, 0.15)' },
 ];
-
-const DEFAULT_ACTIONS = [
-  { id: 'continue', title: 'Continue Last Session', subtitle: 'Thermodynamics • Q. 42', iconKey: 'RotateCcw', colorIdx: 0 },
-  { id: 'weakest',  title: 'Improve Weakest Subject', subtitle: 'Fluid Mechanics (56%)', iconKey: 'TrendingDown', colorIdx: 1 },
-  { id: 'challenge', title: 'Daily Challenge', subtitle: '20 Mixed Questions • +50 XP', iconKey: 'Zap', colorIdx: 2 },
-  { id: 'formula',  title: 'Formula Revision', subtitle: '15 High-Yield Formulas', iconKey: 'Target', colorIdx: 3 },
-];
-
-export default function QuickActions({ onNavigate }) {
-  const [actions, setActions] = useState(DEFAULT_ACTIONS);
+export default function QuickActions({ onNavigate, weakestTopicName = 'Fluid Mechanics', weakestTopicAccuracy = 56 }) {
+  const [actions, setActions] = useState([
+    { id: 'continue', title: 'Continue Last Session', subtitle: 'Thermodynamics • Q. 42', iconKey: 'RotateCcw', colorIdx: 0 },
+    { id: 'weakest',  title: 'Improve Weakest Subject', subtitle: `${weakestTopicName} (${weakestTopicAccuracy}%)`, iconKey: 'TrendingDown', colorIdx: 1 },
+    { id: 'challenge', title: 'Daily Challenge', subtitle: '20 Mixed Questions • +50 XP', iconKey: 'Zap', colorIdx: 2 },
+    { id: 'formula',  title: 'Formula Revision', subtitle: '15 High-Yield Formulas', iconKey: 'Target', colorIdx: 3 },
+  ]);
   const [editMode, setEditMode] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [draft, setDraft] = useState(null);

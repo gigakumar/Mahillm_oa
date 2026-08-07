@@ -140,10 +140,9 @@ export default function Mistakes() {
   const reasonStats = {};
   MISTAKE_REASONS.forEach(r => { reasonStats[r.value] = 0; });
   Object.values(mistakes).filter(m => !m.isResolved).forEach(m => {
-    const rType = m.userOverrideType || m.mistakeType;
-    if (reasonStats[rType] !== undefined) {
-      reasonStats[rType]++;
-    }
+    let rType = m.userOverrideType || m.mistakeType;
+    if (!rType || reasonStats[rType] === undefined) rType = 'conceptual'; // Default fallback
+    reasonStats[rType]++;
   });
 
   const topWeakTopic = Object.values(mistakes)
@@ -223,7 +222,7 @@ export default function Mistakes() {
       {/* Stats Cards Row */}
       <div className="mistakes-stats-row">
         <div className="card mistake-stat-card">
-          <span className="mistake-stat-label">Active Errors</span>
+          <span className="mistake-stat-label">Unique Active Errors</span>
           <span className="mistake-stat-val" style={{ color: '#f87171' }}>{totalActiveMistakes}</span>
           <span className="mistake-stat-badge danger">
             <TrendingDown size={11} /> Action Required

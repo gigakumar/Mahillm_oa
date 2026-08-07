@@ -181,13 +181,13 @@ export default function ReadinessHeatmap() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
               <div>
                 <span className="badge badge-danger" style={{ textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.5rem', fontSize: '0.75rem', padding: '0.25rem 0.6rem' }}>
-                  🔥 Test Hashmap & Wrong HashSet Analysis
+                  🔥 Targeted Weakness Analysis
                 </span>
                 <h3 style={{ margin: '0.35rem 0 0 0', fontSize: '1.4rem', fontWeight: 800, color: 'var(--text-h)' }}>
                   Most Wronged Topic: {mostWrongedTopic ? mostWrongedTopic.topic : 'No Test Mistakes Recorded Yet! 🎉'}
                 </h3>
                 <p style={{ margin: '0.25rem 0 0 0', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                  Derived by aggregating user wrong question HashSets across all test attempts and diagnostic sessions.
+                  Derived by analyzing your mistake patterns across all test attempts and diagnostic sessions.
                 </p>
               </div>
 
@@ -211,15 +211,15 @@ export default function ReadinessHeatmap() {
                   </strong>
                 </div>
                 <div className="card" style={{ padding: '1rem', background: 'var(--bg-primary)', border: '1px solid var(--border)' }}>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Unique Wrong Question HashSet</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Unique Questions Missed</span>
                   <strong style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-h)', display: 'block', marginTop: '0.25rem' }}>
-                    {mostWrongedTopic.uniqueWrongQuestionsCount} Question IDs
+                    {mostWrongedTopic.uniqueWrongQuestionsCount} Questions
                   </strong>
                 </div>
                 <div className="card" style={{ padding: '1rem', background: 'var(--bg-primary)', border: '1px solid var(--border)' }}>
-                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Affected Tests Count</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Affected Tests</span>
                   <strong style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-h)', display: 'block', marginTop: '0.25rem' }}>
-                    {mostWrongedTopic.affectedTestsCount} Test Hashmaps
+                    {mostWrongedTopic.affectedTestsCount} Tests
                   </strong>
                 </div>
               </div>
@@ -228,7 +228,7 @@ export default function ReadinessHeatmap() {
             {rankedWrongTopics.length > 1 && (
               <div style={{ marginTop: '1.25rem', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
                 <strong style={{ fontSize: '0.85rem', color: 'var(--text-h)', display: 'block', marginBottom: '0.75rem' }}>
-                  Ranked Wronged Topics (Generated from Test Hashmaps):
+                  Ranked Weakest Topics:
                 </strong>
                 <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
                   {rankedWrongTopics.slice(0, 5).map((t, idx) => (
@@ -250,7 +250,7 @@ export default function ReadinessHeatmap() {
             <div className="card" style={{ padding: '1.25rem', border: '1px solid rgba(253, 203, 110, 0.3)', background: 'linear-gradient(135deg, rgba(253, 203, 110, 0.08) 0%, rgba(253, 203, 110, 0.02) 100%)', borderRadius: '16px', display: 'flex', alignItems: 'flex-start', gap: '1rem', marginBottom: '1.5rem' }}>
               <span style={{ fontSize: '1.5rem', marginTop: '0.2rem' }}>⚠️</span>
               <div>
-                <strong style={{ fontSize: '1rem', color: '#fdcb6e', display: 'block', marginBottom: '0.25rem' }}>Learner State Conflict Log Detected (Integrity Score: {Math.round(learnerState.integrity.score * 100)}%)</strong>
+                <strong style={{ fontSize: '1rem', color: '#fdcb6e', display: 'block', marginBottom: '0.25rem' }}>Inconsistent Performance Detected (Reliability Score: {Math.round(learnerState.integrity.score * 100)}%)</strong>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
                   {learnerState.integrity.warnings.map((w, idx) => (
                     <span key={idx} style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>• {w}</span>

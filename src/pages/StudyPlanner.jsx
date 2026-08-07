@@ -15,7 +15,21 @@ import './StudyPlanner.css';
 
 export default function StudyPlanner() {
   const navigate = useNavigate();
-  const { spacedRepetition } = useUserData();
+  const { spacedRepetition, masteryScores = {} } = useUserData();
+  
+  // Compute Weakest Topic
+  const topicEntries = Object.entries(masteryScores)
+    .map(([key, val]) => ({
+      key,
+      name: val.topic || key.split('__')[1] || key,
+      score: val.probabilityKnown || val.score || 0,
+      attempts: val.attemptsCount || val.attempts || 0
+    }))
+    .filter(t => t.attempts >= 3);
+  
+  const weakestTopic = topicEntries.sort((a, b) => a.score - b.score)[0] || null;
+  const weakestTopicName = weakestTopic ? weakestTopic.name : 'Fluid Mechanics';
+  const weakestTopicAccuracy = weakestTopic ? Math.round(weakestTopic.score * 100) : 56;
 
   const [selectedDateOffset, setSelectedDateOffset] = useState(0); // 0 = Today
   const [selectedSubject, setSelectedSubject] = useState('All');
@@ -104,7 +118,11 @@ export default function StudyPlanner() {
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <QuickActions onNavigate={navigate} />
+        <QuickActions 
+          onNavigate={navigate} 
+          weakestTopicName={weakestTopicName} 
+          weakestTopicAccuracy={weakestTopicAccuracy} 
+        />
       </motion.div>
 
 

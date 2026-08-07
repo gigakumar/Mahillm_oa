@@ -79,6 +79,13 @@ export default function Leaderboard() {
           });
         });
 
+        // Seed with simulated users to make gamification feel alive
+        MOCK_LEADERS.forEach(mock => {
+          if (!leaderboardData.some(l => l.id === mock.id)) {
+            leaderboardData.push(mock);
+          }
+        });
+
         // Insert current user stats if not already fetched
         const currentUserStats = user ? {
           id: user.uid,
@@ -207,11 +214,11 @@ export default function Leaderboard() {
   const getRankBadge = (index) => {
     switch (index) {
       case 0:
-        return { label: 'Gold Scholar', color: 'var(--warning)', bg: 'rgba(245, 158, 11, 0.12)' };
+        return { label: 'Gold Tier', color: 'var(--warning)', bg: 'rgba(245, 158, 11, 0.12)' };
       case 1:
-        return { label: 'Silver Specialist', color: 'var(--text-secondary)', bg: 'rgba(148, 163, 184, 0.12)' };
+        return { label: 'Silver Tier', color: 'var(--text-secondary)', bg: 'rgba(148, 163, 184, 0.12)' };
       case 2:
-        return { label: 'Bronze Practitioner', color: '#b45309', bg: 'rgba(180, 83, 9, 0.12)' };
+        return { label: 'Bronze Tier', color: '#b45309', bg: 'rgba(180, 83, 9, 0.12)' };
       default:
         return { label: 'Competitor', color: 'var(--text-secondary)', bg: 'var(--border)' };
     }
@@ -223,6 +230,7 @@ export default function Leaderboard() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
           <Trophy size={32} style={{ color: 'var(--warning)' }} />
           <h1 style={{ margin: 0 }}>Global Leaderboard</h1>
+          <span className="badge-reason time_pressure" style={{ marginLeft: 'auto' }}>4,200+ Participants</span>
         </div>
         <p>Compete with other engineers. Solve placement questions to claim your position at the top.</p>
       </header>
