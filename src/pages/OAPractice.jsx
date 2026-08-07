@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, BookOpen, Clock, Shuffle, List, Layers, Brain, Award, Sparkles, Flame, Zap, Target, RefreshCw, TrendingUp, AlertTriangle, ChevronDown, ChevronUp, Search, X } from 'lucide-react';
+import { CheckCircle, XCircle, ChevronRight, Filter, RotateCcw, Bookmark, BookOpen, Clock, Shuffle, Brain, Sparkles, Flame, Zap, Target, RefreshCw, TrendingUp, AlertTriangle, ChevronDown, ChevronUp, Search, X } from 'lucide-react';
 
 import QuestionIntelligenceBadge from '../components/QuestionIntelligenceBadge';
 import { useScore } from '../contexts/ScoreContext';
@@ -71,7 +71,7 @@ export default function OAPractice() {
   const prevCategoryRef = useRef(category);
   
   // View mode, selections, and Adaptive mode
-  const [viewMode, setViewMode] = useState('card'); // 'card' | 'list'
+  const [viewMode] = useState('card'); // 'card' | 'list'
   const [selectedOptions, setSelectedOptions] = useState({}); // { [qId]: index }
   const [submittedQuestions, setSubmittedQuestions] = useState({}); // { [qId]: boolean }
   const [isAdaptive, setIsAdaptive] = useState(false);
@@ -201,7 +201,7 @@ Respond ONLY with the JSON object, no markdown fences.`;
       let parsed;
       try {
         parsed = await tryFetch(model);
-      } catch (err) {
+      } catch (error) {
         // Fallback to gemini-3.1-flash-lite if requested model is busy/unsupported
         console.warn(`Model ${model} failed, falling back to gemini-3.1-flash-lite...`);
         parsed = await tryFetch('gemini-3.1-flash-lite');
@@ -377,9 +377,9 @@ Respond ONLY with the JSON object, no markdown fences.`;
       return;
     }
     loadActivePool();
-  }, [category, difficulty, topic, isAdaptive, isSessionActive]);
+  }, [category, difficulty, topic, isAdaptive, isSessionActive, loadActivePool]);
 
-  const regenerateQuiz = () => {
+  const handleRegenerateQuiz = () => {
     loadActivePool();
   };
 
@@ -456,7 +456,7 @@ Respond ONLY with the JSON object, no markdown fences.`;
     }, 1000);
     
     return () => clearInterval(timerId);
-  }, [timeLeft, isTimerRunning, submitted, question, viewMode]);
+  }, [timeLeft, isTimerRunning, submitted, question, viewMode, handleTimeUp]);
 
   const handleTimeUp = async () => {
     if (!question) return;
@@ -663,7 +663,7 @@ Respond ONLY with the JSON object, no markdown fences.`;
     // Count from masteryScores which are keyed by topic within a category
     // A more accurate pass: count from questionProgress where we cross-ref with bank topics
     // For simplicity, show total solved across all categories
-    const sessionSolved = Object.values(progressMap).filter(v => v === 'correct').length;
+    // const sessionSolved = Object.values(progressMap).filter(v => v === 'correct').length;
 
     const categoryCards = [
       { cat: 'Mechanical Engineering', emoji: '🔩', title: 'Mechanical Engg', desc: 'Thermo, Fluids, SOM, Manufacturing, Machine Design & more', count: '23,400+', gradient: 'linear-gradient(135deg, rgba(255,107,0,0.15), rgba(255,107,0,0.03))', hasPicker: true },

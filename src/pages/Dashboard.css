@@ -10,18 +10,22 @@
    1. DAILY GOAL STEPPER CARD
    ------------------------------------------------------------- */
 .dashboard-daily-goal-card {
-  background: var(--bg-base);
-  border: 1px solid var(--border);
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.2);
   border-radius: 16px;
   padding: 1.25rem 1.5rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .dashboard-daily-goal-card:hover {
   border-color: var(--border-hover);
-  background: var(--bg-card-hover);
+  box-shadow: 0 8px 24px 0 var(--glass-glow);
+  transform: translateY(-2px);
 }
+
 
 .goal-header-row {
   display: flex;
@@ -230,17 +234,18 @@
 
 .hero-banner-card {
   width: 100%;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 2.25rem 2.5rem;
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  padding: 2.5rem 3rem;
   color: var(--text-primary);
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   position: relative;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
 }
 
 .banner-badge-tags {
@@ -248,10 +253,21 @@
   gap: 0.85rem;
   font-size: 0.82rem;
   font-weight: 600;
-  color: var(--accent);
-  margin-bottom: 0.75rem;
-  flex-wrap: wrap;
-  justify-content: center;
+  margin-bottom: 1.5rem;
+  z-index: 2;
+}
+
+.banner-badge-tags span {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.35rem 1rem;
+  border-radius: 9999px; /* Pill shape */
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.2); /* Neon glow */
 }
 
 .banner-main-title {

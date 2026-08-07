@@ -22,6 +22,11 @@
   --text-secondary: #cbd5e1;
   --text-muted: #94a3b8;
 
+  /* Glassmorphism */
+  --glass-bg: rgba(30, 41, 59, 0.55);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-glow: rgba(56, 189, 248, 0.15);
+
   --accent: #3b82f6;
   --accent-hover: #1d4ed8;
   --accent-glow: rgba(37, 99, 235, 0.35);
@@ -74,6 +79,11 @@
   --text-primary: #0f172a;
   --text-secondary: #334155;
   --text-muted: #64748b;
+
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --glass-glow: rgba(2, 132, 199, 0.1);
 
   --accent: #2563eb;
   --accent-hover: #1d4ed8;
@@ -144,12 +154,46 @@ body {
 /* ========================================
    TYPOGRAPHY
    ======================================== */
-h1, h2, h3, h4, h5 {
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   font-weight: 700;
-  color: var(--text-primary);
-  line-height: 1.2;
-  letter-spacing: -0.03em; /* Tighter premium look */
+  letter-spacing: -0.02em;
+}
+
+/* ========================================
+   UTILITY CLASSES (Glassmorphism & Pills)
+   ======================================== */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.2);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.glass-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: 0 8px 24px 0 var(--glass-glow);
+  transform: translateY(-2px);
+}
+
+.pill-badge {
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
 }
 
 h1 { font-size: clamp(2rem, 5vw, 3rem); }

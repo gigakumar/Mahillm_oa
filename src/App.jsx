@@ -1,3 +1,4 @@
+import React, { Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -5,40 +6,38 @@ import { ScoreProvider } from './contexts/ScoreContext';
 import { UserDataProvider } from './contexts/UserDataContext';
 
 import Layout from './components/Layout';
-import Dashboard from './pages/Dashboard';
-import OAPractice from './pages/OAPractice';
-import MockInterview from './pages/MockInterview';
-import Leaderboard from './pages/Leaderboard';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import Tests from './pages/Tests';
+const Dashboard = React.lazy(() => import('./pages/Dashboard'));
+const OAPractice = React.lazy(() => import('./pages/OAPractice'));
+const MockInterview = React.lazy(() => import('./pages/MockInterview'));
+const Leaderboard = React.lazy(() => import('./pages/Leaderboard'));
+const Login = React.lazy(() => import('./pages/Login'));
+const Signup = React.lazy(() => import('./pages/Signup'));
+const Tests = React.lazy(() => import('./pages/Tests'));
 
-import TestSession from './pages/TestSession';
-import TestResult from './pages/TestResult';
-import Mistakes from './pages/Mistakes';
-import RevisionSession from './pages/RevisionSession';
+const TestSession = React.lazy(() => import('./pages/TestSession'));
+const TestResult = React.lazy(() => import('./pages/TestResult'));
+const Mistakes = React.lazy(() => import('./pages/Mistakes'));
+const RevisionSession = React.lazy(() => import('./pages/RevisionSession'));
 
-import ReadinessHeatmap from './pages/ReadinessHeatmap';
-import AdminDashboard from './pages/AdminDashboard';
-import DailyChallenge from './pages/DailyChallenge';
+const ReadinessHeatmap = React.lazy(() => import('./pages/ReadinessHeatmap'));
+const AdminDashboard = React.lazy(() => import('./pages/AdminDashboard'));
+const DailyChallenge = React.lazy(() => import('./pages/DailyChallenge'));
 
-import Profile from './pages/Profile';
-import Settings from './pages/Settings';
-import Stats from './pages/Stats';
-import StudyPlanner from './pages/StudyPlanner';
-import GatePredictor from './pages/GatePredictor';
-import PeerDuel from './pages/PeerDuel';
+const Profile = React.lazy(() => import('./pages/Profile'));
+const Settings = React.lazy(() => import('./pages/Settings'));
+const Stats = React.lazy(() => import('./pages/Stats'));
+const StudyPlanner = React.lazy(() => import('./pages/StudyPlanner'));
+const GatePredictor = React.lazy(() => import('./pages/GatePredictor'));
+const PeerDuel = React.lazy(() => import('./pages/PeerDuel'));
 
-import Formulas from './pages/Formulas';
-import Syllabus from './pages/Syllabus';
-import CollegePredictor from './pages/CollegePredictor';
-import Bookmarks from './pages/Bookmarks';
-import ExamStrategy from './pages/ExamStrategy';
+const Formulas = React.lazy(() => import('./pages/Formulas'));
+const Syllabus = React.lazy(() => import('./pages/Syllabus'));
+const CollegePredictor = React.lazy(() => import('./pages/CollegePredictor'));
+const Bookmarks = React.lazy(() => import('./pages/Bookmarks'));
+const ExamStrategy = React.lazy(() => import('./pages/ExamStrategy'));
 
-
-import ErrorBoundary from './components/ErrorBoundary';
-import Intelligence from './pages/Intelligence';
-import Timeline from './pages/Timeline';
+const Intelligence = React.lazy(() => import('./pages/Intelligence'));
+const Timeline = React.lazy(() => import('./pages/Timeline'));
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -62,6 +61,7 @@ function App() {
         <ScoreProvider>
           <UserDataProvider>
             <Router>
+              <Suspense fallback={<div className="page-content" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Loading...</div>}>
               <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
@@ -90,22 +90,6 @@ function App() {
                   </ProtectedRoute>
                 } />
 
-                <Route path="/leaderboard" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Leaderboard />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-
-                <Route path="/stats" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Stats />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-
                 <Route path="/tests" element={
                   <ProtectedRoute>
                     <Layout>
@@ -114,14 +98,15 @@ function App() {
                   </ProtectedRoute>
                 } />
 
-
-                <Route path="/tests/session" element={
+                <Route path="/test/:testId" element={
                   <ProtectedRoute>
-                    <TestSession />
+                    <Layout>
+                      <TestSession />
+                    </Layout>
                   </ProtectedRoute>
                 } />
 
-                <Route path="/tests/result/:testId" element={
+                <Route path="/test-result/:attemptId" element={
                   <ProtectedRoute>
                     <Layout>
                       <TestResult />
@@ -145,14 +130,6 @@ function App() {
                   </ProtectedRoute>
                 } />
 
-                <Route path="/planner" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <StudyPlanner />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-
                 <Route path="/formulas" element={
                   <ProtectedRoute>
                     <Layout>
@@ -169,64 +146,18 @@ function App() {
                   </ProtectedRoute>
                 } />
 
-                <Route path="/college-predictor" element={
+                <Route path="/leaderboard" element={
                   <ProtectedRoute>
                     <Layout>
-                      <CollegePredictor />
+                      <Leaderboard />
                     </Layout>
                   </ProtectedRoute>
                 } />
-
-                <Route path="/bookmarks" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Bookmarks />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-
-                <Route path="/exam-strategy" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <ExamStrategy />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-
-
-
-                <Route path="/gate-predictor" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <GatePredictor />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-
-                <Route path="/duel" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <PeerDuel />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-
-
-
-
-
+                
                 <Route path="/readiness" element={
                   <ProtectedRoute>
                     <Layout>
                       <ReadinessHeatmap />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-
-                <Route path="/intelligence" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <Intelligence />
                     </Layout>
                   </ProtectedRoute>
                 } />
@@ -239,16 +170,6 @@ function App() {
                   </ProtectedRoute>
                 } />
 
-
-
-                <Route path="/admin/questions" element={
-                  <ProtectedRoute>
-                    <Layout>
-                      <AdminDashboard />
-                    </Layout>
-                  </ProtectedRoute>
-                } />
-
                 <Route path="/daily-challenge" element={
                   <ProtectedRoute>
                     <Layout>
@@ -257,7 +178,13 @@ function App() {
                   </ProtectedRoute>
                 } />
 
-
+                <Route path="/peer-duel" element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <PeerDuel />
+                    </Layout>
+                  </ProtectedRoute>
+                } />
 
                 <Route path="/profile" element={
                   <ProtectedRoute>
@@ -277,6 +204,7 @@ function App() {
                 
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
+              </Suspense>
             </Router>
           </UserDataProvider>
         </ScoreProvider>

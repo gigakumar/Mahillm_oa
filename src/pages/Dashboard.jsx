@@ -109,55 +109,8 @@ export default function Dashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { masteryScores, spacedRepetition, mistakes, questionProgress, testHistory, scoreData } = useUserData();
-  const firstName = user?.displayName?.split(' ')[0] || 'harshit';
 
-  const [loadingPools, setLoadingPools] = useState(true);
-  const [allQuestions, setAllQuestions] = useState([]);
   const [carouselIdx, setCarouselIdx] = useState(0);
-
-  useEffect(() => {
-    setLoadingPools(false);
-  }, []);
-
-  const [resolvedMetadata, setResolvedMetadata] = useState({});
-
-  useEffect(() => {
-    if (!questionProgress) return;
-    const idsToFetch = Object.keys(questionProgress).filter(id => {
-      const prog = questionProgress[id];
-      return !prog.topic || prog.topic === 'General' || !prog.category || prog.category === 'General';
-    });
-
-    if (idsToFetch.length === 0) return;
-
-    async function fetchMetadata() {
-      const metadata = {};
-      try {
-        const chunkSize = 30;
-        for (let i = 0; i < idsToFetch.length; i += chunkSize) {
-          const chunk = idsToFetch.slice(i, i + chunkSize);
-          const qSnap = await getDocs(query(
-            collection(db, 'questions'),
-            where('id', 'in', chunk.map(id => parseInt(id) || id))
-          ));
-          qSnap.forEach(docSnap => {
-            const data = docSnap.data();
-            if (data && data.id) {
-              metadata[data.id.toString()] = {
-                topic: data.topic,
-                category: data.category
-              };
-            }
-          });
-        }
-        setResolvedMetadata(prev => ({ ...prev, ...metadata }));
-      } catch (err) {
-        console.error("Error fetching question metadata:", err);
-      }
-    }
-
-    fetchMetadata();
-  }, [questionProgress]);
 
   // Dynamic Daily Goal target from localStorage or scaled based on actual progress
   const [userTargetGoal, setUserTargetGoal] = useState(() => parseInt(localStorage.getItem('mahi_daily_target') || '15'));
