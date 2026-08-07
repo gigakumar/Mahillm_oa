@@ -442,22 +442,6 @@ Respond ONLY with the JSON object, no markdown fences.`;
     ]);
   };
 
-  // Timer Effect
-  useEffect(() => {
-    if (!isTimerRunning || submitted || !question || viewMode !== 'card') return;
-    
-    if (timeLeft <= 0) {
-      handleTimeUp();
-      return;
-    }
-    
-    const timerId = setInterval(() => {
-      setTimeLeft(prev => prev - 1);
-    }, 1000);
-    
-    return () => clearInterval(timerId);
-  }, [timeLeft, isTimerRunning, submitted, question, viewMode, handleTimeUp]);
-
   const handleTimeUp = async () => {
     if (!question) return;
     setSubmittedQuestions(prev => ({ ...prev, [question.id]: true }));
@@ -478,12 +462,29 @@ Respond ONLY with the JSON object, no markdown fences.`;
       setXpFeedback({
         xp: res.xpEarned,
         streak: res.newStreak,
-        isCorrect: false
+        message: 'Timeout Participation'
       });
-      setTimeout(() => setXpFeedback(null), 3500);
+      setTimeout(() => setXpFeedback(null), 3000);
     }
     setProgressMap(prev => ({ ...prev, [question.id]: 'incorrect' }));
   };
+
+  // Timer Effect
+  useEffect(() => {
+    if (!isTimerRunning || submitted || !question || viewMode !== 'card') return;
+    
+    if (timeLeft <= 0) {
+      handleTimeUp();
+      return;
+    }
+    
+    const timerId = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+    
+
+    return () => clearInterval(timerId);
+  }, [timeLeft, isTimerRunning, submitted, question, viewMode, handleTimeUp]);
 
   const handleSubmit = async () => {
     if (!question) return;
