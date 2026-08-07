@@ -196,18 +196,15 @@
   z-index: 55;
 }
 
+.sidebar-toggle-mobile {
+  display: none;
+}
+
 @media (max-width: 900px) {
   .sidebar-container {
-    position: fixed;
-    left: -260px;
-    transition: left 0.25s ease;
+    display: none !important;
   }
-
-  .sidebar-container.mobile-open {
-    left: 0;
-  }
-
   .sidebar-backdrop {
-    display: block;
+    display: none !important;
   }
 }

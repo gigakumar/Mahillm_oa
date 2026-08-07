@@ -35,12 +35,59 @@
   transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 
+/* Mobile Bottom Navigation */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--glass-border);
+  padding: 0.5rem 1rem 1.5rem 1rem; /* Extra bottom padding for iOS home indicator */
+  z-index: 100;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.65rem;
+  font-weight: 600;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.bottom-nav-item:hover {
+  color: var(--text-secondary);
+}
+
+.bottom-nav-item.active {
+  color: var(--accent);
+}
+
+.bottom-nav-item.active svg {
+  filter: drop-shadow(0 0 8px var(--accent-glow));
+}
+
 @media (max-width: 900px) {
   .marks-workspace-container {
-    padding: 0 0.5rem 0.5rem 0.5rem;
+    padding: 0 0.5rem 5rem 0.5rem; /* Added 5rem bottom padding so content doesn't hide behind bottom nav */
   }
   .marks-workspace-container > * {
     border-radius: 14px;
     padding: 1.25rem 0.85rem;
+    min-height: calc(100vh - 10rem); /* Adjust for header + bottom nav */
+  }
+  
+  .mobile-bottom-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 }
