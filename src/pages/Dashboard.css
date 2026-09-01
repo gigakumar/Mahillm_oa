@@ -17,19 +17,21 @@
    1. DAILY GOAL STEPPER CARD
    ------------------------------------------------------------- */
 .dashboard-daily-goal-card {
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.2);
-  border-radius: 16px;
-  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(10, 16, 32, 0.42);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 rgba(0, 0, 0, 0.3), 0 16px 40px -8px rgba(0, 0, 0, 0.45);
+  border-radius: 20px;
+  padding: 1.45rem 1.75rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
 }
 
 .dashboard-daily-goal-card:hover {
-  border-color: var(--border-hover);
-  box-shadow: 0 8px 24px 0 var(--glass-glow);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%), rgba(14, 22, 42, 0.52);
+  border-color: rgba(255, 255, 255, 0.24);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.28), 0 20px 48px -6px rgba(0, 0, 0, 0.55), 0 0 30px rgba(56, 189, 248, 0.18);
   transform: translateY(-2px);
 }
 
@@ -241,9 +243,10 @@
 
 .hero-banner-card {
   width: 100%;
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--glass-border);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(10, 16, 32, 0.42);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: 24px;
   padding: 2.5rem 3rem;
   color: var(--text-primary);
@@ -252,7 +255,13 @@
   align-items: center;
   text-align: center;
   position: relative;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.2), inset 0 -1px 1px 0 rgba(0, 0, 0, 0.3), 0 20px 48px -8px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+.hero-banner-card:hover {
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.28), 0 24px 54px -6px rgba(0, 0, 0, 0.6), 0 0 30px rgba(56, 189, 248, 0.15);
 }
 
 .banner-badge-tags {
@@ -645,44 +654,68 @@
 /* Live Stats Row */
 .dashboard-stats-row {
   display: flex;
-  gap: 0.75rem;
+  gap: 1rem;
   flex-wrap: wrap;
 }
 
 .stat-chip {
   flex: 1;
-  min-width: 80px;
+  min-width: 110px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.2rem;
-  background: var(--glass-bg);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--glass-border);
-  border-radius: 14px;
-  padding: 0.85rem 0.5rem;
-  transition: all 0.2s ease;
+  justify-content: center;
+  gap: 0.35rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(10, 16, 32, 0.45);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.22), inset 0 -1px 1px 0 rgba(0, 0, 0, 0.25), 0 12px 30px -4px rgba(0, 0, 0, 0.4);
+  border-radius: 18px;
+  padding: 1.2rem 0.95rem;
+  transition: all 0.25s cubic-bezier(0.2, 0, 0.2, 1);
   cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-chip::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.7), transparent);
+  opacity: 0;
+  transition: opacity 0.25s ease;
 }
 
 .stat-chip:hover {
-  border-color: var(--border-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 100%), rgba(14, 22, 42, 0.55);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-4px);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.3), 0 16px 36px -4px rgba(0, 0, 0, 0.5), 0 0 25px rgba(56, 189, 248, 0.2);
+}
+
+.stat-chip:hover::before {
+  opacity: 1;
 }
 
 .stat-chip-val {
-  font-size: 1.4rem;
+  font-size: 1.75rem;
   font-weight: 800;
   font-family: var(--font-display);
   color: var(--text-primary);
   line-height: 1;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
 }
 
 .stat-chip-label {
   font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--text-muted);
+  font-weight: 700;
+  color: #cbd5e1;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
 }

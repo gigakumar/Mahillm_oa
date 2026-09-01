@@ -51,6 +51,7 @@ const Leaderboard = React.lazy(() => import('./pages/Leaderboard'));
 const Login = React.lazy(() => import('./pages/Login'));
 const Signup = React.lazy(() => import('./pages/Signup'));
 const Tests = React.lazy(() => import('./pages/Tests'));
+const OnSight = React.lazy(() => import('./pages/OnSight'));
 
 const TestSession = React.lazy(() => import('./pages/TestSession'));
 const TestResult = React.lazy(() => import('./pages/TestResult'));
@@ -101,6 +102,8 @@ function App() {
               <Suspense fallback={<PageLoader />}>
               <AnimatePresence mode="wait">
               <Routes>
+                {/* ── Public gate ── */}
+                <Route path="/onsight" element={<OnSight />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/signup" element={<Signup />} />
                 

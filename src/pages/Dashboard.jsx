@@ -8,7 +8,6 @@ import { compileLearnerState } from '../intelligence/learnerStateModel';
 import { deriveInsights } from '../intelligence/learnerInsights/cognitiveInsightEngine';
 import { getWeakestTopics } from '../utils/adaptiveEngine';
 import { MOCK_TESTS } from '../data/mockSeriesConfig';
-import PhysicsBackground from '../components/PhysicsBackground';
 import TiltCard from '../components/TiltCard';
 
 import { 
@@ -159,7 +158,6 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-container">
-      <PhysicsBackground />
         {/* Live GATE 2026 Countdown & Daily Target Sprint Card */}
         <DashboardCountdown />
 

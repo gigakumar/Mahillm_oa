@@ -1,8 +1,7 @@
-/* MARKS Layout Structure CSS */
 .marks-app-layout {
   display: flex;
   min-height: 100vh;
-  background: var(--bg-base);
+  background: transparent;
   color: var(--text-primary);
   font-family: var(--font-body);
   transition: background-color 0.25s ease, color 0.25s ease;
@@ -17,24 +16,25 @@
   overflow: hidden;
 }
 
+/* Workspace Container — Pure Floating Glass Cards */
 .marks-workspace-container {
   flex: 1;
   overflow-y: auto;
-  padding: 0 1rem 1.25rem 1rem;
+  padding: 0 1.25rem 2rem 1.25rem;
   scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
-/* Rounded main container background like MARKS app */
+/* Let child page components float directly as glass panels */
 .marks-workspace-container > * {
-  background: var(--bg-workspace);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 1.75rem;
-  min-height: calc(100vh - 5.5rem);
-  box-shadow: var(--shadow-md);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  min-height: calc(100vh - 5rem);
+  box-shadow: none;
   color: var(--text-primary);
-  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+  transition: all 0.25s ease;
 }
 
 /* Mobile Bottom Navigation */
