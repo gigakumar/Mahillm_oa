@@ -4,6 +4,7 @@ import { Home, Target, BookOpen, Award, User } from 'lucide-react';
 import Sidebar from './Sidebar';
 import HeaderBar from './HeaderBar';
 import QuickNotesModal from './QuickNotesModal';
+import PageTransition from './PageTransition';
 import './Layout.css';
 
 export default function Layout({ children }) {
@@ -22,8 +23,10 @@ export default function Layout({ children }) {
         <HeaderBar mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} />
 
         {/* Main Content Workspace inside dark rounded card */}
-        <main className="marks-workspace-container animate-scale-in">
-          {children}
+        <main className="marks-workspace-container">
+          <PageTransition key={path}>
+            {children}
+          </PageTransition>
         </main>
       </div>
 

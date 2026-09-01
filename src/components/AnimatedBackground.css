@@ -1,0 +1,83 @@
+.animated-bg-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  overflow: hidden;
+  background-color: var(--bg-base);
+  pointer-events: none;
+  transition: background-color 0.4s ease;
+}
+
+.bg-shape {
+  position: absolute;
+  border-radius: 50%;
+  will-change: transform;
+  animation: moveShape 28s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.shape-1 {
+  width: 55vw;
+  height: 55vw;
+  background: var(--accent-glow);
+  filter: blur(90px);
+  opacity: 0.25;
+  top: -12vw;
+  left: -12vw;
+  animation-duration: 32s;
+}
+
+.shape-2 {
+  width: 45vw;
+  height: 45vw;
+  background: var(--secondary-soft);
+  filter: blur(80px);
+  opacity: 0.2;
+  bottom: -18vw;
+  right: -8vw;
+  animation-delay: -8s;
+  animation-duration: 38s;
+}
+
+.shape-3 {
+  width: 35vw;
+  height: 35vw;
+  background: rgba(139, 92, 246, 0.18);
+  filter: blur(70px);
+  opacity: 0.22;
+  top: 35%;
+  left: 35%;
+  animation-delay: -14s;
+  animation-duration: 44s;
+}
+
+/* Light mode: lighter, more subtle shapes */
+[data-theme="light"] .shape-1,
+body.light-mode .shape-1 { opacity: 0.12; }
+[data-theme="light"] .shape-2,
+body.light-mode .shape-2 { opacity: 0.10; }
+[data-theme="light"] .shape-3,
+body.light-mode .shape-3 { opacity: 0.10; }
+
+.bg-noise {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+@keyframes moveShape {
+  0%   { transform: translate(0,    0)    scale(1);    }
+  25%  { transform: translate(8vw,  4vh)  scale(1.08); }
+  50%  { transform: translate(3vw,  10vh) scale(0.95); }
+  75%  { transform: translate(-4vw, 6vh)  scale(1.05); }
+  100% { transform: translate(5vw,  -4vh) scale(1.02); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-shape { animation: none; }
+}

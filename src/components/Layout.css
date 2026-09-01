@@ -20,7 +20,9 @@
 .marks-workspace-container {
   flex: 1;
   overflow-y: auto;
-  padding: 0 1.25rem 1.25rem 1.25rem;
+  padding: 0 1rem 1.25rem 1rem;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
 
 /* Rounded main container background like MARKS app */
@@ -43,36 +45,44 @@
   left: 0;
   right: 0;
   background: var(--glass-bg);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border-top: 1px solid var(--glass-border);
-  padding: 0.5rem 1rem 1.5rem 1rem; /* Extra bottom padding for iOS home indicator */
+  padding: 0.4rem 1rem calc(0.4rem + env(safe-area-inset-bottom)) 1rem;
   z-index: 100;
-  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.12);
+  justify-content: space-around;
 }
 
 .bottom-nav-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.2rem;
   color: var(--text-muted);
   text-decoration: none;
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 600;
-  transition: color 0.2s ease, transform 0.2s ease;
+  padding: 0.5rem 0.75rem;
+  border-radius: 12px;
+  transition: color 0.15s ease, background 0.15s ease;
+  min-width: 44px;
+  min-height: 44px;
+  justify-content: center;
 }
 
 .bottom-nav-item:hover {
   color: var(--text-secondary);
+  background: var(--bg-card);
 }
 
 .bottom-nav-item.active {
   color: var(--accent);
+  background: var(--accent-soft);
 }
 
 .bottom-nav-item.active svg {
-  filter: drop-shadow(0 0 8px var(--accent-glow));
+  filter: drop-shadow(0 0 6px var(--accent-glow));
 }
 
 @media (max-width: 900px) {

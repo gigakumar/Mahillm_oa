@@ -44,7 +44,10 @@ export default function OAPractice() {
   const { scoreData, toggleBookmark } = useScore();
   const { masteryScores, mistakes, spacedRepetition, recordDetailedAnswer, questionProgress } = useUserData();
   const [progressMap, setProgressMap] = useState({});
-  
+
+  // Page title
+  useEffect(() => { document.title = 'Practice & PYQs — MahiLLM'; }, []);
+
   // Mech subtopic picker state
   const [mechSubtopicMode, setMechSubtopicMode] = useState(false);
   const [xpFeedback, setXpFeedback] = useState(null);
@@ -106,6 +109,52 @@ export default function OAPractice() {
   // Gemini AI state
   const selectedModel = 'gemini-3.1-flash-lite';
   const [aiAnalysis, setAiAnalysis] = useState({});
+
+  // Keyboard shortcut handler for quiz navigation
+  useEffect(() => {
+    const handleKey = (e) => {
+      // Don't fire if user is typing in an input/textarea
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (!question) return;
+
+      const optionKeys = ['1', '2', '3', '4'];
+      if (optionKeys.includes(e.key)) {
+        const idx = parseInt(e.key) - 1;
+        const opts = question.options || [];
+        if (idx < opts.length && !submitted) {
+          setSelectedOptions(prev => ({ ...prev, [question.id]: idx }));
+        }
+      }
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (!submitted && selected !== null) {
+          const isCorrect = selected === displayCorrect;
+          setSubmittedQuestions(prev => ({ ...prev, [question.id]: true }));
+          recordDetailedAnswer(question, isCorrect, (60 - timeLeft) * 1000, null, currentTimeline);
+          if (isCorrect) {
+            setXpFeedback('+10 XP!');
+            setTimeout(() => setXpFeedback(null), 1500);
+          }
+        }
+      }
+      if ((e.key === 'ArrowRight' || e.key === ']') && submitted) {
+        e.preventDefault();
+        if (currentIdx < quizQuestions.length - 1) {
+          setCurrentIdx(prev => prev + 1);
+          setTimeLeft(60);
+          setIsTimerRunning(true);
+          setCurrentTimeline([]);
+        }
+      }
+      if ((e.key === 'ArrowLeft' || e.key === '[') && currentIdx > 0) {
+        e.preventDefault();
+        setCurrentIdx(prev => prev - 1);
+      }
+    };
+
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [question, submitted, selected, displayCorrect, currentIdx, quizQuestions.length, setSelectedOptions, setSubmittedQuestions, recordDetailedAnswer, timeLeft, currentTimeline, setXpFeedback]);
 
   const filteredAvailableTopics = useMemo(() => {
     if (!availableTopics) return ['all'];
@@ -246,7 +295,18 @@ Respond ONLY with the JSON object, no markdown fences.`;
     return shuffleArray(questionBankCache[cacheKey]);
   }, []);
 
-  const loadActivePool = async () => {
+  // Stable refs for Firestore data — updated on every render but don't trigger useCallback recreation
+  const spacedRepetitionRef = useRef(spacedRepetition);
+  const mistakesRef = useRef(mistakes);
+  const masteryScoresRef = useRef(masteryScores);
+  const scoreDataRef = useRef(scoreData);
+  useEffect(() => { spacedRepetitionRef.current = spacedRepetition; }, [spacedRepetition]);
+  useEffect(() => { mistakesRef.current = mistakes; }, [mistakes]);
+  useEffect(() => { masteryScoresRef.current = masteryScores; }, [masteryScores]);
+  useEffect(() => { scoreDataRef.current = scoreData; }, [scoreData]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadActivePool = useCallback(async () => {
     setLoading(true);
     setLoadError(null);
     try {
@@ -254,23 +314,16 @@ Respond ONLY with the JSON object, no markdown fences.`;
       let pool = [];
 
       if (category === 'all' || category === 'bookmarked') {
-        // For 'all'/'bookmarked': load ONE random bank first for instant display,
-        // then load remaining banks in background
         const enabledBanks = QuestionBankRegistry.filter(b => b.enabled);
         const randomBank = enabledBanks[Math.floor(Math.random() * enabledBanks.length)];
-        
-        // Load first bank fast
         const firstPool = await loadBank(randomBank, topic, difficulty);
         pool = [...firstPool];
-        
-        // Load remaining banks in parallel
         const remainingBanks = enabledBanks.filter(b => b.id !== randomBank.id);
         const remainingPools = await Promise.all(
           remainingBanks.map(b => loadBank(b, topic, difficulty))
         );
         remainingPools.forEach(p => { pool = pool.concat(p); });
       } else {
-        // Single category: use registry lookup
         const bankEntry = QuestionBankRegistry.find(
           b => b.categoryKey === category || b.label === category
         );
@@ -282,11 +335,9 @@ Respond ONLY with the JSON object, no markdown fences.`;
       setDebugPoolLength(pool ? pool.length : -1);
       console.log("Pool loaded. Size:", pool.length);
 
-      // Use only core Mechanical subject groups instead of dynamic subtopics
       const uniqueTopics = ['all', ...MECH_TOPIC_GROUPS.map(g => g.group)].sort();
       setAvailableTopics(uniqueTopics);
 
-      // Fetch quarantined list with a short timeout to not block UI
       const qList = new Set();
       try {
         const qSnap = await Promise.race([
@@ -298,22 +349,20 @@ Respond ONLY with the JSON object, no markdown fences.`;
         console.warn("Quarantine list unavailable, skipping:", e.message);
       }
 
-      let filtered = qList.size > 0 
+      let filtered = qList.size > 0
         ? pool.filter(q => !qList.has(q.id.toString()))
         : pool;
-        
-      // Filter by Question Type (MCQ vs NAT)
+
       if (qType === 'NAT') {
         filtered = filtered.filter(q => q.type === 'NAT' || !q.options || q.options.length === 0);
       } else if (qType === 'MCQ') {
         filtered = filtered.filter(q => q.type !== 'NAT' && q.options && q.options.length > 0);
       } else {
-        // 'all': ensure valid question content (either has options or is NAT)
         filtered = filtered.filter(q => (q.options && q.options.length > 0) || q.type === 'NAT');
       }
 
       if (category === 'bookmarked') {
-        filtered = filtered.filter(q => scoreData?.bookmarked?.includes(q.id));
+        filtered = filtered.filter(q => scoreDataRef.current?.bookmarked?.includes(q.id));
       }
       if (difficulty !== 'all') {
         filtered = filtered.filter(q => q.difficulty === difficulty);
@@ -326,23 +375,19 @@ Respond ONLY with the JSON object, no markdown fences.`;
       console.log("After filter: category:", category, "diff:", difficulty, "topic:", topic, "count:", filtered.length);
 
       if (isAdaptive) {
+        const sr = spacedRepetitionRef.current;
+        const mk = mistakesRef.current;
+        const ms = masteryScoresRef.current;
         const userHistoryProxy = {};
-        Object.keys(spacedRepetition).forEach(id => {
-          userHistoryProxy[id] = { totalAttempts: 1, correctCount: spacedRepetition[id].lastResult === 'correct' ? 1 : 0 };
+        Object.keys(sr).forEach(id => {
+          userHistoryProxy[id] = { totalAttempts: 1, correctCount: sr[id].lastResult === 'correct' ? 1 : 0 };
         });
-        Object.keys(mistakes).forEach(id => {
+        Object.keys(mk).forEach(id => {
           if (!userHistoryProxy[id]) {
             userHistoryProxy[id] = { totalAttempts: 1, correctCount: 0 };
           }
         });
-
-        const adaptiveResult = selectNextQuestions(
-          filtered,
-          masteryScores,
-          userHistoryProxy,
-          mistakes,
-          20
-        );
+        const adaptiveResult = selectNextQuestions(filtered, ms, userHistoryProxy, mk, 20);
         setQuizQuestions(adaptiveResult.questions.map(shuffleQuestionOptions));
         setSelectionReasons(adaptiveResult.reasons);
       } else {
@@ -363,7 +408,8 @@ Respond ONLY with the JSON object, no markdown fences.`;
     } finally {
       setLoading(false);
     }
-  };
+  // Only primitive filter values — Firestore objects read via refs to avoid re-triggering
+  }, [category, difficulty, topic, isAdaptive, qType, loadBank]);
 
   useEffect(() => {
     if (!isSessionActive) return;
@@ -377,7 +423,8 @@ Respond ONLY with the JSON object, no markdown fences.`;
       return;
     }
     loadActivePool();
-  }, [category, difficulty, topic, isAdaptive, isSessionActive, loadActivePool]);
+  // Only re-run when actual filter values change, NOT on every render
+  }, [category, difficulty, topic, isAdaptive, isSessionActive]);
 
   const handleRegenerateQuiz = () => {
     loadActivePool();
@@ -559,43 +606,25 @@ Respond ONLY with the JSON object, no markdown fences.`;
     );
   }
 
-  if (loading) {
-    return (
-      <div className="page-content oa-practice">
-        <div className="loading-skeleton-container">
-          <div className="loading-skeleton-header">
-            <div className="skeleton-pulse skeleton-title"></div>
-            <div className="skeleton-pulse skeleton-subtitle"></div>
-          </div>
-          <div className="loading-skeleton-progress">
-            <div className="skeleton-pulse skeleton-progress-bar"></div>
-          </div>
-          <div className="loading-skeleton-card card">
-            <div className="skeleton-badges">
-              <div className="skeleton-pulse skeleton-badge"></div>
-              <div className="skeleton-pulse skeleton-badge"></div>
-              <div className="skeleton-pulse skeleton-badge-timer"></div>
-            </div>
-            <div className="skeleton-pulse skeleton-question-line long"></div>
-            <div className="skeleton-pulse skeleton-question-line medium"></div>
-            <div className="skeleton-options">
-              <div className="skeleton-pulse skeleton-option"></div>
-              <div className="skeleton-pulse skeleton-option"></div>
-              <div className="skeleton-pulse skeleton-option"></div>
-              <div className="skeleton-pulse skeleton-option"></div>
-            </div>
-            <div className="skeleton-actions">
-              <div className="skeleton-pulse skeleton-btn"></div>
-            </div>
-          </div>
-          <p className="loading-status-text">
-            <span className="loading-dot-animation"></span>
-            Preparing your questions
-          </p>
-        </div>
+  if (loading) return (
+    <div style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Topic filter skeleton */}
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        {[1,2,3,4,5].map(i => (
+          <div key={i} className="skeleton" style={{ height: '32px', width: `${60 + i * 20}px`, borderRadius: '99px' }} />
+        ))}
       </div>
-    );
-  }
+      {/* Question card skeleton */}
+      <div className="skeleton" style={{ height: '200px', borderRadius: '16px' }} />
+      {/* Options skeleton */}
+      {[1,2,3,4].map(i => (
+        <div key={i} className="skeleton" style={{ height: '52px', borderRadius: '12px' }} />
+      ))}
+      <div style={{ textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: '-0.5rem' }}>
+        ✦ Preparing your questions...
+      </div>
+    </div>
+  );
   if (!question) {
     return (
       <div className="page-content oa-practice">

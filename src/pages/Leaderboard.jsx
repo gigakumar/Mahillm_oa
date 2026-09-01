@@ -24,6 +24,9 @@ export default function Leaderboard() {
   const { user } = useAuth();
   const { scoreData } = useScore();
 
+  // Page title
+  useEffect(() => { document.title = 'Leaderboard — MahiLLM'; }, []);
+
   useEffect(() => {
     const fetchLeaderboard = async () => {
       setLoading(true);

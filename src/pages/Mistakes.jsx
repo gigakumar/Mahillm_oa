@@ -37,6 +37,9 @@ export default function Mistakes() {
   const { mistakes, updateMistakeType, resolveMistake, updateMistakeNote } = useUserData();
   const { scoreData } = useScore();
 
+  // Page title
+  useEffect(() => { document.title = 'Notebooks — MahiLLM'; }, []);
+
   const [loadedQuestions, setLoadedQuestions] = useState({});
   const [loadingPools, setLoadingPools] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState('all');

@@ -170,7 +170,7 @@ export default function TestsSidebar({ stats = {} }) {
               <button
                 className="btn btn-primary w-100"
                 style={{ padding: '0.6rem' }}
-                onClick={() => navigate('/practice')}
+                onClick={() => navigate('/oa-practice')}
               >
                 Practice Now
               </button>

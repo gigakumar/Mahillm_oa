@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useUserData } from '../contexts/UserDataContext';
 import './Sidebar.css';
 
 export default function Sidebar({ mobileOpen, setMobileOpen }) {
@@ -33,6 +34,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { mistakes } = useUserData();
 
   const isActive = (path) => {
     if (path === '/' && location.pathname === '/') return true;
@@ -46,6 +48,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
       items: [
         { path: '/', label: 'Home', icon: Home },
         { path: '/planner', label: 'Study Planner', icon: Calendar },
+        { path: '/focus', label: 'Engine Room (Focus)', icon: Moon },
         { path: '/profile', label: 'Profile', icon: User },
       ]
     },
@@ -54,8 +57,9 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
       items: [
         { path: '/tests', label: 'Tests', icon: ClipboardCheck },
         { path: '/oa-practice', label: 'Practice & PYQs', icon: Sparkles },
+        { path: '/boss-fight', label: 'Boss Fight Arena', icon: Swords },
         { path: '/bookmarks', label: 'Starred PYQs', icon: Bookmark },
-        { path: '/mistakes', label: 'Notebooks', icon: BookMarked },
+        { path: '/mistakes', label: 'Notebooks', icon: BookMarked, badge: Object.values(mistakes || {}).filter(m => !m.isResolved).length || 0 },
         { path: '/revision', label: 'Spaced Revision', icon: Brain },
       ]
     },
@@ -112,6 +116,7 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
                   >
                     <Icon size={18} className="sidebar-link-icon" />
                     <span className="sidebar-link-label">{item.label}</span>
+                    {item.badge > 0 && <span className="nav-badge">{item.badge}</span>}
                   </Link>
                 );
               })}

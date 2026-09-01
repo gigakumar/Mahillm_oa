@@ -7,7 +7,8 @@ import {
   Menu,
   X,
   User,
-  Calculator
+  Calculator,
+  Flame
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useScore } from '../contexts/ScoreContext';
@@ -64,6 +65,13 @@ export default function HeaderBar({ mobileOpen, setMobileOpen }) {
 
         {/* Focus Stopwatch & Pomodoro Timer */}
         <FocusTimerModal />
+
+        {scoreData?.streak > 0 && (
+          <div className="header-stat-pill streak-pill" title={`${scoreData.streak} day streak!`}>
+            <Flame size={15} className="pill-icon" style={{ color: '#f97316' }} />
+            <span className="pill-val" style={{ color: '#f97316', fontWeight: 700 }}>{scoreData.streak}🔥</span>
+          </div>
+        )}
 
         {/* XP / Sparkle Pill */}
         <div className="header-stat-pill xp-pill" onClick={() => navigate('/stats')} title="Experience Points (XP) earned from practice">

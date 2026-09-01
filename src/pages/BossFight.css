@@ -1,0 +1,284 @@
+.boss-lobby {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #3f1515, #0a0a0a);
+  color: white;
+  text-align: center;
+  padding: 2rem;
+  position: relative;
+}
+
+.btn-back {
+  position: absolute;
+  top: 2rem;
+  left: 2rem;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.btn-back:hover {
+  color: white;
+}
+
+.boss-preview img {
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  border: 4px solid #ef4444;
+  box-shadow: 0 0 40px rgba(239, 68, 68, 0.4);
+  margin: 2rem 0;
+  animation: float 4s ease-in-out infinite;
+}
+
+.btn-fight {
+  margin-top: 2rem;
+  padding: 1rem 3rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  background: linear-gradient(45deg, #ef4444, #b91c1c);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(239, 68, 68, 0.5);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-fight:hover {
+  transform: scale(1.05) translateY(-5px);
+  box-shadow: 0 15px 40px rgba(239, 68, 68, 0.7);
+}
+
+.boss-arena {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #0f172a;
+  color: white;
+  overflow: hidden;
+}
+
+.arena-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 3rem;
+  background: rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.health-bar-container {
+  flex: 1;
+  max-width: 400px;
+  position: relative;
+}
+
+.health-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.boss-health .health-label {
+  justify-content: flex-end;
+  color: #ef4444;
+}
+
+.player-health .health-label {
+  color: #10b981;
+}
+
+.health-track {
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+}
+
+.health-fill {
+  height: 100%;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.boss-health .health-track {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.vs-badge {
+  margin: 0 2rem;
+  color: #fbbf24;
+  font-style: italic;
+  font-weight: 900;
+  font-size: 1.5rem;
+  text-shadow: 0 0 15px rgba(251, 191, 36, 0.5);
+}
+
+.arena-stage {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  background: radial-gradient(circle at center, rgba(239, 68, 68, 0.1), transparent 60%);
+}
+
+.boss-sprite {
+  animation: float 4s ease-in-out infinite;
+}
+
+.boss-sprite img {
+  width: 300px;
+  height: 300px;
+  filter: drop-shadow(0 0 30px rgba(239, 68, 68, 0.3));
+}
+
+.battle-panel {
+  background: rgba(15, 23, 42, 0.95);
+  border-top: 2px solid rgba(56, 189, 248, 0.3);
+  padding: 2rem;
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+}
+
+.battle-question {
+  font-size: 1.25rem;
+  font-weight: 500;
+  margin-bottom: 2rem;
+  text-align: center;
+  max-width: 800px;
+  margin-inline: auto;
+}
+
+.battle-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.battle-opt-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+  color: white;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.battle-opt-btn:hover:not(:disabled) {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: rgba(56, 189, 248, 0.5);
+  transform: translateY(-2px);
+}
+
+.battle-opt-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.battle-over {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem;
+  text-align: center;
+}
+
+.battle-over h2 {
+  font-size: 4rem;
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+}
+
+.battle-over.win h2 {
+  color: #10b981;
+  text-shadow: 0 0 30px rgba(16, 185, 129, 0.5);
+}
+
+.battle-over.lose h2 {
+  color: #ef4444;
+  text-shadow: 0 0 30px rgba(239, 68, 68, 0.5);
+}
+
+.battle-over button {
+  margin-top: 2rem;
+  padding: 1rem 3rem;
+  font-size: 1.25rem;
+  border: none;
+  border-radius: 50px;
+  background: white;
+  color: black;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
+
+.shake {
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.floating-damage {
+  position: absolute;
+  top: -40px;
+  font-size: 2rem;
+  font-weight: 900;
+  color: white;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+  animation: floatUp 1s ease-out forwards;
+}
+
+.boss-health .floating-damage {
+  right: 0;
+  color: #ef4444;
+}
+
+.player-health .floating-damage {
+  left: 0;
+  color: #ef4444;
+}
+
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  50% { transform: translateY(-30px) scale(1.2); }
+  100% { opacity: 0; transform: translateY(-50px) scale(1); }
+}

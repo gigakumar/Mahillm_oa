@@ -8,6 +8,8 @@ import { compileLearnerState } from '../intelligence/learnerStateModel';
 import { deriveInsights } from '../intelligence/learnerInsights/cognitiveInsightEngine';
 import { getWeakestTopics } from '../utils/adaptiveEngine';
 import { MOCK_TESTS } from '../data/mockSeriesConfig';
+import PhysicsBackground from '../components/PhysicsBackground';
+import TiltCard from '../components/TiltCard';
 
 import { 
   Play, 
@@ -151,10 +153,39 @@ export default function Dashboard() {
     setCarouselIdx(prev => (prev === 1 ? 0 : 1));
   };
 
+  useEffect(() => {
+    document.title = 'Dashboard — MahiLLM GATE Prep';
+  }, []);
+
   return (
     <div className="dashboard-container">
-      {/* Live GATE 2026 Countdown & Daily Target Sprint Card */}
-      <DashboardCountdown />
+      <PhysicsBackground />
+        {/* Live GATE 2026 Countdown & Daily Target Sprint Card */}
+        <DashboardCountdown />
+
+      {/* LIVE STATS ROW */}
+      <div className="dashboard-stats-row">
+        <div className="stat-chip">
+          <span className="stat-chip-val">{Object.keys(questionProgress || {}).length}</span>
+          <span className="stat-chip-label">Solved</span>
+        </div>
+        <div className="stat-chip">
+          <span className="stat-chip-val" style={{ color: '#10b981' }}>
+            {Object.keys(questionProgress || {}).length > 0
+              ? Math.round((Object.values(questionProgress || {}).filter(p => p.status === 'correct').length / Object.keys(questionProgress).length) * 100)
+              : 0}%
+          </span>
+          <span className="stat-chip-label">Accuracy</span>
+        </div>
+        <div className="stat-chip">
+          <span className="stat-chip-val" style={{ color: '#f97316' }}>{Object.values(mistakes || {}).filter(m => !m.isResolved).length}</span>
+          <span className="stat-chip-label">Mistakes</span>
+        </div>
+        <div className="stat-chip">
+          <span className="stat-chip-val" style={{ color: '#a78bfa' }}>{Object.keys(masteryScores || {}).length}</span>
+          <span className="stat-chip-label">Topics</span>
+        </div>
+      </div>
 
       {/* TOP ROW: DAILY GOAL STEPPER CARD */}
       <div className="dashboard-daily-goal-card">
@@ -334,42 +365,42 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="modules-grid-row">
-          <div className="module-card duel-mod-card" onClick={() => navigate('/duel')}>
+        <div className="modules-grid">
+          <TiltCard className="module-card duel-mod-card" onClick={() => navigate('/duel')}>
             <Swords size={32} className="text-indigo-400" />
             <div className="mod-info">
               <h4>1v1 Speed Duel Arena</h4>
               <p>Challenge peers live or practice against AI bots in real time</p>
             </div>
             <ArrowRight size={20} className="mod-arrow" />
-          </div>
+          </TiltCard>
 
-          <div className="module-card interview-mod-card" onClick={() => navigate('/mock-interview')}>
+          <TiltCard className="module-card interview-mod-card" onClick={() => navigate('/mock-interview')}>
             <Mic size={32} className="text-emerald-400" />
             <div className="mod-info">
               <h4>Voice Coach Mock Interview</h4>
               <p>Practice technical & HR questions with voice evaluation</p>
             </div>
             <ArrowRight size={20} className="mod-arrow" />
-          </div>
+          </TiltCard>
 
-          <div className="module-card predictor-mod-card" onClick={() => navigate('/gate-predictor')}>
+          <TiltCard className="module-card predictor-mod-card" onClick={() => navigate('/gate-predictor')}>
             <Compass size={32} className="text-amber-400" />
             <div className="mod-info">
               <h4>GATE Target Rank Predictor</h4>
               <p>Interactive What-If marks simulator & qualifying analysis</p>
             </div>
             <ArrowRight size={20} className="mod-arrow" />
-          </div>
+          </TiltCard>
 
-          <div className="module-card inspector-mod-card" onClick={() => navigate('/inspector')}>
+          <TiltCard className="module-card inspector-mod-card" onClick={() => navigate('/readiness')}>
             <Layers size={32} className="text-cyan-400" />
             <div className="mod-info">
-              <h4>Component Physics Inspector</h4>
-              <p>Simulate pumps, Otto engines, and Pelton turbine physics</p>
+              <h4>Topic Readiness Heatmap</h4>
+              <p>Visualize your mastery across every GATE topic in real-time</p>
             </div>
             <ArrowRight size={20} className="mod-arrow" />
-          </div>
+          </TiltCard>
         </div>
       </div>
 

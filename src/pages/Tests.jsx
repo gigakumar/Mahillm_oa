@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useUserData } from '../contexts/UserDataContext';
@@ -32,6 +32,9 @@ export default function Tests() {
   const { testHistory = [], masteryScores = {}, questionProgress = {}, loading: historyLoading } = useUserData();
   const { scoreData } = useScore();
   const navigate = useNavigate();
+
+  // Page title
+  useEffect(() => { document.title = 'Mock Tests — MahiLLM'; }, []);
 
   const [activeTab, setActiveTab] = useState('mocks');
 

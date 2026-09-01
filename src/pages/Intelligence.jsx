@@ -28,6 +28,9 @@ import './Intelligence.css';
 export default function Intelligence() {
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Page title
+  useEffect(() => { document.title = 'Learner Intelligence — MahiLLM'; }, []);
   const { masteryScores, spacedRepetition, mistakes, questionProgress } = useUserData();
 
   const [loadingPools, setLoadingPools] = useState(true);
@@ -461,7 +464,7 @@ export default function Intelligence() {
         <h1>Learner Intelligence</h1>
         <p className="subtitle">
           A live model of what you know, how stable that knowledge is, and where your performance breaks down.
-          <button className="btn btn-link" onClick={() => navigate('/how-ai-thinks')} style={{marginLeft: '10px', color: '#a78bfa'}}>Learn how AI thinks →</button>
+          <button className="btn btn-link" onClick={() => navigate('/readiness')} style={{marginLeft: '10px', color: '#a78bfa'}}>See Topic Heatmap →</button>
         </p>
       </header>
 

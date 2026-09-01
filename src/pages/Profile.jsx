@@ -39,6 +39,9 @@ export default function Profile() {
   const { masteryScores, questionProgress, testHistory } = useUserData();
   const navigate = useNavigate();
 
+  // Page title
+  useEffect(() => { document.title = 'Profile — MahiLLM'; }, []);
+
   const [dbProfile, setDbProfile] = useState(null);
   const [testsCompleted, setTestsCompleted] = useState(0);
 
