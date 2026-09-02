@@ -30,6 +30,7 @@ import {
   Sliders
 } from 'lucide-react';
 
+import { useTheme } from '../contexts/ThemeContext';
 import AIStudyCoach from '../components/AIStudyCoach';
 import DashboardCountdown from '../components/DashboardCountdown';
 import './Dashboard.css';
@@ -92,18 +93,19 @@ const DIGITAL_BOOKS = [
 ];
 
 const PYQ_BANKS = [
-  { id: 'gate_main', name: 'GATE ME (Core)', badge: '2026 QS ADDED', category: 'Mechanical Engineering', icon: Cog },
-  { id: 'nta_abhyas', name: 'GATE NTA Abhyas', badge: 'VERIFIED', isCheck: true, category: 'Mechanical Engineering', icon: CheckCircle2 },
-  { id: 'isro', name: 'ISRO & BARC', badge: 'SPACE EXAMS', category: 'General Aptitude', icon: Rocket },
-  { id: 'psu_state', name: 'State PSUs / ESE', badge: '2026 QS ADDED', category: 'Mechanical Engineering', icon: Building2 },
-  { id: 'ese_prelims', name: 'ESE Prelims', badge: 'OBJECTIVE', category: 'Mechanical Engineering', icon: FileText },
-  { id: 'drdo', name: 'DRDO RAC', badge: 'DEFENCE', category: 'Mechanical Engineering', icon: Shield },
-  { id: 'gate_adv', name: 'GATE AIR 1-100', badge: '2026 QS ADDED', category: 'Mechanical Engineering', icon: Flame },
-  { id: 'aptitude', name: 'Engineering Aptitude', badge: 'ALL EXAMS', category: 'General Aptitude', icon: BarChart2 }
+  { id: 'gate_main', name: 'GATE ME (Core)', badge: '2026 QS ADDED', category: 'Mechanical Engineering', icon: Cog, emoji: '⚙️' },
+  { id: 'nta_abhyas', name: 'GATE NTA Abhyas', badge: 'VERIFIED', isCheck: true, category: 'Mechanical Engineering', icon: CheckCircle2, emoji: '✅' },
+  { id: 'isro', name: 'ISRO & BARC', badge: 'SPACE EXAMS', category: 'General Aptitude', icon: Rocket, emoji: '🚀' },
+  { id: 'psu_state', name: 'State PSUs / ESE', badge: '2026 QS ADDED', category: 'Mechanical Engineering', icon: Building2, emoji: '🏛️' },
+  { id: 'ese_prelims', name: 'ESE Prelims', badge: 'OBJECTIVE', category: 'Mechanical Engineering', icon: FileText, emoji: '📜' },
+  { id: 'drdo', name: 'DRDO RAC', badge: 'DEFENCE', category: 'Mechanical Engineering', icon: Shield, emoji: '🛡️' },
+  { id: 'gate_adv', name: 'GATE AIR 1-100', badge: '2026 QS ADDED', category: 'Mechanical Engineering', icon: Flame, emoji: '🔥' },
+  { id: 'aptitude', name: 'Engineering Aptitude', badge: 'ALL EXAMS', category: 'General Aptitude', icon: BarChart2, emoji: '📊' }
 ];
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { uiMode } = useTheme();
   const { masteryScores, mistakes, questionProgress } = useUserData();
 
   const [carouselIdx, setCarouselIdx] = useState(0);
@@ -161,82 +163,113 @@ export default function Dashboard() {
       {/* Live GATE 2026 Countdown & Daily Target Sprint Card */}
       <DashboardCountdown />
 
-      {/* KPI METRICS ROW — Bespoke Linear Style Cards */}
-      <div className="dashboard-kpi-grid">
-        <div className="kpi-card" onClick={() => navigate('/oa-practice')}>
-          <div className="kpi-header">
-            <span className="kpi-title">SOLVED</span>
-            <div className="kpi-icon-wrap icon-cyan">
-              <Target size={16} />
-            </div>
+      {/* STATS ROW: Conditional between Modern KPI Grid & Classic Stat Chips */}
+      {uiMode === 'classic' ? (
+        <div className="dashboard-stats-row">
+          <div className="stat-chip" onClick={() => navigate('/oa-practice')}>
+            <span className="stat-chip-val">{totalSolved}</span>
+            <span className="stat-chip-label">Solved</span>
           </div>
-          <div className="kpi-body">
-            <span className="kpi-val">{totalSolved}</span>
-            <span className="kpi-sub-badge">Practice questions</span>
+          <div className="stat-chip" onClick={() => navigate('/readiness')}>
+            <span className="stat-chip-val" style={{ color: '#10b981' }}>{accuracyPct}%</span>
+            <span className="stat-chip-label">Accuracy</span>
           </div>
-          <div className="kpi-footer-bar">
-            <div className="kpi-bar-fill bar-cyan" style={{ width: `${Math.min(100, (totalSolved / 500) * 100)}%` }} />
+          <div className="stat-chip" onClick={() => navigate('/mistakes')}>
+            <span className="stat-chip-val" style={{ color: '#f97316' }}>{unresolvedMistakes}</span>
+            <span className="stat-chip-label">Mistakes</span>
           </div>
-        </div>
-
-        <div className="kpi-card" onClick={() => navigate('/readiness')}>
-          <div className="kpi-header">
-            <span className="kpi-title">ACCURACY</span>
-            <div className="kpi-icon-wrap icon-emerald">
-              <TrendingUp size={16} />
-            </div>
-          </div>
-          <div className="kpi-body">
-            <span className="kpi-val text-emerald">{accuracyPct}%</span>
-            <span className="kpi-sub-badge">{accuracyPct >= 75 ? 'Target achieved' : 'Target: 80%+'}</span>
-          </div>
-          <div className="kpi-footer-bar">
-            <div className="kpi-bar-fill bar-emerald" style={{ width: `${accuracyPct}%` }} />
+          <div className="stat-chip" onClick={() => navigate('/syllabus')}>
+            <span className="stat-chip-val" style={{ color: '#a78bfa' }}>{coveredTopics}</span>
+            <span className="stat-chip-label">Topics</span>
           </div>
         </div>
-
-        <div className="kpi-card" onClick={() => navigate('/mistakes')}>
-          <div className="kpi-header">
-            <span className="kpi-title">MISTAKES</span>
-            <div className="kpi-icon-wrap icon-amber">
-              <AlertTriangle size={16} />
+      ) : (
+        <div className="dashboard-kpi-grid">
+          <div className="kpi-card" onClick={() => navigate('/oa-practice')}>
+            <div className="kpi-header">
+              <span className="kpi-title">SOLVED</span>
+              <div className="kpi-icon-wrap icon-cyan">
+                <Target size={16} />
+              </div>
+            </div>
+            <div className="kpi-body">
+              <span className="kpi-val">{totalSolved}</span>
+              <span className="kpi-sub-badge">Practice questions</span>
+            </div>
+            <div className="kpi-footer-bar">
+              <div className="kpi-bar-fill bar-cyan" style={{ width: `${Math.min(100, (totalSolved / 500) * 100)}%` }} />
             </div>
           </div>
-          <div className="kpi-body">
-            <span className="kpi-val text-amber">{unresolvedMistakes}</span>
-            <span className="kpi-sub-badge">Needs revision</span>
-          </div>
-          <div className="kpi-footer-bar">
-            <div className="kpi-bar-fill bar-amber" style={{ width: `${Math.min(100, (unresolvedMistakes / 50) * 100)}%` }} />
-          </div>
-        </div>
 
-        <div className="kpi-card" onClick={() => navigate('/syllabus')}>
-          <div className="kpi-header">
-            <span className="kpi-title">TOPICS</span>
-            <div className="kpi-icon-wrap icon-indigo">
-              <Layers size={16} />
+          <div className="kpi-card" onClick={() => navigate('/readiness')}>
+            <div className="kpi-header">
+              <span className="kpi-title">ACCURACY</span>
+              <div className="kpi-icon-wrap icon-emerald">
+                <TrendingUp size={16} />
+              </div>
+            </div>
+            <div className="kpi-body">
+              <span className="kpi-val text-emerald">{accuracyPct}%</span>
+              <span className="kpi-sub-badge">{accuracyPct >= 75 ? 'Target achieved' : 'Target: 80%+'}</span>
+            </div>
+            <div className="kpi-footer-bar">
+              <div className="kpi-bar-fill bar-emerald" style={{ width: `${accuracyPct}%` }} />
             </div>
           </div>
-          <div className="kpi-body">
-            <span className="kpi-val text-indigo">{coveredTopics}</span>
-            <span className="kpi-sub-badge">Active syllabus topics</span>
+
+          <div className="kpi-card" onClick={() => navigate('/mistakes')}>
+            <div className="kpi-header">
+              <span className="kpi-title">MISTAKES</span>
+              <div className="kpi-icon-wrap icon-amber">
+                <AlertTriangle size={16} />
+              </div>
+            </div>
+            <div className="kpi-body">
+              <span className="kpi-val text-amber">{unresolvedMistakes}</span>
+              <span className="kpi-sub-badge">Needs revision</span>
+            </div>
+            <div className="kpi-footer-bar">
+              <div className="kpi-bar-fill bar-amber" style={{ width: `${Math.min(100, (unresolvedMistakes / 50) * 100)}%` }} />
+            </div>
           </div>
-          <div className="kpi-footer-bar">
-            <div className="kpi-bar-fill bar-indigo" style={{ width: `${Math.min(100, (coveredTopics / 45) * 100)}%` }} />
+
+          <div className="kpi-card" onClick={() => navigate('/syllabus')}>
+            <div className="kpi-header">
+              <span className="kpi-title">TOPICS</span>
+              <div className="kpi-icon-wrap icon-indigo">
+                <Layers size={16} />
+              </div>
+            </div>
+            <div className="kpi-body">
+              <span className="kpi-val text-indigo">{coveredTopics}</span>
+              <span className="kpi-sub-badge">Active syllabus topics</span>
+            </div>
+            <div className="kpi-footer-bar">
+              <div className="kpi-bar-fill bar-indigo" style={{ width: `${Math.min(100, (coveredTopics / 45) * 100)}%` }} />
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* DAILY GOAL PROGRESSION BAR — Precision Milestone Track */}
-      <div className="dashboard-daily-goal-card">
+      {/* DAILY GOAL PROGRESSION BAR — Conditional between Modern Milestone & Classic Runner Emojis */}
+      <div className={`dashboard-daily-goal-card ${uiMode === 'classic' ? 'classic-goal-card' : ''}`}>
         <div className="goal-header-row">
           <div className="goal-title" onClick={() => navigate('/oa-practice')}>
-            <span className="goal-badge-label">DAILY MILESTONES</span>
-            <h3 className="goal-heading">
-              Today's Practice Pace 
-              <span className="goal-nums"> ({questionsSolvedToday} / {targetDailyGoal} Questions)</span>
-            </h3>
+            {uiMode === 'classic' ? (
+              <>
+                <span>Your Daily Goal</span>
+                <strong className="goal-nums">({questionsSolvedToday}/{targetDailyGoal} Qs)</strong>
+                <span className="goal-arrow">›</span>
+              </>
+            ) : (
+              <>
+                <span className="goal-badge-label">DAILY MILESTONES</span>
+                <h3 className="goal-heading">
+                  Today's Practice Pace 
+                  <span className="goal-nums"> ({questionsSolvedToday} / {targetDailyGoal} Questions)</span>
+                </h3>
+              </>
+            )}
           </div>
 
           <button 
@@ -246,59 +279,83 @@ export default function Dashboard() {
               setShowGoalModal(true);
             }}
           >
-            <Sliders size={13} />
-            <span>Target: {userTargetGoal} Qs</span>
+            {uiMode === 'classic' ? (
+              <span>⚙️ Edit Target Goal</span>
+            ) : (
+              <>
+                <Sliders size={13} />
+                <span>Target: {userTargetGoal} Qs</span>
+              </>
+            )}
           </button>
         </div>
 
         {/* Milestone Progression Track */}
-        <div className="milestone-track-container" onClick={() => navigate('/oa-practice')}>
-          <div className="milestone-line-bg">
-            <div className="milestone-line-fill" style={{ width: `${goalPercent}%` }} />
-          </div>
-
-          <div className="milestone-nodes-row">
-            {/* Step 0: Start */}
-            <div className={`milestone-node ${questionsSolvedToday > 0 ? 'completed' : 'active'}`}>
-              <div className="node-bubble">
-                {questionsSolvedToday > 0 ? <Check size={12} /> : <span>0</span>}
-              </div>
-              <span className="node-label">Start</span>
+        {uiMode === 'classic' ? (
+          <div className="goal-stepper-track" onClick={() => navigate('/oa-practice')}>
+            <div className="stepper-line">
+              <div className="stepper-progress-fill" style={{ width: `${goalPercent}%` }} />
             </div>
-
-            {/* Step 1 */}
-            <div className={`milestone-node ${questionsSolvedToday >= step1Threshold ? 'completed' : (questionsSolvedToday > 0 ? 'active' : '')}`}>
-              <div className="node-bubble">
-                {questionsSolvedToday >= step1Threshold ? <Check size={12} /> : <span>1</span>}
-              </div>
-              <span className="node-label">Warmup ({step1Threshold} Qs)</span>
+            <div className={`stepper-node node-start ${questionsSolvedToday >= 0 ? 'reached' : ''}`} title="Start">
+              <span className="node-icon">📈</span>
             </div>
-
-            {/* Step 2 */}
-            <div className={`milestone-node ${questionsSolvedToday >= step2Threshold ? 'completed' : ''}`}>
-              <div className="node-bubble">
-                {questionsSolvedToday >= step2Threshold ? <Check size={12} /> : <span>2</span>}
-              </div>
-              <span className="node-label">Core ({step2Threshold} Qs)</span>
+            <div className={`stepper-node node-1 ${questionsSolvedToday >= step1Threshold ? 'reached' : ''}`} title={`${step1Threshold} Qs`}>
+              <span className="node-icon">🚶</span>
             </div>
-
-            {/* Step 3 */}
-            <div className={`milestone-node ${questionsSolvedToday >= step3Threshold ? 'completed' : ''}`}>
-              <div className="node-bubble">
-                {questionsSolvedToday >= step3Threshold ? <Check size={12} /> : <span>3</span>}
-              </div>
-              <span className="node-label">Pro Sprint ({step3Threshold} Qs)</span>
+            <div className={`stepper-node node-2 ${questionsSolvedToday >= step2Threshold ? 'reached' : ''}`} title={`${step2Threshold} Qs`}>
+              <span className="node-icon">🏃</span>
             </div>
-
-            {/* Step 4: Finish */}
-            <div className={`milestone-node finish ${questionsSolvedToday >= targetDailyGoal ? 'completed' : ''}`}>
-              <div className="node-bubble">
-                {questionsSolvedToday >= targetDailyGoal ? <Check size={12} /> : <span>★</span>}
-              </div>
-              <span className="node-label">Target ({targetDailyGoal} Qs)</span>
+            <div className={`stepper-node node-3 ${questionsSolvedToday >= step3Threshold ? 'reached' : ''}`} title={`${step3Threshold} Qs`}>
+              <span className="node-icon">🏃‍♂️</span>
+            </div>
+            <div className={`stepper-node node-finish ${questionsSolvedToday >= targetDailyGoal ? 'reached' : ''}`} title={`${targetDailyGoal} Qs Goal`}>
+              <span className="node-icon">🏁</span>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="milestone-track-container" onClick={() => navigate('/oa-practice')}>
+            <div className="milestone-line-bg">
+              <div className="milestone-line-fill" style={{ width: `${goalPercent}%` }} />
+            </div>
+
+            <div className="milestone-nodes-row">
+              <div className={`milestone-node ${questionsSolvedToday > 0 ? 'completed' : 'active'}`}>
+                <div className="node-bubble">
+                  {questionsSolvedToday > 0 ? <Check size={12} /> : <span>0</span>}
+                </div>
+                <span className="node-label">Start</span>
+              </div>
+
+              <div className={`milestone-node ${questionsSolvedToday >= step1Threshold ? 'completed' : (questionsSolvedToday > 0 ? 'active' : '')}`}>
+                <div className="node-bubble">
+                  {questionsSolvedToday >= step1Threshold ? <Check size={12} /> : <span>1</span>}
+                </div>
+                <span className="node-label">Warmup ({step1Threshold} Qs)</span>
+              </div>
+
+              <div className={`milestone-node ${questionsSolvedToday >= step2Threshold ? 'completed' : ''}`}>
+                <div className="node-bubble">
+                  {questionsSolvedToday >= step2Threshold ? <Check size={12} /> : <span>2</span>}
+                </div>
+                <span className="node-label">Core ({step2Threshold} Qs)</span>
+              </div>
+
+              <div className={`milestone-node ${questionsSolvedToday >= step3Threshold ? 'completed' : ''}`}>
+                <div className="node-bubble">
+                  {questionsSolvedToday >= step3Threshold ? <Check size={12} /> : <span>3</span>}
+                </div>
+                <span className="node-label">Pro Sprint ({step3Threshold} Qs)</span>
+              </div>
+
+              <div className={`milestone-node finish ${questionsSolvedToday >= targetDailyGoal ? 'completed' : ''}`}>
+                <div className="node-bubble">
+                  {questionsSolvedToday >= targetDailyGoal ? <Check size={12} /> : <span>★</span>}
+                </div>
+                <span className="node-label">Target ({targetDailyGoal} Qs)</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* DAILY GOAL MODAL */}
@@ -412,9 +469,13 @@ export default function Dashboard() {
             return (
               <div key={bank.id} className="pyq-bank-card" onClick={() => navigate(`/oa-practice?cat=${encodeURIComponent(bank.category)}`)}>
                 <div className="bank-card-content">
-                  <div className="bank-icon-box">
-                    <IconComponent size={18} className="text-cyan-400" />
-                  </div>
+                  {uiMode === 'classic' ? (
+                    <span className="bank-emoji" style={{ fontSize: '1.25rem' }}>{bank.emoji}</span>
+                  ) : (
+                    <div className="bank-icon-box">
+                      <IconComponent size={18} className="text-cyan-400" />
+                    </div>
+                  )}
                   <span className="bank-name">{bank.name}</span>
                 </div>
                 <div className={`bank-badge ${bank.isCheck ? 'check-badge' : ''}`}>

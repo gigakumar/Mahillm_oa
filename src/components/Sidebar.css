@@ -161,6 +161,47 @@
   gap: 0.5rem;
 }
 
+/* UI Mode Segmented Switcher */
+.ui-style-switcher {
+  display: flex;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 3px;
+  margin-bottom: 0.15rem;
+}
+
+.ui-style-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.4rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: #94a3b8;
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.ui-style-btn:hover {
+  color: #f1f5f9;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ui-style-btn.active {
+  background: rgba(59, 130, 246, 0.22);
+  border-color: rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.2);
+}
+
 .theme-toggle-btn {
   width: 100%;
   display: flex;

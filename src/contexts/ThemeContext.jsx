@@ -14,6 +14,14 @@ export function ThemeProvider({ children }) {
     return 'dark';
   });
 
+  // UI Mode: 'modern' (Linear / Bespoke) vs 'classic' (3D Bubble / Playful)
+  const [uiMode, setUiMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('mechprep-ui-mode') || 'modern';
+    }
+    return 'modern';
+  });
+
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     document.body.setAttribute('data-theme', theme);
@@ -33,10 +41,18 @@ export function ThemeProvider({ children }) {
     localStorage.setItem('mechprep-theme', theme);
   }, [theme]);
 
+  useEffect(() => {
+    document.documentElement.setAttribute('data-ui-mode', uiMode);
+    document.body.setAttribute('data-ui-mode', uiMode);
+    localStorage.setItem('mechprep-ui-mode', uiMode);
+    window.dispatchEvent(new CustomEvent('ui-mode-changed', { detail: { uiMode } }));
+  }, [uiMode]);
+
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
+  const toggleUiMode = () => setUiMode((m) => (m === 'modern' ? 'classic' : 'modern'));
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, uiMode, setUiMode, toggleUiMode }}>
       {children}
     </ThemeContext.Provider>
   );

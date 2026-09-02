@@ -89,3 +89,29 @@ body.light-mode .ambient-grid-mesh {
     linear-gradient(to right, rgba(0, 0, 0, 0.035) 1px, transparent 1px),
     linear-gradient(to bottom, rgba(0, 0, 0, 0.035) 1px, transparent 1px);
 }
+
+/* Classic Mode Atmospheric Nebula */
+.bg-top-nebula {
+  position: absolute;
+  top: -12vw;
+  right: -8vw;
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(
+    ellipse at 65% 30%,
+    rgba(225, 45, 15, 0.28) 0%,
+    rgba(240, 110, 20, 0.16) 40%,
+    rgba(140, 30, 180, 0.08) 65%,
+    transparent 80%
+  );
+  filter: blur(60px);
+  opacity: 0.75;
+  animation: nebulaBreathe 8s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes nebulaBreathe {
+  0%   { transform: scale(0.96) translate(0, 0); opacity: 0.65; }
+  50%  { transform: scale(1.06) translate(-15px, 15px); opacity: 0.85; }
+  100% { transform: scale(1.02) translate(10px, -5px); opacity: 0.7; }
+}

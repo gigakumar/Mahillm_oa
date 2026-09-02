@@ -21,8 +21,8 @@ import {
   Mic,
   Target,
   GraduationCap,
-  Clock,
-  BookOpen
+  BookOpen,
+  Boxes
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -124,11 +124,31 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
           ))}
         </nav>
 
-        {/* Bottom Theme Toggle */}
+        {/* Bottom Theme & UI Style Toggles */}
         <div className="sidebar-footer">
-          <button className="theme-toggle-btn" onClick={toggleTheme}>
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-            <span>Turn on {theme === 'dark' ? 'light' : 'dark'} mode</span>
+          {/* UI Mode Segmented Switcher */}
+          <div className="ui-style-switcher" title="Toggle between Modern Linear UI and Previous 3D Bubble UI">
+            <button
+              type="button"
+              className={`ui-style-btn ${uiMode === 'modern' ? 'active' : ''}`}
+              onClick={() => setUiMode('modern')}
+            >
+              <Sparkles size={13} />
+              <span>Modern UI</span>
+            </button>
+            <button
+              type="button"
+              className={`ui-style-btn ${uiMode === 'classic' ? 'active' : ''}`}
+              onClick={() => setUiMode('classic')}
+            >
+              <Boxes size={13} />
+              <span>3D Bubble</span>
+            </button>
+          </div>
+
+          <button type="button" className="theme-toggle-btn" onClick={toggleTheme}>
+            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+            <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
           </button>
         </div>
       </aside>

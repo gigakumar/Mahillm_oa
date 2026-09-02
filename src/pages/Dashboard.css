@@ -162,6 +162,95 @@
 .bar-indigo { background: #6366f1; }
 
 /* -------------------------------------------------------------
+   CLASSIC MODE STYLES (3D Bubble UI)
+   ------------------------------------------------------------- */
+.dashboard-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .dashboard-stats-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+.stat-chip {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(11, 18, 36, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  backdrop-filter: blur(20px) saturate(180%);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.15), 0 8px 24px -4px rgba(0, 0, 0, 0.35);
+}
+
+.stat-chip-val {
+  font-size: 1.85rem;
+  font-weight: 800;
+  font-family: var(--font-display);
+  color: #f8fafc;
+  line-height: 1;
+}
+
+.stat-chip-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Classic Stepper Track */
+.goal-stepper-track {
+  position: relative;
+  padding: 1rem 0.5rem 0.5rem 0.5rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+
+.stepper-line {
+  position: absolute;
+  top: 25px;
+  left: 20px;
+  right: 20px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  z-index: 1;
+}
+
+.stepper-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 100%);
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+
+.stepper-node {
+  position: relative;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.95);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
+}
+
+.stepper-node.reached {
+  border-color: #38bdf8;
+  background: #1e3a8a;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+}
+
+/* -------------------------------------------------------------
    2. DAILY GOAL PROGRESSION MILESTONE TRACK
    ------------------------------------------------------------- */
 .dashboard-daily-goal-card {
