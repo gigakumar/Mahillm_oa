@@ -32,8 +32,7 @@ import './Sidebar.css';
 export default function Sidebar({ mobileOpen, setMobileOpen }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, uiMode, setUiMode } = useTheme();
   const { mistakes } = useUserData();
 
   const isActive = (path) => {
