@@ -3,11 +3,9 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Home, 
   ClipboardCheck, 
-  Crown, 
   BookMarked, 
   User, 
   Calendar, 
-  ExternalLink, 
   Sun, 
   Moon,
   Sparkles,
@@ -15,13 +13,12 @@ import {
   Brain,
   Layers,
   Compass,
-  Award,
   Bookmark,
   Activity,
   Mic,
   Target,
   GraduationCap,
-  BookOpen,
+  Clock,
   Boxes
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -32,8 +29,10 @@ import './Sidebar.css';
 export default function Sidebar({ mobileOpen, setMobileOpen }) {
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { theme, toggleTheme, uiMode, setUiMode } = useTheme();
   const { mistakes } = useUserData();
+
 
   const isActive = (path) => {
     if (path === '/' && location.pathname === '/') return true;
